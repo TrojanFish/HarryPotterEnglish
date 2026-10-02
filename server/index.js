@@ -42,9 +42,9 @@ if (isConfigured) {
       secretAccessKey: secretAccessKey,
     },
   });
-  console.log(`⚡ [R2] S3 Client initialized for bucket: ${bucketName}`);
+  console.log(`[R2] S3 Client initialized for bucket: ${bucketName}`);
 } else {
-  console.warn(`⚠️ [R2] Missing R2 credentials in .env.`);
+  console.warn(`[R2] Missing R2 credentials in .env.`);
 }
 
 // ==========================================
@@ -76,17 +76,17 @@ async function getS3TextCached(key, bypassCache = false) {
 
 // Known Chinese Title and House Mapping for Harry Potter series & classical stories
 const KNOWN_TITLE_MAP = {
-  'hp-book-1': { cnTitle: '哈利·波特与魔法石', cover: '🧙‍♂️', color: '#740001' },
-  'hp-book-2': { cnTitle: '哈利·波特与密室', cover: '🐍', color: '#1a472a' },
-  'hp-book-3': { cnTitle: '哈利·波特与阿兹卡班的囚徒', cover: '🐺', color: '#0e1a40' },
-  'hp-book-4': { cnTitle: '哈利·波特与火焰杯', cover: '🏆', color: '#740001' },
-  'hp-book-5': { cnTitle: '哈利·波特与凤凰社', cover: '🦅', color: '#0e1a40' },
-  'hp-book-6': { cnTitle: '哈利·波特与混血王子', cover: '⚗️', color: '#1a472a' },
-  'hp-book-7': { cnTitle: '哈利·波特与死亡圣器', cover: '⚔️', color: '#740001' },
-  'the-little-prince': { cnTitle: '小王子', cover: '👑', color: '#b8860b' },
-  'tiny-tales': { cnTitle: '经典童话故事', cover: '📖', color: '#4a7c59' },
-  'adventure-time': { cnTitle: '探险时光', cover: '🗡️', color: '#2a52be' },
-  'epic-stories': { cnTitle: '史诗传奇', cover: '🛡️', color: '#6a0dad' },
+  'hp-book-1': { cnTitle: '哈利·波特与魔法石', code: 'HP1', color: '#740001' },
+  'hp-book-2': { cnTitle: '哈利·波特与密室', code: 'HP2', color: '#1a472a' },
+  'hp-book-3': { cnTitle: '哈利·波特与阿兹卡班的囚徒', code: 'HP3', color: '#0e1a40' },
+  'hp-book-4': { cnTitle: '哈利·波特与火焰杯', code: 'HP4', color: '#740001' },
+  'hp-book-5': { cnTitle: '哈利·波特与凤凰社', code: 'HP5', color: '#0e1a40' },
+  'hp-book-6': { cnTitle: '哈利·波特与混血王子', code: 'HP6', color: '#1a472a' },
+  'hp-book-7': { cnTitle: '哈利·波特与死亡圣器', code: 'HP7', color: '#740001' },
+  'the-little-prince': { cnTitle: '小王子', code: 'TLP', color: '#b8860b' },
+  'tiny-tales': { cnTitle: '经典童话故事', code: 'TALES', color: '#4a7c59' },
+  'adventure-time': { cnTitle: '探险时光', code: 'ADV', color: '#2a52be' },
+  'epic-stories': { cnTitle: '史诗传奇', code: 'EPIC', color: '#6a0dad' },
 };
 
 // ==========================================
@@ -94,7 +94,7 @@ const KNOWN_TITLE_MAP = {
 // ==========================================
 async function scanR2Catalog(bypassCache = false) {
   if (!s3Client) return [];
-  console.log(`⚡ [R2 Scanner] Scanning R2 bucket for podcasts... (bypass: ${bypassCache})`);
+  console.log(`[R2 Scanner] Scanning R2 bucket for podcasts... (bypass: ${bypassCache})`);
 
   try {
     const listCmd = new ListObjectsV2Command({
@@ -152,7 +152,7 @@ async function scanR2Catalog(bypassCache = false) {
       // Smart title resolution
       const metaExtra = KNOWN_TITLE_MAP[showId] || { 
         cnTitle: showInfo.title || showId, 
-        cover: '📚', 
+        code: 'BOOK', 
         color: '#cba358' 
       };
 
@@ -160,7 +160,8 @@ async function scanR2Catalog(bypassCache = false) {
         id: showId,
         title: showInfo.title || showId,
         cnTitle: metaExtra.cnTitle,
-        cover: metaExtra.cover,
+        code: metaExtra.code || 'BOOK',
+        cover: '',
         color: metaExtra.color,
         description: showInfo.description || '',
         coverPath: showInfo.coverPath || null,
@@ -182,10 +183,10 @@ async function scanR2Catalog(bypassCache = false) {
 
     catalogCache = books;
     catalogCacheTime = Date.now();
-    console.log(`⚡ [R2 Scanner] Done! ${books.length} shows discovered.`);
+    console.log(`[R2 Scanner] Done! ${books.length} shows discovered.`);
     return books;
   } catch (err) {
-    console.error('❌ [R2 Scanner Error]', err);
+    console.error('[R2 Scanner Error]', err);
     return catalogCache || [];
   }
 }
@@ -340,7 +341,7 @@ app.get('/api/raw/*', async (req, res) => {
 // 5. Serve production static assets from dist/ if built (Docker / Production mode)
 const distPath = path.resolve(__dirname, '../dist');
 if (fs.existsSync(distPath)) {
-  console.log(`📦 [Static Assets] Serving production build from ${distPath}`);
+  console.log(`[Static Assets] Serving production build from ${distPath}`);
   app.use(express.static(distPath));
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api')) return next();
@@ -351,7 +352,7 @@ if (fs.existsSync(distPath)) {
 // Start HTTP server only if not running in serverless environment (Vercel)
 if (!process.env.VERCEL) {
   app.listen(port, () => {
-    console.log(`🧙‍♂️ Hogwarts R2 High-Concurrency Server running at http://localhost:${port}`);
+    console.log(`Hogwarts R2 High-Concurrency Server running at http://localhost:${port}`);
     // Initial scan on boot
     scanR2Catalog(false);
   });

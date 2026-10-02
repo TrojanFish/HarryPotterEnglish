@@ -23,6 +23,7 @@ import {
   getCachedChapter, 
   getOfflineStorageInfo 
 } from './utils/offlineStorage';
+import { Loader2 } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -603,9 +604,9 @@ export function App() {
           {isLoadingContent ? (
             <div className="flex-1 flex items-center justify-center py-32 text-[#f3d38c]">
               <div className="flex flex-col items-center space-y-3">
-                <span className="text-4xl animate-spin">⚡</span>
+                <Loader2 className="w-10 h-10 animate-spin text-amber-500" />
                 <span className="font-magical text-base text-gold-glow">
-                  正在从 R2 调取霍格沃茨原声与精听字幕...
+                  正在调取霍格沃茨原声与精听字幕...
                 </span>
               </div>
             </div>

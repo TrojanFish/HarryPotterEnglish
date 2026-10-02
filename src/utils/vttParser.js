@@ -37,6 +37,22 @@ export function parseVTT(vttText) {
       continue;
     }
 
+    // Skip cue sequence numbers (e.g., "1", "2", "3")
+    if (/^\d+$/.test(line)) {
+      let isCueIndex = false;
+      for (let j = i + 1; j < lines.length; j++) {
+        const nextLine = lines[j].trim();
+        if (!nextLine) continue;
+        if (timeRegex.test(nextLine)) {
+          isCueIndex = true;
+        }
+        break;
+      }
+      if (isCueIndex) {
+        continue;
+      }
+    }
+
     const timeMatch = line.match(timeRegex);
     if (timeMatch) {
       const startTime = timeToSeconds(timeMatch[1]);
@@ -51,25 +67,32 @@ export function parseVTT(vttText) {
       cues.push(currentCue);
     } else if (currentCue) {
       // Clean HTML tags like <b>, <i>, <v Narrator>
-      const cleanLine = line.replace(/<\/?[^>]+(>|$)/g, '');
-      if (cleanLine) {
+      const cleanLine = line.replace(/<\/?[^>]+(>|$)/g, '').trim();
+      // Do not append standalone digit lines (cue numbers) to subtitle text
+      if (cleanLine && !/^\d+$/.test(cleanLine)) {
         currentCue.textLines.push(cleanLine);
       }
     }
   }
 
   return cues.map(cue => {
-    let text = cue.textLines.join(' ');
+    // Filter out any purely numeric lines that might have slipped into textLines
+    const filteredLines = cue.textLines.filter(l => !/^\d+$/.test(l.trim()));
+    let text = filteredLines.join(' ');
     let translation = '';
 
-    // Check if there is dual subtitle separated by // or Chinese characters
-    if (cue.textLines.length >= 2) {
-      const hasChinese = /[\u4e00-\u9fa5]/.test(cue.textLines[cue.textLines.length - 1]);
+    // Check if there is dual subtitle separated by Chinese characters
+    if (filteredLines.length >= 2) {
+      const lastLine = filteredLines[filteredLines.length - 1];
+      const hasChinese = /[\u4e00-\u9fa5]/.test(lastLine);
       if (hasChinese) {
-        translation = cue.textLines.pop();
-        text = cue.textLines.join(' ');
+        translation = filteredLines.pop();
+        text = filteredLines.join(' ');
       }
     }
+
+    // Ensure no trailing standalone cue index at the end of sentence (e.g. "something. 2" -> "something.")
+    text = text.replace(/\s+\d+$/, '').trim();
 
     return {
       id: cue.id,

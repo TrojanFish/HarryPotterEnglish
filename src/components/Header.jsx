@@ -83,8 +83,8 @@ export function Header({
           className="flex items-center gap-2 cursor-pointer group select-none"
           title="点击打开魔法书架"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-lg shadow-md group-hover:scale-105 transition-transform">
-            ⚡
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+            <Sparkles className="w-5 h-5 text-amber-950" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">

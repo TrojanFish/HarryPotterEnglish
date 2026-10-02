@@ -61,14 +61,17 @@ export function Sidebar({
                   alt={currentBook.title}
                   onError={(e) => {
                     e.target.style.display = 'none';
-                    e.target.parentNode.classList.add('flex', 'items-center', 'justify-center', 'text-3xl');
-                    e.target.parentNode.innerText = currentBook.cover || '🧙‍♂️';
+                    e.target.parentNode.classList.add('flex', 'items-center', 'justify-center');
+                    const textNode = document.createElement('span');
+                    textNode.className = 'font-magical text-amber-500 font-bold text-sm tracking-wider';
+                    textNode.innerText = currentBook.code || 'HP';
+                    e.target.parentNode.appendChild(textNode);
                   }}
                   className="w-full h-full object-cover transition-transform group-hover:scale-105"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-3xl">
-                  {currentBook.cover || '🧙‍♂️'}
+                <div className="w-full h-full flex items-center justify-center bg-amber-950/20 text-amber-500">
+                  <BookOpen className="w-7 h-7" />
                 </div>
               )}
             </div>
@@ -77,7 +80,7 @@ export function Sidebar({
             <div className="flex-1 min-w-0">
               <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-800 dark:text-amber-300 text-[10px] font-bold mb-1">
                 <Sparkles size={10} />
-                <span>入门适读 ★☆☆</span>
+                <span>入门适读 · 基础难度</span>
               </div>
               <h2 className="font-magical font-bold text-sm leading-snug text-amber-900 dark:text-amber-300 line-clamp-2">
                 {currentBook.cnTitle || currentBook.title}

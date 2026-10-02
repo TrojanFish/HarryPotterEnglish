@@ -245,11 +245,11 @@ export function SubtitleViewer({
                             ? 'font-medium text-amber-950 dark:text-amber-100 hover:bg-amber-400/20 hover:text-amber-700' 
                             : 'hover:bg-amber-400/15 hover:text-amber-700 dark:hover:text-amber-300'
                       }`}
-                      title={isHpTerm ? `⚡ 魔法专有名词: ${token.text} (点击查看百科背景)` : '💡 点击查看中文释义与纯正英音发音'}
+                      title={isHpTerm ? `魔法专有名词: ${token.text} (点击查看百科背景)` : '点击查看中文释义与纯正英音发音'}
                     >
                       {token.text}
                       {isHpTerm && (
-                        <span className="text-[10px] text-amber-500 align-super select-none">⚡</span>
+                        <Sparkles className="w-2.5 h-2.5 text-amber-500 inline ml-0.5 align-super" />
                       )}
                     </span>
                   );
@@ -263,7 +263,7 @@ export function SubtitleViewer({
                     ? 'border-amber-200/80 text-[#735839]' 
                     : 'border-slate-800 text-slate-400'
                 }`}>
-                  💡 {cue.translation}
+                  {cue.translation}
                 </div>
               )}
             </div>

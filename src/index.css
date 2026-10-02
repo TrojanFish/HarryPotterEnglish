@@ -33,11 +33,11 @@
 
 /* ───────────────────────────────────────────────────────────
    Theme System:
-   .theme-parchment = ☀️ 魔法学院·日间明亮版 (Bright Academy Day Mode)
-   default (dark body) = 🌙 星空夜读·夜间守护版 (Starry Night Mode)
+   .theme-parchment = 魔法学院·日间明亮版 (Bright Academy Day Mode)
+   default (dark body) = 星空夜读·夜间守护版 (Starry Night Mode)
 ─────────────────────────────────────────────────────────── */
 
-/* ☀️ Day Mode: Warm creamy academy paper, high readability for young learners */
+/* Day Mode: Warm creamy academy paper, high readability for young learners */
 .theme-parchment {
   background-color: #fbf8f2 !important;
   color: #2d241c !important;
@@ -55,7 +55,7 @@
   border: 1px solid #c8b78f;
 }
 
-/* 🌙 Night Mode overrides when theme-parchment is not active */
+/* Night Mode overrides when theme-parchment is not active */
 body:not(.theme-parchment) {
   background-color: #0b0f19 !important;
   color: #e2e8f0 !important;

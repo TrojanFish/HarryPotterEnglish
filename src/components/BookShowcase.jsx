@@ -40,10 +40,12 @@ export function BookShowcase({
                 src={coverUrl}
                 alt={currentBook.title}
                 onError={(e) => {
-                  // Fallback to placeholder emoji if cover image fails to load
                   e.target.style.display = 'none';
-                  e.target.parentNode.classList.add('flex', 'items-center', 'justify-center', 'text-5xl');
-                  e.target.parentNode.innerText = currentBook.cover || '🧙‍♂️';
+                  e.target.parentNode.classList.add('flex', 'items-center', 'justify-center');
+                  const textNode = document.createElement('span');
+                  textNode.className = 'font-magical text-amber-500 font-bold text-lg tracking-wider';
+                  textNode.innerText = currentBook.code || 'HP';
+                  e.target.parentNode.appendChild(textNode);
                 }}
                 className="w-full h-full object-cover"
               />
@@ -52,8 +54,8 @@ export function BookShowcase({
             </div>
 
             {/* Floating House Crest badge */}
-            <span className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#740001] text-amber-200 border border-[#cba358] shadow-md">
-              {currentBook.cover || '⚡'}
+            <span className="absolute -bottom-2 -right-2 p-1.5 rounded-full bg-[#740001] text-amber-200 border border-[#cba358] shadow-md flex items-center justify-center">
+              <Sparkles size={12} />
             </span>
           </div>
 

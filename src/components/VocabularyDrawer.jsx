@@ -81,7 +81,7 @@ export function VocabularyDrawer({
           {/* Drawer Header */}
           <div className="px-5 py-4 border-b border-gray-700/40 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <span className="text-xl">📜</span>
+              <BookOpen className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               <div>
                 <h2 className="font-magical font-bold text-lg text-[#cba358]">
                   魔法生词本 ({vocabList.length})
@@ -155,7 +155,7 @@ export function VocabularyDrawer({
                           </span>
                         )}
                         <p className="text-xs text-gray-400 mt-4">
-                          👉 点击查看释义与例句
+                          点击卡片查看中文释义与例句
                         </p>
                       </div>
                     ) : (
@@ -167,9 +167,10 @@ export function VocabularyDrawer({
                           {currentFlashcard.translation}
                         </h4>
                         {currentFlashcard.lore && (
-                          <p className="text-xs text-amber-100/80 bg-[#740001]/30 p-2.5 rounded-lg border border-amber-400/30">
-                            ⚡ {currentFlashcard.lore}
-                          </p>
+                          <div className="text-xs text-amber-100/80 bg-[#740001]/30 p-2.5 rounded-lg border border-amber-400/30 flex items-start gap-1.5 text-left">
+                            <Sparkles size={13} className="text-amber-400 shrink-0 mt-0.5" />
+                            <span>{currentFlashcard.lore}</span>
+                          </div>
                         )}
                         {currentFlashcard.context && (
                           <p className="text-xs italic text-gray-300 font-reading mt-2 border-t border-gray-700/40 pt-2">
@@ -260,8 +261,8 @@ export function VocabularyDrawer({
                             </span>
                           )}
                           {item.isHpLore && (
-                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#740001] text-amber-200">
-                              ⚡ 魔法
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#740001] text-amber-200 font-semibold">
+                              魔法词
                             </span>
                           )}
                         </div>

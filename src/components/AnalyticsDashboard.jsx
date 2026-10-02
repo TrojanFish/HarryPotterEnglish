@@ -423,9 +423,9 @@ export function AnalyticsDashboard({
               <div className={`mt-2 text-xs flex items-center justify-center gap-2 font-mono py-1 rounded-lg ${
                 isParchment ? 'bg-[#ede2c9] text-[#2d1e12]' : 'bg-[#182335] text-[#f3d38c]'
               }`}>
-                <span>📅 {weeklyData[hoveredBarIndex].date} ({weeklyData[hoveredBarIndex].day})</span>
+                <span>{weeklyData[hoveredBarIndex].date} ({weeklyData[hoveredBarIndex].day})</span>
                 <span>•</span>
-                <span>🎧 听力时长: <strong>{weeklyData[hoveredBarIndex].minutes}</strong> 分钟</span>
+                <span>听力时长: <strong>{weeklyData[hoveredBarIndex].minutes}</strong> 分钟</span>
               </div>
             )}
           </div>
@@ -589,9 +589,9 @@ export function AnalyticsDashboard({
               <div className={`mt-2 text-xs flex items-center justify-center gap-2 font-mono py-1 rounded-lg ${
                 isParchment ? 'bg-[#ede2c9] text-[#2d1e12]' : 'bg-[#182335] text-emerald-300'
               }`}>
-                <span>📅 练习日期: {trendPoints[hoveredPointIndex].date}</span>
+                <span>练习日期: {trendPoints[hoveredPointIndex].date}</span>
                 <span>•</span>
-                <span>🎯 听写准确率: <strong>{trendPoints[hoveredPointIndex].accuracy}%</strong></span>
+                <span>听写准确率: <strong>{trendPoints[hoveredPointIndex].accuracy}%</strong></span>
               </div>
             )}
           </div>

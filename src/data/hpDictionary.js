@@ -269,11 +269,86 @@ export const HP_LORE_DICTIONARY = {
   huddle: {
     word: 'huddle',
     phonetic: '/ˈhʌd.əl/',
-    pos: 'noun / verb',
+    pos: '名词 / 动词',
     translation: '挤作一团；聚拢',
-    explanation: 'A dense and disorderly crowd or group.',
     lore: '德思礼先生注意到一小群穿着奇装异服的人凑在一起。'
-  }
+  },
+  // Chapter 1 & Junior High Core Vocabulary (Chinese definitions)
+  boy: { word: 'boy', phonetic: '/bɔɪ/', pos: '名词', translation: '男孩；少年' },
+  lived: { word: 'lived', phonetic: '/lɪvd/', pos: '动词', translation: '活下来的；居住（live的过去式）' },
+  live: { word: 'live', phonetic: '/lɪv/', pos: '动词', translation: '活着；居住；生活' },
+  proud: { word: 'proud', phonetic: '/praʊd/', pos: '形容词', translation: '自豪的；骄傲的；得意的' },
+  normal: { word: 'normal', phonetic: '/ˈnɔː.məl/', pos: '形容词', translation: '正常的；正规的；平凡的' },
+  family: { word: 'family', phonetic: '/ˈfæm.əl.i/', pos: '名词', translation: '家庭；家人' },
+  strange: { word: 'strange', phonetic: '/streɪndʒ/', pos: '形容词', translation: '古怪的；奇怪的；陌生的' },
+  involved: { word: 'involved', phonetic: '/ɪnˈvɒlvd/', pos: '形容词', translation: '卷入的；涉及的' },
+  nonsense: { word: 'nonsense', phonetic: '/ˈnɒn.səns/', pos: '名词', translation: '胡说八道；废话；荒唐事' },
+  director: { word: 'director', phonetic: '/daɪˈrek.tər/', pos: '名词', translation: '主任；主管；董事' },
+  company: { word: 'company', phonetic: '/ˈkʌm.pə.ni/', pos: '名词', translation: '公司；伙伴' },
+  firm: { word: 'firm', phonetic: '/fɜːm/', pos: '名词', translation: '商行；公司' },
+  drills: { word: 'drills', phonetic: '/drɪlz/', pos: '名词', translation: '钻机；钻孔机（复数）' },
+  drill: { word: 'drill', phonetic: '/drɪl/', pos: '名词', translation: '钻头；钻孔机' },
+  beefy: { word: 'beefy', phonetic: '/ˈbiː.fi/', pos: '形容词', translation: '健壮的；魁梧的；粗壮的' },
+  neck: { word: 'neck', phonetic: '/nek/', pos: '名词', translation: '脖子；颈部' },
+  moustache: { word: 'moustache', phonetic: '/məˈstɑːʃ/', pos: '名词', translation: '小胡子；八字须' },
+  mustache: { word: 'mustache', phonetic: '/ˈmʌs.tæʃ/', pos: '名词', translation: '胡子；八字须' },
+  blonde: { word: 'blonde', phonetic: '/blɒnd/', pos: '形容词', translation: '金发的' },
+  craning: { word: 'craning', phonetic: '/kreɪnɪŋ/', pos: '动词', translation: '伸长脖子窥视（crane的现在分词）' },
+  fence: { word: 'fence', phonetic: '/fens/', pos: '名词', translation: '篱笆；栅栏' },
+  garden: { word: 'garden', phonetic: '/ˈɡɑː.dən/', pos: '名词', translation: '花园；菜园' },
+  spying: { word: 'spying', phonetic: '/ˈspaɪ.ɪŋ/', pos: '动词', translation: '窥探；打探邻居隐私' },
+  neighbour: { word: 'neighbour', phonetic: '/ˈneɪ.bər/', pos: '名词', translation: '邻居' },
+  neighbours: { word: 'neighbours', phonetic: '/ˈneɪ.bərz/', pos: '名词', translation: '邻居们（复数）' },
+  neighbor: { word: 'neighbor', phonetic: '/ˈneɪ.bər/', pos: '名词', translation: '邻居' },
+  opinion: { word: 'opinion', phonetic: '/əˈpɪn.jən/', pos: '名词', translation: '意见；看法' },
+  finer: { word: 'finer', phonetic: '/ˈfaɪ.nər/', pos: '形容词', translation: '更好的；更棒的（fine的比较级）' },
+  secret: { word: 'secret', phonetic: '/ˈsiː.krət/', pos: '名词', translation: '秘密；机密' },
+  fear: { word: 'fear', phonetic: '/fɪər/', pos: '名词 / 动词', translation: '恐惧；害怕' },
+  discover: { word: 'discover', phonetic: '/dɪˈskʌv.ər/', pos: '动词', translation: '发现；发觉' },
+  bear: { word: 'bear', phonetic: '/beər/', pos: '动词', translation: '承受；忍受' },
+  sister: { word: 'sister', phonetic: '/ˈsɪs.tər/', pos: '名词', translation: '姐妹；姐姐；妹妹' },
+  several: { word: 'several', phonetic: '/ˈsev.ər.əl/', pos: '形容词', translation: '几个；若干' },
+  years: { word: 'years', phonetic: '/jɪərz/', pos: '名词', translation: '年；岁月（复数）' },
+  pretended: { word: 'pretended', phonetic: '/prɪˈten.dɪd/', pos: '动词', translation: '假装（pretend的过去式）' },
+  husband: { word: 'husband', phonetic: '/ˈhʌz.bənd/', pos: '名词', translation: '丈夫' },
+  shuddered: { word: 'shuddered', phonetic: '/ˈʃʌd.əd/', pos: '动词', translation: '战栗；不寒而栗' },
+  street: { word: 'street', phonetic: '/striːt/', pos: '名词', translation: '街道；马路' },
+  dull: { word: 'dull', phonetic: '/dʌl/', pos: '形容词', translation: '阴暗的；无聊的；枯燥的' },
+  grey: { word: 'grey', phonetic: '/ɡreɪ/', pos: '形容词', translation: '灰色的；阴沉的' },
+  tuesday: { word: 'Tuesday', phonetic: '/ˈtʃuːz.deɪ/', pos: '名词', translation: '星期二' },
+  story: { word: 'story', phonetic: '/ˈstɔː.ri/', pos: '名词', translation: '故事；小说' },
+  cloudy: { word: 'cloudy', phonetic: '/ˈklaʊ.di/', pos: '形容词', translation: '多云的；阴天' },
+  sky: { word: 'sky', phonetic: '/skaɪ/', pos: '名词', translation: '天空' },
+  suggest: { word: 'suggest', phonetic: '/səˈdʒest/', pos: '动词', translation: '表明；暗示；建议' },
+  hummed: { word: 'hummed', phonetic: '/hʌmd/', pos: '动词', translation: '哼着小调（hum的过去式）' },
+  boring: { word: 'boring', phonetic: '/ˈbɔː.rɪŋ/', pos: '形容词', translation: '枯燥的；乏味的；不起眼的' },
+  tie: { word: 'tie', phonetic: '/taɪ/', pos: '名词', translation: '领带；系带' },
+  work: { word: 'work', phonetic: '/wɜːk/', pos: '名词 / 动词', translation: '工作；上班' },
+  gossiped: { word: 'gossiped', phonetic: '/ˈɡɒs.ɪpt/', pos: '动词', translation: '闲聊；嚼舌根' },
+  happily: { word: 'happily', phonetic: '/ˈhæp.əl.i/', pos: '副词', translation: '高兴地；眉飞色舞地' },
+  wrestled: { word: 'wrestled', phonetic: '/ˈres.əld/', pos: '动词', translation: '费力对付；硬塞进' },
+  screaming: { word: 'screaming', phonetic: '/ˈskriː.mɪŋ/', pos: '形容词', translation: '尖叫哭闹的' },
+  chair: { word: 'chair', phonetic: '/tʃeər/', pos: '名词', translation: '椅子；餐椅' },
+  noticed: { word: 'noticed', phonetic: '/ˈnəʊ.tɪst/', pos: '动词', translation: '注意到（notice的过去式）' },
+  large: { word: 'large', phonetic: '/lɑːdʒ/', pos: '形容词', translation: '巨大的；硕大的' },
+  owl: { word: 'owl', phonetic: '/aʊl/', pos: '名词', translation: '猫头鹰' },
+  window: { word: 'window', phonetic: '/ˈwɪn.dəʊ/', pos: '名词', translation: '窗户；窗口' },
+  briefcase: { word: 'briefcase', phonetic: '/ˈbriːf.keɪs/', pos: '名词', translation: '公文包' },
+  pecked: { word: 'pecked', phonetic: '/pekt/', pos: '动词', translation: '啄了一下；匆匆吻了一下' },
+  cheek: { word: 'cheek', phonetic: '/tʃiːk/', pos: '名词', translation: '面颊；脸蛋' },
+  kiss: { word: 'kiss', phonetic: '/kɪs/', pos: '动词 / 名词', translation: '吻；亲吻' },
+  tantrum: { word: 'tantrum', phonetic: '/ˈtæn.trəm/', pos: '名词', translation: '大发脾气；耍赖' },
+  cereal: { word: 'cereal', phonetic: '/ˈsɪə.ri.əl/', pos: '名词', translation: '麦片；谷物早餐' },
+  walls: { word: 'walls', phonetic: '/wɔːlz/', pos: '名词', translation: '墙壁（复数）' },
+  wall: { word: 'wall', phonetic: '/wɔːl/', pos: '名词', translation: '墙壁' },
+  chortled: { word: 'chortled', phonetic: '/ˈtʃɔː.təld/', pos: '动词', translation: '格格欢笑；乐滋滋地笑' },
+  house: { word: 'house', phonetic: '/haʊs/', pos: '名词', translation: '房子；家' },
+  car: { word: 'car', phonetic: '/kɑːr/', pos: '名词', translation: '汽车；小轿车' },
+  drive: { word: 'drive', phonetic: '/draɪv/', pos: '名词 / 动词', translation: '私人车道；驾驶' },
+  corner: { word: 'corner', phonetic: '/ˈkɔː.nər/', pos: '名词', translation: '街角；拐角' },
+  cat: { word: 'cat', phonetic: '/kæt/', pos: '名词', translation: '猫' },
+  reading: { word: 'reading', phonetic: '/ˈriː.dɪŋ/', pos: '动词', translation: '阅读；看（read的现在分词）' },
+  map: { word: 'map', phonetic: '/mæp/', pos: '名词', translation: '地图' },
 };
 
 // Async function to lookup word in local HP glossary or Free Dictionary API
@@ -283,22 +358,21 @@ export async function lookupWord(rawWord) {
   const cleanWord = rawWord.replace(/[^a-zA-Z'-]/g, '').trim().toLowerCase();
   if (!cleanWord) return null;
 
-  // Check HP Lore first
+  // Check HP Lore / Core glossary first
   if (HP_LORE_DICTIONARY[cleanWord]) {
     const item = HP_LORE_DICTIONARY[cleanWord];
     return {
       word: item.word,
-      phonetic: item.phonetic,
-      pos: item.pos,
+      phonetic: item.phonetic || '',
+      pos: item.pos || '单词',
       translation: item.translation,
-      explanation: item.explanation,
-      lore: item.lore,
-      isHpLore: true,
+      lore: item.lore || null,
+      isHpLore: Boolean(item.lore),
       audioUrl: null
     };
   }
 
-  // Fallback to Free Dictionary API
+  // Fallback to online dictionary for phonetics & POS
   try {
     const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${cleanWord}`);
     if (res.ok) {
@@ -307,16 +381,38 @@ export async function lookupWord(rawWord) {
         const entry = data[0];
         const audioObj = entry.phonetics?.find(p => p.audio && p.audio.length > 0);
         const meaning = entry.meanings?.[0];
-        const def = meaning?.definitions?.[0]?.definition || '';
-        const example = meaning?.definitions?.[0]?.example || '';
+
+        // Pos translation to Chinese
+        const posMap = {
+          noun: '名词',
+          verb: '动词',
+          adjective: '形容词',
+          adverb: '副词',
+          pronoun: '代词',
+          preposition: '介词',
+          conjunction: '连词'
+        };
+        const rawPos = meaning?.partOfSpeech || 'word';
+        const cnPos = posMap[rawPos] || rawPos;
+
+        // Try to fetch Chinese definition from free translation API
+        let cnTranslation = '';
+        try {
+          const transRes = await fetch(`https://api.mymemory.translated.net/get?q=${cleanWord}&langpair=en|zh`);
+          if (transRes.ok) {
+            const transData = await transRes.json();
+            const translatedText = transData.responseData?.translatedText;
+            if (translatedText && !translatedText.toLowerCase().includes('error')) {
+              cnTranslation = translatedText;
+            }
+          }
+        } catch {}
 
         return {
           word: entry.word,
           phonetic: entry.phonetic || entry.phonetics?.[0]?.text || '',
-          pos: meaning?.partOfSpeech || 'word',
-          translation: def,
-          explanation: def,
-          example: example,
+          pos: cnPos,
+          translation: cnTranslation || `【${cnPos}】可点击底部“有道词典”或“剑桥双解”详查`,
           lore: null,
           isHpLore: false,
           audioUrl: audioObj?.audio || null
@@ -331,9 +427,8 @@ export async function lookupWord(rawWord) {
   return {
     word: cleanWord,
     phonetic: '',
-    pos: 'word',
-    translation: '暂无中文释义，可点击发音或查阅生词本',
-    explanation: 'No English definition available offline.',
+    pos: '单词',
+    translation: '可点击底部“有道词典”或“剑桥双解”查看中文释义',
     lore: null,
     isHpLore: false,
     audioUrl: null

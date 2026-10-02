@@ -4,7 +4,8 @@ export const HP_BOOKS = [
     id: 'book1',
     title: "Harry Potter and the Philosopher's Stone",
     cnTitle: "哈利·波特与魔法石",
-    cover: "🧙‍♂️",
+    code: "HP1",
+    cover: "",
     color: "#740001",
     chapters: [
       { id: 'b1_c01', number: 1, title: 'The Boy Who Lived', cnTitle: '大难不死的男孩', r2Key: 'book1/ch01' },
@@ -30,7 +31,8 @@ export const HP_BOOKS = [
     id: 'book2',
     title: "Harry Potter and the Chamber of Secrets",
     cnTitle: "哈利·波特与密室",
-    cover: "🐍",
+    code: "HP2",
+    cover: "",
     color: "#1a472a",
     chapters: [
       { id: 'b2_c01', number: 1, title: 'The Worst Birthday', cnTitle: '糟糕的生日', r2Key: 'book2/ch01' },
@@ -43,7 +45,8 @@ export const HP_BOOKS = [
     id: 'book3',
     title: "Harry Potter and the Prisoner of Azkaban",
     cnTitle: "哈利·波特与阿兹卡班的囚徒",
-    cover: "🐺",
+    code: "HP3",
+    cover: "",
     color: "#0e1a40",
     chapters: [
       { id: 'b3_c01', number: 1, title: 'Owl Post', cnTitle: '猫头鹰邮递', r2Key: 'book3/ch01' },

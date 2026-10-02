@@ -1,19 +1,19 @@
-# 🚀 霍格沃茨魔法英语 — 多平台部署指南 (Deployment Guide)
+# 霍格沃茨魔法英语 — 多平台部署指南 (Deployment Guide)
 
 本项目已全面支持 **Docker、Vercel、Cloudflare Pages、GitHub Pages** 四种主流部署方式，满足不同场景下的上线需求。
 
 ---
 
 ## 目录
-1. [🐳 Docker 容器化部署（推荐云服务器）](#1-docker-容器化部署)
-2. [▲ Vercel 自动化部署（推荐全栈无服务器）](#2-vercel-自动化部署)
-3. [⚡ Cloudflare Pages 部署（推荐全球边缘网络）](#3-cloudflare-pages-部署)
-4. [📄 GitHub Pages 部署（纯前端静态托管）](#4-github-pages-部署)
-5. [🔑 环境变量说明](#5-环境变量配置表)
+1. [Docker 容器化部署（推荐云服务器）](#1-docker-容器化部署)
+2. [Vercel 自动化部署（推荐全栈无服务器）](#2-vercel-自动化部署)
+3. [Cloudflare Pages 部署（推荐全球边缘网络）](#3-cloudflare-pages-部署)
+4. [GitHub Pages 部署（纯前端静态托管）](#4-github-pages-部署)
+5. [环境变量说明](#5-环境变量配置表)
 
 ---
 
-## 1. 🐳 Docker 容器化部署
+## 1. Docker 容器化部署
 
 本项目提供了经过优化的多阶段构建 `Dockerfile` 与 `docker-compose.yml`，一个镜像即可同时托管前端 SPA 静态应用与后端 R2 音频流媒体代理服务。
 
@@ -48,7 +48,7 @@ docker run -d \
 
 ---
 
-## 2. ▲ Vercel 自动化部署
+## 2. Vercel 自动化部署
 
 仓库根目录已配置好 `vercel.json` 与 `api/index.js`，Vercel 会自动识别并以 Serverless 模式运行。
 
@@ -65,7 +65,7 @@ docker run -d \
 
 ---
 
-## 3. ⚡ Cloudflare Pages 部署
+## 3. Cloudflare Pages 部署
 
 仓库已包含 `functions/api/[[path]].js`，原生支持 Cloudflare Edge Functions 与 R2 Bucket Binding。
 
@@ -84,7 +84,7 @@ docker run -d \
 
 ---
 
-## 4. 📄 GitHub Pages 部署
+## 4. GitHub Pages 部署
 
 项目 `vite.config.js` 已配置相对路径基址 (`base: './'`)，且已内置 GitHub Actions 自动化工作流 `.github/workflows/deploy.yml`。
 
@@ -96,7 +96,7 @@ docker run -d \
 
 ---
 
-## 5. 🔑 环境变量配置表
+## 5. 环境变量配置表
 
 | 变量名 | 说明 | 默认值 / 示例 | 适用平台 |
 | :--- | :--- | :--- | :--- |

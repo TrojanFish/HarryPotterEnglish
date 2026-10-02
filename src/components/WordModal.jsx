@@ -10,12 +10,12 @@ import {
 } from 'lucide-react';
 
 /**
- * WordModal — Kid-friendly Magic Vocabulary Card (魔法单词卡)
- * Tailored for primary and junior high school learners:
- * - Clear, large typography with IPA phonetics (音标)
+ * WordModal — Chinese Student Vocabulary Card
+ * - Designed for Chinese elementary & middle school students:
+ * - Pure Chinese definitions (中文释义)
  * - British pronunciation speech audio button
- * - Clean Chinese definition + Harry Potter magical lore fun facts
- * - Quick save to student's vocabulary notebook
+ * - Zero emoji symbols (uses clean Lucide icons)
+ * - Links to Cambridge Chinese & Youdao dictionaries
  */
 export function WordModal({
   wordData,
@@ -38,8 +38,8 @@ export function WordModal({
     } else if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(wordData.word);
-      utterance.lang = 'en-GB'; // British English for Harry Potter!
-      utterance.rate = 0.85; // Slightly slower for student clarity
+      utterance.lang = 'en-GB'; // British English for Harry Potter
+      utterance.rate = 0.85; // Clear pace for students
       setIsPlayingAudio(true);
       utterance.onend = () => setIsPlayingAudio(false);
       window.speechSynthesis.speak(utterance);
@@ -72,7 +72,8 @@ export function WordModal({
               </h2>
               {wordData.isHpLore && (
                 <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-red-700 text-amber-200 border border-amber-400/40 font-semibold shadow-sm">
-                  <Sparkles size={11} /> 魔法专有名词
+                  <Sparkles size={11} />
+                  <span>魔法专有名词</span>
                 </span>
               )}
             </div>
@@ -80,7 +81,7 @@ export function WordModal({
             {/* Phonetic & Pronunciation */}
             <div className="flex items-center space-x-3 mt-2">
               {wordData.phonetic && (
-                <span className="font-mono text-sm px-2 py-0.5 rounded-lg bg-amber-100/70 dark:bg-slate-800 text-amber-900 dark:text-amber-300 font-bold">
+                <span className="font-mono text-sm px-2.5 py-0.5 rounded-lg bg-amber-100/70 dark:bg-slate-800 text-amber-900 dark:text-amber-300 font-bold">
                   {wordData.phonetic}
                 </span>
               )}
@@ -99,40 +100,30 @@ export function WordModal({
                 title="点击试听纯正英音朗读"
               >
                 <Volume2 size={14} className={isPlayingAudio ? 'animate-bounce' : ''} />
-                <span>{isPlayingAudio ? '朗读中...' : '🔊 纯正英音'}</span>
+                <span>{isPlayingAudio ? '朗读中...' : '纯正英音朗读'}</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Translation & Definitions */}
+        {/* Translation & Definitions (Pure Chinese for Chinese Students) */}
         <div className="space-y-3.5 my-4">
           <div className="p-4 rounded-2xl border border-amber-200/80 dark:border-slate-800 bg-amber-50/50 dark:bg-slate-800/50">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">
-              📝 中小学生核心释义
+            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1 flex items-center gap-1.5">
+              <BookOpen size={13} />
+              <span>中文释义</span>
             </h4>
-            <p className="text-lg sm:text-xl font-reading font-bold text-amber-950 dark:text-amber-200">
+            <p className="text-lg sm:text-xl font-reading font-bold text-amber-950 dark:text-amber-200 leading-snug">
               {wordData.translation}
             </p>
           </div>
-
-          {wordData.explanation && (
-            <div className="p-3.5 rounded-2xl border border-gray-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-                English Definition (英文释义)
-              </h4>
-              <p className="text-sm font-reading text-slate-600 dark:text-slate-300 leading-relaxed">
-                {wordData.explanation}
-              </p>
-            </div>
-          )}
 
           {/* Special Harry Potter Lore Box */}
           {wordData.lore && (
             <div className="p-4 rounded-2xl border border-amber-400/60 bg-gradient-to-br from-amber-500/10 via-red-500/5 to-transparent text-xs sm:text-sm">
               <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300 font-bold font-magical mb-1.5">
                 <Sparkles size={14} className="text-amber-500" />
-                <span>⚡ 霍格沃茨原著背景与魔法百科：</span>
+                <span>霍格沃茨原著背景与魔法百科：</span>
               </div>
               <p className="leading-relaxed text-amber-900/90 dark:text-amber-100/90 font-reading">
                 {wordData.lore}
@@ -143,7 +134,7 @@ export function WordModal({
           {/* Context Sentence */}
           {currentSentence && (
             <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-gray-200 dark:border-slate-800 text-xs">
-              <span className="text-slate-400 block mb-1">📖 原书句子出处：</span>
+              <span className="text-slate-400 block mb-1">原书句子出处：</span>
               <p className="italic font-reading text-slate-700 dark:text-slate-300 leading-relaxed">
                 "{currentSentence.text}"
               </p>
@@ -153,16 +144,26 @@ export function WordModal({
 
         {/* Action Footer */}
         <div className="mt-5 pt-3 border-t border-inherit flex items-center justify-between">
-          <a
-            href={`https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(wordData.word.toLowerCase())}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-slate-500 hover:text-amber-600 transition-colors"
-          >
-            <BookOpen size={13} />
-            <span>剑桥英汉词典</span>
-            <ExternalLink size={11} />
-          </a>
+          <div className="flex items-center space-x-3 text-xs">
+            <a
+              href={`https://dict.youdao.com/result?word=${encodeURIComponent(wordData.word.toLowerCase())}&lang=en`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-slate-500 hover:text-amber-600 transition-colors"
+            >
+              <span>有道词典</span>
+              <ExternalLink size={11} />
+            </a>
+            <a
+              href={`https://dictionary.cambridge.org/zhs/词典/英语-汉语-简体/${encodeURIComponent(wordData.word.toLowerCase())}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-slate-500 hover:text-amber-600 transition-colors"
+            >
+              <span>剑桥双解</span>
+              <ExternalLink size={11} />
+            </a>
+          </div>
 
           <button
             onClick={() => onSaveToVocab(wordData, currentSentence)}

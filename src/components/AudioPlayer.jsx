@@ -18,7 +18,7 @@ import { formatTime } from '../utils/vttParser';
  * AudioPlayer — Elder Wand Bottom Audio Player designed for Students.
  * - Big comfortable Play/Pause button (easy to tap on tablets & phones)
  * - 5s rewind for repeating hard syllables
- * - Beginner speed controls: 🐢 0.75x (慢速磨耳朵), ⚡ 1.0x (原速), 🐇 1.15x (挑战速)
+ * - Beginner speed controls: 0.75x (慢速磨耳朵), 1.0x (原速), 1.15x (进阶速)
  * - Clear sentence counter and glowing Elder Wand scrubber
  */
 export function AudioPlayer({
@@ -51,11 +51,11 @@ export function AudioPlayer({
   const prevVolumeRef = useRef(volume);
 
   const speedOptions = [
-    { rate: 0.75, label: '🐢 0.75x (慢速磨耳朵)' },
-    { rate: 0.85, label: '🐢 0.85x (稍慢)' },
-    { rate: 1.0,  label: '⚡ 1.0x (原速)' },
-    { rate: 1.15, label: '🐇 1.15x (进阶)' },
-    { rate: 1.25, label: '🚀 1.25x (挑战)' },
+    { rate: 0.75, label: '0.75x (慢速磨耳朵)' },
+    { rate: 0.85, label: '0.85x (稍慢)' },
+    { rate: 1.0,  label: '1.0x (原速标准)' },
+    { rate: 1.15, label: '1.15x (进阶提速)' },
+    { rate: 1.25, label: '1.25x (挑战速)' },
   ];
 
   const handleVolumeToggle = () => {

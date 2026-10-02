@@ -22,9 +22,9 @@ import { recordDictationSession } from '../utils/analyticsStore';
  * DictationStudio — Gamified Spell Challenge (魔法拼写大闯关)
  * Designed specifically for primary and junior high school students:
  * - Word-by-word visual blank feedback
- * - Star rating system (⭐⭐⭐ 3 stars for clean spelling)
- * - Combo streak tracking (🔥 连对计数)
- * - Slow replay audio & Magic Quill hints (🪶 羽毛笔提示)
+ * - Star rating system (3 stars for clean spelling)
+ * - Combo streak tracking (连对计数)
+ * - Slow replay audio & Magic Quill hints (羽毛笔提示)
  */
 export function DictationStudio({
   cues,
@@ -185,8 +185,11 @@ export function DictationStudio({
                 闯关中
               </span>
             </div>
-            <p className="text-xs text-slate-500 font-mono mt-0.5">
-              第 {activeCueIndex + 1} / {cues.length} 句 · 已斩获 ⭐ {totalStars} 颗魔法星
+            <p className="text-xs text-slate-500 font-mono mt-0.5 flex items-center gap-1">
+              <span>第 {activeCueIndex + 1} / {cues.length} 句</span>
+              <span>·</span>
+              <Star size={12} className="text-amber-500 fill-amber-500 inline" />
+              <span>已斩获 {totalStars} 颗魔法星</span>
             </p>
           </div>
         </div>
@@ -228,7 +231,7 @@ export function DictationStudio({
               title="重新听本句慢速朗读"
             >
               <RotateCcw size={14} />
-              <span>🔊 重播本句声音</span>
+              <span>重播本句声音</span>
             </button>
 
             <button
@@ -259,7 +262,7 @@ export function DictationStudio({
           {showAnswer ? (
             <div className="text-amber-700 dark:text-amber-300 animate-fadeIn">
               <span className="text-xs uppercase tracking-wider text-slate-400 block mb-1 font-mono">
-                📖 原著标准文本：
+                原著标准文本：
               </span>
               "{currentCue.text}"
             </div>
@@ -309,7 +312,7 @@ export function DictationStudio({
           {/* Chinese Translation Clue */}
           {currentCue.translation && (
             <div className="mt-3.5 pt-2.5 border-t border-dashed border-inherit text-xs sm:text-sm font-reading text-amber-900/80 dark:text-slate-400">
-              💡 中文释义线索：{currentCue.translation}
+              中文释义线索：{currentCue.translation}
             </div>
           )}
         </div>
@@ -330,7 +333,7 @@ export function DictationStudio({
                 handleNext();
               }
             }}
-            placeholder="🎧 仔细听原声，在这里输入英文单词... (按 Tab 获取羽毛笔提示，按 Enter 提交进入下一句)"
+            placeholder="仔细听原声，在这里输入英文单词... (按 Tab 获取羽毛笔提示，按 Enter 提交进入下一句)"
             className={`w-full p-4 rounded-2xl text-base sm:text-lg font-reading border-2 focus:outline-none transition-all resize-none ${
               isAllCorrect
                 ? 'border-emerald-500 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100 shadow-sm'
@@ -343,7 +346,7 @@ export function DictationStudio({
           {isAllCorrect && (
             <div className="absolute right-4 bottom-4 flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-xs font-bold animate-bounce shadow-lg">
               <CheckCircle2 size={16} />
-              <span>拼写全对！获得 ⭐⭐⭐</span>
+              <span>拼写全对！获得满星评分</span>
             </div>
           )}
         </div>
@@ -362,7 +365,7 @@ export function DictationStudio({
               title="羽毛笔魔法提示：自动补齐下一个单词 (快捷键: Tab)"
             >
               <Sparkles size={14} className="text-amber-500" />
-              <span>🪶 羽毛笔提示 (Tab)</span>
+              <span>羽毛笔提示 (Tab)</span>
             </button>
 
             <button
@@ -388,7 +391,7 @@ export function DictationStudio({
               onClick={handleNext}
               className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:shadow-md text-xs font-bold transition-all shadow-sm"
             >
-              <span>{activeCueIndex >= cues.length - 1 ? '🎉 完成全章挑战' : '下一句 (Enter)'}</span>
+              <span>{activeCueIndex >= cues.length - 1 ? '完成全章挑战' : '下一句 (Enter)'}</span>
               <SkipForward size={14} />
             </button>
           </div>
@@ -398,9 +401,9 @@ export function DictationStudio({
 
       {/* Keyboard Shortcuts Hint */}
       <div className="mt-4 text-center text-xs text-slate-400 flex items-center justify-center gap-4">
-        <span>⌨️ <kbd className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-slate-800 text-amber-800 dark:text-amber-300 font-mono">Tab</kbd> 羽毛笔提示</span>
-        <span>⌨️ <kbd className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-slate-800 text-amber-800 dark:text-amber-300 font-mono">Enter</kbd> 提交下一句</span>
-        <span>⌨️ <kbd className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-slate-800 text-amber-800 dark:text-amber-300 font-mono">Space</kbd> 暂停/播放</span>
+        <span><kbd className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-slate-800 text-amber-800 dark:text-amber-300 font-mono">Tab</kbd> 羽毛笔提示</span>
+        <span><kbd className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-slate-800 text-amber-800 dark:text-amber-300 font-mono">Enter</kbd> 提交下一句</span>
+        <span><kbd className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-slate-800 text-amber-800 dark:text-amber-300 font-mono">Space</kbd> 暂停/播放</span>
       </div>
     </div>
   );

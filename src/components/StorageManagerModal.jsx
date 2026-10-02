@@ -10,7 +10,8 @@ import {
   Sparkles, 
   RefreshCw,
   FolderDown,
-  Layers
+  Layers,
+  BookOpen
 } from 'lucide-react';
 import { 
   getOfflineStorageInfo, 
@@ -188,7 +189,7 @@ export function StorageManagerModal({
               isParchment ? 'bg-[#f4ebd9] border-[#dec9a5]' : 'bg-[#0f1726] border-[#253248]'
             }`}>
               <div className="flex items-center space-x-2.5 w-full sm:w-auto">
-                <span className="text-xl">⚡</span>
+                <Sparkles className="w-5 h-5 text-amber-500 shrink-0" />
                 <div>
                   <div className="text-xs font-bold text-[#d3a625] truncate max-w-[280px]">
                     当前章节：{currentChapter.title || `Chapter ${currentChapter.id}`}
@@ -247,8 +248,8 @@ export function StorageManagerModal({
             <div className={`p-8 text-center rounded-2xl border border-dashed flex flex-col items-center justify-center ${
               isParchment ? 'border-[#dec9a5] bg-[#f9f3e5]' : 'border-gray-800 bg-[#0b0f16]/40'
             }`}>
-              <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-[#d3a625] mb-2 text-2xl">
-                📜
+              <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-[#d3a625] mb-2">
+                <BookOpen size={24} className="text-[#d3a625]" />
               </div>
               <p className="text-sm font-semibold text-[#d3a625] mb-1">魔法行囊尚空</p>
               <p className={`text-xs max-w-sm ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>

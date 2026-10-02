@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, BookOpen, Sparkles, Headphones, Layers, RotateCw } from 'lucide-react';
+import { X, BookOpen, Sparkles, Headphones, Layers, RotateCw, Library } from 'lucide-react';
 
 export function BookShelfDrawer({
   isOpen,
@@ -27,7 +27,7 @@ export function BookShelfDrawer({
             isParchment ? 'border-[#e5d6ba] bg-[#faf6ee]' : 'border-slate-800 bg-slate-900'
           }`}>
             <div className="flex items-center space-x-2.5">
-              <span className="text-2xl animate-float">🏰</span>
+              <Library className="w-6 h-6 text-amber-600 dark:text-amber-400" />
               <div>
                 <h3 className="font-magical font-bold text-lg sm:text-xl text-amber-800 dark:text-amber-300">
                   霍格沃茨魔法书架 (Magic Library)
@@ -87,8 +87,11 @@ export function BookShelfDrawer({
                       alt={book.title}
                       onError={(e) => {
                         e.target.style.display = 'none';
-                        e.target.parentNode.classList.add('flex', 'items-center', 'justify-center', 'text-4xl');
-                        e.target.parentNode.innerText = book.cover || '🧙‍♂️';
+                        e.target.parentNode.classList.add('flex', 'items-center', 'justify-center');
+                        const textNode = document.createElement('span');
+                        textNode.className = 'font-magical text-amber-500 font-bold text-sm tracking-wider';
+                        textNode.innerText = book.code || 'HP';
+                        e.target.parentNode.appendChild(textNode);
                       }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />
@@ -98,7 +101,7 @@ export function BookShelfDrawer({
                   <div className="flex-1 flex flex-col justify-between min-w-0">
                     <div>
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm">{book.cover || '📚'}</span>
+                        <BookOpen size={16} className="text-amber-600 dark:text-amber-400 shrink-0" />
                         <h4 className="font-magical font-bold text-base text-amber-900 dark:text-amber-300 group-hover:text-amber-600 transition-colors truncate">
                           {book.cnTitle || book.title}
                         </h4>
@@ -136,7 +139,7 @@ export function BookShelfDrawer({
 
           {/* Footer note */}
           <div className="p-4 border-t border-gray-700/40 text-center text-xs text-[#8c9ba5]">
-            💡 后续在 R2 上传新有声书或新章节后，点击右上角“刷新藏书”即可秒级识别
+            提示：在 R2 存储桶上传新有声书或新章节后，点击右上角“刷新藏书”即可同步更新
           </div>
         </div>
       </div>

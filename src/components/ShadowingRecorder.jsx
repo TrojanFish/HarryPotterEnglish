@@ -11,7 +11,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Award,
-  Info
+  Info,
+  Headphones
 } from 'lucide-react';
 import { evaluatePronunciation, isSpeechRecognitionSupported } from '../utils/speechScoring';
 
@@ -325,7 +326,7 @@ export function ShadowingRecorder({
     if (score >= 90) {
       return {
         letter: 'O',
-        title: '🪄 卓越 · Outstanding',
+        title: '卓越 · Outstanding',
         quote: '“宛如赫敏·格兰杰般标准地道！纯正英伦腔调，格兰芬多为你加 10 分！”',
         badgeClass: 'border-emerald-500 text-emerald-400 bg-emerald-950/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]',
         parchmentBadge: 'border-emerald-700 text-emerald-900 bg-emerald-100'
@@ -333,7 +334,7 @@ export function ShadowingRecorder({
     } else if (score >= 75) {
       return {
         letter: 'E',
-        title: '✨ 超乎期待 · Exceeds Expectations',
+        title: '超乎期待 · Exceeds Expectations',
         quote: '“令人赞叹！节奏与发音都非常自然，展现出高年级学长的语调风范。”',
         badgeClass: 'border-[#cba358] text-[#f3d38c] bg-[#cba358]/20 shadow-[0_0_15px_rgba(203,163,88,0.3)]',
         parchmentBadge: 'border-[#946b2d] text-[#744210] bg-[#fbf0d9]'
@@ -341,7 +342,7 @@ export function ShadowingRecorder({
     } else if (score >= 60) {
       return {
         letter: 'A',
-        title: '⚡ 及格 · Acceptable',
+        title: '及格 · Acceptable',
         quote: '“通过考核！主体发音清晰，注意黄色标记词汇的发音与重音弱读。”',
         badgeClass: 'border-amber-500 text-amber-400 bg-amber-950/50 shadow-[0_0_15px_rgba(245,158,11,0.3)]',
         parchmentBadge: 'border-amber-700 text-amber-900 bg-amber-100'
@@ -349,7 +350,7 @@ export function ShadowingRecorder({
     } else {
       return {
         letter: 'P',
-        title: '📜 尚需练习 · Needs Practice',
+        title: '尚需练习 · Needs Practice',
         quote: '“魔法共鸣稍弱。不妨点击‘播放原音’多听两遍原声，再重新录音跟读。”',
         badgeClass: 'border-rose-500 text-rose-400 bg-rose-950/50 shadow-[0_0_15px_rgba(244,63,94,0.3)]',
         parchmentBadge: 'border-rose-700 text-rose-900 bg-rose-100'
@@ -547,7 +548,7 @@ export function ShadowingRecorder({
           {/* 1. Original Narrator Audio */}
           <div className="flex items-center justify-between p-3 rounded-xl border border-gray-700/30 bg-gray-800/20">
             <div className="flex items-center space-x-2.5">
-              <span className="text-lg">🎙️</span>
+              <Volume2 className="w-5 h-5 text-amber-500 shrink-0" />
               <div>
                 <span className="text-xs font-semibold block text-gray-300">原版朗读原音</span>
                 <span className="text-[11px] text-[#8c9ba5]">纯正英式青少年发音</span>
@@ -566,7 +567,7 @@ export function ShadowingRecorder({
           {/* 2. User Recording Box */}
           <div className="flex items-center justify-between p-3 rounded-xl border border-gray-700/30 bg-gray-800/20">
             <div className="flex items-center space-x-2.5">
-              <span className="text-lg">🎧</span>
+              <Headphones className="w-5 h-5 text-amber-500 shrink-0" />
               <div>
                 <span className="text-xs font-semibold block text-gray-300">你的跟读录音</span>
                 <span className="text-[11px] text-[#8c9ba5]">
@@ -620,7 +621,7 @@ export function ShadowingRecorder({
 
         {/* Tips footer */}
         <div className="mt-4 text-center text-xs text-[#8c9ba5]">
-          💡 建议：先听一遍原声语调重音，再点击“开始录音”大声跟读，反复比对纠正连读和发音细节。
+          建议：先听一遍原声语调重音，再点击“开始录音”大声跟读，反复比对纠正连读和发音细节。
         </div>
       </div>
     </div>

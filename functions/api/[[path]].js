@@ -3,15 +3,15 @@
 // Variable name: "HP_AUDIO_BUCKET"
 
 const KNOWN_TITLE_MAP = {
-  'hp-book-1': { cnTitle: '哈利·波特与魔法石', cover: '🧙‍♂️', color: '#740001' },
-  'hp-book-2': { cnTitle: '哈利·波特与密室', cover: '🐍', color: '#1a472a' },
-  'hp-book-3': { cnTitle: '哈利·波特与阿兹卡班的囚徒', cover: '🐺', color: '#0e1a40' },
-  'hp-book-4': { cnTitle: '哈利·波特与火焰杯', cover: '🏆', color: '#740001' },
-  'hp-book-5': { cnTitle: '哈利·波特与凤凰社', cover: '🦅', color: '#0e1a40' },
-  'hp-book-6': { cnTitle: '哈利·波特与混血王子', cover: '⚗️', color: '#1a472a' },
-  'hp-book-7': { cnTitle: '哈利·波特与死亡圣器', cover: '⚔️', color: '#740001' },
-  'the-little-prince': { cnTitle: '小王子', cover: '👑', color: '#b8860b' },
-  'tiny-tales': { cnTitle: '经典童话故事', cover: '📖', color: '#4a7c59' },
+  'hp-book-1': { cnTitle: '哈利·波特与魔法石', code: 'HP1', color: '#740001' },
+  'hp-book-2': { cnTitle: '哈利·波特与密室', code: 'HP2', color: '#1a472a' },
+  'hp-book-3': { cnTitle: '哈利·波特与阿兹卡班的囚徒', code: 'HP3', color: '#0e1a40' },
+  'hp-book-4': { cnTitle: '哈利·波特与火焰杯', code: 'HP4', color: '#740001' },
+  'hp-book-5': { cnTitle: '哈利·波特与凤凰社', code: 'HP5', color: '#0e1a40' },
+  'hp-book-6': { cnTitle: '哈利·波特与混血王子', code: 'HP6', color: '#1a472a' },
+  'hp-book-7': { cnTitle: '哈利·波特与死亡圣器', code: 'HP7', color: '#740001' },
+  'the-little-prince': { cnTitle: '小王子', code: 'TLP', color: '#b8860b' },
+  'tiny-tales': { cnTitle: '经典童话故事', code: 'TALES', color: '#4a7c59' },
 };
 
 export async function onRequest(context) {
@@ -50,7 +50,8 @@ export async function onRequest(context) {
             id: 'hp-book-1',
             title: "Harry Potter and the Philosopher's Stone",
             cnTitle: '哈利·波特与魔法石',
-            cover: '🧙‍♂️',
+            code: 'HP1',
+            cover: '',
             color: '#740001',
             chapters: [
               {
@@ -117,13 +118,14 @@ export async function onRequest(context) {
         }));
 
         episodes.sort((a, b) => a.number - b.number);
-        const metaExtra = KNOWN_TITLE_MAP[showId] || { cnTitle: showInfo.title || showId, cover: '📖', color: '#cba358' };
+        const metaExtra = KNOWN_TITLE_MAP[showId] || { cnTitle: showInfo.title || showId, code: 'BOOK', color: '#cba358' };
 
         return {
           id: showId,
           title: showInfo.title || showId,
           cnTitle: metaExtra.cnTitle,
-          cover: metaExtra.cover,
+          code: metaExtra.code || 'BOOK',
+          cover: '',
           color: metaExtra.color,
           description: showInfo.description || '',
           coverPath: showInfo.coverPath || null,
