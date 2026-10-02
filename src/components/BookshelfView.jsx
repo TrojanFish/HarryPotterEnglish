@@ -135,10 +135,10 @@ export function BookshelfView({
       <section className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400">
+            <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-600">
               <Sparkles size={18} />
             </span>
-            <h2 className="font-magical font-bold text-xl sm:text-2xl text-amber-900 dark:text-amber-300">
+            <h2 className="font-magical font-bold text-xl sm:text-2xl text-amber-900">
               {getGreeting()}
             </h2>
           </div>
@@ -224,22 +224,22 @@ export function BookshelfView({
 
               {/* Information Column */}
               <div className="flex-1 min-w-0 text-center sm:text-left">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 text-xs font-bold mb-2">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-800 text-xs font-bold mb-2">
                   <Clock size={12} />
                   <span>上次学习进度 · 随时无缝续播</span>
                 </div>
 
-                <h3 className="font-magical font-bold text-lg sm:text-xl text-amber-950 dark:text-amber-200 truncate">
+                <h3 className="font-magical font-bold text-lg sm:text-xl text-amber-950 truncate">
                   {currentBookObj.cnTitle || currentBookObj.title}
                 </h3>
-                <p className="text-xs font-reading italic text-slate-500 dark:text-slate-400 mb-3 truncate">
+                <p className="text-xs font-reading italic text-slate-500 mb-3 truncate">
                   {currentBookObj.title}
                 </p>
 
                 {/* Current Chapter Progress */}
                 <div className="mb-4">
                   <div className="flex items-center justify-between text-xs font-semibold mb-1.5">
-                    <span className="text-amber-700 dark:text-amber-400 font-bold truncate">
+                    <span className="text-amber-700 font-bold truncate">
                       第 {currentChapterObj.number || 1} 章 · {currentChapterObj.cnTitle || currentChapterObj.title}
                     </span>
                     <span className="text-slate-500 shrink-0 font-mono ml-2">
@@ -248,7 +248,7 @@ export function BookshelfView({
                   </div>
 
                   {/* Progress Line */}
-                  <div className="w-full h-2 rounded-full bg-gray-200 dark:bg-slate-700 overflow-hidden">
+                  <div className="w-full h-2 rounded-full bg-amber-100/80 overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full transition-all duration-300"
                       style={{ width: `${Math.max(5, resumeProgressPercent)}%` }}
@@ -285,22 +285,22 @@ export function BookshelfView({
       {/* ── 3. Classical iBooks Wooden Bookshelf Gallery ───────────────── */}
       <section className="mb-14">
         {/* Section Title */}
-        <div className="flex items-center justify-between mb-8 pb-3 border-b border-amber-200/60 dark:border-slate-800">
+        <div className="flex items-center justify-between mb-8 pb-3 border-b border-amber-200/60">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600">
               <BookOpen size={20} />
             </div>
             <div>
-              <h2 className="font-magical font-bold text-lg sm:text-xl text-amber-950 dark:text-amber-200">
+              <h2 className="font-magical font-bold text-lg sm:text-xl text-amber-950">
                 霍格沃茨魔法书架
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500">
                 专为中小学英语进阶设计 · 难度由浅入深 · 纯中文对照辅助
               </p>
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400 bg-amber-500/10 px-3 py-1.5 rounded-full font-bold">
+          <div className="hidden sm:flex items-center gap-1 text-xs text-amber-700 bg-amber-500/10 px-3 py-1.5 rounded-full font-bold">
             <Award size={13} />
             <span>全套收录 · 随点随听</span>
           </div>
@@ -357,21 +357,21 @@ export function BookshelfView({
                   {/* Book Metadata & Action Controls next to the book */}
                   <div className="flex-1 min-w-0 text-center md:text-left space-y-2.5 pb-2">
                     {/* Level Pill */}
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-900 dark:text-amber-300 text-xs font-bold">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-900 text-xs font-bold">
                       <Sparkles size={12} className="text-amber-600" />
                       <span>{levelInfo.level}</span>
                       <span className="text-slate-400">|</span>
                       <span className="font-normal">{levelInfo.desc}</span>
                     </div>
 
-                    <h3 className="font-magical font-bold text-xl sm:text-2xl text-amber-950 dark:text-amber-200">
+                    <h3 className="font-magical font-bold text-xl sm:text-2xl text-amber-950">
                       {book.cnTitle || book.title}
                     </h3>
-                    <p className="text-xs sm:text-sm font-reading italic text-slate-500 dark:text-slate-400 line-clamp-2">
+                    <p className="text-xs sm:text-sm font-reading italic text-slate-500 line-clamp-2">
                       {book.description || book.title}
                     </p>
 
-                    <div className="flex items-center justify-center md:justify-start gap-4 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                    <div className="flex items-center justify-center md:justify-start gap-4 text-xs font-semibold text-slate-600">
                       <span className="flex items-center gap-1">
                         <Layers size={14} className="text-amber-500" />
                         <span>共 {chapters.length} 个精听章节</span>
@@ -431,7 +431,10 @@ export function BookshelfView({
 
       {/* ── 4. Chapter Selection Drawer / Modal ───────────────────────── */}
       {inspectingBook && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+          onClick={() => { setInspectingBook(null); setChapterSearch(''); }}
+        >
           <div 
             onClick={(e) => e.stopPropagation()}
             className={`w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl border-2 shadow-2xl overflow-hidden transition-all ${
@@ -441,7 +444,7 @@ export function BookshelfView({
             }`}
           >
             {/* Modal Header */}
-            <div className="p-5 border-b border-amber-200/60 dark:border-slate-800 flex items-center justify-between shrink-0 bg-amber-500/5">
+            <div className="p-5 border-b border-amber-200/60 flex items-center justify-between shrink-0 bg-amber-500/5">
               <div className="flex items-center gap-3">
                 <div className="w-12 aspect-[3/4] rounded-lg overflow-hidden border border-amber-400 shadow-sm shrink-0 bg-slate-900">
                   {!coverErrorMap[inspectingBook.id] ? (
@@ -458,10 +461,10 @@ export function BookshelfView({
                   )}
                 </div>
                 <div>
-                  <h3 className="font-magical font-bold text-base sm:text-lg text-amber-950 dark:text-amber-200">
+                  <h3 className="font-magical font-bold text-base sm:text-lg text-amber-950">
                     {inspectingBook.cnTitle || inspectingBook.title}
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-reading italic">
+                  <p className="text-xs text-slate-500 font-reading italic">
                     全卷共 {(inspectingBook.chapters || []).length} 个精听章节
                   </p>
                 </div>
@@ -537,7 +540,7 @@ export function BookshelfView({
                       <span className={`w-7 h-7 rounded-xl flex items-center justify-center font-magical font-bold text-xs shrink-0 ${
                         isCurrent 
                           ? 'bg-amber-500 text-white shadow' 
-                          : 'bg-amber-500/20 text-amber-800 dark:text-amber-300'
+                          : 'bg-amber-500/20 text-amber-800'
                       }`}>
                         {ch.number || idx + 1}
                       </span>

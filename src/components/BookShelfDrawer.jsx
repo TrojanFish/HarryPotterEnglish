@@ -27,9 +27,9 @@ export function BookShelfDrawer({
             isParchment ? 'border-[#e5d6ba] bg-[#faf6ee]' : 'border-slate-800 bg-slate-900'
           }`}>
             <div className="flex items-center space-x-2.5">
-              <Library className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+              <Library className="w-6 h-6 text-amber-600" />
               <div>
-                <h3 className="font-magical font-bold text-lg sm:text-xl text-amber-800 dark:text-amber-300">
+                <h3 className="font-magical font-bold text-lg sm:text-xl text-amber-800">
                   霍格沃茨魔法书架 (Magic Library)
                 </h3>
                 <p className="text-xs text-slate-500">原版有声小说 · 挑选你的专属英语故事</p>
@@ -102,8 +102,8 @@ export function BookShelfDrawer({
                   <div className="flex-1 flex flex-col justify-between min-w-0">
                     <div>
                       <div className="flex items-center space-x-2">
-                        <BookOpen size={16} className="text-amber-600 dark:text-amber-400 shrink-0" />
-                        <h4 className="font-magical font-bold text-base text-amber-900 dark:text-amber-300 group-hover:text-amber-600 transition-colors truncate">
+                        <BookOpen size={16} className="text-amber-600 shrink-0" />
+                        <h4 className="font-magical font-bold text-base text-amber-900 group-hover:text-amber-600 transition-colors truncate">
                           {book.cnTitle || book.title}
                         </h4>
                       </div>
@@ -112,7 +112,7 @@ export function BookShelfDrawer({
                       </p>
 
                       {book.description && (
-                        <p className="text-xs text-slate-600 dark:text-slate-400 font-reading mt-2 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-slate-600 font-reading mt-2 line-clamp-2 leading-relaxed">
                           {book.description}
                         </p>
                       )}

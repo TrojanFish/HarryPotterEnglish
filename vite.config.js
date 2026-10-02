@@ -20,5 +20,18 @@ export default defineConfig(({ mode }) => ({
     host: '0.0.0.0',
     port: 3000,
     strictPort: true
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        // Split vendor libraries into separate chunks for better browser caching
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'lucide': ['lucide-react'],
+        }
+      }
+    },
+    // Increase chunk size warning threshold slightly since we have expected large components
+    chunkSizeWarningLimit: 500
   }
 }))

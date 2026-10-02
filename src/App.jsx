@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Header } from './components/Header';
 import { BookshelfView } from './components/BookshelfView';
 import { Sidebar } from './components/Sidebar';
@@ -334,11 +334,13 @@ export function App() {
     };
   }, [selectedChapter, selectedBook]);
 
+  // Throttle timestamp for scrubber UI (update at most every 250ms to reduce re-renders)
+  const lastTimeUpdateRef = useRef(0);
+
   // Audio Events & Sync
-  const handleTimeUpdate = () => {
+  const handleTimeUpdate = useCallback(() => {
     if (!audioRef.current) return;
     const curTime = audioRef.current.currentTime;
-    setCurrentTime(curTime);
 
     if (cues.length > 0) {
       const activeCue = cues[activeCueIndex];
@@ -351,7 +353,7 @@ export function App() {
         }
       }
 
-      // Check if cue still valid
+      // Check if cue still valid — run every frame for accurate sync
       if (!activeCue || curTime < activeCue.startTime || curTime >= activeCue.endTime) {
         const foundIdx = cues.findIndex(c => curTime >= c.startTime && curTime < c.endTime);
         if (foundIdx !== -1 && foundIdx !== activeCueIndex) {
@@ -364,24 +366,31 @@ export function App() {
     if (duration > 0 && curTime >= duration - 1.5 && selectedChapter) {
       markChapterCompleted(selectedChapter);
     }
-  };
 
-  const handleLoadedMetadata = () => {
+    // Throttle scrubber state update to every 250ms to avoid excessive re-renders
+    const now = performance.now();
+    if (now - lastTimeUpdateRef.current >= 250) {
+      lastTimeUpdateRef.current = now;
+      setCurrentTime(curTime);
+    }
+  }, [cues, activeCueIndex, isLoopSentence, duration, selectedChapter]);
+
+  const handleLoadedMetadata = useCallback(() => {
     if (audioRef.current) {
       setDuration(audioRef.current.duration);
     }
-  };
+  }, []);
 
-  const handleEnded = () => {
+  const handleEnded = useCallback(() => {
     setIsPlaying(false);
     if (selectedChapter) {
       markChapterCompleted(selectedChapter);
       setAnalyticsSummary(getAnalyticsSummary());
     }
-  };
+  }, [selectedChapter]);
 
   // Play / Pause Toggle
-  const togglePlayPause = () => {
+  const togglePlayPause = useCallback(() => {
     if (!audioRef.current) return;
     if (isPlaying) {
       audioRef.current.pause();
@@ -393,17 +402,17 @@ export function App() {
         console.warn('Playback error:', err);
       });
     }
-  };
+  }, [isPlaying]);
 
   // Seek
-  const handleSeek = (time) => {
+  const handleSeek = useCallback((time) => {
     if (!audioRef.current) return;
     audioRef.current.currentTime = time;
     setCurrentTime(time);
-  };
+  }, []);
 
   // Seek to specific cue
-  const handleSeekToCue = (cue) => {
+  const handleSeekToCue = useCallback((cue) => {
     if (!audioRef.current) return;
     audioRef.current.currentTime = cue.startTime;
     setCurrentTime(cue.startTime);
@@ -412,25 +421,25 @@ export function App() {
     if (!isPlaying) {
       audioRef.current.play().then(() => setIsPlaying(true)).catch(e => console.warn(e));
     }
-  };
+  }, [cues, isPlaying]);
 
   // Prev / Next Sentence
-  const handlePrevSentence = () => {
+  const handlePrevSentence = useCallback(() => {
     if (activeCueIndex > 0) {
       const prevCue = cues[activeCueIndex - 1];
       handleSeekToCue(prevCue);
     }
-  };
+  }, [activeCueIndex, cues, handleSeekToCue]);
 
-  const handleNextSentence = () => {
+  const handleNextSentence = useCallback(() => {
     if (activeCueIndex < cues.length - 1) {
       const nextCue = cues[activeCueIndex + 1];
       handleSeekToCue(nextCue);
     }
-  };
+  }, [activeCueIndex, cues, handleSeekToCue]);
 
   // Replay Current Sentence
-  const handleReplayCurrentSentence = () => {
+  const handleReplayCurrentSentence = useCallback(() => {
     const curCue = cues[activeCueIndex];
     if (curCue && audioRef.current) {
       audioRef.current.currentTime = curCue.startTime;
@@ -439,35 +448,35 @@ export function App() {
         audioRef.current.play().then(() => setIsPlaying(true)).catch(e => console.warn(e));
       }
     }
-  };
+  }, [cues, activeCueIndex, isPlaying]);
 
   // Speed change
-  const handleChangePlaybackRate = (rate) => {
+  const handleChangePlaybackRate = useCallback((rate) => {
     setPlaybackRate(rate);
     if (audioRef.current) {
       audioRef.current.playbackRate = rate;
     }
-  };
+  }, []);
 
   // Volume change
-  const handleChangeVolume = (vol) => {
+  const handleChangeVolume = useCallback((vol) => {
     setVolume(vol);
     if (audioRef.current) {
       audioRef.current.volume = vol;
     }
-  };
+  }, []);
 
   // Word Click -> Open Dictionary Modal
-  const handleWordClick = async (rawWord, sentenceCue) => {
+  const handleWordClick = useCallback(async (rawWord, sentenceCue) => {
     const lookupResult = await lookupWord(rawWord);
     if (lookupResult) {
       setSelectedWordData(lookupResult);
       setActiveWordSentence(sentenceCue);
     }
-  };
+  }, []);
 
   // Save to Vocabulary Notebook
-  const handleSaveToVocab = (wordData, sentenceCue) => {
+  const handleSaveToVocab = useCallback((wordData, sentenceCue) => {
     const exists = vocabList.some(v => v.word.toLowerCase() === wordData.word.toLowerCase());
     if (exists) {
       setVocabList(prev => prev.filter(v => v.word.toLowerCase() !== wordData.word.toLowerCase()));
@@ -496,18 +505,18 @@ export function App() {
       };
       setVocabList(prev => [newEntry, ...prev]);
     }
-  };
+  }, [vocabList, selectedChapter, selectedBook, currentChapterObj]);
 
   // Remove word from vocab list
-  const handleRemoveVocabWord = (word) => {
+  const handleRemoveVocabWord = useCallback((word) => {
     setVocabList(prev => prev.filter(v => v.word.toLowerCase() !== word.toLowerCase()));
-  };
+  }, []);
 
   // Shadowing record trigger
-  const handleRecordCue = (cue) => {
+  const handleRecordCue = useCallback((cue) => {
     setCurrentRecordCue(cue);
     setIsRecorderOpen(true);
-  };
+  }, []);
 
   // Play original snippet for shadowing recorder
   const handlePlayOriginalSnippet = (cue) => {

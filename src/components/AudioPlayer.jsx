@@ -97,7 +97,7 @@ export function AudioPlayer({
     }`}>
       {/* ── Elder Wand Scrubber Bar with Lumos Sparkle Tip ───────────── */}
       <div 
-        className="w-full h-2.5 bg-gray-200 dark:bg-slate-800 cursor-pointer relative group"
+        className="w-full h-2.5 bg-amber-100/80 cursor-pointer relative group"
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           const clickX = e.clientX - rect.left;
@@ -140,19 +140,19 @@ export function AudioPlayer({
                   <span className="w-1 h-2 bg-amber-500 rounded-full animate-wave-3" />
                 </span>
               )}
-              <span className="font-magical font-bold text-xs sm:text-sm text-amber-900 dark:text-amber-300 truncate" title={currentChapter ? (currentChapter.cnTitle ? `${currentChapter.cnTitle} · ${currentChapter.title}` : currentChapter.title) : 'Chapter'}>
+              <span className="font-magical font-bold text-xs sm:text-sm text-amber-900 truncate" title={currentChapter ? (currentChapter.cnTitle ? `${currentChapter.cnTitle} · ${currentChapter.title}` : currentChapter.title) : 'Chapter'}>
                 {currentChapter ? (currentChapter.cnTitle ? `${currentChapter.cnTitle} · ${currentChapter.title}` : currentChapter.title) : 'Chapter'}
               </span>
             </div>
 
             <div className="flex items-center space-x-2 text-[11px] font-mono mt-0.5 text-slate-500">
-              <span className="text-amber-600 dark:text-amber-400 font-bold">
+              <span className="text-amber-600 font-bold">
                 {formatTime(currentTime)}
               </span>
               <span>/</span>
               <span>{formatTime(duration)}</span>
               {totalCues > 0 && (
-                <span className="hidden sm:inline text-amber-700 dark:text-amber-300 font-bold">
+                <span className="hidden sm:inline text-amber-700 font-bold">
                   (第 {activeCueIndex + 1}/{totalCues} 句)
                 </span>
               )}
@@ -303,7 +303,7 @@ export function AudioPlayer({
               setIsMuted(false);
               onChangeVolume(parseFloat(e.target.value));
             }}
-            className="w-20 accent-amber-500 h-1.5 bg-gray-200 dark:bg-slate-700 rounded-lg cursor-pointer"
+            className="w-20 accent-amber-500 h-1.5 bg-amber-100 rounded-lg cursor-pointer"
             title="调节音量"
           />
         </div>
