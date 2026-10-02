@@ -36,6 +36,11 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
+  // 0. Bypass SW completely for localhost/development and Vite HMR
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.pathname.includes('@vite') || url.pathname.includes('@react-refresh')) {
+    return;
+  }
+
   // 1. Audio media streaming (HTTP 206 Range requests): Bypass SW cache for direct native streaming
   if (url.pathname.startsWith('/api/media/')) {
     return;

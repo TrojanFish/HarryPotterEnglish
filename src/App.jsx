@@ -200,7 +200,10 @@ export function App() {
     if (forceRefresh) setIsRefreshing(true);
     try {
       const url = forceRefresh ? `${API_BASE}/api/catalog?refresh=1` : `${API_BASE}/api/catalog`;
-      const res = await fetch(url);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
       if (res.ok) {
         const data = await res.json();
         if (data.books && data.books.length > 0) {
@@ -216,7 +219,7 @@ export function App() {
         }
       }
     } catch (err) {
-      console.warn('Backend catalog API offline, using fallback:', err);
+      console.warn('Backend catalog API offline, using fallback:', err.message);
     } finally {
       if (forceRefresh) setIsRefreshing(false);
     }
@@ -276,7 +279,10 @@ export function App() {
       if (!cancelled) setAudioUrl(newAudioUrl);
 
       try {
-        const res = await fetch(newVttUrl);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
+        const res = await fetch(newVttUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (res.ok) {
           const text = await res.text();
           if (!cancelled) setCues(parseVTT(text));
@@ -285,7 +291,7 @@ export function App() {
           if (!cancelled) setCues(parseVTT(SAMPLE_CHAPTER_1_VTT));
         }
       } catch (err) {
-        console.error('Error fetching VTT:', err);
+        console.warn('VTT fetch timed out or failed, using local chapter sample:', err.message);
         if (!cancelled) setCues(parseVTT(SAMPLE_CHAPTER_1_VTT));
       } finally {
         if (!cancelled) setIsLoadingContent(false);
