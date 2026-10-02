@@ -1,0 +1,145 @@
+import React from 'react';
+import { X, BookOpen, Sparkles, Headphones, Layers, RotateCw } from 'lucide-react';
+
+export function BookShelfDrawer({
+  isOpen,
+  onClose,
+  books,
+  selectedBookId,
+  onSelectBook,
+  onRefreshCatalog,
+  isRefreshing,
+  isParchment
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-hidden bg-black/70 backdrop-blur-md animate-fadeIn">
+      <div className="absolute inset-y-0 right-0 max-w-full flex pl-8 sm:pl-16">
+        <div className={`w-screen max-w-xl shadow-2xl flex flex-col border-l transition-colors duration-300 ${
+          isParchment 
+            ? 'bg-[#fbf6ea] border-[#dec9a5] text-[#2c221e]' 
+            : 'bg-[#101622] border-[#253245] text-[#e2d9c8]'
+        }`}>
+          {/* Header */}
+          {/* Header */}
+          <div className={`px-6 py-4 border-b flex items-center justify-between ${
+            isParchment ? 'border-[#e5d6ba] bg-[#faf6ee]' : 'border-slate-800 bg-slate-900'
+          }`}>
+            <div className="flex items-center space-x-2.5">
+              <span className="text-2xl animate-float">🏰</span>
+              <div>
+                <h3 className="font-magical font-bold text-lg sm:text-xl text-amber-800 dark:text-amber-300">
+                  霍格沃茨魔法书架 (Magic Library)
+                </h3>
+                <p className="text-xs text-slate-500">原版有声小说 · 挑选你的专属英语故事</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              {/* Refresh Catalog Button */}
+              <button
+                onClick={onRefreshCatalog}
+                disabled={isRefreshing}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-amber-400/60 bg-amber-50 dark:bg-slate-800 text-amber-800 dark:text-amber-300 text-xs font-bold transition-colors"
+                title="重新扫描 R2 存储桶新文件"
+              >
+                <RotateCw size={13} className={isRefreshing ? 'animate-spin' : ''} />
+                <span className="hidden sm:inline">{isRefreshing ? '扫描中...' : '刷新藏书'}</span>
+              </button>
+
+              <button
+                onClick={onClose}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* Book Cards Gallery */}
+          <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+            {books.map((book) => {
+              const isSelected = book.id === selectedBookId;
+              const apiBase = import.meta.env.VITE_API_BASE || '';
+              const coverUrl = `${apiBase}/api/raw/podcasts/${book.id}/cover.jpg`;
+              const chapterCount = (book.chapters || []).length;
+
+              return (
+                <div
+                  key={book.id}
+                  onClick={() => {
+                    onSelectBook(book.id);
+                    onClose();
+                  }}
+                  className={`group relative rounded-2xl border-2 p-4 cursor-pointer transition-all duration-300 transform hover:-translate-y-0.5 flex flex-col sm:flex-row gap-4 ${
+                    isSelected
+                      ? 'border-amber-500 bg-amber-500/15 shadow-md'
+                      : isParchment
+                        ? 'border-[#e8dcb9] bg-[#ffffff] hover:border-amber-400 hover:shadow-sm'
+                        : 'border-slate-800 bg-slate-900/80 hover:border-amber-400'
+                  }`}
+                >
+                  {/* Cover Art Image */}
+                  <div className="w-24 aspect-[3/4] rounded-xl overflow-hidden border border-amber-400/50 shadow-md bg-slate-900 shrink-0 mx-auto sm:mx-0">
+                    <img
+                      src={coverUrl}
+                      alt={book.title}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentNode.classList.add('flex', 'items-center', 'justify-center', 'text-4xl');
+                        e.target.parentNode.innerText = book.cover || '🧙‍♂️';
+                      }}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex-1 flex flex-col justify-between min-w-0">
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm">{book.cover || '📚'}</span>
+                        <h4 className="font-magical font-bold text-base text-amber-900 dark:text-amber-300 group-hover:text-amber-600 transition-colors truncate">
+                          {book.cnTitle || book.title}
+                        </h4>
+                      </div>
+                      <p className="text-xs text-slate-500 font-reading italic mt-0.5 truncate">
+                        {book.title}
+                      </p>
+
+                      {book.description && (
+                        <p className="text-xs text-slate-600 dark:text-slate-400 font-reading mt-2 line-clamp-2 leading-relaxed">
+                          {book.description}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mt-3 pt-2 border-t border-gray-700/30 flex items-center justify-between text-xs">
+                      <span className="flex items-center gap-1 text-[#8c9ba5]">
+                        <Layers size={13} className="text-[#cba358]" />
+                        <span>共 {chapterCount} 个精听章节</span>
+                      </span>
+
+                      <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${
+                        isSelected 
+                          ? 'bg-[#cba358] text-[#0f141c]' 
+                          : 'bg-gray-700/30 text-[#cba358] group-hover:bg-[#cba358] group-hover:text-[#0f141c]'
+                      }`}>
+                        {isSelected ? '正在学习' : '进入本卷'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Footer note */}
+          <div className="p-4 border-t border-gray-700/40 text-center text-xs text-[#8c9ba5]">
+            💡 后续在 R2 上传新有声书或新章节后，点击右上角“刷新藏书”即可秒级识别
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
