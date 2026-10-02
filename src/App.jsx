@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Header } from './components/Header';
+import { BookshelfView } from './components/BookshelfView';
 import { Sidebar } from './components/Sidebar';
 import { BookShelfDrawer } from './components/BookShelfDrawer';
 import { AudioPlayer } from './components/AudioPlayer';
@@ -52,10 +53,48 @@ export function App() {
   const [studyMode, setStudyMode] = useState('normal'); // 'normal' | 'blind' | 'dictation'
   const [showTranslation, setShowTranslation] = useState(true);
 
+  // View mode: 'bookshelf' (iBooks-style library homepage) | 'player' (full interactive player)
+  const [currentView, setCurrentView] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hp_current_view');
+      return saved === 'player' ? 'player' : 'bookshelf';
+    } catch {
+      return 'bookshelf';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('hp_current_view', currentView);
+    } catch {}
+  }, [currentView]);
+
   // Books catalog (dynamically discovered from R2)
   const [books, setBooks] = useState(HP_BOOKS);
-  const [selectedBook, setSelectedBook] = useState('hp-book-1');
-  const [selectedChapter, setSelectedChapter] = useState('hp-book-1_ep01');
+  const [selectedBook, setSelectedBook] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hp_last_played_book');
+      return saved || 'hp-book-1';
+    } catch {
+      return 'hp-book-1';
+    }
+  });
+  const [selectedChapter, setSelectedChapter] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hp_last_played_chapter');
+      return saved || 'hp-book-1_ep01';
+    } catch {
+      return 'hp-book-1_ep01';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (selectedBook) localStorage.setItem('hp_last_played_book', selectedBook);
+      if (selectedChapter) localStorage.setItem('hp_last_played_chapter', selectedChapter);
+    } catch {}
+  }, [selectedBook, selectedChapter]);
+
   const [cues, setCues] = useState([]);
   const [audioUrl, setAudioUrl] = useState('');
   const [isLoadingContent, setIsLoadingContent] = useState(false);
@@ -587,101 +626,153 @@ export function App() {
           setIsStorageOpen(true);
         }}
         cachedChaptersCount={cachedChaptersCount}
+        currentView={currentView}
+        onSwitchView={setCurrentView}
       />
 
-
-      {/* ── Two-column body: Sidebar + Main Content ─────────────────── */}
-      <div className="flex flex-1 overflow-hidden min-h-0">
-
-        {/* Left Sidebar — book cover + chapter list (hidden on mobile) */}
-        <Sidebar
-          currentBook={currentBookObj}
-          currentChapter={currentChapterObj}
-          onSelectChapter={setSelectedChapter}
-          onOpenShelf={() => setIsShelfOpen(true)}
-          onRefreshCatalog={() => fetchCatalog(true)}
-          isRefreshing={isRefreshing}
+      {/* ── Main View Switcher: Bookshelf (Home) vs Player (Full Study Classroom) ── */}
+      {currentView === 'bookshelf' ? (
+        <BookshelfView
+          books={books}
+          selectedBook={selectedBook}
+          selectedChapter={selectedChapter}
+          onSelectBook={(bookId) => {
+            setSelectedBook(bookId);
+            const b = books.find(x => x.id === bookId);
+            if (b && b.chapters && b.chapters.length > 0) {
+              setSelectedChapter(b.chapters[0].id);
+            }
+          }}
+          onSelectChapter={(chapterId, shouldPlay = true) => {
+            setSelectedChapter(chapterId);
+            setCurrentView('player');
+            if (shouldPlay) {
+              setTimeout(() => {
+                if (audioRef.current) audioRef.current.play().catch(() => {});
+                setIsPlaying(true);
+              }, 350);
+            }
+          }}
+          onEnterPlayer={() => {
+            setCurrentView('player');
+            if (!isPlaying && audioRef.current) {
+              audioRef.current.play().catch(() => {});
+              setIsPlaying(true);
+            }
+          }}
+          isPlaying={isPlaying}
+          onTogglePlay={togglePlayPause}
+          currentTime={currentTime}
+          duration={duration}
+          activeCue={activeCue}
+          streakDays={analyticsSummary?.streakDays || 0}
+          vocabCount={vocabList.length}
+          cachedChaptersCount={cachedChaptersCount}
           isParchment={isParchment}
-          isOfflinePlaying={isOfflinePlaying}
+          onOpenVocab={() => setIsVocabOpen(true)}
+          onOpenAnalytics={() => {
+            setAnalyticsSummary(getAnalyticsSummary());
+            setIsAnalyticsOpen(true);
+          }}
+          onOpenStorage={() => {
+            refreshOfflineCount();
+            setIsStorageOpen(true);
+          }}
         />
-
-        {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto min-w-0">
-          {isLoadingContent ? (
-            <div className="flex-1 flex items-center justify-center py-32 text-[#f3d38c]">
-              <div className="flex flex-col items-center space-y-3">
-                <Loader2 className="w-10 h-10 animate-spin text-amber-500" />
-                <span className="font-magical text-base text-gold-glow">
-                  正在调取霍格沃茨原声与精听字幕...
-                </span>
-              </div>
-            </div>
-          ) : studyMode === 'dictation' ? (
-            // Mode 3: Interactive Dictation & Typing Studio
-            <DictationStudio
-              cues={cues}
-              activeCueIndex={activeCueIndex}
-              onSeekToCue={handleSeekToCue}
-              onPlayPause={togglePlayPause}
-              isPlaying={isPlaying}
-              playbackRate={playbackRate}
-              onChangePlaybackRate={handleChangePlaybackRate}
+      ) : (
+        <>
+          {/* ── Two-column body: Sidebar + Main Content ─────────────────── */}
+          <div className="flex flex-1 overflow-hidden min-h-0">
+            {/* Left Sidebar — book cover + chapter list (hidden on mobile) */}
+            <Sidebar
+              currentBook={currentBookObj}
+              currentChapter={currentChapterObj}
+              onSelectChapter={setSelectedChapter}
+              onOpenShelf={() => setIsShelfOpen(true)}
+              onRefreshCatalog={() => fetchCatalog(true)}
+              isRefreshing={isRefreshing}
               isParchment={isParchment}
-              onNextCue={handleNextSentence}
-              onPrevCue={handlePrevSentence}
-              chapterId={selectedChapter}
-              chapterTitle={currentChapterObj ? currentChapterObj.title : ''}
-              onRecordResult={() => setAnalyticsSummary(getAnalyticsSummary())}
+              isOfflinePlaying={isOfflinePlaying}
             />
-          ) : (
-            // Mode 1 & 2: Subtitle Viewer with Lumos Focus & Term Beacon
-            <SubtitleViewer
-              cues={cues}
-              activeCueIndex={activeCueIndex}
-              onSeekToCue={handleSeekToCue}
-              onWordClick={handleWordClick}
-              studyMode={studyMode}
-              showTranslation={showTranslation}
-              setShowTranslation={setShowTranslation}
-              isLoopSentence={isLoopSentence}
-              onToggleLoopSentence={() => setIsLoopSentence(!isLoopSentence)}
-              onRecordCue={handleRecordCue}
-              isParchment={isParchment}
-              onSaveToVocab={handleSaveToVocab}
-            />
-          )}
-        </main>
-      </div>
 
+            {/* Main Content Area */}
+            <main className="flex-1 overflow-y-auto min-w-0">
+              {isLoadingContent ? (
+                <div className="flex-1 flex items-center justify-center py-32 text-[#f3d38c]">
+                  <div className="flex flex-col items-center space-y-3">
+                    <Loader2 className="w-10 h-10 animate-spin text-amber-500" />
+                    <span className="font-magical text-base text-gold-glow">
+                      正在调取霍格沃茨原声与精听字幕...
+                    </span>
+                  </div>
+                </div>
+              ) : studyMode === 'dictation' ? (
+                // Mode 3: Interactive Dictation & Typing Studio
+                <DictationStudio
+                  cues={cues}
+                  activeCueIndex={activeCueIndex}
+                  onSeekToCue={handleSeekToCue}
+                  onPlayPause={togglePlayPause}
+                  isPlaying={isPlaying}
+                  playbackRate={playbackRate}
+                  onChangePlaybackRate={handleChangePlaybackRate}
+                  isParchment={isParchment}
+                  onNextCue={handleNextSentence}
+                  onPrevCue={handlePrevSentence}
+                  chapterId={selectedChapter}
+                  chapterTitle={currentChapterObj ? currentChapterObj.title : ''}
+                  onRecordResult={() => setAnalyticsSummary(getAnalyticsSummary())}
+                />
+              ) : (
+                // Mode 1 & 2: Subtitle Viewer with Lumos Focus & Term Beacon
+                <SubtitleViewer
+                  cues={cues}
+                  activeCueIndex={activeCueIndex}
+                  onSeekToCue={handleSeekToCue}
+                  onWordClick={handleWordClick}
+                  studyMode={studyMode}
+                  showTranslation={showTranslation}
+                  setShowTranslation={setShowTranslation}
+                  isLoopSentence={isLoopSentence}
+                  onToggleLoopSentence={() => setIsLoopSentence(!isLoopSentence)}
+                  onRecordCue={handleRecordCue}
+                  isParchment={isParchment}
+                  onSaveToVocab={handleSaveToVocab}
+                />
+              )}
+            </main>
+          </div>
 
-      {/* Fixed Bottom Audio Player with Elder Wand & Cover Art */}
-      <AudioPlayer
-        currentBook={currentBookObj}
-        currentChapter={currentChapterObj}
-        audioSrc={audioUrl}
-        currentTime={currentTime}
-        duration={duration}
-        isPlaying={isPlaying}
-        onPlayPause={togglePlayPause}
-        onSeek={handleSeek}
-        onPrevSentence={handlePrevSentence}
-        onNextSentence={handleNextSentence}
-        onReplayCurrentSentence={handleReplayCurrentSentence}
-        isLoopSentence={isLoopSentence}
-        onToggleLoopSentence={() => setIsLoopSentence(!isLoopSentence)}
-        playbackRate={playbackRate}
-        onChangePlaybackRate={handleChangePlaybackRate}
-        volume={volume}
-        onChangeVolume={handleChangeVolume}
-        activeCue={activeCue}
-        totalCues={cues.length}
-        activeCueIndex={activeCueIndex}
-        isParchment={isParchment}
-        onToggleRecorder={() => {
-          if (activeCue) handleRecordCue(activeCue);
-        }}
-        isRecordingActive={isRecorderOpen}
-      />
+          {/* Fixed Bottom Audio Player with Elder Wand & Cover Art */}
+          <AudioPlayer
+            currentBook={currentBookObj}
+            currentChapter={currentChapterObj}
+            audioSrc={audioUrl}
+            currentTime={currentTime}
+            duration={duration}
+            isPlaying={isPlaying}
+            onPlayPause={togglePlayPause}
+            onSeek={handleSeek}
+            onPrevSentence={handlePrevSentence}
+            onNextSentence={handleNextSentence}
+            onReplayCurrentSentence={handleReplayCurrentSentence}
+            isLoopSentence={isLoopSentence}
+            onToggleLoopSentence={() => setIsLoopSentence(!isLoopSentence)}
+            playbackRate={playbackRate}
+            onChangePlaybackRate={handleChangePlaybackRate}
+            volume={volume}
+            onChangeVolume={handleChangeVolume}
+            activeCue={activeCue}
+            totalCues={cues.length}
+            activeCueIndex={activeCueIndex}
+            isParchment={isParchment}
+            onToggleRecorder={() => {
+              if (activeCue) handleRecordCue(activeCue);
+            }}
+            isRecordingActive={isRecorderOpen}
+          />
+        </>
+      )}
 
       {/* Hogwarts Library Bookshelf Drawer */}
       <BookShelfDrawer

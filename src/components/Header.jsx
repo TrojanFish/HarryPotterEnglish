@@ -14,6 +14,8 @@ import {
   HardDrive,
   ChevronDown,
   Sparkles,
+  Headphones,
+  ArrowLeft,
 } from 'lucide-react';
 
 /**
@@ -43,6 +45,8 @@ export function Header({
   streakDays = 0,
   onOpenStorageManager,
   cachedChaptersCount = 0,
+  currentView = 'bookshelf',
+  onSwitchView,
 }) {
   const currentBook = (books && books.find((b) => b.id === selectedBook)) || books[0];
 
@@ -76,12 +80,35 @@ export function Header({
           : 'bg-[#0f172a]/95 border-[#1e293b] text-[#f1f5f9] shadow-lg'
       }`}
     >
-      {/* ── LEFT: Logo & Student Title ────────────────────────────── */}
+      {/* ── LEFT: Logo, Navigation & Student Title ─────────────────── */}
       <div className="flex items-center gap-3 shrink-0">
+        {/* If in player view, show Back to Bookshelf button */}
+        {currentView === 'player' && (
+          <button
+            onClick={() => onSwitchView && onSwitchView('bookshelf')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border font-bold text-xs sm:text-sm transition-all shadow-sm group ${
+              isParchment
+                ? 'border-amber-400 bg-amber-500/15 hover:bg-amber-500/25 text-amber-900'
+                : 'border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300'
+            }`}
+            title="返回霍格沃茨书架选书"
+          >
+            <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
+            <span className="hidden sm:inline">返回书架</span>
+            <span className="sm:hidden">书架</span>
+          </button>
+        )}
+
         <div 
-          onClick={onOpenShelf}
+          onClick={() => {
+            if (currentView === 'player' && onSwitchView) {
+              onSwitchView('bookshelf');
+            } else {
+              onOpenShelf();
+            }
+          }}
           className="flex items-center gap-2 cursor-pointer group select-none"
-          title="点击打开魔法书架"
+          title="点击返回魔法书房"
         >
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
             <Sparkles className="w-5 h-5 text-amber-950" />
@@ -102,51 +129,81 @@ export function Header({
         </div>
 
         {/* Mobile book switcher */}
-        <button
-          onClick={onOpenShelf}
-          className={`flex lg:hidden items-center gap-1 text-xs px-2.5 py-1.5 rounded-xl border font-semibold truncate max-w-[130px] sm:max-w-[180px] ${
-            isParchment
-              ? 'border-amber-300 bg-amber-50 text-amber-900'
-              : 'border-slate-700 bg-slate-800 text-amber-300'
-          }`}
-          title="切换原著故事"
-        >
-          <Library size={12} className="shrink-0" />
-          <span className="truncate">{currentBook ? (currentBook.cnTitle || currentBook.title) : '魔法书架'}</span>
-          <ChevronDown size={11} className="shrink-0" />
-        </button>
+        {currentView === 'player' && (
+          <button
+            onClick={onOpenShelf}
+            className={`flex lg:hidden items-center gap-1 text-xs px-2.5 py-1.5 rounded-xl border font-semibold truncate max-w-[130px] sm:max-w-[180px] ${
+              isParchment
+                ? 'border-amber-300 bg-amber-50 text-amber-900'
+                : 'border-slate-700 bg-slate-800 text-amber-300'
+            }`}
+            title="切换原著故事"
+          >
+            <Library size={12} className="shrink-0" />
+            <span className="truncate">{currentBook ? (currentBook.cnTitle || currentBook.title) : '魔法书架'}</span>
+            <ChevronDown size={11} className="shrink-0" />
+          </button>
+        )}
       </div>
 
-      {/* ── CENTER: Student-friendly 3 Core Modes ─────────────────── */}
+      {/* ── CENTER: Contextual Switcher ───────────────────────────── */}
       <div className="flex items-center justify-center">
-        <div
-          className={`flex rounded-2xl p-1 border gap-1 shadow-inner ${
-            isParchment
-              ? 'bg-[#f4ebe1] border-[#e2d3be]'
-              : 'bg-slate-900 border-slate-800'
-          }`}
-        >
-          {modes.map(({ key, label, icon, desc }) => {
-            const isActive = studyMode === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setStudyMode(key)}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all select-none ${
-                  isActive
-                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md font-bold scale-[1.02]'
-                    : isParchment
-                    ? 'text-[#6b5438] hover:bg-[#e9ded0] hover:text-[#2d241c]'
-                    : 'text-slate-400 hover:bg-slate-800 hover:text-amber-300'
-                }`}
-                title={desc}
-              >
-                {icon}
-                <span>{label}</span>
-              </button>
-            );
-          })}
-        </div>
+        {currentView === 'bookshelf' ? (
+          /* Bookshelf Navigation Pill */
+          <div
+            className={`flex rounded-2xl p-1 border gap-1 shadow-inner ${
+              isParchment ? 'bg-[#f4ebe1] border-[#e2d3be]' : 'bg-slate-900 border-slate-800'
+            }`}
+          >
+            <button
+              onClick={() => onSwitchView && onSwitchView('bookshelf')}
+              className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md select-none"
+            >
+              <Library size={14} />
+              <span>魔法书架</span>
+            </button>
+            <button
+              onClick={() => onSwitchView && onSwitchView('player')}
+              className={`flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all select-none ${
+                isParchment
+                  ? 'text-[#6b5438] hover:bg-[#e9ded0] hover:text-[#2d241c]'
+                  : 'text-slate-400 hover:bg-slate-800 hover:text-amber-300'
+              }`}
+              title="进入全功能精听教室"
+            >
+              <Headphones size={14} />
+              <span>精听教室</span>
+            </button>
+          </div>
+        ) : (
+          /* Player 3 Core Learning Modes */
+          <div
+            className={`flex rounded-2xl p-1 border gap-1 shadow-inner ${
+              isParchment ? 'bg-[#f4ebe1] border-[#e2d3be]' : 'bg-slate-900 border-slate-800'
+            }`}
+          >
+            {modes.map(({ key, label, icon, desc }) => {
+              const isActive = studyMode === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setStudyMode(key)}
+                  className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all select-none ${
+                    isActive
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md font-bold scale-[1.02]'
+                      : isParchment
+                      ? 'text-[#6b5438] hover:bg-[#e9ded0] hover:text-[#2d241c]'
+                      : 'text-slate-400 hover:bg-slate-800 hover:text-amber-300'
+                  }`}
+                  title={desc}
+                >
+                  {icon}
+                  <span>{label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* ── RIGHT: Gamified Student Tools ─────────────────────────── */}

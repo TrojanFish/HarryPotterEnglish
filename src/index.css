@@ -139,3 +139,62 @@ body:not(.theme-parchment) .lumos-active {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
+
+/* ───────────────────────────────────────────────────────────
+   iBooks-style Classical Bookshelf & 3D Book Aesthetics
+─────────────────────────────────────────────────────────── */
+
+/* 3D Wooden Shelf Plank */
+.ibooks-shelf-plank {
+  position: relative;
+  height: 20px;
+  background: linear-gradient(180deg, #e3d2b2 0%, #c4af87 40%, #a48c60 100%);
+  border-radius: 4px;
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.6),
+    0 4px 6px -1px rgba(0, 0, 0, 0.25),
+    0 10px 20px -3px rgba(0, 0, 0, 0.35);
+}
+
+.ibooks-shelf-plank::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 4px 4px 0 0;
+}
+
+body:not(.theme-parchment) .ibooks-shelf-plank {
+  background: linear-gradient(180deg, #334155 0%, #1e293b 50%, #0f172a 100%);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.5),
+    0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+body:not(.theme-parchment) .ibooks-shelf-plank::before {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 3D Book Standing on Shelf */
+.ibooks-book {
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+  transform-origin: bottom center;
+}
+
+.ibooks-book:hover {
+  transform: translateY(-8px) scale(1.02);
+  z-index: 10;
+}
+
+/* Physical Spine Edge & Depth Shadow */
+.ibooks-book-spine {
+  box-shadow: 
+    inset 4px 0 8px -2px rgba(0, 0, 0, 0.45),
+    inset -2px 0 4px rgba(255, 255, 255, 0.2),
+    4px 10px 20px rgba(0, 0, 0, 0.28);
+}
