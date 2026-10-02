@@ -372,37 +372,45 @@ export function ShadowingRecorder({
           : 'bg-[#141b26] border-[#2b3a4f] text-[#e2d9c8]'
       }`}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-700/40">
+        <div className={`flex items-center justify-between mb-4 pb-2 border-b ${
+          isParchment ? 'border-amber-200/80' : 'border-gray-700/40'
+        }`}>
           <div className="flex items-center space-x-2">
-            <Mic className="text-[#cba358]" size={20} />
-            <h3 className="font-magical font-bold text-lg text-[#cba358]">
+            <Mic className="text-amber-600 dark:text-[#cba358]" size={20} />
+            <h3 className="font-magical font-bold text-lg text-amber-950 dark:text-[#cba358]">
               本句跟读与 AI 语音评分 (Shadowing & Scoring)
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-gray-400 hover:text-gray-200 transition-colors"
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Target Sentence Box & Word-Level Badges */}
-        <div className="p-4 rounded-xl bg-black/25 border border-gray-700/40 mb-4 transition-all">
+        <div className={`p-4 rounded-2xl border mb-4 transition-all ${
+          isParchment 
+            ? 'bg-amber-50/70 border-amber-200/80 text-[#2c221e]' 
+            : 'bg-black/25 border-gray-700/40 text-[#e2d9c8]'
+        }`}>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-magical uppercase tracking-wider text-[#cba358]">
+            <span className={`text-[11px] font-magical uppercase tracking-wider font-bold ${
+              isParchment ? 'text-amber-900' : 'text-[#cba358]'
+            }`}>
               原著朗读目标句 · Target Sentence
             </span>
             {/* Legend */}
             {evaluationResult && (
               <div className="flex items-center gap-2 text-[10px]">
-                <span className="flex items-center gap-1 text-emerald-400">
+                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> 准确
                 </span>
-                <span className="flex items-center gap-1 text-amber-400">
+                <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold">
                   <span className="w-2 h-2 rounded-full bg-amber-500 inline-block"></span> 相似
                 </span>
-                <span className="flex items-center gap-1 text-rose-400">
+                <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400 font-semibold">
                   <span className="w-2 h-2 rounded-full bg-rose-500 inline-block"></span> 偏差/遗漏
                 </span>
               </div>
@@ -411,7 +419,9 @@ export function ShadowingRecorder({
 
           {/* Interactive Word Badges or Default Sentence */}
           {!evaluationResult ? (
-            <p className="font-reading text-base sm:text-lg leading-relaxed text-[#f3d38c]">
+            <p className={`font-reading text-base sm:text-lg leading-relaxed ${
+              isParchment ? 'text-amber-950 font-medium' : 'text-[#f3d38c]'
+            }`}>
               "{currentCue.text}"
             </p>
           ) : (
@@ -450,20 +460,24 @@ export function ShadowingRecorder({
           )}
 
           {currentCue.translation && (
-            <p className="text-xs text-[#8c9ba5] font-reading mt-2.5">
+            <p className={`text-xs font-reading mt-2.5 ${
+              isParchment ? 'text-[#7a644c]' : 'text-[#8c9ba5]'
+            }`}>
               {currentCue.translation}
             </p>
           )}
 
           {/* Transcript Footer */}
           {evaluationResult && evaluationResult.transcript && (
-            <div className="mt-3 pt-2.5 border-t border-gray-700/30 text-xs text-[#8c9ba5] flex items-center justify-between">
+            <div className={`mt-3 pt-2.5 border-t text-xs flex items-center justify-between ${
+              isParchment ? 'border-amber-200/80 text-[#7a644c]' : 'border-gray-700/30 text-[#8c9ba5]'
+            }`}>
               <div>
-                <span className="text-gray-400 font-semibold">你朗读的内容：</span>
-                <span className="italic text-gray-200 ml-1">"{evaluationResult.transcript}"</span>
+                <span className={isParchment ? 'text-amber-900 font-semibold' : 'text-gray-400 font-semibold'}>你朗读的内容：</span>
+                <span className={`italic ml-1 ${isParchment ? 'text-amber-950 font-medium' : 'text-gray-200'}`}>"{evaluationResult.transcript}"</span>
               </div>
               {evaluationResult.latencyMs !== undefined && (
-                <span className="text-[10px] text-gray-500 font-mono">
+                <span className="text-[10px] text-slate-400 font-mono">
                   {evaluationResult.latencyMs}ms
                 </span>
               )}
@@ -500,7 +514,11 @@ export function ShadowingRecorder({
 
         {/* Overall Score Badge Card & Hogwarts O.W.L. Grade */}
         {evaluationResult && gradeInfo && !isEvaluating && (
-          <div className="p-4 rounded-xl border border-gray-700/40 bg-gradient-to-r from-gray-900/60 to-gray-800/40 mb-4 shadow-magic-card flex items-center justify-between">
+          <div className={`p-4 rounded-2xl border mb-4 shadow-sm flex items-center justify-between ${
+            isParchment 
+              ? 'bg-[#ffffff] border-amber-300/80 text-[#2c221e]' 
+              : 'border-gray-700/40 bg-gradient-to-r from-gray-900/60 to-gray-800/40 text-slate-100'
+          }`}>
             <div className="flex items-center space-x-3.5">
               <div className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl border-2 font-magical font-black text-xl shadow-inner ${
                 isParchment ? gradeInfo.parchmentBadge : gradeInfo.badgeClass
@@ -512,14 +530,22 @@ export function ShadowingRecorder({
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="font-magical font-bold text-sm text-[#cba358]">
+                  <h4 className={`font-magical font-bold text-sm ${
+                    isParchment ? 'text-amber-900' : 'text-[#cba358]'
+                  }`}>
                     {gradeInfo.title}
                   </h4>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 border border-gray-700">
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded border font-mono font-semibold ${
+                    isParchment 
+                      ? 'bg-amber-100/80 text-amber-900 border-amber-300' 
+                      : 'bg-gray-800 text-gray-400 border-gray-700'
+                  }`}>
                     {matchedCount}/{totalCount} 词匹配
                   </span>
                 </div>
-                <p className="text-xs text-gray-300 mt-1 font-reading leading-snug">
+                <p className={`text-xs mt-1 font-reading leading-snug ${
+                  isParchment ? 'text-[#7a644c]' : 'text-gray-300'
+                }`}>
                   {gradeInfo.quote}
                 </p>
               </div>
@@ -529,15 +555,19 @@ export function ShadowingRecorder({
 
         {/* Browser compatibility fallback notice */}
         {!isSpeechSupported && (
-          <div className="p-2.5 mb-4 rounded-lg bg-amber-950/30 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2">
-            <Info size={14} className="shrink-0" />
+          <div className={`p-3 mb-4 rounded-xl border text-xs flex items-center gap-2 ${
+            isParchment
+              ? 'bg-amber-100/60 border-amber-300/80 text-amber-900'
+              : 'bg-amber-950/30 border-amber-500/30 text-amber-300'
+          }`}>
+            <Info size={14} className="shrink-0 text-amber-600" />
             <span>当前浏览器未开启 Web Speech API，音频录制与原音回放正常，AI 自动评分推荐使用 Chrome / Edge。</span>
           </div>
         )}
 
         {/* Error message */}
         {recordingError && (
-          <div className="p-3 mb-4 rounded-lg bg-rose-900/30 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2">
+          <div className="p-3 mb-4 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
             <AlertCircle size={14} className="shrink-0" />
             <span>{recordingError}</span>
           </div>
@@ -546,18 +576,26 @@ export function ShadowingRecorder({
         {/* Dual Playback Control Bar */}
         <div className="space-y-3">
           {/* 1. Original Narrator Audio */}
-          <div className="flex items-center justify-between p-3 rounded-xl border border-gray-700/30 bg-gray-800/20">
+          <div className={`flex items-center justify-between p-3 rounded-2xl border ${
+            isParchment 
+              ? 'border-amber-200/80 bg-amber-50/50' 
+              : 'border-gray-700/30 bg-gray-800/20'
+          }`}>
             <div className="flex items-center space-x-2.5">
-              <Volume2 className="w-5 h-5 text-amber-500 shrink-0" />
+              <Volume2 className="w-5 h-5 text-amber-600 dark:text-amber-500 shrink-0" />
               <div>
-                <span className="text-xs font-semibold block text-gray-300">原版朗读原音</span>
-                <span className="text-[11px] text-[#8c9ba5]">纯正英式青少年发音</span>
+                <span className={`text-xs font-bold block ${isParchment ? 'text-amber-950' : 'text-gray-300'}`}>原版朗读原音</span>
+                <span className={`text-[11px] ${isParchment ? 'text-[#7a644c]' : 'text-[#8c9ba5]'}`}>纯正英式青少年发音</span>
               </div>
             </div>
             <button
               onClick={() => onPlayOriginalSnippet(currentCue)}
               disabled={isRecording || isEvaluating}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#cba358]/20 border border-[#cba358]/40 text-[#cba358] hover:bg-[#cba358]/30 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-semibold transition-all"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold transition-all ${
+                isParchment
+                  ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100 shadow-sm'
+                  : 'bg-[#cba358]/20 border-[#cba358]/40 text-[#cba358] hover:bg-[#cba358]/30'
+              }`}
             >
               <Volume2 size={14} />
               <span>播放原音</span>
@@ -565,12 +603,16 @@ export function ShadowingRecorder({
           </div>
 
           {/* 2. User Recording Box */}
-          <div className="flex items-center justify-between p-3 rounded-xl border border-gray-700/30 bg-gray-800/20">
+          <div className={`flex items-center justify-between p-3 rounded-2xl border ${
+            isParchment 
+              ? 'border-amber-200/80 bg-amber-50/50' 
+              : 'border-gray-700/30 bg-gray-800/20'
+          }`}>
             <div className="flex items-center space-x-2.5">
-              <Headphones className="w-5 h-5 text-amber-500 shrink-0" />
+              <Headphones className="w-5 h-5 text-amber-600 dark:text-amber-500 shrink-0" />
               <div>
-                <span className="text-xs font-semibold block text-gray-300">你的跟读录音</span>
-                <span className="text-[11px] text-[#8c9ba5]">
+                <span className={`text-xs font-bold block ${isParchment ? 'text-amber-950' : 'text-gray-300'}`}>你的跟读录音</span>
+                <span className={`text-[11px] ${isParchment ? 'text-[#7a644c]' : 'text-[#8c9ba5]'}`}>
                   {isRecording 
                     ? `正在录音中... ${recordSeconds}s` 
                     : recordedAudioUrl 
@@ -585,7 +627,7 @@ export function ShadowingRecorder({
                 <button
                   onClick={startRecording}
                   disabled={isEvaluating}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#740001] text-white hover:bg-red-800 text-xs font-semibold transition-all shadow-sm disabled:opacity-50"
+                  className="flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 text-xs font-bold transition-all shadow-md disabled:opacity-50"
                 >
                   <Mic size={14} />
                   <span>{recordedAudioUrl ? '重新录音' : '开始录音'}</span>
@@ -593,7 +635,7 @@ export function ShadowingRecorder({
               ) : (
                 <button
                   onClick={stopRecording}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-600 text-white animate-pulse text-xs font-semibold shadow-sm"
+                  className="flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-red-600 text-white animate-pulse text-xs font-bold shadow-md"
                 >
                   <Square size={14} />
                   <span>停止录音</span>
@@ -604,7 +646,7 @@ export function ShadowingRecorder({
                 <button
                   onClick={togglePlayRecording}
                   disabled={isEvaluating}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#cba358] text-[#0f141c] hover:shadow-glow-gold text-xs font-bold transition-all disabled:opacity-50"
+                  className="flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold transition-all shadow-md disabled:opacity-50"
                 >
                   {isPlayingRecording ? <Pause size={14} /> : <Play size={14} />}
                   <span>回放录音</span>

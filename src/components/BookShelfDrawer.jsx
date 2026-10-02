@@ -117,15 +117,21 @@ export function BookShelfDrawer({
                       )}
                     </div>
 
-                    <div className="mt-3 pt-2 border-t border-gray-700/30 flex items-center justify-between text-xs">
-                      <span className="flex items-center gap-1 text-[#8c9ba5]">
-                        <Layers size={13} className="text-[#cba358]" />
+                    <div className={`mt-3 pt-2 border-t flex items-center justify-between text-xs ${
+                      isParchment ? 'border-amber-200/80' : 'border-gray-700/30'
+                    }`}>
+                      <span className={`flex items-center gap-1 text-xs ${
+                        isParchment ? 'text-[#7a644c]' : 'text-[#8c9ba5]'
+                      }`}>
+                        <Layers size={13} className="text-amber-500" />
                         <span>共 {chapterCount} 个精听章节</span>
                       </span>
 
-                      <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${
+                      <span className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
                         isSelected 
-                          ? 'bg-[#cba358] text-[#0f141c]' 
+                          ? 'bg-amber-500 text-white shadow-sm' 
+                          : isParchment
+                          ? 'bg-amber-50 text-amber-800 border border-amber-300 group-hover:bg-amber-500 group-hover:text-white'
                           : 'bg-gray-700/30 text-[#cba358] group-hover:bg-[#cba358] group-hover:text-[#0f141c]'
                       }`}>
                         {isSelected ? '正在学习' : '进入本卷'}

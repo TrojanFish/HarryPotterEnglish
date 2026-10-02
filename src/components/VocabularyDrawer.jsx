@@ -103,14 +103,16 @@ export function VocabularyDrawer({
             : 'bg-[#121824] border-[#253245] text-[#e2d9c8]'
         }`}>
           {/* Drawer Header */}
-          <div className="px-5 py-4 border-b border-gray-700/40 flex items-center justify-between">
+          <div className={`px-5 py-4 border-b flex items-center justify-between ${
+            isParchment ? 'border-amber-200/80 bg-[#f7eedc]' : 'border-gray-700/40'
+          }`}>
             <div className="flex items-center space-x-2">
-              <BookOpen className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              <BookOpen className="w-5 h-5 text-amber-700 dark:text-amber-400" />
               <div>
-                <h2 className="font-magical font-bold text-lg text-[#cba358]">
+                <h2 className="font-magical font-bold text-lg text-amber-950 dark:text-[#cba358]">
                   魔法生词本 ({vocabList.length})
                 </h2>
-                <p className="text-xs text-[#8c9ba5]">精听原著词汇与例句笔记</p>
+                <p className={`text-xs ${isParchment ? 'text-[#7a644c]' : 'text-[#8c9ba5]'}`}>精听原著词汇与例句笔记</p>
               </div>
             </div>
 
@@ -223,13 +225,21 @@ export function VocabularyDrawer({
                         setIsCardFlipped(false);
                         setFlashcardIndex(prev => Math.max(0, prev - 1));
                       }}
-                      className="px-4 py-2 rounded-lg border border-gray-600/40 text-xs disabled:opacity-30 hover:border-[#cba358]"
+                      className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all disabled:opacity-30 ${
+                        isParchment 
+                          ? 'border-amber-300 bg-white text-amber-900 hover:bg-amber-50 shadow-sm' 
+                          : 'border-gray-600/40 text-slate-300 hover:border-[#cba358]'
+                      }`}
                     >
                       上一张
                     </button>
                     <button
                       onClick={() => playPronunciation(currentFlashcard.word)}
-                      className="p-2 rounded-full border border-[#cba358]/40 text-[#cba358]"
+                      className={`p-2.5 rounded-full border transition-all ${
+                        isParchment
+                          ? 'border-amber-400 bg-amber-50 text-amber-800 hover:bg-amber-100 shadow-sm'
+                          : 'border-[#cba358]/40 text-[#cba358]'
+                      }`}
                       title="朗读单词"
                     >
                       <Volume2 size={16} />
@@ -240,7 +250,7 @@ export function VocabularyDrawer({
                         setIsCardFlipped(false);
                         setFlashcardIndex(prev => Math.min(filteredList.length - 1, prev + 1));
                       }}
-                      className="px-4 py-2 rounded-lg bg-[#cba358] text-[#0f141c] font-bold text-xs disabled:opacity-30 hover:shadow-glow-gold"
+                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-xs disabled:opacity-30 shadow-md hover:shadow-lg transition-all"
                     >
                       下一张
                     </button>
@@ -252,16 +262,20 @@ export function VocabularyDrawer({
             // List Mode
             <>
               {/* Search input */}
-              <div className="p-3 border-b border-gray-700/30">
+              <div className={`p-3 border-b ${
+                isParchment ? 'border-amber-200/80 bg-[#f9f2e3]' : 'border-gray-700/30'
+              }`}>
                 <div className="relative">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     placeholder="搜索生词或中文释义..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className={`w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border focus:outline-none focus:ring-1 focus:ring-[#cba358] ${
-                      isParchment ? 'bg-[#fffdf8] border-[#dec9a5]' : 'bg-[#18202d] border-[#2d3a4f] text-[#e2d9c8]'
+                    className={`w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border focus:outline-none transition-all ${
+                      isParchment 
+                        ? 'bg-white border-amber-200 text-amber-950 focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20' 
+                        : 'bg-[#18202d] border-[#2d3a4f] text-[#e2d9c8] focus:ring-1 focus:ring-[#cba358]'
                     }`}
                   />
                 </div>
@@ -270,32 +284,32 @@ export function VocabularyDrawer({
               {/* Vocab Cards List */}
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {filteredList.length === 0 ? (
-                  <div className="text-center py-16 text-[#8c9ba5] text-xs">
-                    <p>暂无生词</p>
-                    <p className="mt-1 text-gray-500">听音频时点击任意英文单词即可收藏</p>
+                  <div className="text-center py-16 text-slate-500 text-xs">
+                    <p className="font-bold text-sm text-amber-900/80 mb-1">生词本暂无内容</p>
+                    <p className="text-xs">在精听模式下轻点任意英文单词，即可收入生词本</p>
                   </div>
                 ) : (
                   filteredList.map((item) => (
                     <div
                       key={item.id || item.word}
-                      className={`p-3.5 rounded-xl border transition-all ${
+                      className={`p-3.5 rounded-2xl border transition-all ${
                         isParchment 
-                          ? 'bg-[#fffdf8] border-[#dec9a5] hover:border-[#cba358]' 
+                          ? 'bg-[#ffffff] border-[#e8dcb9] hover:border-amber-400 shadow-sm' 
                           : 'bg-[#18202d]/80 border-[#2b394e] hover:border-[#3f5370]'
                       }`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-2">
-                          <h4 className="font-magical font-bold text-base text-[#cba358]">
+                          <h4 className="font-magical font-bold text-base text-amber-950 dark:text-[#cba358]">
                             {item.word}
                           </h4>
                           {item.phonetic && (
-                            <span className="font-mono text-xs text-[#8c9ba5]">
+                            <span className="font-mono text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-800 dark:text-[#8c9ba5] font-semibold">
                               {item.phonetic}
                             </span>
                           )}
                           {item.isHpLore && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#740001] text-amber-200 font-semibold">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#740001] text-amber-200 font-semibold shadow-sm">
                               魔法词
                             </span>
                           )}
@@ -304,27 +318,31 @@ export function VocabularyDrawer({
                         <div className="flex items-center space-x-1">
                           <button
                             onClick={() => playPronunciation(item.word)}
-                            className="p-1 rounded text-gray-400 hover:text-[#cba358]"
-                            title="发音"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+                            title="试听纯正英音发音"
                           >
-                            <Volume2 size={14} />
+                            <Volume2 size={15} />
                           </button>
                           <button
                             onClick={() => onRemoveWord(item.word)}
-                            className="p-1 rounded text-gray-400 hover:text-rose-400"
-                            title="移除"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                            title="从生词本移除"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={15} />
                           </button>
                         </div>
                       </div>
 
-                      <p className="text-xs font-reading text-amber-200/90 mt-1">
+                      <p className={`text-xs sm:text-sm font-reading mt-1.5 font-bold ${
+                        isParchment ? 'text-amber-950' : 'text-amber-200/90'
+                      }`}>
                         {item.translation}
                       </p>
 
                       {item.context && (
-                        <p className="text-[11px] font-reading italic text-gray-400 mt-2 border-t border-gray-700/30 pt-1.5 line-clamp-2">
+                        <p className={`text-[11px] font-reading italic mt-2 border-t pt-1.5 line-clamp-2 ${
+                          isParchment ? 'text-[#735839] border-amber-200/80' : 'text-gray-400 border-gray-700/30'
+                        }`}>
                           "{item.context}"
                         </p>
                       )}
@@ -334,7 +352,9 @@ export function VocabularyDrawer({
               </div>
 
               {/* Bottom Actions */}
-              <div className="p-4 border-t border-gray-700/40 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className={`p-4 border-t flex flex-wrap items-center justify-between gap-2 text-xs ${
+                isParchment ? 'border-amber-200/80 bg-[#f7eedc]' : 'border-gray-700/40'
+              }`}>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleExportAnki}

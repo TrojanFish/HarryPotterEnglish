@@ -81,7 +81,19 @@ export function Sidebar({
             <div className="flex-1 min-w-0">
               <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-800 dark:text-amber-300 text-[10px] font-bold mb-1">
                 <Sparkles size={10} />
-                <span>入门适读 · 基础难度</span>
+                <span>
+                  {currentBook.id?.includes('book-1') 
+                    ? '入门适读 · 基础难度' 
+                    : currentBook.id?.includes('book-2')
+                    ? '初级进阶 · 辨音训练'
+                    : currentBook.id?.includes('book-3')
+                    ? '中阶挑战 · 进阶精读'
+                    : currentBook.id?.includes('prince')
+                    ? '世界名著 · 纯美双语'
+                    : currentBook.id?.includes('tales') || currentBook.id?.includes('tiny')
+                    ? '启蒙绘本 · 趣味童话'
+                    : '原版精选 · 有声精听'}
+                </span>
               </div>
               <h2 className="font-magical font-bold text-sm leading-snug text-amber-900 dark:text-amber-300 line-clamp-2">
                 {currentBook.cnTitle || currentBook.title}

@@ -18,7 +18,7 @@ import { getAnalyticsSummary } from '../utils/analyticsStore';
 export function AnalyticsDashboard({
   isOpen,
   onClose,
-  isParchment = false,
+  isParchment = true,
   vocabCount = 0
 }) {
   const [summary, setSummary] = useState(null);

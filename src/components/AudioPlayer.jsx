@@ -182,10 +182,25 @@ export function AudioPlayer({
           {/* Rewind 5s */}
           <button
             onClick={handleRewind5s}
-            className="p-2 rounded-full hover:bg-amber-100 dark:hover:bg-slate-800 text-slate-500 hover:text-amber-600 transition-colors"
-            title="后退 5 秒 (重听一遍)"
+            className="p-2 rounded-full hover:bg-amber-100 dark:hover:bg-slate-800 text-slate-500 hover:text-amber-600 transition-colors relative"
+            title="后退 5 秒 (重听片段)"
           >
             <RotateCcw size={16} />
+            <span className="absolute -bottom-0.5 -right-0.5 text-[8px] font-mono font-bold text-slate-500 bg-white/80 dark:bg-slate-900 rounded px-0.5 border border-slate-300 dark:border-slate-700">
+              5s
+            </span>
+          </button>
+
+          {/* Replay Current Sentence */}
+          <button
+            onClick={onReplayCurrentSentence}
+            className="p-2 rounded-full hover:bg-amber-100 dark:hover:bg-slate-800 text-slate-500 hover:text-amber-700 transition-colors relative"
+            title="从头重播当前句 (快捷键: R)"
+          >
+            <RotateCcw size={16} />
+            <span className="absolute -bottom-0.5 -right-0.5 text-[8px] font-bold text-amber-800 dark:text-amber-300 bg-amber-100/90 dark:bg-amber-950 rounded px-0.5 border border-amber-300/80">
+              句
+            </span>
           </button>
 
           {/* Single Sentence Loop Toggle */}

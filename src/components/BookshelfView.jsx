@@ -69,29 +69,56 @@ export function BookshelfView({
     ? (currentBookObj.chapters || []).find(c => c.id === selectedChapter) || (currentBookObj.chapters || [])[0]
     : null;
 
-  // Reading level tags based on book code / index
+  // Reading level tags based on book ID and metadata
   const getReadingLevelBadge = (book, index) => {
-    if (index === 0) {
+    const bookId = (book?.id || '').toLowerCase();
+    const title = (book?.title || '').toLowerCase();
+    
+    if (bookId.includes('book-1') || title.includes('sorcerer') || title.includes('philosopher')) {
       return {
         level: '入门基础级',
-        desc: '基础词汇 500+ · 纯中文智能释义 · 语速温和',
+        desc: '基础词汇 500+ · 纯中文释义 · 语速温和适中',
         ribbon: '魔法石 · 入门首选',
         ribbonColor: 'bg-amber-600 text-amber-100'
       };
     }
-    if (index === 1) {
+    if (bookId.includes('book-2') || title.includes('chamber')) {
       return {
         level: '初级进阶级',
-        desc: '拓展词汇 700+ · 紧凑叙事 · 强化听力辨音',
+        desc: '拓展词汇 700+ · 紧凑叙事 · 强化辨音能力',
         ribbon: '密室 · 冒险升级',
         ribbonColor: 'bg-emerald-700 text-emerald-100'
       };
     }
+    if (bookId.includes('book-3') || title.includes('azkaban')) {
+      return {
+        level: '中阶挑战级',
+        desc: '原版精读 900+ · 丰富句式 · 初中进阶首选',
+        ribbon: '阿兹卡班 · 进阶挑战',
+        ribbonColor: 'bg-blue-800 text-blue-100'
+      };
+    }
+    if (bookId.includes('prince') || title.includes('prince')) {
+      return {
+        level: '双语名著级',
+        desc: '词汇 600+ · 纯美哲理 · 朗读优美治愈',
+        ribbon: '小王子 · 世界名著',
+        ribbonColor: 'bg-indigo-700 text-indigo-100'
+      };
+    }
+    if (bookId.includes('tales') || title.includes('tale') || bookId.includes('tiny')) {
+      return {
+        level: '童话启蒙级',
+        desc: '启蒙词汇 300+ · 简易绘本 · 趣味小故事',
+        ribbon: '微光童话 · 快乐启蒙',
+        ribbonColor: 'bg-rose-700 text-rose-100'
+      };
+    }
     return {
-      level: '中阶挑战级',
-      desc: '原版精读 900+ · 丰富句式 · 适合初中进阶',
-      ribbon: '阿兹卡班 · 高阶挑战',
-      ribbonColor: 'bg-blue-800 text-blue-100'
+      level: '精选有声级',
+      desc: `全书共收录 ${(book?.chapters || []).length} 个精听章节 · 原版同步`,
+      ribbon: '原版精选',
+      ribbonColor: 'bg-amber-700 text-amber-100'
     };
   };
 
@@ -397,8 +424,18 @@ export function BookshelfView({
                   </div>
                 </div>
 
-                {/* Realistic iBooks Wooden Shelf Plank */}
-                <div className="ibooks-shelf-plank w-full mt-1" />
+                {/* Realistic iBooks Wooden Shelf Plank with Brass Archive Plaque */}
+                <div className="relative mt-2">
+                  <div className="ibooks-shelf-plank w-full flex items-center justify-between px-6 overflow-hidden">
+                    <div className="h-[2px] w-16 bg-gradient-to-r from-transparent via-amber-100/50 to-transparent rounded-full" />
+                    <div className="text-[10px] font-magical font-bold text-[#5c3e16] tracking-widest uppercase opacity-80 flex items-center gap-1.5 py-0.5">
+                      <Sparkles size={9} className="text-amber-700/70" />
+                      <span>Hogwarts Archive · {book.code || 'HP'} · 《{book.cnTitle || book.title}》</span>
+                      <Sparkles size={9} className="text-amber-700/70" />
+                    </div>
+                    <div className="h-[2px] w-16 bg-gradient-to-r from-transparent via-amber-100/50 to-transparent rounded-full" />
+                  </div>
+                </div>
               </div>
             );
           })}
@@ -464,12 +501,21 @@ export function BookshelfView({
                   value={chapterSearch}
                   onChange={(e) => setChapterSearch(e.target.value)}
                   placeholder="按关键词快速筛选章节（如：第一章、Boy、魔药）..."
-                  className={`w-full pl-9 pr-4 py-2 rounded-xl text-xs font-reading border focus:outline-none transition-all ${
+                  className={`w-full pl-9 pr-8 py-2 rounded-xl text-xs font-reading border focus:outline-none transition-all ${
                     isParchment 
                       ? 'bg-white border-amber-200 text-amber-950 focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20' 
                       : 'bg-slate-800 border-slate-700 text-slate-200 focus:border-amber-400'
                   }`}
                 />
+                {chapterSearch && (
+                  <button
+                    onClick={() => setChapterSearch('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    title="清空搜索"
+                  >
+                    <X size={13} />
+                  </button>
+                )}
               </div>
             </div>
 
