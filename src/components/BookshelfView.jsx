@@ -152,11 +152,8 @@ export function BookshelfView({
           {/* Streak */}
           <button 
             onClick={onOpenAnalytics}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border font-bold transition-all shadow-sm ${
-              isParchment 
-                ? 'bg-amber-50 border-amber-200/80 text-amber-900 hover:border-amber-400' 
-                : 'bg-slate-800/80 border-slate-700 text-amber-300 hover:border-amber-500'
-            }`}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer"
+            title="查看霍格沃茨学业数据罗盘"
           >
             <Flame size={14} className="text-orange-500" />
             <span>连续打卡 {streakDays} 天</span>
@@ -165,11 +162,8 @@ export function BookshelfView({
           {/* Vocab Notebook */}
           <button 
             onClick={onOpenVocab}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border font-bold transition-all shadow-sm ${
-              isParchment 
-                ? 'bg-amber-50 border-amber-200/80 text-amber-900 hover:border-amber-400' 
-                : 'bg-slate-800/80 border-slate-700 text-amber-300 hover:border-amber-500'
-            }`}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer"
+            title="打开魔法生词本"
           >
             <Bookmark size={14} className="text-amber-600" />
             <span>生词本 {vocabCount} 词</span>
@@ -178,11 +172,8 @@ export function BookshelfView({
           {/* Offline Cache */}
           <button 
             onClick={onOpenStorage}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border font-bold transition-all shadow-sm ${
-              isParchment 
-                ? 'bg-emerald-50 border-emerald-200/80 text-emerald-900 hover:border-emerald-400' 
-                : 'bg-slate-800/80 border-slate-700 text-emerald-300 hover:border-emerald-500'
-            }`}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-300/80 bg-emerald-50/80 hover:bg-emerald-100/70 text-emerald-950 hover:border-emerald-400 font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer"
+            title="管理离线魔法行囊缓存"
           >
             <HardDrive size={14} className="text-emerald-600" />
             <span>已下载 {cachedChaptersCount} 章</span>
@@ -269,7 +260,8 @@ export function BookshelfView({
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
                   <button
                     onClick={onEnterPlayer}
-                    className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all scale-100 hover:scale-[1.02]"
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-sm shadow-md hover:shadow-lg active:scale-95 cursor-pointer transition-all ring-1 ring-amber-300/30"
+                    title="立即进入精听教室并继续播放"
                   >
                     <Play size={16} className="fill-current" />
                     <span>继续精听本章</span>
@@ -277,11 +269,8 @@ export function BookshelfView({
 
                   <button
                     onClick={() => setInspectingBook(currentBookObj)}
-                    className={`flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border font-bold text-xs sm:text-sm transition-all ${
-                      isParchment 
-                        ? 'border-amber-300 bg-white hover:bg-amber-50 text-amber-900' 
-                        : 'border-slate-700 bg-slate-800 hover:bg-slate-700 text-amber-300'
-                    }`}
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border border-amber-300/90 bg-white/95 hover:bg-amber-50/90 text-amber-950 hover:border-amber-400 font-bold text-xs sm:text-sm shadow-xs hover:shadow active:scale-95 cursor-pointer transition-all"
+                    title="浏览《哈利·波特》完整章节目录"
                   >
                     <Layers size={15} />
                     <span>查看完整章节目录</span>
@@ -403,7 +392,8 @@ export function BookshelfView({
                           }
                           onEnterPlayer();
                         }}
-                        className="flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs sm:text-sm shadow-md transition-all scale-100 hover:scale-[1.02]"
+                        className="flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs sm:text-sm shadow-sm hover:shadow-md active:scale-95 cursor-pointer transition-all ring-1 ring-amber-300/30"
+                        title={`从第一章开始精听《${book.cnTitle || book.title}》`}
                       >
                         <Play size={14} className="fill-current" />
                         <span>从第一章开始精听</span>
@@ -411,11 +401,8 @@ export function BookshelfView({
 
                       <button
                         onClick={() => setInspectingBook(book)}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border font-bold text-xs sm:text-sm transition-all ${
-                          isParchment 
-                            ? 'border-amber-300 bg-white hover:bg-amber-50 text-amber-900' 
-                            : 'border-slate-700 bg-slate-800 hover:bg-slate-700 text-amber-300'
-                        }`}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 font-bold text-xs sm:text-sm shadow-xs hover:shadow active:scale-95 cursor-pointer transition-all"
+                        title={`翻开《${book.cnTitle || book.title}》完整章节选单`}
                       >
                         <Layers size={14} />
                         <span>翻开章节目录</span>
@@ -485,8 +472,8 @@ export function BookshelfView({
                   setInspectingBook(null);
                   setChapterSearch('');
                 }}
-                className="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
-                title="关闭目录"
+                className="p-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
+                title="关闭章节目录"
               >
                 <X size={18} />
               </button>
@@ -510,7 +497,7 @@ export function BookshelfView({
                 {chapterSearch && (
                   <button
                     onClick={() => setChapterSearch('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 active:scale-90 cursor-pointer transition-all"
                     title="清空搜索"
                   >
                     <X size={13} />
@@ -571,7 +558,7 @@ export function BookshelfView({
                       </div>
                     </div>
 
-                    <button className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-800 dark:text-amber-300 text-xs font-bold shrink-0 hover:bg-amber-500 hover:text-white transition-colors">
+                    <button className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-amber-300/60 bg-amber-500/15 hover:bg-gradient-to-r hover:from-amber-500 hover:to-amber-600 text-amber-900 hover:text-white text-xs font-bold shrink-0 shadow-2xs hover:shadow-sm active:scale-95 cursor-pointer transition-all">
                       <Play size={12} className="fill-current" />
                       <span>开始精听</span>
                     </button>
@@ -603,8 +590,8 @@ export function BookshelfView({
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <button
                 onClick={onTogglePlay}
-                className="w-11 h-11 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 text-white flex items-center justify-center shrink-0 shadow-md hover:scale-105 transition-transform"
-                title={isPlaying ? '暂停音频' : '继续播放'}
+                className="w-12 h-12 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 text-white flex items-center justify-center shrink-0 shadow-md hover:shadow-lg active:scale-95 cursor-pointer transition-all ring-2 ring-white/60 hover:from-amber-600 hover:to-amber-700"
+                title={isPlaying ? '暂停音频 (空格键)' : '继续播放 (空格键)'}
               >
                 {isPlaying ? <Pause size={18} /> : <Play size={18} className="fill-current ml-0.5" />}
               </button>
@@ -638,7 +625,7 @@ export function BookshelfView({
             {/* Enter Full Player CTA Button */}
             <button
               onClick={onEnterPlayer}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-amber-500/20 hover:bg-amber-500 hover:text-white text-amber-800 dark:text-amber-200 text-xs sm:text-sm font-bold transition-all shrink-0"
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-sm hover:shadow-md active:scale-95 text-xs sm:text-sm font-bold transition-all shrink-0 cursor-pointer"
               title="进入全功能精听教室（字幕、查词、跟读、听写）"
             >
               <span>进入精听教室</span>

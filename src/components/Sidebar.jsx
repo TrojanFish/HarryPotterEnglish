@@ -125,18 +125,15 @@ export function Sidebar({
           <button
             onClick={onRefreshCatalog}
             disabled={isRefreshing}
-            className={`p-1 rounded-lg transition-colors ${
-              isParchment ? 'hover:bg-amber-100 text-[#8c7452]' : 'hover:bg-slate-800 text-slate-400'
-            }`}
-            title="刷新章节"
+            className="p-1.5 rounded-xl border border-amber-300/60 bg-white/80 hover:bg-amber-100 text-[#8c7452] hover:text-amber-950 transition-all active:scale-90 shadow-2xs cursor-pointer disabled:opacity-50"
+            title="重新扫描目录"
           >
             <RotateCw size={12} className={isRefreshing ? 'animate-spin text-amber-500' : ''} />
           </button>
           <button
             onClick={() => setIsChaptersExpanded(!isChaptersExpanded)}
-            className={`p-1 rounded-lg transition-colors ${
-              isParchment ? 'hover:bg-amber-100 text-[#8c7452]' : 'hover:bg-slate-800 text-slate-400'
-            }`}
+            className="p-1.5 rounded-xl border border-amber-300/60 bg-white/80 hover:bg-amber-100 text-[#8c7452] hover:text-amber-950 transition-all active:scale-90 shadow-2xs cursor-pointer"
+            title={isChaptersExpanded ? '收起目录' : '展开目录'}
           >
             {isChaptersExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
@@ -152,14 +149,10 @@ export function Sidebar({
               <button
                 key={ch.id}
                 onClick={() => onSelectChapter(ch.id)}
-                className={`w-full text-left p-2.5 rounded-xl text-xs transition-all flex items-center gap-2.5 group ${
+                className={`w-full text-left p-2.5 rounded-xl text-xs transition-all flex items-center gap-2.5 group cursor-pointer active:scale-[0.98] ${
                   isActive
-                    ? isParchment
-                      ? 'bg-amber-500/15 border-2 border-amber-500 text-amber-950 font-bold shadow-sm'
-                      : 'bg-amber-500/20 border-2 border-amber-400 text-amber-200 font-bold shadow-sm'
-                    : isParchment
-                    ? 'hover:bg-[#f2e7d3] text-[#5c4a35] border border-transparent'
-                    : 'hover:bg-slate-800 text-slate-300 border border-transparent'
+                    ? 'bg-amber-500/15 border-2 border-amber-500 text-amber-950 font-bold shadow-sm'
+                    : 'hover:bg-amber-100/60 text-[#5c4a35] border border-transparent'
                 }`}
               >
                 {/* Chapter Number Badge */}
@@ -167,9 +160,7 @@ export function Sidebar({
                   className={`w-7 h-7 rounded-lg flex items-center justify-center font-mono text-xs shrink-0 font-bold ${
                     isActive
                       ? 'bg-amber-500 text-white shadow-sm'
-                      : isParchment
-                      ? 'bg-[#ede0ca] text-[#7a6042]'
-                      : 'bg-slate-800 text-slate-400'
+                      : 'bg-[#ede0ca] text-[#7a6042]'
                   }`}
                 >
                   {String(ch.number).padStart(2, '0')}
@@ -212,11 +203,8 @@ export function Sidebar({
       <div className="p-3 border-t border-inherit shrink-0">
         <button
           onClick={onOpenShelf}
-          className={`w-full py-2.5 px-3 rounded-xl border-2 text-xs font-bold flex items-center justify-center gap-2 transition-all ${
-            isParchment
-              ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100 hover:shadow-sm'
-              : 'border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700'
-          }`}
+          className="w-full py-2.5 px-3 rounded-xl border border-amber-300/90 bg-white/95 text-amber-950 hover:bg-amber-50 hover:border-amber-400 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer"
+          title="翻开霍格沃茨书架"
         >
           <Library size={15} />
           <span>浏览更多原著魔法故事</span>

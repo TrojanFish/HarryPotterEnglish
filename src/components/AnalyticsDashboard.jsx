@@ -149,11 +149,7 @@ export function AnalyticsDashboard({
 
           <button
             onClick={onClose}
-            className={`p-2 rounded-xl border transition-colors ${
-              isParchment
-                ? 'border-[#dec9a5] hover:bg-[#ede2c9] text-[#7d6852]'
-                : 'border-gray-700 hover:border-gray-500 hover:bg-gray-800 text-gray-400 hover:text-white'
-            }`}
+            className="p-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
             title="关闭罗盘 (ESC)"
           >
             <X size={18} />
@@ -619,7 +615,7 @@ export function AnalyticsDashboard({
           </div>
           <button
             onClick={onClose}
-            className="px-3 py-1 rounded-lg bg-[#d3a625] text-[#090d14] font-bold text-xs hover:bg-[#e0b435] transition-colors"
+            className="px-5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs shadow-xs hover:shadow active:scale-95 cursor-pointer transition-all ring-1 ring-amber-300/30"
           >
             完成查看
           </button>

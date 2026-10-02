@@ -383,7 +383,8 @@ export function ShadowingRecorder({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            className="p-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
+            title="关闭跟读录音"
           >
             <X size={18} />
           </button>
@@ -591,11 +592,8 @@ export function ShadowingRecorder({
             <button
               onClick={() => onPlayOriginalSnippet(currentCue)}
               disabled={isRecording || isEvaluating}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold transition-all ${
-                isParchment
-                  ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100 shadow-sm'
-                  : 'bg-[#cba358]/20 border-[#cba358]/40 text-[#cba358] hover:bg-[#cba358]/30'
-              }`}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 text-amber-950 hover:bg-amber-50 hover:border-amber-400 disabled:opacity-40 disabled:pointer-events-none text-xs font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer"
+              title="播放当前句原著原声朗读"
             >
               <Volume2 size={14} />
               <span>播放原音</span>
@@ -627,7 +625,8 @@ export function ShadowingRecorder({
                 <button
                   onClick={startRecording}
                   disabled={isEvaluating}
-                  className="flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 text-xs font-bold transition-all shadow-md disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 via-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white text-xs font-bold transition-all shadow-sm hover:shadow-md active:scale-95 cursor-pointer disabled:opacity-50 ring-1 ring-rose-400/30"
+                  title="开始麦克风跟读录音与 AI 语音打分"
                 >
                   <Mic size={14} />
                   <span>{recordedAudioUrl ? '重新录音' : '开始录音'}</span>
@@ -635,7 +634,8 @@ export function ShadowingRecorder({
               ) : (
                 <button
                   onClick={stopRecording}
-                  className="flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-red-600 text-white animate-pulse text-xs font-bold shadow-md"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 text-white animate-pulse text-xs font-bold shadow-md hover:shadow-lg active:scale-95 cursor-pointer ring-2 ring-rose-300"
+                  title="停止录音并触发 AI 评分"
                 >
                   <Square size={14} />
                   <span>停止录音</span>
@@ -646,7 +646,8 @@ export function ShadowingRecorder({
                 <button
                   onClick={togglePlayRecording}
                   disabled={isEvaluating}
-                  className="flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold transition-all shadow-md disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs font-bold transition-all shadow-sm hover:shadow-md active:scale-95 cursor-pointer disabled:opacity-50 ring-1 ring-amber-300/30"
+                  title={isPlayingRecording ? '暂停回放' : '回放自己录制的音频'}
                 >
                   {isPlayingRecording ? <Pause size={14} /> : <Play size={14} />}
                   <span>回放录音</span>

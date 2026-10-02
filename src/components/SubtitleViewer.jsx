@@ -136,18 +136,14 @@ export function SubtitleViewer({
               setIsFollowActive(next);
               if (next) scrollToActiveCue();
             }}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all active:scale-95 shadow-xs cursor-pointer ${
               isFollowActive
-                ? isParchment
-                  ? 'bg-amber-500/20 border-amber-400 text-amber-900 font-bold'
-                  : 'bg-amber-500/25 border-amber-400 text-amber-300 font-bold'
-                : isParchment
-                ? 'border-gray-300 text-gray-500 hover:bg-gray-100'
-                : 'border-slate-700 text-slate-400 hover:bg-slate-800'
+                ? 'bg-amber-500/20 border-amber-400 text-amber-950 font-bold'
+                : 'border-amber-200/80 bg-white/80 text-slate-600 hover:bg-amber-50 hover:border-amber-400'
             }`}
             title="开启/关闭滚动跟随朗读进度"
           >
-            <LocateFixed size={13} />
+            <LocateFixed size={13} className="text-amber-700" />
             <span>{isFollowActive ? '跟随朗读：开' : '跟随朗读：关'}</span>
           </button>
 
@@ -156,32 +152,24 @@ export function SubtitleViewer({
             onClick={() => {
               setFontSize(prev => prev === 'normal' ? 'large' : prev === 'large' ? 'huge' : 'normal');
             }}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
-              isParchment
-                ? 'border-amber-300/80 hover:bg-amber-100/60 text-[#7a5927]'
-                : 'border-slate-700 hover:bg-slate-800 text-slate-300'
-            }`}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-50 text-amber-950 hover:border-amber-400 text-xs font-bold transition-all active:scale-95 shadow-xs cursor-pointer"
             title="调整阅读字号（大字号更护眼）"
           >
-            <Type size={14} />
+            <Type size={14} className="text-amber-700" />
             <span className="font-mono text-xs uppercase">{fontSize === 'normal' ? '标准' : fontSize === 'large' ? '大字' : '特大'}</span>
           </button>
 
           {/* Translation Toggle */}
           <button
             onClick={() => setShowTranslation(!showTranslation)}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all active:scale-95 shadow-xs cursor-pointer ${
               showTranslation
-                ? isParchment
-                  ? 'bg-amber-500/15 border-amber-400 text-amber-900 shadow-sm'
-                  : 'bg-amber-500/20 border-amber-400 text-amber-300'
-                : isParchment
-                ? 'border-gray-300 text-gray-500 hover:bg-gray-100'
-                : 'border-slate-700 text-slate-400 hover:bg-slate-800'
+                ? 'bg-amber-500/20 border-amber-400 text-amber-950 shadow-xs'
+                : 'border-amber-200/80 bg-white/80 text-slate-600 hover:bg-amber-50 hover:border-amber-400'
             }`}
             title="开启/关闭中文双语译文"
           >
-            <Languages size={14} />
+            <Languages size={14} className="text-amber-700" />
             <span>{showTranslation ? '双语译文：开' : '双语译文：关'}</span>
           </button>
         </div>
@@ -236,23 +224,23 @@ export function SubtitleViewer({
                   {/* Replay this sentence */}
                   <button
                     onClick={() => onSeekToCue(cue)}
-                    className="p-1.5 rounded-lg text-slate-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800 transition-colors"
+                    className="p-1.5 rounded-lg border border-amber-200/60 bg-white/70 hover:bg-amber-100/80 text-slate-600 hover:text-amber-800 hover:border-amber-400 transition-all active:scale-90 cursor-pointer shadow-2xs"
                     title="从原声音频播放本句"
                   >
-                    <Play size={14} className="fill-current" />
+                    <Play size={13} className="fill-current" />
                   </button>
 
                   {/* Clean British TTS Speak */}
                   <button
                     onClick={() => handleSpeakSentence(cue)}
-                    className={`p-1.5 rounded-lg transition-colors ${
+                    className={`p-1.5 rounded-lg border transition-all active:scale-90 cursor-pointer shadow-2xs ${
                       speakingCueId === cue.id 
-                        ? 'text-amber-600 bg-amber-100 dark:bg-amber-950 font-bold' 
-                        : 'text-slate-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800'
+                        ? 'text-amber-900 bg-amber-200 border-amber-400 font-bold' 
+                        : 'border-amber-200/60 bg-white/70 hover:bg-amber-100/80 text-slate-600 hover:text-amber-800 hover:border-amber-400'
                     }`}
                     title="清晰单句朗读示范 (英音)"
                   >
-                    <Volume2 size={14} className={speakingCueId === cue.id ? 'animate-bounce' : ''} />
+                    <Volume2 size={13} className={speakingCueId === cue.id ? 'animate-bounce' : ''} />
                   </button>
 
                   {/* Loop this sentence */}
@@ -261,43 +249,43 @@ export function SubtitleViewer({
                       if (!isActive) onSeekToCue(cue);
                       onToggleLoopSentence();
                     }}
-                    className={`p-1.5 rounded-lg transition-colors ${
+                    className={`p-1.5 rounded-lg border transition-all active:scale-90 cursor-pointer shadow-2xs ${
                       isActive && isLoopSentence 
-                        ? 'text-amber-600 bg-amber-100 dark:bg-amber-950 font-bold' 
-                        : 'text-slate-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800'
+                        ? 'text-amber-900 bg-amber-200 border-amber-400 font-bold' 
+                        : 'border-amber-200/60 bg-white/70 hover:bg-amber-100/80 text-slate-600 hover:text-amber-800 hover:border-amber-400'
                     }`}
                     title="单句精听循环"
                   >
-                    <Repeat size={14} />
+                    <Repeat size={13} />
                   </button>
 
                   {/* Copy sentence text */}
                   <button
                     onClick={() => handleCopySentence(cue)}
-                    className="p-1.5 rounded-lg text-slate-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800 transition-colors"
+                    className="p-1.5 rounded-lg border border-amber-200/60 bg-white/70 hover:bg-amber-100/80 text-slate-600 hover:text-amber-800 hover:border-amber-400 transition-all active:scale-90 cursor-pointer shadow-2xs"
                     title={copiedCueId === cue.id ? "已复制本句英文" : "复制本句英文"}
                   >
-                    {copiedCueId === cue.id ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                    {copiedCueId === cue.id ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
                   </button>
 
                   {/* Shadowing Voice Recording */}
                   <button
                     onClick={() => onRecordCue(cue)}
-                    className="p-1.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-1"
+                    className="px-2.5 py-1 rounded-lg border border-amber-300/80 bg-amber-50/80 hover:bg-amber-100 text-amber-900 hover:border-amber-400 transition-all active:scale-95 cursor-pointer flex items-center gap-1 shadow-2xs font-bold"
                     title="跟读施咒（AI发音评分）"
                   >
-                    <Mic size={14} />
-                    <span className="text-[11px] hidden sm:inline font-bold">跟读</span>
+                    <Mic size={13} className="text-amber-700" />
+                    <span className="text-[11px] hidden sm:inline">跟读</span>
                   </button>
 
                   {/* Blind mode reveal toggle */}
                   {studyMode === 'blind' && (
                     <button
                       onClick={() => toggleSentenceReveal(cue.id)}
-                      className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-800"
+                      className="p-1.5 rounded-lg border border-indigo-200/80 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-800 transition-all active:scale-90 cursor-pointer"
                       title={isRevealed ? "开启迷雾遮罩" : "驱散迷雾显形"}
                     >
-                      {isRevealed ? <EyeOff size={14} /> : <Eye size={14} />}
+                      {isRevealed ? <EyeOff size={13} /> : <Eye size={13} />}
                     </button>
                   )}
                 </div>
@@ -360,14 +348,10 @@ export function SubtitleViewer({
       {cues.length > 0 && activeCueIndex >= 0 && (
         <button
           onClick={scrollToActiveCue}
-          className={`fixed bottom-24 right-5 sm:right-8 z-30 flex items-center gap-1.5 px-3.5 py-2 rounded-full shadow-lg border text-xs font-bold transition-all hover:scale-105 active:scale-95 ${
-            isParchment
-              ? 'bg-[#ffffff] border-amber-300 text-amber-900 shadow-amber-900/10 hover:bg-amber-50'
-              : 'bg-slate-900 border-amber-500/50 text-amber-300 shadow-black/50 hover:bg-slate-800'
-          }`}
+          className="fixed bottom-24 right-5 sm:right-8 z-30 flex items-center gap-2 px-4 py-2.5 rounded-full shadow-md hover:shadow-lg border border-amber-400/90 bg-white/95 text-amber-950 font-bold text-xs transition-all hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs"
           title="快速定位到正在朗读的句子"
         >
-          <LocateFixed size={14} className="text-amber-500" />
+          <LocateFixed size={14} className="text-amber-600" />
           <span>定位朗读 (第 {activeCueIndex + 1} 句)</span>
         </button>
       )}

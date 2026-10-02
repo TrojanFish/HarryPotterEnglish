@@ -233,7 +233,7 @@ export function DictationStudio({
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => handleReplayCurrent(false)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:shadow-md text-xs font-bold transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
               title="重新听本句原速朗读"
             >
               <RotateCcw size={14} />
@@ -243,21 +243,17 @@ export function DictationStudio({
             {onChangePlaybackRate && (
               <button
                 onClick={() => handleReplayCurrent(true)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition-all ${
-                  isParchment
-                    ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
-                    : 'border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700'
-                }`}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer"
                 title="以 0.8x 慢速重播本句，辨析生词发音细节"
               >
-                <Sparkles size={13} className="text-amber-500" />
+                <Sparkles size={13} className="text-amber-600" />
                 <span>慢速精听 (0.8x)</span>
               </button>
             )}
 
             <button
               onClick={() => onPlayPause()}
-              className="p-2 rounded-xl border border-gray-300 dark:border-slate-700 hover:border-amber-500 text-slate-600 dark:text-slate-300 transition-colors"
+              className="p-2 rounded-xl border border-amber-200/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 transition-all active:scale-95 shadow-xs cursor-pointer"
               title="播放 / 暂停"
             >
               {isPlaying ? <Pause size={15} /> : <Play size={15} />}
@@ -267,9 +263,9 @@ export function DictationStudio({
           {/* Reveal Answer Toggle */}
           <button
             onClick={() => setShowAnswer(!showAnswer)}
-            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-amber-600 transition-colors font-medium"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-200/60 bg-white/60 hover:bg-amber-50 text-xs text-amber-900 font-semibold transition-all active:scale-95 shadow-2xs cursor-pointer"
           >
-            {showAnswer ? <EyeOff size={14} /> : <Eye size={14} />}
+            {showAnswer ? <EyeOff size={14} className="text-amber-700" /> : <Eye size={14} className="text-amber-700" />}
             <span>{showAnswer ? '隐藏原句' : '偷看原句'}</span>
           </button>
         </div>
@@ -383,20 +379,16 @@ export function DictationStudio({
           <div className="flex items-center space-x-2">
             <button
               onClick={handleQuillHint}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all ${
-                isParchment
-                  ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
-                  : 'border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700'
-              }`}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-amber-400 bg-amber-50/80 hover:bg-amber-100/90 text-amber-950 hover:border-amber-500 text-xs font-bold transition-all active:scale-95 shadow-xs cursor-pointer"
               title="羽毛笔魔法提示：自动补齐下一个单词 (快捷键: Tab)"
             >
-              <Sparkles size={14} className="text-amber-500" />
+              <Sparkles size={14} className="text-amber-600" />
               <span>羽毛笔提示 (Tab)</span>
             </button>
 
             <button
               onClick={() => setUserInput('')}
-              className="px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 text-xs text-slate-400 hover:text-red-500 transition-colors"
+              className="px-3.5 py-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-rose-50 text-xs text-slate-500 hover:text-rose-600 hover:border-rose-300 transition-all active:scale-95 cursor-pointer shadow-2xs"
             >
               清空重来
             </button>
@@ -407,7 +399,7 @@ export function DictationStudio({
             <button
               onClick={onPrevCue}
               disabled={activeCueIndex <= 0}
-              className="px-3.5 py-2 rounded-xl border border-gray-300 dark:border-slate-700 text-xs disabled:opacity-30 hover:border-amber-400 flex items-center gap-1 font-semibold"
+              className="px-3.5 py-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-50 text-slate-700 hover:text-amber-950 hover:border-amber-400 text-xs disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 font-bold transition-all active:scale-95 shadow-xs cursor-pointer"
             >
               <SkipBack size={14} />
               <span>上一句</span>
@@ -415,7 +407,7 @@ export function DictationStudio({
 
             <button
               onClick={handleNext}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:shadow-md text-xs font-bold transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white hover:shadow-md text-xs font-bold transition-all active:scale-95 shadow-sm cursor-pointer"
             >
               <span>{activeCueIndex >= cues.length - 1 ? '完成全章挑战' : '下一句 (Enter)'}</span>
               <SkipForward size={14} />

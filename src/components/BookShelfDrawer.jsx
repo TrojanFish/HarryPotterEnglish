@@ -41,7 +41,7 @@ export function BookShelfDrawer({
               <button
                 onClick={onRefreshCatalog}
                 disabled={isRefreshing}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-amber-400/60 bg-amber-50 dark:bg-slate-800 text-amber-800 dark:text-amber-300 text-xs font-bold transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 text-amber-950 hover:bg-amber-50 hover:border-amber-400 text-xs font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer disabled:opacity-50"
                 title="重新扫描 R2 存储桶新文件"
               >
                 <RotateCw size={13} className={isRefreshing ? 'animate-spin' : ''} />
@@ -50,7 +50,8 @@ export function BookShelfDrawer({
 
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="p-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
+                title="关闭书架选单"
               >
                 <X size={18} />
               </button>
@@ -127,12 +128,10 @@ export function BookShelfDrawer({
                         <span>共 {chapterCount} 个精听章节</span>
                       </span>
 
-                      <span className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                      <span className={`px-3 py-1 rounded-xl text-xs font-bold transition-all shadow-2xs group-hover:shadow-sm ${
                         isSelected 
                           ? 'bg-amber-500 text-white shadow-sm' 
-                          : isParchment
-                          ? 'bg-amber-50 text-amber-800 border border-amber-300 group-hover:bg-amber-500 group-hover:text-white'
-                          : 'bg-gray-700/30 text-[#cba358] group-hover:bg-[#cba358] group-hover:text-[#0f141c]'
+                          : 'bg-amber-50 text-amber-900 border border-amber-300/80 group-hover:bg-gradient-to-r group-hover:from-amber-500 group-hover:to-amber-600 group-hover:text-white group-hover:border-amber-500'
                       }`}>
                         {isSelected ? '正在学习' : '进入本卷'}
                       </span>

@@ -72,7 +72,7 @@ export function WordModal({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          className="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-amber-950 hover:bg-amber-100/70 border border-transparent hover:border-amber-300/80 transition-all active:scale-90 cursor-pointer"
         >
           <X size={18} />
         </button>
@@ -81,11 +81,11 @@ export function WordModal({
         <div className="flex items-start justify-between pr-8 mb-4">
           <div>
             <div className="flex items-center space-x-2">
-              <h2 className="text-2xl sm:text-3xl font-bold font-magical tracking-wide text-amber-800 dark:text-amber-300">
+              <h2 className="text-2xl sm:text-3xl font-bold font-magical tracking-wide text-amber-950 dark:text-amber-300">
                 {wordData.word}
               </h2>
               {wordData.isHpLore && (
-                <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-red-700 text-amber-200 border border-amber-400/40 font-semibold shadow-sm">
+                <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-red-800 text-amber-200 border border-amber-400/40 font-semibold shadow-xs">
                   <Sparkles size={11} />
                   <span>魔法专有名词</span>
                 </span>
@@ -95,25 +95,25 @@ export function WordModal({
             {/* Phonetic & Pronunciation */}
             <div className="flex items-center space-x-3 mt-2">
               {wordData.phonetic && (
-                <span className="font-mono text-sm px-2.5 py-0.5 rounded-lg bg-amber-100/70 dark:bg-slate-800 text-amber-900 dark:text-amber-300 font-bold">
+                <span className="font-mono text-sm px-2.5 py-0.5 rounded-lg bg-amber-100 text-amber-950 font-bold border border-amber-200/80">
                   {wordData.phonetic}
                 </span>
               )}
               {wordData.pos && (
-                <span className="text-xs px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono">
+                <span className="text-xs px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 font-mono border border-amber-200/60">
                   {wordData.pos}
                 </span>
               )}
               <button
                 onClick={playPronunciation}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer ${
                   isPlayingAudio 
                     ? 'bg-amber-500 text-white border-amber-500 scale-105 shadow-md' 
-                    : 'border-amber-400/60 bg-amber-50 dark:bg-slate-800 text-amber-800 dark:text-amber-300 hover:bg-amber-100'
+                    : 'border-amber-400/80 bg-amber-50/80 hover:bg-amber-100 text-amber-950 hover:border-amber-500'
                 }`}
                 title="点击试听纯正英音朗读"
               >
-                <Volume2 size={14} className={isPlayingAudio ? 'animate-bounce' : ''} />
+                <Volume2 size={14} className={isPlayingAudio ? 'animate-bounce text-white' : 'text-amber-700'} />
                 <span>{isPlayingAudio ? '朗读中...' : '纯正英音朗读'}</span>
               </button>
             </div>
@@ -122,12 +122,12 @@ export function WordModal({
 
         {/* Translation & Definitions (Pure Chinese for Chinese Students) */}
         <div className="space-y-3.5 my-4">
-          <div className="p-4 rounded-2xl border border-amber-200/80 dark:border-slate-800 bg-amber-50/50 dark:bg-slate-800/50">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1 flex items-center gap-1.5">
-              <BookOpen size={13} />
+          <div className="p-4 rounded-2xl border border-amber-200/80 bg-amber-50/50">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-800 mb-1 flex items-center gap-1.5">
+              <BookOpen size={13} className="text-amber-700" />
               <span>中文释义</span>
             </h4>
-            <p className="text-lg sm:text-xl font-reading font-bold text-amber-950 dark:text-amber-200 leading-snug">
+            <p className="text-lg sm:text-xl font-reading font-bold text-amber-950 leading-snug">
               {wordData.translation}
             </p>
           </div>
@@ -135,11 +135,11 @@ export function WordModal({
           {/* Special Harry Potter Lore Box */}
           {wordData.lore && (
             <div className="p-4 rounded-2xl border border-amber-400/60 bg-gradient-to-br from-amber-500/10 via-red-500/5 to-transparent text-xs sm:text-sm">
-              <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300 font-bold font-magical mb-1.5">
-                <Sparkles size={14} className="text-amber-500" />
+              <div className="flex items-center gap-1.5 text-amber-900 font-bold font-magical mb-1.5">
+                <Sparkles size={14} className="text-amber-600" />
                 <span>霍格沃茨原著背景与魔法百科：</span>
               </div>
-              <p className="leading-relaxed text-amber-900/90 dark:text-amber-100/90 font-reading">
+              <p className="leading-relaxed text-amber-950 font-reading">
                 {wordData.lore}
               </p>
             </div>
@@ -147,9 +147,9 @@ export function WordModal({
 
           {/* Context Sentence */}
           {currentSentence && (
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-gray-200 dark:border-slate-800 text-xs">
+            <div className="p-3.5 rounded-xl bg-white border border-amber-200/80 text-xs">
               <span className="text-slate-400 block mb-1">原书句子出处：</span>
-              <p className="italic font-reading text-slate-700 dark:text-slate-300 leading-relaxed">
+              <p className="italic font-reading text-slate-700 leading-relaxed">
                 "{currentSentence.text}"
               </p>
             </div>
@@ -157,34 +157,34 @@ export function WordModal({
         </div>
 
         {/* Action Footer */}
-        <div className="mt-5 pt-3 border-t border-inherit flex items-center justify-between">
-          <div className="flex items-center space-x-3 text-xs">
+        <div className="mt-5 pt-3 border-t border-amber-200/80 flex items-center justify-between">
+          <div className="flex items-center space-x-2 text-xs">
             <a
               href={`https://dict.youdao.com/result?word=${encodeURIComponent(wordData.word.toLowerCase())}&lang=en`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-slate-500 hover:text-amber-600 transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-amber-200/70 bg-white/70 hover:bg-amber-50 text-slate-600 hover:text-amber-950 hover:border-amber-400 transition-all shadow-2xs"
             >
               <span>有道词典</span>
-              <ExternalLink size={11} />
+              <ExternalLink size={11} className="text-amber-700" />
             </a>
             <a
               href={`https://dictionary.cambridge.org/zhs/词典/英语-汉语-简体/${encodeURIComponent(wordData.word.toLowerCase())}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-slate-500 hover:text-amber-600 transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-amber-200/70 bg-white/70 hover:bg-amber-50 text-slate-600 hover:text-amber-950 hover:border-amber-400 transition-all shadow-2xs"
             >
               <span>剑桥双解</span>
-              <ExternalLink size={11} />
+              <ExternalLink size={11} className="text-amber-700" />
             </a>
           </div>
 
           <button
             onClick={() => onSaveToVocab(wordData, currentSentence)}
-            className={`flex items-center gap-1.5 px-5 py-2.5 rounded-2xl text-sm font-bold transition-all shadow-md ${
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl text-sm font-bold transition-all shadow-md active:scale-95 cursor-pointer ${
               isSaved
-                ? 'bg-emerald-700 text-white'
-                : 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:scale-102 hover:shadow-amber-500/25'
+                ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/25'
+                : 'bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white hover:shadow-lg hover:shadow-amber-500/25'
             }`}
           >
             {isSaved ? (

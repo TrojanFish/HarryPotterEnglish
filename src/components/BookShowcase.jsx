@@ -106,10 +106,11 @@ export function BookShowcase({
             </div>
 
             {/* Action Bar */}
-            <div className="mt-3 pt-2.5 border-t border-gray-700/30 flex items-center justify-between">
+            <div className="mt-3 pt-2.5 border-t border-amber-200/80 flex items-center justify-between">
               <button
                 onClick={onOpenShelf}
-                className="flex items-center gap-1.5 text-xs text-[#cba358] hover:underline font-semibold"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 text-xs font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer"
+                title="打开魔法书架浏览全部原著"
               >
                 <Library size={14} />
                 <span>浏览全部原著藏书 ({chapters.length} 章节)</span>
@@ -117,7 +118,8 @@ export function BookShowcase({
 
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="flex items-center gap-1 text-xs text-[#8c9ba5] hover:text-[#cba358] transition-colors"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-50 text-amber-900 text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
+                title={isExpanded ? '收起本卷章节' : '展开本卷章节'}
               >
                 <span>{isExpanded ? '收起目录' : '展开本卷章节'}</span>
                 {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -128,8 +130,8 @@ export function BookShowcase({
 
         {/* Collapsible Chapters Grid */}
         {isExpanded && (
-          <div className="px-4 pb-4 pt-1 border-t border-gray-700/30 bg-black/10">
-            <h4 className="text-[11px] uppercase tracking-wider text-[#8c9ba5] font-mono mb-2">
+          <div className="px-4 pb-4 pt-1 border-t border-amber-200/80 bg-amber-50/50">
+            <h4 className="text-[11px] uppercase tracking-wider text-amber-900/80 font-mono font-bold mb-2">
               全书章节快速跳转：
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-56 overflow-y-auto pr-1">
@@ -142,20 +144,18 @@ export function BookShowcase({
                       onSelectChapter(ch.id);
                       setIsExpanded(false);
                     }}
-                    className={`p-2 rounded-lg text-left text-xs border transition-all truncate flex flex-col justify-between ${
+                    className={`p-2 rounded-xl text-left text-xs border transition-all truncate flex flex-col justify-between cursor-pointer active:scale-95 shadow-2xs hover:shadow-xs ${
                       isCurrent
-                        ? 'border-[#cba358] bg-[#cba358]/20 text-[#f3d38c] font-bold shadow-sm'
-                        : isParchment
-                          ? 'border-[#dec9a5] bg-[#fffdf8] hover:border-[#cba358]'
-                          : 'border-gray-800 bg-[#121822] text-[#8c9ba5] hover:text-gray-200 hover:border-gray-700'
+                        ? 'border-amber-500 bg-amber-500/20 text-amber-950 font-bold shadow-sm'
+                        : 'border-[#dec9a5] bg-[#fffdf8] hover:border-amber-400 text-amber-950 hover:bg-amber-50/70'
                     }`}
                   >
                     <div className="truncate font-reading">
-                      <span className="text-[#cba358] mr-1">#{ch.number}</span>
+                      <span className="text-amber-600 font-bold mr-1">#{ch.number}</span>
                       {ch.title}
                     </div>
                     {ch.duration && (
-                      <span className="text-[10px] text-gray-400 font-mono mt-1">
+                      <span className="text-[10px] text-slate-500 font-mono mt-1">
                         {ch.duration}
                       </span>
                     )}

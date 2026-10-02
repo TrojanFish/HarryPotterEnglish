@@ -162,31 +162,29 @@ export function AudioPlayer({
           {/* Shadowing recording toggle button */}
           <button
             onClick={onToggleRecorder}
-            className={`p-1.5 rounded-xl border text-xs flex items-center gap-1 transition-all shrink-0 ml-auto ${
+            className={`px-3 py-1.5 rounded-xl border text-xs flex items-center gap-1.5 transition-all shrink-0 ml-auto font-bold shadow-xs active:scale-95 cursor-pointer ${
               isRecordingActive 
-                ? 'bg-red-700 text-white border-red-500 shadow-md animate-pulse' 
-                : isParchment
-                ? 'border-amber-300/80 text-amber-800 hover:bg-amber-100/60'
-                : 'border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-amber-300'
+                ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-500 shadow-md animate-pulse' 
+                : 'border-amber-300/80 bg-white/90 text-amber-950 hover:bg-amber-50 hover:border-amber-400'
             }`}
             title="开启本句跟读施咒录音打分"
           >
-            <Mic size={14} className="text-amber-600 dark:text-amber-400" />
-            <span className="text-[11px] hidden lg:inline font-bold">跟读施咒</span>
+            <Mic size={14} className={isRecordingActive ? 'text-white' : 'text-amber-700'} />
+            <span className="text-[11px] hidden sm:inline">跟读施咒</span>
           </button>
         </div>
 
         {/* ── Center: Main Playback Controls ───────────────────────── */}
-        <div className="flex items-center space-x-2 sm:space-x-3">
+        <div className="flex items-center space-x-1.5 sm:space-x-2.5">
           
           {/* Rewind 5s */}
           <button
             onClick={handleRewind5s}
-            className="p-2 rounded-full hover:bg-amber-100 dark:hover:bg-slate-800 text-slate-500 hover:text-amber-600 transition-colors relative"
+            className="p-2.5 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-50 text-slate-600 hover:text-amber-800 hover:border-amber-400 transition-all active:scale-95 shadow-xs relative cursor-pointer"
             title="后退 5 秒 (重听片段)"
           >
-            <RotateCcw size={16} />
-            <span className="absolute -bottom-0.5 -right-0.5 text-[8px] font-mono font-bold text-slate-500 bg-white/80 dark:bg-slate-900 rounded px-0.5 border border-slate-300 dark:border-slate-700">
+            <RotateCcw size={15} />
+            <span className="absolute -bottom-0.5 -right-0.5 text-[8px] font-mono font-bold text-amber-900 bg-amber-100 rounded px-0.5 border border-amber-300/80">
               5s
             </span>
           </button>
@@ -194,11 +192,11 @@ export function AudioPlayer({
           {/* Replay Current Sentence */}
           <button
             onClick={onReplayCurrentSentence}
-            className="p-2 rounded-full hover:bg-amber-100 dark:hover:bg-slate-800 text-slate-500 hover:text-amber-700 transition-colors relative"
+            className="p-2.5 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-50 text-slate-600 hover:text-amber-800 hover:border-amber-400 transition-all active:scale-95 shadow-xs relative cursor-pointer"
             title="从头重播当前句 (快捷键: R)"
           >
-            <RotateCcw size={16} />
-            <span className="absolute -bottom-0.5 -right-0.5 text-[8px] font-bold text-amber-800 dark:text-amber-300 bg-amber-100/90 dark:bg-amber-950 rounded px-0.5 border border-amber-300/80">
+            <RotateCcw size={15} />
+            <span className="absolute -bottom-0.5 -right-0.5 text-[8px] font-bold text-amber-900 bg-amber-100 rounded px-0.5 border border-amber-300/80">
               句
             </span>
           </button>
@@ -206,15 +204,15 @@ export function AudioPlayer({
           {/* Single Sentence Loop Toggle */}
           <button
             onClick={onToggleLoopSentence}
-            className={`p-2 rounded-full border transition-all ${
+            className={`p-2.5 rounded-xl border transition-all active:scale-95 shadow-xs cursor-pointer ${
               isLoopSentence 
-                ? 'bg-amber-500 text-white border-amber-500 shadow-md font-bold scale-105' 
-                : 'border-gray-300 dark:border-slate-700 text-slate-400 hover:text-amber-600'
+                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-500 shadow-sm font-bold scale-105' 
+                : 'border-amber-200/80 bg-white/80 text-slate-500 hover:text-amber-800 hover:border-amber-400 hover:bg-amber-50'
             }`}
             title={isLoopSentence ? "单句精听循环：已开启 (按 L 关闭)" : "开启单句精听循环 (按 L 开启)"}
           >
             <div className="relative">
-              <Repeat size={16} />
+              <Repeat size={15} />
               <span className="absolute -bottom-1 -right-1 text-[8px] font-black">1</span>
             </div>
           </button>
@@ -223,16 +221,16 @@ export function AudioPlayer({
           <button
             onClick={onPrevSentence}
             disabled={activeCueIndex <= 0}
-            className="p-2 rounded-full text-slate-500 hover:text-amber-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="p-2.5 rounded-xl border border-amber-200/80 bg-white/80 text-slate-600 hover:text-amber-800 hover:border-amber-400 hover:bg-amber-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 shadow-xs cursor-pointer"
             title="上一句 (快捷键: 左箭头 ←)"
           >
-            <SkipBack size={18} />
+            <SkipBack size={16} />
           </button>
 
-          {/* Main Play / Pause Button (Big, Friendly 48px) */}
+          {/* Main Play / Pause Button (Hero 48px) */}
           <button
             onClick={onPlayPause}
-            className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg hover:shadow-amber-500/30"
+            className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-md hover:shadow-lg hover:shadow-amber-500/30 border-2 border-white/80 cursor-pointer"
             title="播放 / 暂停 (快捷键: 空格键 Space)"
           >
             {isPlaying ? (
@@ -246,27 +244,25 @@ export function AudioPlayer({
           <button
             onClick={onNextSentence}
             disabled={activeCueIndex >= totalCues - 1}
-            className="p-2 rounded-full text-slate-500 hover:text-amber-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="p-2.5 rounded-xl border border-amber-200/80 bg-white/80 text-slate-600 hover:text-amber-800 hover:border-amber-400 hover:bg-amber-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 shadow-xs cursor-pointer"
             title="下一句 (快捷键: 右箭头 →)"
           >
-            <SkipForward size={18} />
+            <SkipForward size={16} />
           </button>
 
           {/* Student Speed Selector */}
           <div className="relative" ref={speedMenuContainerRef}>
             <button
               onClick={() => setShowSpeedMenu(!showSpeedMenu)}
-              className="px-2.5 py-1.5 rounded-xl border border-gray-300 dark:border-slate-700 text-xs font-mono font-bold hover:border-amber-500 hover:text-amber-600 transition-colors flex items-center space-x-1"
+              className="px-3 py-2 rounded-xl border border-amber-200/80 bg-white/80 text-amber-950 font-mono font-bold hover:border-amber-400 hover:bg-amber-50 text-xs transition-all active:scale-95 shadow-xs flex items-center space-x-1 cursor-pointer"
               title="调整朗读语速"
             >
-              <Gauge size={13} />
+              <Gauge size={13} className="text-amber-700" />
               <span>{playbackRate}x</span>
             </button>
 
             {showSpeedMenu && (
-              <div className={`absolute bottom-full mb-2 left-1/2 -translate-x-1/2 rounded-2xl shadow-2xl border p-1.5 z-50 flex flex-col min-w-[170px] ${
-                isParchment ? 'bg-[#ffffff] border-[#e8dcb9]' : 'bg-slate-900 border-slate-800'
-              }`}>
+              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 rounded-2xl shadow-xl border border-[#e8dcb9] bg-[#ffffff] p-1.5 z-50 flex flex-col min-w-[170px]">
                 {speedOptions.map(({ rate, label }) => (
                   <button
                     key={rate}
@@ -274,10 +270,10 @@ export function AudioPlayer({
                       onChangePlaybackRate(rate);
                       setShowSpeedMenu(false);
                     }}
-                    className={`px-3 py-1.5 text-xs text-left rounded-xl transition-all ${
+                    className={`px-3 py-1.5 text-xs text-left rounded-xl transition-all cursor-pointer ${
                       playbackRate === rate 
-                        ? 'bg-amber-500 text-white font-bold shadow-sm' 
-                        : 'hover:bg-amber-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
+                        ? 'bg-amber-500 text-white font-bold shadow-xs' 
+                        : 'hover:bg-amber-100/70 text-slate-700 font-medium'
                     }`}
                   >
                     {label}
@@ -292,7 +288,8 @@ export function AudioPlayer({
         <div className="hidden md:flex items-center space-x-2 w-1/3 justify-end">
           <button 
             onClick={handleVolumeToggle}
-            className="text-slate-400 hover:text-amber-600 transition-colors"
+            className="p-1.5 rounded-lg text-slate-500 hover:text-amber-800 hover:bg-amber-100/60 transition-colors cursor-pointer"
+            title="静音 / 恢复音量"
           >
             {isMuted || volume === 0 ? <VolumeX size={17} /> : <Volume2 size={17} />}
           </button>

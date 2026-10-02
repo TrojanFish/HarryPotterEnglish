@@ -83,14 +83,10 @@ export function Header({
         {currentView === 'player' && (
           <button
             onClick={() => onSwitchView && onSwitchView('bookshelf')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border font-bold text-xs sm:text-sm transition-all shadow-sm group ${
-              isParchment
-                ? 'border-amber-400 bg-amber-500/15 hover:bg-amber-500/25 text-amber-900'
-                : 'border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300'
-            }`}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-amber-400/80 bg-white/90 hover:bg-amber-50 text-amber-950 font-bold text-xs sm:text-sm shadow-xs hover:shadow transition-all active:scale-95 group cursor-pointer"
             title="返回霍格沃茨书架选书"
           >
-            <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
+            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform text-amber-700" />
             <span className="hidden sm:inline">返回书架</span>
             <span className="sm:hidden">书架</span>
           </button>
@@ -107,19 +103,19 @@ export function Header({
           className="flex items-center gap-2 cursor-pointer group select-none"
           title="点击返回魔法书房"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center text-white shadow-md group-hover:scale-105 active:scale-95 transition-transform">
             <Sparkles className="w-5 h-5 text-amber-950" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <h1 className="font-magical font-bold text-base sm:text-lg tracking-wide text-amber-700 dark:text-amber-400">
+              <h1 className="font-magical font-bold text-base sm:text-lg tracking-wide text-amber-800 dark:text-amber-300">
                 霍格沃茨魔法英语
               </h1>
-              <span className="hidden sm:inline-flex items-center gap-0.5 text-[10px] px-2 py-0.5 rounded-full bg-red-800 text-amber-200 font-sans font-semibold">
+              <span className="hidden sm:inline-flex items-center gap-0.5 text-[10px] px-2 py-0.5 rounded-full bg-red-800 text-amber-200 font-sans font-semibold shadow-xs">
                 青少精听
               </span>
             </div>
-            <p className={`text-[11px] hidden md:block font-medium ${isParchment ? 'text-[#8c7452]' : 'text-slate-400'}`}>
+            <p className="text-[11px] hidden md:block font-medium text-[#7a644c]">
               听魔法小说 · 轻松学地道英语
             </p>
           </div>
@@ -129,16 +125,12 @@ export function Header({
         {currentView === 'player' && (
           <button
             onClick={onOpenShelf}
-            className={`flex lg:hidden items-center gap-1 text-xs px-2.5 py-1.5 rounded-xl border font-semibold truncate max-w-[130px] sm:max-w-[180px] ${
-              isParchment
-                ? 'border-amber-300 bg-amber-50 text-amber-900'
-                : 'border-slate-700 bg-slate-800 text-amber-300'
-            }`}
+            className="flex lg:hidden items-center gap-1 text-xs px-2.5 py-1.5 rounded-xl border border-amber-300/90 bg-white/90 text-amber-950 font-bold truncate max-w-[130px] sm:max-w-[180px] shadow-xs active:scale-95 transition-all"
             title="切换原著故事"
           >
-            <Library size={12} className="shrink-0" />
+            <Library size={12} className="shrink-0 text-amber-600" />
             <span className="truncate">{currentBook ? (currentBook.cnTitle || currentBook.title) : '魔法书架'}</span>
-            <ChevronDown size={11} className="shrink-0" />
+            <ChevronDown size={11} className="shrink-0 text-amber-700" />
           </button>
         )}
       </div>
@@ -147,50 +139,36 @@ export function Header({
       <div className="flex items-center justify-center">
         {currentView === 'bookshelf' ? (
           /* Bookshelf Navigation Pill */
-          <div
-            className={`flex rounded-2xl p-1 border gap-1 shadow-inner ${
-              isParchment ? 'bg-[#f4ebe1] border-[#e2d3be]' : 'bg-slate-900 border-slate-800'
-            }`}
-          >
+          <div className="flex rounded-2xl p-1 border border-[#dfceb5] bg-[#f0e5d4] gap-1 shadow-inner">
             <button
               onClick={() => onSwitchView && onSwitchView('bookshelf')}
-              className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md select-none"
+              className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-sm active:scale-95 transition-all select-none cursor-pointer"
             >
               <Library size={14} />
               <span>魔法书架</span>
             </button>
             <button
               onClick={() => onSwitchView && onSwitchView('player')}
-              className={`flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all select-none ${
-                isParchment
-                  ? 'text-[#6b5438] hover:bg-[#e9ded0] hover:text-[#2d241c]'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-amber-300'
-              }`}
+              className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-[#6b5235] hover:bg-[#e6d8c3] hover:text-[#2d2217] active:scale-95 transition-all select-none cursor-pointer"
               title="进入全功能精听教室"
             >
-              <Headphones size={14} />
+              <Headphones size={14} className="text-amber-700" />
               <span>精听教室</span>
             </button>
           </div>
         ) : (
           /* Player 3 Core Learning Modes */
-          <div
-            className={`flex rounded-2xl p-1 border gap-1 shadow-inner ${
-              isParchment ? 'bg-[#f4ebe1] border-[#e2d3be]' : 'bg-slate-900 border-slate-800'
-            }`}
-          >
+          <div className="flex rounded-2xl p-1 border border-[#dfceb5] bg-[#f0e5d4] gap-1 shadow-inner">
             {modes.map(({ key, label, icon, desc }) => {
               const isActive = studyMode === key;
               return (
                 <button
                   key={key}
                   onClick={() => setStudyMode(key)}
-                  className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all select-none ${
+                  className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm transition-all select-none cursor-pointer active:scale-95 ${
                     isActive
-                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md font-bold scale-[1.02]'
-                      : isParchment
-                      ? 'text-[#6b5438] hover:bg-[#e9ded0] hover:text-[#2d241c]'
-                      : 'text-slate-400 hover:bg-slate-800 hover:text-amber-300'
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-sm font-bold scale-[1.02]'
+                      : 'text-[#6b5235] hover:bg-[#e6d8c3] hover:text-[#2d2217] font-semibold'
                   }`}
                   title={desc}
                 >
@@ -204,12 +182,12 @@ export function Header({
       </div>
 
       {/* ── RIGHT: Gamified Student Tools ─────────────────────────── */}
-      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
         {/* PWA Install */}
         {canInstallPwa && (
           <button
             onClick={onInstallPwa}
-            className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400 text-amber-800 dark:text-amber-200 text-xs font-bold hover:shadow-md transition-all"
+            className="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
             title="一键安装到桌面，随时随地听故事"
           >
             <Download size={13} />
@@ -220,17 +198,13 @@ export function Header({
         {/* Vocab Notebook */}
         <button
           onClick={onOpenVocab}
-          className={`relative p-2 sm:px-2.5 sm:py-1.5 rounded-xl border flex items-center gap-1.5 text-xs font-semibold transition-all ${
-            isParchment
-              ? 'border-amber-300/80 bg-amber-50/60 text-[#7a5927] hover:bg-amber-100/60'
-              : 'border-slate-700 bg-slate-800/80 text-amber-300 hover:bg-slate-800'
-          }`}
+          className="relative p-2 sm:px-3 sm:py-1.5 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 flex items-center gap-1.5 text-xs font-bold shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
           title="我的魔法生词本"
         >
-          <Bookmark size={15} className="text-amber-600 dark:text-amber-400" />
+          <Bookmark size={15} className="text-amber-700" />
           <span className="hidden md:inline">生词本</span>
           {vocabCount > 0 && (
-            <span className="min-w-[18px] h-[18px] px-1 bg-red-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow">
+            <span className="min-w-[18px] h-[18px] px-1 bg-red-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs">
               {vocabCount}
             </span>
           )}
@@ -239,53 +213,40 @@ export function Header({
         {/* Achievement Compass */}
         <button
           onClick={onOpenAnalytics}
-          className={`relative p-2 sm:px-2.5 sm:py-1.5 rounded-xl border flex items-center gap-1.5 text-xs font-semibold transition-all ${
-            isParchment
-              ? 'border-amber-300/80 bg-amber-50/60 text-[#7a5927] hover:bg-amber-100/60'
-              : 'border-slate-700 bg-slate-800/80 text-amber-300 hover:bg-slate-800'
-          }`}
+          className="relative p-2 sm:px-3 sm:py-1.5 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 flex items-center gap-1.5 text-xs font-bold shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
           title={`学业成就 · 连续打卡 ${streakDays} 天`}
         >
-          <BarChart2 size={15} className="text-amber-600 dark:text-amber-400" />
+          <BarChart2 size={15} className="text-amber-700" />
           <span className="hidden md:inline">成就</span>
           {streakDays > 0 ? (
-            <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-[10px] rounded-full font-bold shadow animate-pulse">
+            <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-[10px] rounded-full font-bold shadow-xs animate-pulse">
               <Flame size={10} />
               {streakDays}天
             </span>
           ) : (
-            <span className="hidden lg:inline text-[10px] text-amber-700 dark:text-amber-400">0天</span>
+            <span className="hidden lg:inline text-[10px] text-amber-800 font-semibold">0天</span>
           )}
         </button>
 
         {/* Offline Storage */}
         <button
           onClick={onOpenStorageManager}
-          className={`relative p-2 rounded-xl border transition-all ${
-            isParchment
-              ? 'border-amber-300/80 bg-amber-50/60 text-[#7a5927] hover:bg-amber-100/60'
-              : 'border-slate-700 bg-slate-800/80 text-amber-300 hover:bg-slate-800'
-          }`}
+          className="relative p-2 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
           title={`魔法行囊（离线下载）：已下载 ${cachedChaptersCount} 章`}
         >
-          <HardDrive size={15} className="text-emerald-600 dark:text-emerald-400" />
+          <HardDrive size={15} className="text-emerald-700" />
           {cachedChaptersCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white" />
           )}
         </button>
-
 
         {/* Shortcuts */}
         <button
           onClick={onOpenShortcuts}
-          className={`p-2 rounded-xl border transition-all ${
-            isParchment
-              ? 'border-amber-300/80 bg-amber-50/60 text-[#7a5927] hover:bg-amber-100/60'
-              : 'border-slate-700 bg-slate-800/80 text-amber-300 hover:bg-slate-800'
-          }`}
+          className="p-2 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
           title="使用秘籍与快捷键指南"
         >
-          <HelpCircle size={15} />
+          <HelpCircle size={15} className="text-amber-700" />
         </button>
       </div>
     </header>

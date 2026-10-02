@@ -119,20 +119,21 @@ export function VocabularyDrawer({
             <div className="flex items-center space-x-1.5">
               <button
                 onClick={() => setIsFlashcardMode(!isFlashcardMode)}
-                className={`p-1.5 rounded-lg border text-xs flex items-center gap-1 transition-colors ${
+                className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer ${
                   isFlashcardMode 
-                    ? 'bg-[#cba358] text-[#0f141c] border-[#cba358] font-bold' 
-                    : 'border-gray-600/50 text-[#cba358] hover:bg-[#cba358]/20'
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-500 shadow-sm' 
+                    : 'border-amber-300/80 bg-white/90 text-amber-950 hover:bg-amber-50 hover:border-amber-400'
                 }`}
-                title="切换卡片翻转记忆模式"
+                title="切换卡片翻转记忆模式与列表笔记"
               >
                 <Layers size={14} />
-                <span className="text-[11px]">{isFlashcardMode ? '列表' : '卡片背词'}</span>
+                <span>{isFlashcardMode ? '列表笔记' : '卡片背词'}</span>
               </button>
 
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-700/30"
+                className="p-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
+                title="关闭生词本"
               >
                 <X size={18} />
               </button>
@@ -225,22 +226,15 @@ export function VocabularyDrawer({
                         setIsCardFlipped(false);
                         setFlashcardIndex(prev => Math.max(0, prev - 1));
                       }}
-                      className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all disabled:opacity-30 ${
-                        isParchment 
-                          ? 'border-amber-300 bg-white text-amber-900 hover:bg-amber-50 shadow-sm' 
-                          : 'border-gray-600/40 text-slate-300 hover:border-[#cba358]'
-                      }`}
+                      className="px-4 py-2 rounded-xl border border-amber-300/90 bg-white/95 text-amber-950 hover:bg-amber-50 hover:border-amber-400 font-bold text-xs shadow-xs hover:shadow active:scale-95 disabled:opacity-30 disabled:pointer-events-none cursor-pointer transition-all"
+                      title="翻看上一张生词卡"
                     >
                       上一张
                     </button>
                     <button
                       onClick={() => playPronunciation(currentFlashcard.word)}
-                      className={`p-2.5 rounded-full border transition-all ${
-                        isParchment
-                          ? 'border-amber-400 bg-amber-50 text-amber-800 hover:bg-amber-100 shadow-sm'
-                          : 'border-[#cba358]/40 text-[#cba358]'
-                      }`}
-                      title="朗读单词"
+                      className="p-2.5 rounded-xl border border-amber-300/80 bg-white/90 text-amber-800 hover:bg-amber-50 hover:border-amber-400 shadow-xs hover:shadow active:scale-90 cursor-pointer transition-all"
+                      title="朗读当前单词发音"
                     >
                       <Volume2 size={16} />
                     </button>
@@ -250,7 +244,8 @@ export function VocabularyDrawer({
                         setIsCardFlipped(false);
                         setFlashcardIndex(prev => Math.min(filteredList.length - 1, prev + 1));
                       }}
-                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-xs disabled:opacity-30 shadow-md hover:shadow-lg transition-all"
+                      className="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs disabled:opacity-30 disabled:pointer-events-none shadow-sm hover:shadow-md active:scale-95 cursor-pointer transition-all ring-1 ring-amber-300/30"
+                      title="翻看下一张生词卡"
                     >
                       下一张
                     </button>
@@ -318,14 +313,14 @@ export function VocabularyDrawer({
                         <div className="flex items-center space-x-1">
                           <button
                             onClick={() => playPronunciation(item.word)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+                            className="p-1.5 rounded-xl border border-transparent hover:border-amber-300/80 bg-transparent hover:bg-amber-50 text-slate-400 hover:text-amber-800 transition-all active:scale-90 cursor-pointer"
                             title="试听纯正英音发音"
                           >
                             <Volume2 size={15} />
                           </button>
                           <button
                             onClick={() => onRemoveWord(item.word)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                            className="p-1.5 rounded-xl border border-transparent hover:border-rose-300/80 bg-transparent hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-all active:scale-90 cursor-pointer"
                             title="从生词本移除"
                           >
                             <Trash2 size={15} />
@@ -359,25 +354,17 @@ export function VocabularyDrawer({
                   <button
                     onClick={handleExportAnki}
                     disabled={vocabList.length === 0}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-medium transition-colors disabled:opacity-30 ${
-                      isParchment
-                        ? 'border-[#8c6d37] bg-[#f0dfbe] text-[#4a3525] hover:bg-[#e4cfaa]'
-                        : 'border-[#cba358]/60 bg-[#cba358]/10 text-[#f3d38c] hover:bg-[#cba358]/20'
-                    }`}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/90 bg-amber-50/90 hover:bg-amber-100/80 text-amber-950 hover:border-amber-400 font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
                     title="导出为标准 Anki 卡片牌组 (.tsv)"
                   >
-                    <Sparkles size={13} className="text-[#cba358]" />
+                    <Sparkles size={13} className="text-amber-600" />
                     <span>导出至 Anki (TSV)</span>
                   </button>
 
                   <button
                     onClick={handleExportCSV}
                     disabled={vocabList.length === 0}
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-colors disabled:opacity-30 ${
-                      isParchment
-                        ? 'border-[#c2ad88] text-[#7d6852] hover:bg-[#f0e4cc]'
-                        : 'border-gray-600/50 text-[#8c9ba5] hover:bg-gray-700/30'
-                    }`}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-amber-300/70 bg-white/90 hover:bg-amber-50 text-amber-900 hover:border-amber-400 font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
                     title="导出为通用表格 CSV 格式"
                   >
                     <Download size={13} />
@@ -388,7 +375,8 @@ export function VocabularyDrawer({
                 <button
                   onClick={onClearAll}
                   disabled={vocabList.length === 0}
-                  className="text-gray-400 hover:text-rose-400 disabled:opacity-30 transition-colors"
+                  className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-rose-600 hover:bg-rose-50/80 transition-all active:scale-95 cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
+                  title="清空生词本内所有单词"
                 >
                   清空生词本
                 </button>

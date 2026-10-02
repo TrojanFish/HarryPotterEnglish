@@ -48,7 +48,8 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
           </div>
           <button 
             onClick={onClose} 
-            className="p-1 rounded-lg text-gray-400 hover:text-gray-200 transition-colors"
+            className="p-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
+            title="关闭快捷键指南 (ESC)"
           >
             <X size={18} />
           </button>

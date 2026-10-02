@@ -153,11 +153,8 @@ export function StorageManagerModal({
 
           <button
             onClick={onClose}
-            className={`p-1.5 rounded-lg border transition-colors ${
-              isParchment 
-                ? 'border-[#dec9a5] hover:bg-[#ebdcc0] text-[#7d6852]' 
-                : 'border-gray-700 hover:bg-gray-800 text-gray-400 hover:text-white'
-            }`}
+            className="p-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
+            title="关闭魔法行囊"
           >
             <X size={18} />
           </button>
@@ -214,7 +211,8 @@ export function StorageManagerModal({
                 ) : (
                   <button
                     onClick={handleDownloadCurrent}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#d3a625] to-[#cba358] text-[#0b0f16] font-bold text-xs hover:shadow-glow-gold transition-all"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs shadow-sm hover:shadow-md active:scale-95 cursor-pointer transition-all ring-1 ring-amber-300/30"
+                    title="离线缓存当前章节音频与同步字幕"
                   >
                     <DownloadCloud size={14} />
                     <span>一键缓存本章</span>
@@ -235,9 +233,8 @@ export function StorageManagerModal({
             </h3>
             <button
               onClick={refreshStorage}
-              className={`text-xs flex items-center gap-1 hover:text-[#d3a625] transition-colors ${
-                isParchment ? 'text-[#8c6527]' : 'text-[#8c9ba5]'
-              }`}
+              className="text-xs flex items-center gap-1 px-2.5 py-1 rounded-xl border border-amber-300/70 bg-white/90 text-amber-900 hover:bg-amber-50 hover:border-amber-400 font-bold transition-all shadow-2xs hover:shadow-xs active:scale-95 cursor-pointer"
+              title="刷新本地离线存储信息"
             >
               <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} />
               <span>刷新</span>
@@ -304,11 +301,7 @@ export function StorageManagerModal({
                     {onPlayChapter && !isPlayingThis && (
                       <button
                         onClick={() => onPlayChapter(ch.chapterId)}
-                        className={`p-2 rounded-lg border text-xs font-semibold flex items-center gap-1 transition-all ${
-                          isParchment 
-                            ? 'border-[#dec9a5] hover:bg-[#ede0c8] text-[#4a3525]' 
-                            : 'border-gray-700 hover:bg-[#d3a625]/20 text-[#f3d38c] hover:border-[#d3a625]'
-                        }`}
+                        className="px-3 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs hover:shadow active:scale-95 cursor-pointer"
                         title="立即从离线本地播放此章"
                       >
                         <Play size={13} fill="currentColor" />
@@ -319,7 +312,7 @@ export function StorageManagerModal({
                     <button
                       onClick={() => handleDelete(ch.chapterId)}
                       disabled={isDeleting}
-                      className="p-2 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
+                      className="p-2 rounded-xl border border-rose-300/80 bg-rose-50/70 text-rose-600 hover:bg-rose-100 hover:border-rose-400 transition-all active:scale-90 cursor-pointer disabled:opacity-50"
                       title="删除此离线缓存以释放存储"
                     >
                       <Trash2 size={14} className={isDeleting ? 'animate-spin' : ''} />
@@ -340,11 +333,7 @@ export function StorageManagerModal({
           </span>
           <button
             onClick={onClose}
-            className={`px-4 py-1.5 rounded-lg border font-semibold transition-colors ${
-              isParchment 
-                ? 'border-[#cba358] bg-[#fffdfa] text-[#4a3525] hover:bg-[#f0dfbe]' 
-                : 'border-gray-700 bg-gray-800 text-gray-200 hover:bg-gray-700'
-            }`}
+            className="px-5 py-1.5 rounded-xl border border-amber-300/90 bg-white text-amber-950 font-bold hover:bg-amber-50 hover:border-amber-400 transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer"
           >
             完成
           </button>
