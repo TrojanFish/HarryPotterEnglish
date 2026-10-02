@@ -349,27 +349,150 @@ export const HP_LORE_DICTIONARY = {
   cat: { word: 'cat', phonetic: '/kæt/', pos: '名词', translation: '猫' },
   reading: { word: 'reading', phonetic: '/ˈriː.dɪŋ/', pos: '动词', translation: '阅读；看（read的现在分词）' },
   map: { word: 'map', phonetic: '/mæp/', pos: '名词', translation: '地图' },
+  // Chapter 1 Core & Elementary/Middle School Essentials
+  crane: { word: 'crane', phonetic: '/kreɪn/', pos: '动词 / 名词', translation: '伸长脖子；起重机；鹤' },
+  fence: { word: 'fence', phonetic: '/fens/', pos: '名词', translation: '栅栏；篱笆；围墙' },
+  spy: { word: 'spy', phonetic: '/spaɪ/', pos: '动词 / 名词', translation: '暗中打探；窥探；间谍' },
+  shudder: { word: 'shudder', phonetic: '/ˈʃʌd.ər/', pos: '动词 / 名词', translation: '不寒而栗；发抖；战栗' },
+  drill: { word: 'drill', phonetic: '/drɪl/', pos: '名词 / 动词', translation: '钻机；电钻；操练' },
+  firm: { word: 'firm', phonetic: '/fɜːm/', pos: '名词 / 形容词', translation: '商行；公司；坚定的' },
+  director: { word: 'director', phonetic: '/daɪˈrek.tər/', pos: '名词', translation: '董事；总经理；主任' },
+  beefy: { word: 'beefy', phonetic: '/ˈbiː.fi/', pos: '形容词', translation: '魁梧壮实的；肥大的' },
+  neck: { word: 'neck', phonetic: '/nek/', pos: '名词', translation: '脖子；颈部' },
+  moustache: { word: 'moustache', phonetic: '/məˈstɑːʃ/', pos: '名词', translation: '八字胡；大胡子' },
+  thin: { word: 'thin', phonetic: '/θɪn/', pos: '形容词', translation: '瘦的；薄的' },
+  blonde: { word: 'blonde', phonetic: '/blɒnd/', pos: '形容词', translation: '金发的；白皙的' },
+  twice: { word: 'twice', phonetic: '/twaɪs/', pos: '副词', translation: '两倍；两次' },
+  usual: { word: 'usual', phonetic: '/ˈjuː.ʒu.əl/', pos: '形容词', translation: '通常的；寻常的' },
+  amount: { word: 'amount', phonetic: '/əˈmaʊnt/', pos: '名词', translation: '数量；数额' },
+  garden: { word: 'garden', phonetic: '/ˈɡɑː.dən/', pos: '名词', translation: '花园；菜园' },
+  neighbour: { word: 'neighbour', phonetic: '/ˈneɪ.bər/', pos: '名词', translation: '邻居' },
+  opinion: { word: 'opinion', phonetic: '/əˈpɪn.jən/', pos: '名词', translation: '看法；见解；主见' },
+  finer: { word: 'finer', phonetic: '/ˈfaɪ.nər/', pos: '形容词', translation: '更好的；更出色的（fine的比较级）' },
+  fine: { word: 'fine', phonetic: '/faɪn/', pos: '形容词', translation: '美好的；健康的；细致的' },
+  secret: { word: 'secret', phonetic: '/ˈsiː.krət/', pos: '名词 / 形容词', translation: '秘密；保密的' },
+  fear: { word: 'fear', phonetic: '/fɪər/', pos: '名词 / 动词', translation: '恐惧；害怕；担忧' },
+  discover: { word: 'discover', phonetic: '/dɪˈskʌv.ər/', pos: '动词', translation: '发现；发觉' },
+  bear: { word: 'bear', phonetic: '/beər/', pos: '动词 / 名词', translation: '忍受；承受；熊' },
+  sister: { word: 'sister', phonetic: '/ˈsɪs.tər/', pos: '名词', translation: '姐妹；姐姐；妹妹' },
+  pretend: { word: 'pretend', phonetic: '/prɪˈtend/', pos: '动词', translation: '假装；装作' },
+  'good-for-nothing': { word: 'good-for-nothing', phonetic: '/ˌɡʊd.fəˈnʌθ.ɪŋ/', pos: '形容词 / 名词', translation: '一无是处的；无用的废物' },
+  arrive: { word: 'arrive', phonetic: '/əˈraɪv/', pos: '动词', translation: '到达；抵达' },
+  street: { word: 'street', phonetic: '/striːt/', pos: '名词', translation: '街道；马路' },
+  dull: { word: 'dull', phonetic: '/dʌl/', pos: '形容词', translation: '阴沉的；沉闷的；迟钝的' },
+  grey: { word: 'grey', phonetic: '/ɡreɪ/', pos: '形容词', translation: '灰色的；阴暗的' },
+  tuesday: { word: 'Tuesday', phonetic: '/ˈtʃuːz.deɪ/', pos: '名词', translation: '星期二' },
+  story: { word: 'story', phonetic: '/ˈstɔː.ri/', pos: '名词', translation: '故事；小说' },
+  start: { word: 'start', phonetic: '/stɑːt/', pos: '动词 / 名词', translation: '开始；启程' },
+  outside: { word: 'outside', phonetic: '/ˌaʊtˈsaɪd/', pos: '介词 / 副词', translation: '在外面；在窗外' },
+  soon: { word: 'soon', phonetic: '/suːn/', pos: '副词', translation: '不久；立刻' },
+  happen: { word: 'happen', phonetic: '/ˈhæp.ən/', pos: '动词', translation: '发生；碰巧' },
+  country: { word: 'country', phonetic: '/ˈkʌn.tri/', pos: '名词', translation: '国家；全国；乡村' },
+  hum: { word: 'hum', phonetic: '/hʌm/', pos: '动词 / 名词', translation: '哼曲子；发嗡嗡声' },
+  pick: { word: 'pick', phonetic: '/pɪk/', pos: '动词', translation: '挑选；摘采' },
+  gossip: { word: 'gossip', phonetic: '/ˈɡɒs.ɪp/', pos: '动词 / 名词', translation: '嚼舌根；闲言碎语' },
+  wrestle: { word: 'wrestle', phonetic: '/ˈres.əl/', pos: '动词', translation: '费劲应对；扭打；摔跤' },
+  scream: { word: 'scream', phonetic: '/skriːm/', pos: '动词 / 名词', translation: '尖叫；大声叫嚷' },
+  tawny: { word: 'tawny', phonetic: '/ˈtɔː.ni/', pos: '形容词', translation: '黄褐色的；茶色的' },
+  flutter: { word: 'flutter', phonetic: '/ˈflʌt.ər/', pos: '动词 / 名词', translation: '振翅扑翼；飘动' },
+  past: { word: 'past', phonetic: '/pɑːst/', pos: '介词 / 形容词', translation: '越过；走过；过去的' },
+  half: { word: 'half', phonetic: '/hɑːf/', pos: '名词 / 形容词', translation: '一半；半数；三十分（半点）' },
+  peck: { word: 'peck', phonetic: '/pek/', pos: '动词 / 名词', translation: '仓促亲吻；啄食' },
+  miss: { word: 'miss', phonetic: '/mɪs/', pos: '动词', translation: '未击中；错过；想念' },
+  tyke: { word: 'tyke', phonetic: '/taɪk/', pos: '名词', translation: '小顽童；淘气鬼' },
+  chortle: { word: 'chortle', phonetic: '/ˈtʃɔː.təl/', pos: '动词 / 名词', translation: '哈哈大笑；格格笑' },
+  peculiar: { word: 'peculiar', phonetic: '/pɪˈkjuː.li.ər/', pos: '形容词', translation: '古怪的；奇特的；罕见的' },
+  blink: { word: 'blink', phonetic: '/blɪŋk/', pos: '动词 / 名词', translation: '眨眼；眨巴' },
+  stare: { word: 'stare', phonetic: '/steər/', pos: '动词 / 名词', translation: '凝视；盯着看' },
+  tabby: { word: 'tabby', phonetic: '/ˈtæb.i/', pos: '形容词 / 名词', translation: '虎斑纹的；斑猫' },
+  mirror: { word: 'mirror', phonetic: '/ˈmɪr.ər/', pos: '名词', translation: '镜子；后视镜' },
+  cloak: { word: 'cloak', phonetic: '/kləʊk/', pos: '名词', translation: '斗篷；披风' },
+  emerald: { word: 'emerald', phonetic: '/ˈem.ə.rəld/', pos: '名词 / 形容词', translation: '翡翠；祖母绿；翠绿色的' },
+  spectacles: { word: 'spectacles', phonetic: '/ˈspek.tə.kəlz/', pos: '名词', translation: '眼镜（复数）' },
+  chuckle: { word: 'chuckle', phonetic: '/ˈtʃʌk.əl/', pos: '动词 / 名词', translation: '轻声笑；吃吃地笑' },
+  sob: { word: 'sob', phonetic: '/sɒb/', pos: '动词 / 名词', translation: '抽泣；呜咽' },
+  quiver: { word: 'quiver', phonetic: '/ˈkwɪv.ər/', pos: '动词 / 名词', translation: '颤抖；轻微发抖' },
+  astound: { word: 'astound', phonetic: '/əˈstaʊnd/', pos: '动词', translation: '使震惊；使大吃一惊' },
+  falter: { word: 'falter', phonetic: '/ˈfɒl.tər/', pos: '动词', translation: '结结巴巴地说；犹豫迟疑' },
+  rumour: { word: 'rumour', phonetic: '/ˈruː.mər/', pos: '名词', translation: '传闻；谣言' },
+  whisper: { word: 'whisper', phonetic: '/ˈwɪs.pər/', pos: '动词 / 名词', translation: '耳语；低语；私语' },
 };
+
+/**
+ * Intelligent English Stemming & Lemmatization for Primary & Junior Learners
+ * Helps students click past tenses (whispered -> whisper), plurals (fences -> fence),
+ * and gerunds (craning -> crane) without failing dictionary lookups.
+ */
+export function getStemCandidates(word) {
+  if (!word) return [];
+  const w = word.toLowerCase();
+  const candidates = [w];
+
+  if (w.endsWith("'s") || w.endsWith("’s")) {
+    candidates.push(w.slice(0, -2));
+  }
+  if (w.endsWith('ies') && w.length > 4) {
+    candidates.push(w.slice(0, -3) + 'y');
+  }
+  if (w.endsWith('es') && w.length > 3) {
+    candidates.push(w.slice(0, -2));
+    candidates.push(w.slice(0, -1));
+  }
+  if (w.endsWith('s') && !w.endsWith('ss') && w.length > 2) {
+    candidates.push(w.slice(0, -1));
+  }
+  if (w.endsWith('ing') && w.length > 4) {
+    const base = w.slice(0, -3);
+    candidates.push(base);
+    candidates.push(base + 'e');
+    if (base.length > 2 && base[base.length - 1] === base[base.length - 2]) {
+      candidates.push(base.slice(0, -1));
+    }
+  }
+  if (w.endsWith('ed') && w.length > 3) {
+    const base = w.slice(0, -2);
+    candidates.push(base);
+    candidates.push(w.slice(0, -1));
+    if (base.length > 2 && base[base.length - 1] === base[base.length - 2]) {
+      candidates.push(base.slice(0, -1));
+    }
+    if (base.endsWith('i')) {
+      candidates.push(base.slice(0, -1) + 'y');
+    }
+  }
+  if (w.endsWith('ly') && w.length > 3) {
+    const base = w.slice(0, -2);
+    candidates.push(base);
+    if (base.endsWith('i')) {
+      candidates.push(base.slice(0, -1) + 'y');
+    }
+  }
+  return [...new Set(candidates)];
+}
 
 // Async function to lookup word in local HP glossary or Free Dictionary API
 export async function lookupWord(rawWord) {
   if (!rawWord) return null;
   // Clean punctuation from word
-  const cleanWord = rawWord.replace(/[^a-zA-Z'-]/g, '').trim().toLowerCase();
+  const cleanWord = rawWord.replace(/[^a-zA-Z'’-]/g, '').trim().toLowerCase();
   if (!cleanWord) return null;
 
-  // Check HP Lore / Core glossary first
-  if (HP_LORE_DICTIONARY[cleanWord]) {
-    const item = HP_LORE_DICTIONARY[cleanWord];
-    return {
-      word: item.word,
-      phonetic: item.phonetic || '',
-      pos: item.pos || '单词',
-      translation: item.translation,
-      lore: item.lore || null,
-      isHpLore: Boolean(item.lore),
-      audioUrl: null
-    };
+  // 1. Try local glossary with lemmatization candidates first (0ms latency, 100% pure Chinese)
+  const candidates = getStemCandidates(cleanWord);
+  for (const c of candidates) {
+    if (HP_LORE_DICTIONARY[c]) {
+      const item = HP_LORE_DICTIONARY[c];
+      return {
+        word: rawWord,
+        baseWord: item.word,
+        phonetic: item.phonetic || '',
+        pos: item.pos || '单词',
+        translation: item.translation,
+        lore: item.lore || null,
+        isHpLore: Boolean(item.lore),
+        audioUrl: null
+      };
+    }
   }
 
   // Fallback to online dictionary for phonetics & POS

@@ -37,7 +37,9 @@ export function DictationStudio({
   onPrevCue,
   chapterId = '',
   chapterTitle = '',
-  onRecordResult
+  onRecordResult,
+  playbackRate = 1.0,
+  onChangePlaybackRate
 }) {
   const currentCue = cues[activeCueIndex];
   const [userInput, setUserInput] = useState('');
@@ -75,28 +77,29 @@ export function DictationStudio({
   const targetTokens = tokenizeSentence(currentCue.text);
   const targetWords = targetTokens
     .filter(t => t.isWord)
-    .map(t => t.text.toLowerCase().replace(/[^a-z']/g, ''));
+    .map(t => t.text.toLowerCase().replace(/[^a-z'’\-]/g, ''));
 
   // Tokenize user's typed input into words
   const userTokens = tokenizeSentence(userInput);
   const userWords = userTokens
     .filter(t => t.isWord)
-    .map(t => t.text.toLowerCase().replace(/[^a-z']/g, ''));
+    .map(t => t.text.toLowerCase().replace(/[^a-z'’\-]/g, ''));
 
-  // Calculate live word matching
-  let matchedCount = 0;
+  // Calculate live word matching sequentially by word index
+  let wordIdx = 0;
   const comparison = targetTokens.map((token) => {
     if (!token.isWord) {
       return { text: token.text, status: 'symbol' };
     }
 
-    const cleanTarget = token.text.toLowerCase().replace(/[^a-z']/g, '');
-    const currentWordIndex = targetWords.indexOf(cleanTarget, matchedCount);
+    const cleanTarget = token.text.toLowerCase().replace(/[^a-z'’\-]/g, '');
+    const normTarget = cleanTarget.replace(/['’\-]/g, '');
+    const currentWordIndex = wordIdx++;
 
-    if (currentWordIndex !== -1 && currentWordIndex < userWords.length) {
+    if (currentWordIndex < userWords.length) {
       const typed = userWords[currentWordIndex];
-      matchedCount = currentWordIndex + 1;
-      if (typed === cleanTarget) {
+      const normTyped = typed.replace(/['’\-]/g, '');
+      if (typed === cleanTarget || (normTyped && normTyped === normTarget)) {
         return { text: token.text, status: 'correct', typed };
       } else {
         return { text: token.text, status: 'wrong', typed };
@@ -126,7 +129,10 @@ export function DictationStudio({
   };
 
   // Replay current sentence
-  const handleReplayCurrent = () => {
+  const handleReplayCurrent = (slow = false) => {
+    if (slow && onChangePlaybackRate) {
+      onChangePlaybackRate(0.8);
+    }
     onSeekToCue(currentCue);
   };
 
@@ -224,15 +230,30 @@ export function DictationStudio({
         
         {/* Audio Playback & Replay bar */}
         <div className="flex items-center justify-between pb-4 mb-4 border-b border-inherit">
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
-              onClick={handleReplayCurrent}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:shadow-md text-xs font-bold transition-all shadow-sm"
-              title="重新听本句慢速朗读"
+              onClick={() => handleReplayCurrent(false)}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:shadow-md text-xs font-bold transition-all shadow-sm"
+              title="重新听本句原速朗读"
             >
               <RotateCcw size={14} />
-              <span>重播本句声音</span>
+              <span>原速重播 (1.0x)</span>
             </button>
+
+            {onChangePlaybackRate && (
+              <button
+                onClick={() => handleReplayCurrent(true)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition-all ${
+                  isParchment
+                    ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
+                    : 'border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700'
+                }`}
+                title="以 0.8x 慢速重播本句，辨析生词发音细节"
+              >
+                <Sparkles size={13} className="text-amber-500" />
+                <span>慢速精听 (0.8x)</span>
+              </button>
+            )}
 
             <button
               onClick={() => onPlayPause()}

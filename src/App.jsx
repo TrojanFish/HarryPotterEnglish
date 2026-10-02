@@ -618,6 +618,8 @@ export function App() {
               onSeekToCue={handleSeekToCue}
               onPlayPause={togglePlayPause}
               isPlaying={isPlaying}
+              playbackRate={playbackRate}
+              onChangePlaybackRate={handleChangePlaybackRate}
               isParchment={isParchment}
               onNextCue={handleNextSentence}
               onPrevCue={handlePrevSentence}

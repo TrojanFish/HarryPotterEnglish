@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Trash2, 
@@ -26,6 +26,17 @@ export function VocabularyDrawer({
   const [isFlashcardMode, setIsFlashcardMode] = useState(false);
   const [flashcardIndex, setFlashcardIndex] = useState(0);
   const [isCardFlipped, setIsCardFlipped] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -57,7 +68,7 @@ export function VocabularyDrawer({
       `"${v.word}","${v.phonetic || ''}","${v.pos || ''}","${(v.translation || '').replace(/"/g, '""')}","${(v.context || '').replace(/"/g, '""')}"`
     ).join('\n');
 
-    const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -71,9 +82,14 @@ export function VocabularyDrawer({
   const currentFlashcard = filteredList[flashcardIndex];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm">
+    <div 
+      className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
       <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-        <div className={`w-screen max-w-md shadow-2xl flex flex-col border-l transition-colors duration-300 ${
+        <div 
+          onClick={(e) => e.stopPropagation()}
+          className={`w-screen max-w-md shadow-2xl flex flex-col border-l transition-colors duration-300 ${
           isParchment 
             ? 'bg-[#fbf6ea] border-[#dec9a5] text-[#2c221e]' 
             : 'bg-[#121824] border-[#253245] text-[#e2d9c8]'

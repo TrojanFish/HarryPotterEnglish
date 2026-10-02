@@ -9,7 +9,10 @@ import {
   Sparkles, 
   Type, 
   Volume2,
-  Headphones
+  Headphones,
+  Copy,
+  Check,
+  LocateFixed
 } from 'lucide-react';
 import { tokenizeSentence, formatTime } from '../utils/vttParser';
 import { HP_LORE_DICTIONARY } from '../data/hpDictionary';
@@ -19,7 +22,8 @@ import { HP_LORE_DICTIONARY } from '../data/hpDictionary';
  * - Large legible font with generous line-height for students
  * - Interactive word clicking with instant IPA phonetic & Chinese popover
  * - Lumos focus highlighting the active sentence with warm golden halo
- * - Quick sentence playback, loop, and shadowing recording buttons
+ * - Quick sentence playback, loop, shadowing recording, and copy buttons
+ * - Intelligent auto-follow scroll with manual pause and quick re-center
  */
 export function SubtitleViewer({
   cues,
@@ -39,16 +43,53 @@ export function SubtitleViewer({
   const containerRef = useRef(null);
   const [revealedSentences, setRevealedSentences] = useState({});
   const [fontSize, setFontSize] = useState('large'); // 'normal' | 'large' | 'huge'
+  const [isFollowActive, setIsFollowActive] = useState(true);
+  const [copiedCueId, setCopiedCueId] = useState(null);
+  const [speakingCueId, setSpeakingCueId] = useState(null);
 
-  // Auto-scroll active cue smoothly into center
-  useEffect(() => {
+  // Smoothly scroll active cue into center if auto-follow is active
+  const scrollToActiveCue = () => {
     if (activeCueRef.current) {
       activeCueRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'center'
       });
+      setIsFollowActive(true);
     }
-  }, [activeCueIndex]);
+  };
+
+  useEffect(() => {
+    if (isFollowActive && activeCueRef.current) {
+      activeCueRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+    }
+  }, [activeCueIndex, isFollowActive]);
+
+  // Copy full sentence text
+  const handleCopySentence = (cue) => {
+    if (navigator && navigator.clipboard) {
+      navigator.clipboard.writeText(cue.text).then(() => {
+        setCopiedCueId(cue.id);
+        setTimeout(() => setCopiedCueId(null), 1800);
+      }).catch(e => console.warn(e));
+    }
+  };
+
+  // Speak sentence with clean British English synthesis
+  const handleSpeakSentence = (cue) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(cue.text);
+      utterance.lang = 'en-GB';
+      utterance.rate = 0.85;
+      setSpeakingCueId(cue.id);
+      utterance.onend = () => setSpeakingCueId(null);
+      utterance.onerror = () => setSpeakingCueId(null);
+      window.speechSynthesis.speak(utterance);
+    }
+  };
 
   // Toggle single sentence reveal in blind mode
   const toggleSentenceReveal = (cueId) => {
@@ -65,7 +106,7 @@ export function SubtitleViewer({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 max-w-4xl mx-auto w-full pb-8" ref={containerRef}>
+    <div className="relative flex-1 overflow-y-auto px-3 sm:px-6 py-4 max-w-4xl mx-auto w-full pb-16" ref={containerRef}>
       {/* ── Subtitle Toolbar for Students ─────────────────────────── */}
       <div className={`flex flex-wrap items-center justify-between gap-2.5 mb-4 p-3 rounded-2xl border transition-colors ${
         isParchment
@@ -73,7 +114,7 @@ export function SubtitleViewer({
           : 'bg-slate-900/80 border-slate-800 text-slate-300'
       }`}>
         {/* Left: Cue counts & status */}
-        <div className="flex items-center space-x-2 text-xs font-medium">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
           <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-800 dark:text-amber-300 font-bold font-mono">
             <Headphones size={13} />
             <span>全章 {cues.length} 个精听句</span>
@@ -87,7 +128,29 @@ export function SubtitleViewer({
         </div>
 
         {/* Right: Reading controls for students */}
-        <div className="flex items-center space-x-1.5 sm:space-x-2">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          {/* Follow audio toggle */}
+          <button
+            onClick={() => {
+              const next = !isFollowActive;
+              setIsFollowActive(next);
+              if (next) scrollToActiveCue();
+            }}
+            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
+              isFollowActive
+                ? isParchment
+                  ? 'bg-amber-500/20 border-amber-400 text-amber-900 font-bold'
+                  : 'bg-amber-500/25 border-amber-400 text-amber-300 font-bold'
+                : isParchment
+                ? 'border-gray-300 text-gray-500 hover:bg-gray-100'
+                : 'border-slate-700 text-slate-400 hover:bg-slate-800'
+            }`}
+            title="开启/关闭滚动跟随朗读进度"
+          >
+            <LocateFixed size={13} />
+            <span>{isFollowActive ? '跟随朗读：开' : '跟随朗读：关'}</span>
+          </button>
+
           {/* Font Size Selector (Very important for students!) */}
           <button
             onClick={() => {
@@ -174,9 +237,22 @@ export function SubtitleViewer({
                   <button
                     onClick={() => onSeekToCue(cue)}
                     className="p-1.5 rounded-lg text-slate-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800 transition-colors"
-                    title="从本句开始慢听"
+                    title="从原声音频播放本句"
                   >
                     <Play size={14} className="fill-current" />
+                  </button>
+
+                  {/* Clean British TTS Speak */}
+                  <button
+                    onClick={() => handleSpeakSentence(cue)}
+                    className={`p-1.5 rounded-lg transition-colors ${
+                      speakingCueId === cue.id 
+                        ? 'text-amber-600 bg-amber-100 dark:bg-amber-950 font-bold' 
+                        : 'text-slate-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800'
+                    }`}
+                    title="清晰单句朗读示范 (英音)"
+                  >
+                    <Volume2 size={14} className={speakingCueId === cue.id ? 'animate-bounce' : ''} />
                   </button>
 
                   {/* Loop this sentence */}
@@ -195,11 +271,20 @@ export function SubtitleViewer({
                     <Repeat size={14} />
                   </button>
 
+                  {/* Copy sentence text */}
+                  <button
+                    onClick={() => handleCopySentence(cue)}
+                    className="p-1.5 rounded-lg text-slate-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800 transition-colors"
+                    title={copiedCueId === cue.id ? "已复制本句英文" : "复制本句英文"}
+                  >
+                    {copiedCueId === cue.id ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                  </button>
+
                   {/* Shadowing Voice Recording */}
                   <button
                     onClick={() => onRecordCue(cue)}
                     className="p-1.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-1"
-                    title="点击我来跟读施咒（AI发音评分）"
+                    title="跟读施咒（AI发音评分）"
                   >
                     <Mic size={14} />
                     <span className="text-[11px] hidden sm:inline font-bold">跟读</span>
@@ -270,6 +355,22 @@ export function SubtitleViewer({
           );
         })}
       </div>
+
+      {/* Floating Locate Active Cue Button */}
+      {cues.length > 0 && activeCueIndex >= 0 && (
+        <button
+          onClick={scrollToActiveCue}
+          className={`fixed bottom-24 right-5 sm:right-8 z-30 flex items-center gap-1.5 px-3.5 py-2 rounded-full shadow-lg border text-xs font-bold transition-all hover:scale-105 active:scale-95 ${
+            isParchment
+              ? 'bg-[#ffffff] border-amber-300 text-amber-900 shadow-amber-900/10 hover:bg-amber-50'
+              : 'bg-slate-900 border-amber-500/50 text-amber-300 shadow-black/50 hover:bg-slate-800'
+          }`}
+          title="快速定位到正在朗读的句子"
+        >
+          <LocateFixed size={14} className="text-amber-500" />
+          <span>定位朗读 (第 {activeCueIndex + 1} 句)</span>
+        </button>
+      )}
     </div>
   );
 }

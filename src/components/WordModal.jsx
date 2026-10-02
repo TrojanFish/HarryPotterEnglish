@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Volume2, 
@@ -27,6 +27,16 @@ export function WordModal({
 }) {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   if (!wordData) return null;
 
   const playPronunciation = () => {
@@ -47,8 +57,12 @@ export function WordModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn"
+      onClick={onClose}
+    >
       <div 
+        onClick={(e) => e.stopPropagation()}
         className={`relative w-full max-w-lg rounded-3xl border-2 shadow-2xl p-6 sm:p-7 transition-all duration-300 ${
           isParchment 
             ? 'bg-[#ffffff] border-[#e8dcb9] text-[#2c221e]' 

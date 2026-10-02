@@ -4,9 +4,13 @@
  * Strictly adheres to PROJECT.md § Speech Scoring Engine Contract.
  */
 
-// 1. Soundex Phonetic Encoder
+// 1. Soundex Phonetic Encoder with Cache
+const soundexCache = new Map();
 export function soundex(str) {
   if (!str || typeof str !== 'string') return '';
+  const cached = soundexCache.get(str);
+  if (cached !== undefined) return cached;
+
   const s = str.toUpperCase().replace(/[^A-Z]/g, '');
   if (!s) return '';
 
@@ -40,10 +44,15 @@ export function soundex(str) {
   }
 
   while (code.length < 4) code += '0';
-  return code.slice(0, 4);
+  const result = code.slice(0, 4);
+  soundexCache.set(str, result);
+  return result;
 }
 
-// 2. Space-Optimized Levenshtein Distance
+// 2. Space-Optimized Levenshtein Distance with Buffer Reuse
+let prevBuf = new Int32Array(256);
+let currBuf = new Int32Array(256);
+
 export function levenshteinDistance(s1, s2) {
   if (!s1) return s2 ? s2.length : 0;
   if (!s2) return s1.length;
@@ -52,8 +61,8 @@ export function levenshteinDistance(s1, s2) {
   const m = s1.length;
   const n = s2.length;
 
-  let prev = new Int32Array(n + 1);
-  let curr = new Int32Array(n + 1);
+  let prev = prevBuf.length >= n + 1 ? prevBuf : new Int32Array(n + 1);
+  let curr = currBuf.length >= n + 1 ? currBuf : new Int32Array(n + 1);
 
   for (let j = 0; j <= n; j++) prev[j] = j;
 
@@ -314,6 +323,17 @@ export function evaluatePronunciation(targetSentence, spokenText, isFallback = f
     traceback[0][j] = 3;
   }
 
+  const compCache = new Map();
+  const getComp = (tc, sc) => {
+    const key = tc + '\0' + sc;
+    let cached = compCache.get(key);
+    if (cached === undefined) {
+      cached = compareWords(tc, sc);
+      compCache.set(key, cached);
+    }
+    return cached;
+  };
+
   for (let i = 1; i <= N; i++) {
     const tc = tClean[i - 1];
 
@@ -326,7 +346,7 @@ export function evaluatePronunciation(targetSentence, spokenText, isFallback = f
       }
 
       const sc = sClean[j - 1];
-      const comp = compareWords(tc, sc);
+      const comp = getComp(tc, sc);
 
       let matchScore = -0.6;
       if (comp.status === 'matched') {

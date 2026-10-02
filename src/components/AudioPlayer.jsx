@@ -49,6 +49,18 @@ export function AudioPlayer({
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const prevVolumeRef = useRef(volume);
+  const speedMenuContainerRef = useRef(null);
+
+  useEffect(() => {
+    if (!showSpeedMenu) return;
+    const handleClickOutside = (e) => {
+      if (speedMenuContainerRef.current && !speedMenuContainerRef.current.contains(e.target)) {
+        setShowSpeedMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showSpeedMenu]);
 
   const speedOptions = [
     { rate: 0.75, label: '0.75x (慢速磨耳朵)' },
@@ -226,7 +238,7 @@ export function AudioPlayer({
           </button>
 
           {/* Student Speed Selector */}
-          <div className="relative">
+          <div className="relative" ref={speedMenuContainerRef}>
             <button
               onClick={() => setShowSpeedMenu(!showSpeedMenu)}
               className="px-2.5 py-1.5 rounded-xl border border-gray-300 dark:border-slate-700 text-xs font-mono font-bold hover:border-amber-500 hover:text-amber-600 transition-colors flex items-center space-x-1"

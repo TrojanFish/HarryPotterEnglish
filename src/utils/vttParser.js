@@ -111,8 +111,8 @@ export function parseVTT(vttText) {
  */
 export function tokenizeSentence(text) {
   if (!text) return [];
-  // Match English words (including contraction like don't, Mr., etc.) or non-word symbols
-  const regex = /([a-zA-Z]+(?:'[a-zA-Z]+)?)|([^a-zA-Z]+)/g;
+  // Match English words (including contractions like don't / didn’t, and hyphenated compound words like good-for-nothing) or non-word symbols
+  const regex = /([a-zA-Z]+(?:(?:['’|-])[a-zA-Z]+)*)|([^a-zA-Z]+)/g;
   const tokens = [];
   let match;
 
