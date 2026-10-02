@@ -59,7 +59,7 @@ export function BookShelfDrawer({
 
           {/* Book Cards Gallery */}
           <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
-            {books.map((book) => {
+            {(books || []).filter(b => b.chapters && b.chapters.length > 0).map((book) => {
               const isSelected = book.id === selectedBookId;
               const apiBase = import.meta.env.VITE_API_BASE || '';
               const coverUrl = `${apiBase}/api/raw/podcasts/${book.id}/cover.jpg`;

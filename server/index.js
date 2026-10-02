@@ -92,6 +92,14 @@ const KNOWN_TITLE_MAP = {
 // ==========================================
 // R2 Auto-Discovery Scanner
 // ==========================================
+// Audio extension regex
+const AUDIO_REGEX = /\.(mp3|m4a|wav|aac|ogg|flac)$/i;
+
+function stripEmojis(str) {
+  if (!str) return '';
+  return str.replace(/\p{Extended_Pictographic}/gu, '').replace(/\s+/g, ' ').trim();
+}
+
 async function scanR2Catalog(bypassCache = false) {
   if (!s3Client) return [];
   console.log(`[R2 Scanner] Scanning R2 bucket for podcasts... (bypass: ${bypassCache})`);
@@ -105,61 +113,118 @@ async function scanR2Catalog(bypassCache = false) {
     const listRes = await s3Client.send(listCmd);
     const keys = (listRes.Contents || []).map(c => c.Key);
 
-    const showJsonKeys = keys.filter(k => k.endsWith('/show.json'));
+    // Identify all audio keys in R2
+    const audioKeys = new Set(keys.filter(k => AUDIO_REGEX.test(k)));
 
-    const books = await Promise.all(showJsonKeys.map(async (showKey) => {
-      const showDir = showKey.replace('/show.json', '');
-      const showId = showDir.split('/').pop();
+    // Find all distinct podcast show IDs under podcasts/
+    // Exclude hidden folders like .alist
+    const showIds = [...new Set(keys.map(k => {
+      const parts = k.split('/');
+      return parts.length >= 2 ? parts[1] : null;
+    }))].filter(id => id && !id.startsWith('.'));
 
-      // Read show.json
+    const books = (await Promise.all(showIds.map(async (showId) => {
+      const showDir = `podcasts/${showId}`;
+
+      // Strictly verify if this folder contains at least one audio file in R2
+      const folderHasAudio = [...audioKeys].some(k => k.startsWith(`${showDir}/`));
+      if (!folderHasAudio) {
+        // No audio files in this folder -> Do NOT display!
+        console.log(`[R2 Scanner] Skipping folder "${showDir}" (no audio files found).`);
+        return null;
+      }
+
+      // Read show.json if it exists
+      const showKey = `${showDir}/show.json`;
       const showJsonRaw = await getS3TextCached(showKey, bypassCache);
       let showInfo = {};
       try {
         if (showJsonRaw) showInfo = JSON.parse(showJsonRaw);
       } catch (e) {}
 
-      // Discover all episodes under this show
+      // Discover episodes under this show
       const metaKeys = keys.filter(k => k.startsWith(`${showDir}/episodes/`) && k.endsWith('/meta.json'));
 
-      // Parallel fetch for episode metadata
-      const episodes = await Promise.all(metaKeys.map(async (metaKey) => {
-        const epDir = metaKey.replace('/meta.json', '');
-        const epId = epDir.split('/').pop();
-        const metaRaw = await getS3TextCached(metaKey, bypassCache);
-        let epMeta = {};
-        try {
-          if (metaRaw) epMeta = JSON.parse(metaRaw);
-        } catch (e) {}
+      let episodes = [];
+      if (metaKeys.length > 0) {
+        episodes = (await Promise.all(metaKeys.map(async (metaKey) => {
+          const epDir = metaKey.replace('/meta.json', '');
+          const epId = epDir.split('/').pop();
 
-        const epNum = parseInt(epMeta.episode || epId.replace('ep', ''), 10) || 1;
-        return {
-          id: `${showId}_${epId}`,
-          epId,
-          number: epNum,
-          title: epMeta.title || `Chapter ${epNum}`,
-          description: epMeta.description || '',
-          duration: epMeta.duration || '',
-          durationSeconds: epMeta.durationSeconds || 0,
-          audioKey: `${epDir}/audio.mp3`,
-          subtitleKey: `${epDir}/subtitle.vtt`,
-          showId: showId,
-        };
-      }));
+          // Verify if audio exists for this specific episode
+          const directAudioKey = `${epDir}/audio.mp3`;
+          const actualAudioKey = audioKeys.has(directAudioKey)
+            ? directAudioKey
+            : [...audioKeys].find(k => k.startsWith(`${epDir}/`));
+
+          if (!actualAudioKey) {
+            // Episode has no audio file in R2 -> filter out
+            return null;
+          }
+
+          const metaRaw = await getS3TextCached(metaKey, bypassCache);
+          let epMeta = {};
+          try {
+            if (metaRaw) epMeta = JSON.parse(metaRaw);
+          } catch (e) {}
+
+          const epNum = parseInt(epMeta.episode || epId.replace('ep', ''), 10) || 1;
+          const rawTitle = epMeta.title || `Chapter ${epNum}`;
+
+          return {
+            id: `${showId}_${epId}`,
+            epId,
+            number: epNum,
+            title: stripEmojis(rawTitle),
+            cnTitle: epMeta.cnTitle ? stripEmojis(epMeta.cnTitle) : '',
+            description: epMeta.description || '',
+            duration: epMeta.duration || '',
+            durationSeconds: epMeta.durationSeconds || 0,
+            audioKey: actualAudioKey,
+            subtitleKey: `${epDir}/subtitle.vtt`,
+            showId: showId,
+          };
+        }))).filter(Boolean);
+      } else {
+        // If no meta.json, auto-discover episodes directly from audio files under this show
+        const showAudioList = [...audioKeys].filter(k => k.startsWith(`${showDir}/`));
+        episodes = showAudioList.map((aKey, idx) => {
+          const filename = aKey.split('/').pop().replace(AUDIO_REGEX, '');
+          const epNum = idx + 1;
+          return {
+            id: `${showId}_ep${String(epNum).padStart(2, '0')}`,
+            epId: `ep${String(epNum).padStart(2, '0')}`,
+            number: epNum,
+            title: `Chapter ${epNum} (${filename})`,
+            description: '',
+            duration: '',
+            durationSeconds: 0,
+            audioKey: aKey,
+            subtitleKey: aKey.replace(AUDIO_REGEX, '.vtt'),
+            showId: showId,
+          };
+        });
+      }
 
       // Sort episodes numerically
       episodes.sort((a, b) => a.number - b.number);
 
+      // If after checking episodes, zero episodes have audio, do NOT display this book!
+      if (episodes.length === 0) {
+        return null;
+      }
+
       // Smart title resolution
       const metaExtra = KNOWN_TITLE_MAP[showId] || { 
-        cnTitle: showInfo.title || showId, 
+        cnTitle: stripEmojis(showInfo.title) || showId, 
         code: 'BOOK', 
         color: '#cba358' 
       };
 
       return {
         id: showId,
-        title: showInfo.title || showId,
-        cnTitle: metaExtra.cnTitle,
+        title: stripEmojis(showInfo.title) || showId,
+        cnTitle: stripEmojis(metaExtra.cnTitle),
         code: metaExtra.code || 'BOOK',
         cover: '',
         color: metaExtra.color,
@@ -167,7 +232,7 @@ async function scanR2Catalog(bypassCache = false) {
         coverPath: showInfo.coverPath || null,
         chapters: episodes,
       };
-    }));
+    }))).filter(Boolean);
 
     // Sort books: Harry Potter series in order first, then others
     books.sort((a, b) => {
@@ -183,7 +248,7 @@ async function scanR2Catalog(bypassCache = false) {
 
     catalogCache = books;
     catalogCacheTime = Date.now();
-    console.log(`[R2 Scanner] Done! ${books.length} shows discovered.`);
+    console.log(`[R2 Scanner] Done! ${books.length} shows with audio discovered.`);
     return books;
   } catch (err) {
     console.error('[R2 Scanner Error]', err);

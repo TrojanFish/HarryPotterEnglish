@@ -3,8 +3,6 @@ import {
   Bookmark,
   EyeOff,
   PenTool,
-  Sun,
-  Moon,
   HelpCircle,
   Volume2,
   Library,
@@ -22,7 +20,7 @@ import {
  * Student-friendly Header for Primary & Junior High Learners.
  * - Clear, large, friendly mode switcher with fun badges
  * - Visual "魔法学徒" student rank
- * - Eye-protecting Day/Night mode toggle
+ * - Exclusively eye-protecting daylight parchment mode
  */
 export function Header({
   books = [],
@@ -31,8 +29,7 @@ export function Header({
   setSelectedChapter,
   studyMode,
   setStudyMode,
-  isParchment,
-  setIsParchment,
+  isParchment = true,
   onOpenVocab,
   onOpenShortcuts,
   onOpenShelf,
@@ -277,18 +274,6 @@ export function Header({
           )}
         </button>
 
-        {/* Theme Toggle (Day / Night) */}
-        <button
-          onClick={() => setIsParchment(!isParchment)}
-          className={`p-2 rounded-xl border transition-all ${
-            isParchment
-              ? 'border-amber-300/80 bg-amber-50/60 text-[#7a5927] hover:bg-amber-100/60'
-              : 'border-slate-700 bg-slate-800/80 text-amber-300 hover:bg-slate-800'
-          }`}
-          title={isParchment ? '切换至：星空夜读模式' : '切换至：日间护眼学院模式'}
-        >
-          {isParchment ? <Moon size={15} /> : <Sun size={15} />}
-        </button>
 
         {/* Shortcuts */}
         <button

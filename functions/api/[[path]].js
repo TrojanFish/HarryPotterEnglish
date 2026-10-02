@@ -73,14 +73,28 @@ export async function onRequest(context) {
     }
 
     try {
+      const AUDIO_REGEX = /\.(mp3|m4a|wav|aac|ogg|flac)$/i;
+      const stripEmojis = (str) => (!str ? '' : str.replace(/\p{Extended_Pictographic}/gu, '').replace(/\s+/g, ' ').trim());
+
       const listed = await bucket.list({ prefix: 'podcasts/', delimiter: '' });
       const keys = listed.objects.map(o => o.key);
-      const showJsonKeys = keys.filter(k => k.endsWith('/show.json'));
+      const audioKeys = new Set(keys.filter(k => AUDIO_REGEX.test(k)));
 
-      const books = await Promise.all(showJsonKeys.map(async (showKey) => {
-        const showDir = showKey.replace('/show.json', '');
-        const showId = showDir.split('/').pop();
+      const showIds = [...new Set(keys.map(k => {
+        const parts = k.split('/');
+        return parts.length >= 2 ? parts[1] : null;
+      }))].filter(id => id && !id.startsWith('.'));
 
+      const books = (await Promise.all(showIds.map(async (showId) => {
+        const showDir = `podcasts/${showId}`;
+
+        // Strictly verify if this folder contains at least one audio file in R2
+        const folderHasAudio = [...audioKeys].some(k => k.startsWith(`${showDir}/`));
+        if (!folderHasAudio) {
+          return null;
+        }
+
+        const showKey = `${showDir}/show.json`;
         let showInfo = {};
         try {
           const showObj = await bucket.get(showKey);
@@ -91,39 +105,78 @@ export async function onRequest(context) {
         } catch (e) {}
 
         const metaKeys = keys.filter(k => k.startsWith(`${showDir}/episodes/`) && k.endsWith('/meta.json'));
-        const episodes = await Promise.all(metaKeys.map(async (metaKey) => {
-          const epDir = metaKey.replace('/meta.json', '');
-          const epId = epDir.split('/').pop();
-          let epMeta = {};
-          try {
-            const epObj = await bucket.get(metaKey);
-            if (epObj) {
-              const text = await epObj.text();
-              epMeta = JSON.parse(text);
-            }
-          } catch (e) {}
+        let episodes = [];
 
-          const epNum = parseInt(epMeta.episode || epId.replace('ep', ''), 10) || 1;
-          return {
-            id: `${showId}_${epId}`,
-            epId,
-            number: epNum,
-            title: epMeta.title || `Chapter ${epNum}`,
-            description: epMeta.description || '',
-            duration: epMeta.duration || '',
-            audioKey: `${epDir}/audio.mp3`,
-            subtitleKey: `${epDir}/subtitle.vtt`,
-            showId
-          };
-        }));
+        if (metaKeys.length > 0) {
+          episodes = (await Promise.all(metaKeys.map(async (metaKey) => {
+            const epDir = metaKey.replace('/meta.json', '');
+            const epId = epDir.split('/').pop();
+
+            const directAudioKey = `${epDir}/audio.mp3`;
+            const actualAudioKey = audioKeys.has(directAudioKey)
+              ? directAudioKey
+              : [...audioKeys].find(k => k.startsWith(`${epDir}/`));
+
+            if (!actualAudioKey) {
+              return null;
+            }
+
+            let epMeta = {};
+            try {
+              const epObj = await bucket.get(metaKey);
+              if (epObj) {
+                const text = await epObj.text();
+                epMeta = JSON.parse(text);
+              }
+            } catch (e) {}
+
+            const epNum = parseInt(epMeta.episode || epId.replace('ep', ''), 10) || 1;
+            return {
+              id: `${showId}_${epId}`,
+              epId,
+              number: epNum,
+              title: stripEmojis(epMeta.title) || `Chapter ${epNum}`,
+              cnTitle: epMeta.cnTitle ? stripEmojis(epMeta.cnTitle) : '',
+              description: epMeta.description || '',
+              duration: epMeta.duration || '',
+              durationSeconds: epMeta.durationSeconds || 0,
+              audioKey: actualAudioKey,
+              subtitleKey: `${epDir}/subtitle.vtt`,
+              showId
+            };
+          }))).filter(Boolean);
+        } else {
+          const showAudioList = [...audioKeys].filter(k => k.startsWith(`${showDir}/`));
+          episodes = showAudioList.map((aKey, idx) => {
+            const filename = aKey.split('/').pop().replace(AUDIO_REGEX, '');
+            const epNum = idx + 1;
+            return {
+              id: `${showId}_ep${String(epNum).padStart(2, '0')}`,
+              epId: `ep${String(epNum).padStart(2, '0')}`,
+              number: epNum,
+              title: `Chapter ${epNum} (${filename})`,
+              description: '',
+              duration: '',
+              durationSeconds: 0,
+              audioKey: aKey,
+              subtitleKey: aKey.replace(AUDIO_REGEX, '.vtt'),
+              showId
+            };
+          });
+        }
 
         episodes.sort((a, b) => a.number - b.number);
-        const metaExtra = KNOWN_TITLE_MAP[showId] || { cnTitle: showInfo.title || showId, code: 'BOOK', color: '#cba358' };
+
+        if (episodes.length === 0) {
+          return null;
+        }
+
+        const metaExtra = KNOWN_TITLE_MAP[showId] || { cnTitle: stripEmojis(showInfo.title) || showId, code: 'BOOK', color: '#cba358' };
 
         return {
           id: showId,
-          title: showInfo.title || showId,
-          cnTitle: metaExtra.cnTitle,
+          title: stripEmojis(showInfo.title) || showId,
+          cnTitle: stripEmojis(metaExtra.cnTitle),
           code: metaExtra.code || 'BOOK',
           cover: '',
           color: metaExtra.color,
@@ -131,7 +184,7 @@ export async function onRequest(context) {
           coverPath: showInfo.coverPath || null,
           chapters: episodes
         };
-      }));
+      }))).filter(Boolean);
 
       return new Response(JSON.stringify({ books, cached: false }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' }

@@ -60,8 +60,11 @@ export function BookshelfView({
     return '晚上好，霍格沃茨学徒！';
   };
 
+  // Filter only books that actually have audio files/chapters
+  const displayBooks = (books || []).filter(b => b.chapters && b.chapters.length > 0);
+
   // Find active book & chapter objects
-  const currentBookObj = books.find(b => b.id === selectedBook) || books[0];
+  const currentBookObj = displayBooks.find(b => b.id === selectedBook) || displayBooks[0];
   const currentChapterObj = currentBookObj 
     ? (currentBookObj.chapters || []).find(c => c.id === selectedChapter) || (currentBookObj.chapters || [])[0]
     : null;
@@ -289,7 +292,7 @@ export function BookshelfView({
 
         {/* Bookshelf Rows Grid */}
         <div className="space-y-12">
-          {books.map((book, bookIdx) => {
+          {displayBooks.map((book, bookIdx) => {
             const levelInfo = getReadingLevelBadge(book, bookIdx);
             const chapters = book.chapters || [];
             const isCurrentlySelected = book.id === selectedBook;

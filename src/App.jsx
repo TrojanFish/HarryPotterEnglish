@@ -29,26 +29,12 @@ import { Loader2 } from 'lucide-react';
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 export function App() {
-  // Theme & Modes (Default to eye-protecting bright academy parchment for students)
-  const [isParchment, setIsParchment] = useState(() => {
-    try {
-      const saved = localStorage.getItem('hp_theme_parchment');
-      return saved !== null ? saved === 'true' : true;
-    } catch {
-      return true;
-    }
-  });
+  // Theme: Exclusively eye-protecting bright academy parchment for students
+  const isParchment = true;
 
   useEffect(() => {
-    if (isParchment) {
-      document.body.classList.add('theme-parchment');
-    } else {
-      document.body.classList.remove('theme-parchment');
-    }
-    try {
-      localStorage.setItem('hp_theme_parchment', String(isParchment));
-    } catch {}
-  }, [isParchment]);
+    document.body.classList.add('theme-parchment');
+  }, []);
 
   const [studyMode, setStudyMode] = useState('normal'); // 'normal' | 'blind' | 'dictation'
   const [showTranslation, setShowTranslation] = useState(true);
@@ -246,13 +232,17 @@ export function App() {
       if (res.ok) {
         const data = await res.json();
         if (data.books && data.books.length > 0) {
-          setBooks(data.books);
-          // If current selected book doesn't exist, pick first
-          if (!data.books.some(b => b.id === selectedBook)) {
-            const firstBook = data.books[0];
-            setSelectedBook(firstBook.id);
-            if (firstBook.chapters && firstBook.chapters.length > 0) {
-              setSelectedChapter(firstBook.chapters[0].id);
+          // Strictly filter out any books/folders that have no audio files or 0 chapters
+          const booksWithAudio = data.books.filter(b => b.chapters && b.chapters.length > 0);
+          if (booksWithAudio.length > 0) {
+            setBooks(booksWithAudio);
+            // If current selected book doesn't exist, pick first valid book with audio
+            if (!booksWithAudio.some(b => b.id === selectedBook)) {
+              const firstBook = booksWithAudio[0];
+              setSelectedBook(firstBook.id);
+              if (firstBook.chapters && firstBook.chapters.length > 0) {
+                setSelectedChapter(firstBook.chapters[0].id);
+              }
             }
           }
         }
@@ -607,7 +597,6 @@ export function App() {
         studyMode={studyMode}
         setStudyMode={setStudyMode}
         isParchment={isParchment}
-        setIsParchment={setIsParchment}
         onOpenVocab={() => setIsVocabOpen(true)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
         onOpenShelf={() => setIsShelfOpen(true)}
