@@ -316,8 +316,17 @@ app.get('/api/media/*', async (req, res) => {
 
 // 4. Generic raw media endpoint (cover.jpg, png) with strong browser cache
 app.get('/api/raw/*', async (req, res) => {
-  if (!s3Client) return res.status(503).json({ error: 'R2 not configured' });
   const key = req.params[0];
+  const fallbackCover = path.resolve(__dirname, '../public/icon.svg');
+
+  if (!s3Client) {
+    if (key.includes('cover') && fs.existsSync(fallbackCover)) {
+      res.set('Content-Type', 'image/svg+xml');
+      res.set('Cache-Control', 'public, max-age=86400');
+      return res.sendFile(fallbackCover);
+    }
+    return res.status(503).json({ error: 'R2 not configured' });
+  }
 
   try {
     const command = new GetObjectCommand({ Bucket: bucketName, Key: key });
@@ -334,6 +343,11 @@ app.get('/api/raw/*', async (req, res) => {
       if (response.Body.destroy) response.Body.destroy();
     });
   } catch (err) {
+    if (key.includes('cover') && fs.existsSync(fallbackCover)) {
+      res.set('Content-Type', 'image/svg+xml');
+      res.set('Cache-Control', 'public, max-age=86400');
+      return res.sendFile(fallbackCover);
+    }
     res.status(404).json({ error: err.message });
   }
 });

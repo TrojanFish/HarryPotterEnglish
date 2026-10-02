@@ -87,14 +87,14 @@ export function BookShelfDrawer({
                       alt={book.title}
                       onError={(e) => {
                         e.target.style.display = 'none';
-                        e.target.parentNode.classList.add('flex', 'items-center', 'justify-center');
-                        const textNode = document.createElement('span');
-                        textNode.className = 'font-magical text-amber-500 font-bold text-sm tracking-wider';
-                        textNode.innerText = book.code || 'HP';
-                        e.target.parentNode.appendChild(textNode);
+                        const fallback = e.target.nextElementSibling;
+                        if (fallback) fallback.style.display = 'flex';
                       }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />
+                    <div className="w-full h-full hidden items-center justify-center bg-amber-950/30 text-amber-500 font-magical font-bold text-sm tracking-wider">
+                      {book.code || 'HP'}
+                    </div>
                   </div>
 
                   {/* Details */}

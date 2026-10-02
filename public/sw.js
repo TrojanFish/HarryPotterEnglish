@@ -34,6 +34,10 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Only handle GET requests with http: or https: scheme
+  if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith('http://') && !event.request.url.startsWith('https://')) return;
+
   const url = new URL(event.request.url);
 
   // 0. Bypass SW completely for localhost/development and Vite HMR

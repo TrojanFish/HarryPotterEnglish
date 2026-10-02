@@ -41,14 +41,14 @@ export function BookShowcase({
                 alt={currentBook.title}
                 onError={(e) => {
                   e.target.style.display = 'none';
-                  e.target.parentNode.classList.add('flex', 'items-center', 'justify-center');
-                  const textNode = document.createElement('span');
-                  textNode.className = 'font-magical text-amber-500 font-bold text-lg tracking-wider';
-                  textNode.innerText = currentBook.code || 'HP';
-                  e.target.parentNode.appendChild(textNode);
+                  const fallback = e.target.nextElementSibling;
+                  if (fallback) fallback.style.display = 'flex';
                 }}
                 className="w-full h-full object-cover"
               />
+              <div className="w-full h-full hidden items-center justify-center bg-amber-950/30 text-amber-500 font-magical font-bold text-lg tracking-wider">
+                {currentBook.code || 'HP'}
+              </div>
               {/* Subtle magical gloss sheen */}
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity" />
             </div>

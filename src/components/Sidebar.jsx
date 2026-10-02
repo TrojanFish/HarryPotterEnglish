@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Library, 
   ChevronDown, 
@@ -28,8 +28,13 @@ export function Sidebar({
   isOfflinePlaying = false,
 }) {
   const [isChaptersExpanded, setIsChaptersExpanded] = useState(true);
+  const [coverError, setCoverError] = useState(false);
   const chapters = currentBook?.chapters || [];
   const coverUrl = currentBook ? `/api/raw/podcasts/${currentBook.id}/cover.jpg` : null;
+
+  useEffect(() => {
+    setCoverError(false);
+  }, [coverUrl]);
 
   if (!currentBook) return null;
 
@@ -55,23 +60,19 @@ export function Sidebar({
           <div className="flex gap-3 items-center">
             {/* 3:4 Book Cover */}
             <div className="w-16 h-22 aspect-[3/4] rounded-xl overflow-hidden border border-amber-400/60 shadow-md shrink-0 bg-slate-900 relative">
-              {coverUrl ? (
+              {coverUrl && !coverError ? (
                 <img
                   src={coverUrl}
                   alt={currentBook.title}
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.parentNode.classList.add('flex', 'items-center', 'justify-center');
-                    const textNode = document.createElement('span');
-                    textNode.className = 'font-magical text-amber-500 font-bold text-sm tracking-wider';
-                    textNode.innerText = currentBook.code || 'HP';
-                    e.target.parentNode.appendChild(textNode);
-                  }}
+                  onError={() => setCoverError(true)}
                   className="w-full h-full object-cover transition-transform group-hover:scale-105"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-amber-950/20 text-amber-500">
-                  <BookOpen className="w-7 h-7" />
+                <div className="w-full h-full flex flex-col items-center justify-center bg-amber-950/30 text-amber-500 p-1 text-center">
+                  <BookOpen className="w-6 h-6 mb-1" />
+                  <span className="font-magical text-[11px] font-bold text-amber-400 leading-tight">
+                    {currentBook.code || 'HP'}
+                  </span>
                 </div>
               )}
             </div>
