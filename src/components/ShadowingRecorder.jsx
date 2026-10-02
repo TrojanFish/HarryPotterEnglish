@@ -391,7 +391,7 @@ export function ShadowingRecorder({
         <div className="p-4 rounded-xl bg-black/25 border border-gray-700/40 mb-4 transition-all">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-magical uppercase tracking-wider text-[#cba358]">
-              Target Sentence
+              原著朗读目标句 · Target Sentence
             </span>
             {/* Legend */}
             {evaluationResult && (
@@ -507,7 +507,7 @@ export function ShadowingRecorder({
               }`}>
                 <span>{evaluationResult.score}%</span>
                 <span className="text-[9px] uppercase tracking-wider -mt-1 font-sans">
-                  Grade {gradeInfo.letter}
+                  等阶 {gradeInfo.letter}
                 </span>
               </div>
               <div>

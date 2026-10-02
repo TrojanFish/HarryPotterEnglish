@@ -74,8 +74,25 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
           ))}
         </div>
 
-        <p className={`text-xs text-center mt-4 ${isParchment ? 'text-[#6b543e]' : 'text-[#8c9ba5]'}`}>
-          随时使用空格键与方向键，无需鼠标移动即可行云流水地练习精听！
+        {/* Student Study Tips */}
+        <div className={`p-3 rounded-xl border text-xs space-y-1.5 mt-4 ${
+          isParchment 
+            ? 'bg-[#f5ecda] border-amber-300/80 text-[#543b22]' 
+            : 'bg-slate-900/80 border-slate-800 text-slate-300'
+        }`}>
+          <div className="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+            <span>中小学高效精听四步法：</span>
+          </div>
+          <ol className="list-decimal list-inside space-y-1 text-[11px] leading-relaxed">
+            <li><strong>泛听感知</strong>：以 0.85x 或 1.0x 完整通听整章，掌握大意</li>
+            <li><strong>逐句精析</strong>：打开双语译文，轻点生词查看纯正中文释义</li>
+            <li><strong>磨耳朵盲听</strong>：开启迷雾遮罩，脱离文字单纯锻炼听辨能力</li>
+            <li><strong>拼写闯关</strong>：进入听写教室，敲键盘闯关斩获魔法五角星</li>
+          </ol>
+        </div>
+
+        <p className={`text-xs text-center mt-3 ${isParchment ? 'text-[#6b543e]' : 'text-[#8c9ba5]'}`}>
+          随时使用键盘空格键与方向键，无需鼠标即可行云流水地练习精听！
         </p>
       </div>
     </div>

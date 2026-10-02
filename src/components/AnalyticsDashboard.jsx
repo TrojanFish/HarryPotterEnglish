@@ -71,6 +71,15 @@ export function AnalyticsDashboard({
   // Bar Chart calculations
   const weeklyData = currentSummary.weeklyListeningMinutes || [];
   const maxWeeklyMinutes = Math.max(15, ...weeklyData.map(d => d.minutes || 0));
+  const dayZhMap = {
+    Sun: '周日',
+    Mon: '周一',
+    Tue: '周二',
+    Wed: '周三',
+    Thu: '周四',
+    Fri: '周五',
+    Sat: '周六',
+  };
   const chartHeight = 160;
   const chartWidth = 520;
   const barWidth = 36;
@@ -129,7 +138,7 @@ export function AnalyticsDashboard({
               <h2 className="text-lg sm:text-xl font-bold font-magical tracking-wide text-[#d3a625] text-gold-glow flex items-center gap-2">
                 霍格沃茨学业数据罗盘
                 <span className="text-[11px] font-sans px-2 py-0.5 rounded-full bg-[#d3a625]/20 text-[#f3d38c] border border-[#d3a625]/30">
-                  Visual Analytics
+                  学情追踪
                 </span>
               </h2>
               <p className={`text-xs ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>
@@ -388,7 +397,7 @@ export function AnalyticsDashboard({
                         </text>
                       )}
 
-                      {/* Day Label (e.g. Mon, Tue) */}
+                      {/* Day Label (e.g. 周一, 周二) */}
                       <text
                         x={x + barWidth / 2}
                         y={chartHeight + 16}
@@ -397,7 +406,7 @@ export function AnalyticsDashboard({
                         fontWeight={isToday ? 'bold' : 'normal'}
                         fill={isToday ? '#d3a625' : (isParchment ? '#5c4834' : '#94a3b8')}
                       >
-                        {d.day}
+                        {dayZhMap[d.day] || d.day}
                         {isToday ? ' (今)' : ''}
                       </text>
 
@@ -423,7 +432,7 @@ export function AnalyticsDashboard({
               <div className={`mt-2 text-xs flex items-center justify-center gap-2 font-mono py-1 rounded-lg ${
                 isParchment ? 'bg-[#ede2c9] text-[#2d1e12]' : 'bg-[#182335] text-[#f3d38c]'
               }`}>
-                <span>{weeklyData[hoveredBarIndex].date} ({weeklyData[hoveredBarIndex].day})</span>
+                <span>{weeklyData[hoveredBarIndex].date} ({dayZhMap[weeklyData[hoveredBarIndex].day] || weeklyData[hoveredBarIndex].day})</span>
                 <span>•</span>
                 <span>听力时长: <strong>{weeklyData[hoveredBarIndex].minutes}</strong> 分钟</span>
               </div>

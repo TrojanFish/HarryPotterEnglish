@@ -91,8 +91,12 @@ export function parseVTT(vttText) {
       }
     }
 
-    // Ensure no trailing standalone cue index at the end of sentence (e.g. "something. 2" -> "something.")
-    text = text.replace(/\s+\d+$/, '').trim();
+    // Ensure no trailing standalone cue index at the end of sentence (e.g. "something. 2" -> "something.", "(1)", "[1]")
+    const trailingNumRegex = /\s*[\(\[\{＃#]?\d+[\)\]\}]?\s*$/;
+    text = text.replace(trailingNumRegex, '').trim();
+    if (translation) {
+      translation = translation.replace(trailingNumRegex, '').trim();
+    }
 
     return {
       id: cue.id,

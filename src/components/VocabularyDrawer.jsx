@@ -26,6 +26,12 @@ export function VocabularyDrawer({
   const [isFlashcardMode, setIsFlashcardMode] = useState(false);
   const [flashcardIndex, setFlashcardIndex] = useState(0);
   const [isCardFlipped, setIsCardFlipped] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 2500);
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -59,6 +65,7 @@ export function VocabularyDrawer({
     if (!vocabList || vocabList.length === 0) return;
     const content = generateAnkiTSV(vocabList, { deckName: 'Hogwarts Magic English' });
     downloadAnkiFile(content, `hogwarts_anki_${Date.now()}.tsv`);
+    showToast('已导出 Anki 牌组文件 (.tsv)，可在 Anki 中直接导入！');
   };
 
   const handleExportCSV = () => {
@@ -77,6 +84,7 @@ export function VocabularyDrawer({
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    showToast('已成功导出 CSV 单词表格！');
   };
 
   const currentFlashcard = filteredList[flashcardIndex];
@@ -151,18 +159,22 @@ export function VocabularyDrawer({
                   {/* Flashcard Body */}
                   <div 
                     onClick={() => setIsCardFlipped(!isCardFlipped)}
-                    className={`w-full min-h-[300px] my-6 rounded-2xl p-6 border-2 cursor-pointer flex flex-col items-center justify-center text-center transition-all duration-300 transform shadow-xl ${
-                      isCardFlipped 
-                        ? 'border-[#cba358] bg-[#182333]/90' 
-                        : 'border-[#384860] bg-[#141b26]/70 hover:border-[#cba358]/60'
+                    className={`w-full min-h-[300px] my-6 rounded-2xl p-6 border-2 cursor-pointer flex flex-col items-center justify-center text-center transition-all duration-300 transform shadow-xl select-none ${
+                      isParchment
+                        ? isCardFlipped 
+                          ? 'border-amber-400 bg-[#fffdf9] text-amber-950 shadow-md' 
+                          : 'border-amber-200 bg-[#faf6ee] text-[#2c221e] hover:border-amber-400'
+                        : isCardFlipped 
+                          ? 'border-[#cba358] bg-[#182333]/90 text-amber-100' 
+                          : 'border-[#384860] bg-[#141b26]/70 text-[#e2d9c8] hover:border-[#cba358]/60'
                     }`}
                   >
                     {!isCardFlipped ? (
                       <div>
                         <span className="text-xs font-mono uppercase tracking-widest text-[#8c9ba5] block mb-2">
-                          QUESTION
+                          正面 · QUESTION
                         </span>
-                        <h3 className="text-3xl font-magical font-bold text-[#f3d38c] mb-2">
+                        <h3 className="text-3xl font-magical font-bold text-amber-700 dark:text-[#f3d38c] mb-2">
                           {currentFlashcard.word}
                         </h3>
                         {currentFlashcard.phonetic && (
@@ -170,26 +182,32 @@ export function VocabularyDrawer({
                             {currentFlashcard.phonetic}
                           </span>
                         )}
-                        <p className="text-xs text-gray-400 mt-4">
-                          点击卡片查看中文释义与例句
+                        <p className={`text-xs mt-4 ${isParchment ? 'text-amber-800/70' : 'text-gray-400'}`}>
+                          轻点卡片翻转查看中文释义与例句
                         </p>
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <span className="text-xs font-mono uppercase tracking-widest text-[#cba358] block">
-                          ANSWER
+                        <span className="text-xs font-mono uppercase tracking-widest text-amber-600 dark:text-[#cba358] block">
+                          背面释义 · ANSWER
                         </span>
-                        <h4 className="text-xl font-bold text-amber-200 font-reading">
+                        <h4 className="text-xl font-bold text-amber-900 dark:text-amber-200 font-reading">
                           {currentFlashcard.translation}
                         </h4>
                         {currentFlashcard.lore && (
-                          <div className="text-xs text-amber-100/80 bg-[#740001]/30 p-2.5 rounded-lg border border-amber-400/30 flex items-start gap-1.5 text-left">
-                            <Sparkles size={13} className="text-amber-400 shrink-0 mt-0.5" />
+                          <div className={`text-xs p-2.5 rounded-lg border flex items-start gap-1.5 text-left ${
+                            isParchment
+                              ? 'bg-amber-100/80 text-amber-950 border-amber-300'
+                              : 'bg-[#740001]/30 text-amber-100/80 border-amber-400/30'
+                          }`}>
+                            <Sparkles size={13} className="text-amber-500 shrink-0 mt-0.5" />
                             <span>{currentFlashcard.lore}</span>
                           </div>
                         )}
                         {currentFlashcard.context && (
-                          <p className="text-xs italic text-gray-300 font-reading mt-2 border-t border-gray-700/40 pt-2">
+                          <p className={`text-xs italic font-reading mt-2 border-t pt-2 ${
+                            isParchment ? 'text-[#6b553e] border-amber-200' : 'text-gray-300 border-gray-700/40'
+                          }`}>
                             "{currentFlashcard.context}"
                           </p>
                         )}
@@ -356,6 +374,16 @@ export function VocabularyDrawer({
                 </button>
               </div>
             </>
+          )}
+
+          {/* Toast Feedback Notification */}
+          {toastMessage && (
+            <div className="absolute bottom-20 left-4 right-4 z-50 animate-bounce">
+              <div className="p-3 rounded-2xl bg-emerald-700/95 border border-emerald-500 text-white text-xs font-bold shadow-2xl flex items-center justify-center gap-2">
+                <CheckCircle size={15} />
+                <span>{toastMessage}</span>
+              </div>
+            </div>
           )}
         </div>
       </div>

@@ -165,9 +165,14 @@ export function Sidebar({
 
                 {/* Chapter Title & Audio wave if active */}
                 <div className="flex-1 min-w-0">
-                  <div className="truncate font-reading text-sm leading-snug">
-                    {ch.title}
+                  <div className="truncate font-reading text-xs sm:text-sm font-semibold leading-snug">
+                    {ch.cnTitle || ch.title}
                   </div>
+                  {ch.cnTitle && (
+                    <div className="text-[11px] font-reading text-slate-500 truncate mt-0.5">
+                      {ch.title}
+                    </div>
+                  )}
                   {ch.duration && (
                     <div className="text-[10px] font-mono text-slate-400 mt-0.5">
                       {ch.duration}

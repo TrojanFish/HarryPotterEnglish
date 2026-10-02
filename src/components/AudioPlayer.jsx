@@ -119,7 +119,7 @@ export function AudioPlayer({
       <div className="max-w-7xl mx-auto px-4 py-2 sm:py-2.5 flex items-center justify-between gap-3">
         
         {/* ── Left: Thumbnail + Title + Sentence Count ─────────────── */}
-        <div className="flex items-center space-x-3 w-full md:w-1/3 min-w-0">
+        <div className="flex items-center space-x-2.5 sm:space-x-3 flex-1 md:w-1/3 md:flex-initial min-w-0">
           {coverUrl && (
             <div className="w-10 h-13 aspect-[3/4] rounded-lg border border-amber-400/60 shadow-sm overflow-hidden shrink-0 hidden sm:block bg-slate-900">
               <img
@@ -140,8 +140,8 @@ export function AudioPlayer({
                   <span className="w-1 h-2 bg-amber-500 rounded-full animate-wave-3" />
                 </span>
               )}
-              <span className="font-magical font-bold text-xs sm:text-sm text-amber-900 dark:text-amber-300 truncate">
-                {currentChapter ? currentChapter.title : 'Chapter'}
+              <span className="font-magical font-bold text-xs sm:text-sm text-amber-900 dark:text-amber-300 truncate" title={currentChapter ? (currentChapter.cnTitle ? `${currentChapter.cnTitle} · ${currentChapter.title}` : currentChapter.title) : 'Chapter'}>
+                {currentChapter ? (currentChapter.cnTitle ? `${currentChapter.cnTitle} · ${currentChapter.title}` : currentChapter.title) : 'Chapter'}
               </span>
             </div>
 

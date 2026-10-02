@@ -321,9 +321,14 @@ export function DictationStudio({
                 return (
                   <span 
                     key={i} 
-                    className="inline-flex items-center justify-center min-w-[48px] h-7 border-b-2 border-dashed border-amber-400 text-amber-500/40 text-xs font-mono font-bold select-none px-1"
+                    className={`inline-flex items-center justify-center min-w-[54px] px-2.5 py-0.5 rounded-lg border border-dashed text-xs font-mono font-bold select-none transition-all ${
+                      isParchment
+                        ? 'border-amber-400/80 bg-amber-50/70 text-amber-600/70'
+                        : 'border-slate-700 bg-slate-900/60 text-slate-500'
+                    }`}
+                    title={`待拼写单词 (${item.text.length} 个字母)`}
                   >
-                    ____
+                    {Array(Math.min(item.text.length, 6)).fill('•').join(' ')}
                   </span>
                 );
               })}

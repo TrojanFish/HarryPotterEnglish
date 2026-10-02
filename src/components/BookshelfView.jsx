@@ -14,7 +14,8 @@ import {
   X,
   Clock,
   Compass,
-  CheckCircle2
+  CheckCircle2,
+  Search
 } from 'lucide-react';
 import { formatTime } from '../utils/vttParser';
 
@@ -48,6 +49,7 @@ export function BookshelfView({
 }) {
   // Modal state for viewing a specific book's chapters
   const [inspectingBook, setInspectingBook] = useState(null);
+  const [chapterSearch, setChapterSearch] = useState('');
   const [coverErrorMap, setCoverErrorMap] = useState({});
 
   // Time-of-day greeting
@@ -439,7 +441,10 @@ export function BookshelfView({
               </div>
 
               <button 
-                onClick={() => setInspectingBook(null)}
+                onClick={() => {
+                  setInspectingBook(null);
+                  setChapterSearch('');
+                }}
                 className="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                 title="关闭目录"
               >
@@ -447,9 +452,33 @@ export function BookshelfView({
               </button>
             </div>
 
+            {/* Quick Search Input */}
+            <div className="px-5 pt-3 pb-1 shrink-0">
+              <div className="relative">
+                <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={chapterSearch}
+                  onChange={(e) => setChapterSearch(e.target.value)}
+                  placeholder="按关键词快速筛选章节（如：第一章、Boy、魔药）..."
+                  className={`w-full pl-9 pr-4 py-2 rounded-xl text-xs font-reading border focus:outline-none transition-all ${
+                    isParchment 
+                      ? 'bg-white border-amber-200 text-amber-950 focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20' 
+                      : 'bg-slate-800 border-slate-700 text-slate-200 focus:border-amber-400'
+                  }`}
+                />
+              </div>
+            </div>
+
             {/* Chapters List */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-2.5">
-              {(inspectingBook.chapters || []).map((ch, idx) => {
+              {(inspectingBook.chapters || [])
+                .filter(ch => {
+                  if (!chapterSearch.trim()) return true;
+                  const q = chapterSearch.toLowerCase();
+                  return (ch.title || '').toLowerCase().includes(q) || (ch.cnTitle || '').includes(q) || String(ch.number).includes(q);
+                })
+                .map((ch, idx) => {
                 const isCurrent = inspectingBook.id === selectedBook && ch.id === selectedChapter;
                 return (
                   <div
@@ -508,11 +537,18 @@ export function BookshelfView({
       {/* ── 5. Floating Mini-Player Capsule (when audio is active) ─────── */}
       {(currentTime > 0 || isPlaying) && currentChapterObj && (
         <div className="fixed bottom-4 left-4 right-4 max-w-3xl mx-auto z-40 animate-fade-in">
-          <div className={`p-3 sm:p-4 rounded-3xl border-2 shadow-2xl backdrop-blur-md flex items-center justify-between gap-3 ${
+          <div className={`relative p-3 sm:p-4 rounded-3xl border-2 shadow-2xl backdrop-blur-md flex items-center justify-between gap-3 overflow-hidden ${
             isParchment 
               ? 'bg-[#ffffff]/95 border-amber-300 text-[#2d241c] shadow-[0_8px_30px_rgba(180,140,70,0.2)]' 
               : 'bg-slate-900/95 border-amber-500/50 text-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.5)]'
           }`}>
+            {/* Top Slim Audio Scrubber Line */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500/15">
+              <div 
+                className="h-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-200"
+                style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
+              />
+            </div>
             
             {/* Play/Pause & Soundwave indicator */}
             <div className="flex items-center gap-3 min-w-0 flex-1">
