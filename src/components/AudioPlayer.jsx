@@ -148,9 +148,9 @@ export function AudioPlayer({
   }, [currentTime, isPlaying, duration, waypoints]);
 
   return (
-    <div className={`shrink-0 border-t transition-colors duration-300 shadow-xl backdrop-blur-md select-none relative ${
+    <div className={`shrink-0 border-t transition-colors duration-300 shadow-[0_-8px_30px_rgba(160,110,60,0.06)] backdrop-blur-xl select-none relative ${
       isParchment 
-        ? 'bg-[#ffffff]/95 border-[#e8dcb9] text-[#2c221e]' 
+        ? 'bg-[#ffffff]/95 border-[#ede4d5] text-[#1e1610]' 
         : 'bg-[#0f172a]/95 border-slate-800 text-slate-100'
     }`}>
       {/* ── Micro-Waypoint Celebration Floating Toast ─────────────── */}

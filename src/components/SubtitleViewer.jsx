@@ -115,9 +115,9 @@ export function SubtitleViewer({
   return (
     <div className="relative flex-1 overflow-y-auto px-3 sm:px-6 py-4 max-w-4xl mx-auto w-full pb-16" ref={containerRef}>
       {/* ── Subtitle Toolbar for Students ─────────────────────────── */}
-      <div className={`flex flex-wrap items-center justify-between gap-2.5 mb-4 p-3 rounded-2xl border transition-colors ${
+      <div className={`flex flex-wrap items-center justify-between gap-2.5 mb-5 p-3.5 rounded-3xl border transition-colors ${
         isParchment
-          ? 'bg-[#ffffff]/80 border-[#e8dcb9] shadow-sm text-[#4a3928]'
+          ? 'bg-white/95 border-[#eee5d8] shadow-xs text-[#2b1f14]'
           : 'bg-slate-900/80 border-slate-800 text-slate-300'
       }`}>
         {/* Left: Cue counts & status */}
@@ -229,13 +229,13 @@ export function SubtitleViewer({
 
               <div
                 ref={isActive ? activeCueRef : null}
-                className={`group relative rounded-2xl p-4 sm:p-5 transition-all duration-300 border-2 ${
+                className={`group relative rounded-3xl p-5 sm:p-6 transition-all duration-300 border-2 ${
                   isActive
                     ? isParchment
-                      ? 'lumos-active bg-[#fffcf5] border-amber-500 border-l-[6px] border-l-amber-500 shadow-md ring-2 ring-amber-400/20'
+                      ? 'lumos-active bg-[#fffdfa] border-amber-500 border-l-[6px] border-l-amber-500 shadow-md ring-2 ring-amber-400/20'
                       : 'lumos-active bg-slate-900 border-amber-400 border-l-[6px] border-l-amber-400 shadow-xl'
                     : isParchment
-                    ? 'bg-[#ffffff] border-[#e7ddc8] hover:border-amber-300 hover:shadow-sm'
+                    ? 'duo-card border-[#eee5d8] hover:border-amber-300 hover:shadow-md'
                     : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
                 }`}
               >

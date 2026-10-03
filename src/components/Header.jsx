@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Bookmark,
   EyeOff,
@@ -7,20 +7,21 @@ import {
   Volume2,
   Library,
   Download,
-  BarChart2,
   Flame,
   HardDrive,
   ChevronDown,
   Sparkles,
   Headphones,
   ArrowLeft,
+  SlidersHorizontal,
+  GraduationCap
 } from 'lucide-react';
 
 /**
- * Student-friendly Header for Primary & Junior High Learners.
- * - Clear, large, friendly mode switcher with fun badges
- * - Visual "魔法学徒" student rank
- * - Exclusively eye-protecting daylight parchment mode
+ * Modern Duolingo-styled Header for Hogwarts Magic English.
+ * - Clean, uncluttered layout with 3 clear visual zones
+ * - Modern tactile view switcher & gamified status pills
+ * - Unified quick tools dropdown for offline storage, shortcuts, and app install
  */
 export function Header({
   books = [],
@@ -46,6 +47,20 @@ export function Header({
   onSwitchView,
 }) {
   const currentBook = (books && books.find((b) => b.id === selectedBook)) || books[0];
+  const [showToolsMenu, setShowToolsMenu] = useState(false);
+  const toolsMenuRef = useRef(null);
+
+  // Close tools menu on outside click
+  useEffect(() => {
+    if (!showToolsMenu) return;
+    const handleClickOutside = (e) => {
+      if (toolsMenuRef.current && !toolsMenuRef.current.contains(e.target)) {
+        setShowToolsMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showToolsMenu]);
 
   // Student-friendly mode configurations
   const modes = [
@@ -59,7 +74,7 @@ export function Header({
       key: 'blind',  
       label: '魔法磨耳朵', 
       desc: '迷雾遮罩 · 盲听训练',
-      icon: <EyeOff size={14} className="text-indigo-400" /> 
+      icon: <EyeOff size={14} className="text-indigo-500" /> 
     },
     { 
       key: 'dictation', 
@@ -71,9 +86,9 @@ export function Header({
 
   return (
     <header
-      className={`h-16 shrink-0 sticky top-0 z-40 flex items-center justify-between px-3 sm:px-6 border-b transition-colors duration-300 backdrop-blur-md ${
+      className={`h-16 shrink-0 sticky top-0 z-40 flex items-center justify-between px-3 sm:px-6 border-b transition-colors duration-300 backdrop-blur-xl ${
         isParchment
-          ? 'bg-[#ffffff]/92 border-[#e8dcb9] text-[#2d241c] shadow-[0_2px_12px_rgba(180,140,70,0.08)]'
+          ? 'bg-[#ffffff]/90 border-[#ede4d5] text-[#1e1610] shadow-[0_2px_12px_rgba(160,110,60,0.05)]'
           : 'bg-[#0f172a]/95 border-[#1e293b] text-[#f1f5f9] shadow-lg'
       }`}
     >
@@ -83,7 +98,7 @@ export function Header({
         {currentView === 'player' && (
           <button
             onClick={() => onSwitchView && onSwitchView('bookshelf')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-amber-400/80 bg-white/90 hover:bg-amber-50 text-amber-950 font-bold text-xs sm:text-sm shadow-xs hover:shadow transition-all active:scale-95 group cursor-pointer"
+            className="duo-pill text-xs sm:text-sm hover:border-amber-400 group cursor-pointer"
             title="返回霍格沃茨书架选书"
           >
             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform text-amber-700" />
@@ -100,23 +115,24 @@ export function Header({
               onOpenShelf();
             }
           }}
-          className="flex items-center gap-2 cursor-pointer group select-none"
+          className="flex items-center gap-2.5 cursor-pointer group select-none"
           title="点击返回魔法书房"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center text-white shadow-md group-hover:scale-105 active:scale-95 transition-transform">
+          <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center text-white shadow-md shadow-amber-500/20 group-hover:scale-105 active:scale-95 transition-transform">
             <Sparkles className="w-5 h-5 text-amber-950" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <h1 className="font-magical font-bold text-base sm:text-lg tracking-wide text-amber-800 dark:text-amber-300">
+              <h1 className="font-magical font-bold text-base sm:text-lg tracking-wide text-amber-950 dark:text-amber-200">
                 霍格沃茨魔法英语
               </h1>
-              <span className="hidden sm:inline-flex items-center gap-0.5 text-[10px] px-2 py-0.5 rounded-full bg-red-800 text-amber-200 font-sans font-semibold shadow-xs">
-                青少精听
+              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-red-800 text-amber-100 font-sans font-bold shadow-2xs">
+                <GraduationCap size={10} />
+                <span>少儿原版</span>
               </span>
             </div>
             <p className="text-[11px] hidden md:block font-medium text-[#7a644c]">
-              听魔法小说 · 轻松学地道英语
+              听魔法原著 · 轻松学地道英语
             </p>
           </div>
         </div>
@@ -125,7 +141,7 @@ export function Header({
         {currentView === 'player' && (
           <button
             onClick={onOpenShelf}
-            className="flex lg:hidden items-center gap-1 text-xs px-2.5 py-1.5 rounded-xl border border-amber-300/90 bg-white/90 text-amber-950 font-bold truncate max-w-[130px] sm:max-w-[180px] shadow-xs active:scale-95 transition-all"
+            className="flex lg:hidden items-center gap-1 text-xs px-2.5 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 text-amber-950 font-bold truncate max-w-[130px] sm:max-w-[170px] shadow-xs active:scale-95 transition-all"
             title="切换原著故事"
           >
             <Library size={12} className="shrink-0 text-amber-600" />
@@ -135,21 +151,20 @@ export function Header({
         )}
       </div>
 
-      {/* ── CENTER: Contextual Switcher ───────────────────────────── */}
+      {/* ── CENTER: Clean Modern Segmented Pill Switcher ────────────── */}
       <div className="flex items-center justify-center">
         {currentView === 'bookshelf' ? (
-          /* Bookshelf Navigation Pill */
-          <div className="flex rounded-2xl p-1 border border-[#dfceb5] bg-[#f0e5d4] gap-1 shadow-inner">
+          <div className="flex rounded-2xl p-1 border border-[#e8ddcd] bg-[#f5ede2]/90 gap-1 shadow-inner">
             <button
               onClick={() => onSwitchView && onSwitchView('bookshelf')}
-              className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-sm active:scale-95 transition-all select-none cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-sm active:scale-95 transition-all select-none cursor-pointer"
             >
               <Library size={14} />
               <span>魔法书架</span>
             </button>
             <button
               onClick={() => onSwitchView && onSwitchView('player')}
-              className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-[#6b5235] hover:bg-[#e6d8c3] hover:text-[#2d2217] active:scale-95 transition-all select-none cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-[#665039] hover:bg-white/70 hover:text-[#2d2217] active:scale-95 transition-all select-none cursor-pointer"
               title="进入全功能精听教室"
             >
               <Headphones size={14} className="text-amber-700" />
@@ -157,8 +172,7 @@ export function Header({
             </button>
           </div>
         ) : (
-          /* Player 3 Core Learning Modes */
-          <div className="flex rounded-2xl p-1 border border-[#dfceb5] bg-[#f0e5d4] gap-1 shadow-inner">
+          <div className="flex rounded-2xl p-1 border border-[#e8ddcd] bg-[#f5ede2]/90 gap-1 shadow-inner">
             {modes.map(({ key, label, icon, desc }) => {
               const isActive = studyMode === key;
               return (
@@ -167,8 +181,8 @@ export function Header({
                   onClick={() => setStudyMode(key)}
                   className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm transition-all select-none cursor-pointer active:scale-95 ${
                     isActive
-                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-sm font-bold scale-[1.02]'
-                      : 'text-[#6b5235] hover:bg-[#e6d8c3] hover:text-[#2d2217] font-semibold'
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-sm font-bold'
+                      : 'text-[#665039] hover:bg-white/70 hover:text-[#2d2217] font-semibold'
                   }`}
                   title={desc}
                 >
@@ -181,74 +195,102 @@ export function Header({
         )}
       </div>
 
-      {/* ── RIGHT: Gamified Student Tools ─────────────────────────── */}
-      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        {/* PWA Install */}
-        {canInstallPwa && (
-          <button
-            onClick={onInstallPwa}
-            className="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
-            title="一键安装到桌面，随时随地听故事"
-          >
-            <Download size={13} />
-            <span>下载 App</span>
-          </button>
-        )}
-
-        {/* Vocab Notebook */}
-        <button
-          onClick={onOpenVocab}
-          className="relative p-2 sm:px-3 sm:py-1.5 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 flex items-center gap-1.5 text-xs font-bold shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
-          title="我的魔法生词本"
-        >
-          <Bookmark size={15} className="text-amber-700" />
-          <span className="hidden md:inline">生词本</span>
-          {vocabCount > 0 && (
-            <span className="min-w-[18px] h-[18px] px-1 bg-red-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs">
-              {vocabCount}
-            </span>
-          )}
-        </button>
-
-        {/* Achievement Compass */}
+      {/* ── RIGHT: Duolingo Gamified Status & Unified Tools ─────────── */}
+      <div className="flex items-center gap-2 shrink-0">
+        {/* Daily Streak Flame Pill */}
         <button
           onClick={onOpenAnalytics}
-          className="relative p-2 sm:px-3 sm:py-1.5 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 flex items-center gap-1.5 text-xs font-bold shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
-          title={`学业成就 · 连续打卡 ${streakDays} 天`}
+          className="duo-pill text-xs hover:border-amber-400 group cursor-pointer"
+          title={`今日打卡状态：已连续打卡 ${streakDays} 天，点击查看学业罗盘`}
         >
-          <BarChart2 size={15} className="text-amber-700" />
-          <span className="hidden md:inline">成就</span>
-          {streakDays > 0 ? (
-            <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-[10px] rounded-full font-bold shadow-xs animate-pulse">
-              <Flame size={10} />
-              {streakDays}天
-            </span>
-          ) : (
-            <span className="hidden lg:inline text-[10px] text-amber-800 font-semibold">0天</span>
-          )}
+          <Flame size={15} className="text-orange-500 group-hover:scale-110 transition-transform" />
+          <span className="font-mono font-bold text-amber-950">{streakDays} 天</span>
         </button>
 
-        {/* Offline Storage */}
+        {/* Vocab Notebook Pill */}
         <button
-          onClick={onOpenStorageManager}
-          className="relative p-2 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
-          title={`魔法行囊（离线下载）：已下载 ${cachedChaptersCount} 章`}
+          onClick={onOpenVocab}
+          className="duo-pill text-xs hover:border-amber-400 group cursor-pointer"
+          title="打开魔法生词本"
         >
-          <HardDrive size={15} className="text-emerald-700" />
-          {cachedChaptersCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white" />
-          )}
+          <Bookmark size={14} className="text-amber-700 group-hover:scale-110 transition-transform" />
+          <span className="font-bold text-amber-950">{vocabCount} 词</span>
         </button>
 
-        {/* Shortcuts */}
-        <button
-          onClick={onOpenShortcuts}
-          className="p-2 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
-          title="使用秘籍与快捷键指南"
-        >
-          <HelpCircle size={15} className="text-amber-700" />
-        </button>
+        {/* Unified Tools Dropdown (Offline Cache, Shortcuts, PWA Install) */}
+        <div className="relative" ref={toolsMenuRef}>
+          <button
+            onClick={() => setShowToolsMenu(!showToolsMenu)}
+            className="duo-pill p-2 sm:px-2.5 sm:py-2 text-xs hover:border-amber-400 cursor-pointer"
+            title="魔法工具箱 (离线行囊、快捷键、安装 App)"
+          >
+            <SlidersHorizontal size={14} className="text-amber-800" />
+            {cachedChaptersCount > 0 && (
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+            )}
+          </button>
+
+          {/* Floating Tools Dropdown Menu */}
+          {showToolsMenu && (
+            <div className="absolute right-0 top-full mt-2 w-56 rounded-3xl bg-white/95 backdrop-blur-xl border-2 border-[#ece2d4] shadow-2xl p-2 z-50 animate-fadeIn select-none space-y-1">
+              <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-amber-100 mb-1">
+                魔法辅助工具
+              </div>
+
+              {/* Offline Storage Item */}
+              <button
+                onClick={() => {
+                  setShowToolsMenu(false);
+                  onOpenStorageManager();
+                }}
+                className="w-full flex items-center justify-between p-2.5 rounded-2xl hover:bg-amber-50 text-left text-xs font-bold text-amber-950 cursor-pointer transition-all"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                    <HardDrive size={14} />
+                  </div>
+                  <span>离线魔法行囊</span>
+                </div>
+                <span className="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  {cachedChaptersCount} 章
+                </span>
+              </button>
+
+              {/* Shortcuts Item */}
+              <button
+                onClick={() => {
+                  setShowToolsMenu(false);
+                  onOpenShortcuts();
+                }}
+                className="w-full flex items-center gap-2 p-2.5 rounded-2xl hover:bg-amber-50 text-left text-xs font-bold text-amber-950 cursor-pointer transition-all"
+              >
+                <div className="w-7 h-7 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
+                  <HelpCircle size={14} />
+                </div>
+                <span>快捷键与使用秘籍</span>
+              </button>
+
+              {/* PWA Install Item */}
+              {canInstallPwa && (
+                <button
+                  onClick={() => {
+                    setShowToolsMenu(false);
+                    onInstallPwa();
+                  }}
+                  className="w-full flex items-center gap-2 p-2.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-left text-xs font-bold text-amber-900 cursor-pointer transition-all"
+                >
+                  <div className="w-7 h-7 rounded-xl bg-amber-500 text-white flex items-center justify-center">
+                    <Download size={14} />
+                  </div>
+                  <span>安装到桌面 App</span>
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
 }
+
+export default Header;
