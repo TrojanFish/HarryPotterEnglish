@@ -44,7 +44,9 @@ export function createInitialState() {
     streakDays: 0,
     longestStreakDays: 0,
     lastActiveDate: null,
-    schemaVersion: 1
+    timeTurnersCount: 1,       // Duolingo Time-Turner streak freezes (starts with 1)
+    frozenDates: [],           // Array of 'YYYY-MM-DD' dates protected by Time-Turner
+    schemaVersion: 2
   };
 }
 
@@ -112,6 +114,20 @@ export function sanitizeState(rawState) {
   // 7. lastActiveDate
   if (typeof rawState.lastActiveDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(rawState.lastActiveDate)) {
     safe.lastActiveDate = rawState.lastActiveDate;
+  }
+
+  // 8. timeTurnersCount: non-negative integer (defaults to 1 for welcome gift)
+  if (Number.isFinite(rawState.timeTurnersCount) && rawState.timeTurnersCount >= 0) {
+    safe.timeTurnersCount = Math.floor(rawState.timeTurnersCount);
+  } else {
+    safe.timeTurnersCount = 1;
+  }
+
+  // 9. frozenDates: array of valid date strings
+  if (Array.isArray(rawState.frozenDates)) {
+    safe.frozenDates = rawState.frozenDates.filter(d => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d));
+  } else {
+    safe.frozenDates = [];
   }
 
   return safe;
@@ -182,7 +198,7 @@ export function saveState(state) {
  * @param {Date} [referenceDate] Optional reference date for testing
  * @returns {{ currentStreak: number, longestStreak: number }}
  */
-export function calculateStreaks(dailyListening = {}, dictationHistory = [], shadowingScores = [], referenceDate = new Date()) {
+export function calculateStreaks(dailyListening = {}, dictationHistory = [], shadowingScores = [], referenceDate = new Date(), frozenDates = []) {
   const activeDates = new Set();
 
   for (const [date, sec] of Object.entries(dailyListening || {})) {
@@ -198,6 +214,11 @@ export function calculateStreaks(dailyListening = {}, dictationHistory = [], sha
   for (const item of shadowingScores || []) {
     if (item && item.date && typeof item.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(item.date)) {
       activeDates.add(item.date);
+    }
+  }
+  for (const date of frozenDates || []) {
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      activeDates.add(date);
     }
   }
 
@@ -278,7 +299,7 @@ export function recordListeningSeconds(seconds) {
   state.dailyListeningSeconds[today] = (state.dailyListeningSeconds[today] || 0) + sec;
   state.lastActiveDate = today;
 
-  const streaks = calculateStreaks(state.dailyListeningSeconds, state.dictationHistory, state.shadowingScores);
+  const streaks = calculateStreaks(state.dailyListeningSeconds, state.dictationHistory, state.shadowingScores, new Date(), state.frozenDates || []);
   state.streakDays = streaks.currentStreak;
   state.longestStreakDays = Math.max(state.longestStreakDays, streaks.longestStreak);
 
@@ -324,7 +345,7 @@ export function recordDictationSession(session) {
   state.dictationHistory.push(record);
   state.lastActiveDate = today;
 
-  const streaks = calculateStreaks(state.dailyListeningSeconds, state.dictationHistory, state.shadowingScores);
+  const streaks = calculateStreaks(state.dailyListeningSeconds, state.dictationHistory, state.shadowingScores, new Date(), state.frozenDates || []);
   state.streakDays = streaks.currentStreak;
   state.longestStreakDays = Math.max(state.longestStreakDays, streaks.longestStreak);
 
@@ -356,7 +377,7 @@ export function recordShadowingScore(record) {
   });
   state.lastActiveDate = today;
 
-  const streaks = calculateStreaks(state.dailyListeningSeconds, state.dictationHistory, state.shadowingScores);
+  const streaks = calculateStreaks(state.dailyListeningSeconds, state.dictationHistory, state.shadowingScores, new Date(), state.frozenDates || []);
   state.streakDays = streaks.currentStreak;
   state.longestStreakDays = Math.max(state.longestStreakDays, streaks.longestStreak);
 
@@ -404,7 +425,10 @@ export function isChapterCompleted(chapterId) {
  */
 export function getAnalyticsSummary() {
   const state = loadState();
-  const streaks = calculateStreaks(state.dailyListeningSeconds, state.dictationHistory, state.shadowingScores);
+  const streaks = calculateStreaks(state.dailyListeningSeconds, state.dictationHistory, state.shadowingScores, new Date(), state.frozenDates || []);
+
+  const todayStr = getTodayDateStr();
+  const todayListeningSeconds = state.dailyListeningSeconds[todayStr] || 0;
 
   // Generate 7-day weekly listening minutes (chronological, ending today)
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -431,12 +455,118 @@ export function getAnalyticsSummary() {
 
   return {
     totalListeningSeconds: state.totalListeningSeconds,
+    todayListeningSeconds,
     weeklyListeningMinutes,
     dictationTrend,
     completedChaptersCount: state.completedChapters.length,
     streakDays: streaks.currentStreak,
-    longestStreakDays: Math.max(state.longestStreakDays || 0, streaks.longestStreak)
+    longestStreakDays: Math.max(state.longestStreakDays || 0, streaks.longestStreak),
+    timeTurnersCount: state.timeTurnersCount ?? 1,
+    frozenDates: state.frozenDates || []
   };
+}
+
+/**
+ * Automatically checks if yesterday was missed and consumes a Time-Turner
+ * to prevent the student's streak from resetting (Duolingo Streak Freeze mechanic).
+ * @param {Date|string} [referenceDate]
+ * @returns {{ protected: boolean, date?: string, remaining: number }}
+ */
+export function checkAndApplyTimeTurnerProtection(referenceDate = new Date()) {
+  const state = loadState();
+  const timeTurners = state.timeTurnersCount ?? 1;
+  if (timeTurners <= 0) {
+    return { protected: false, remaining: 0 };
+  }
+
+  const ref = referenceDate instanceof Date ? referenceDate : new Date(referenceDate);
+  const yesterday = new Date(ref.getTime() - 24 * 60 * 60 * 1000);
+  const dayBeforeYesterday = new Date(ref.getTime() - 48 * 60 * 60 * 1000);
+  const yesterdayStr = getTodayDateStr(yesterday);
+  const dayBeforeStr = getTodayDateStr(dayBeforeYesterday);
+
+  const activeDates = new Set();
+  for (const [d, sec] of Object.entries(state.dailyListeningSeconds || {})) {
+    if (Number(sec) > 0) activeDates.add(d);
+  }
+  for (const item of state.dictationHistory || []) {
+    if (item?.date) activeDates.add(item.date);
+  }
+  for (const item of state.shadowingScores || []) {
+    if (item?.date) activeDates.add(item.date);
+  }
+  for (const d of state.frozenDates || []) {
+    activeDates.add(d);
+  }
+
+  // If yesterday is already active or protected, no freeze needed
+  if (activeDates.has(yesterdayStr)) {
+    return { protected: false, remaining: timeTurners };
+  }
+
+  // If day before yesterday was active, and yesterday was missed, freeze yesterday!
+  if (activeDates.has(dayBeforeStr)) {
+    state.timeTurnersCount = Math.max(0, timeTurners - 1);
+    state.frozenDates = state.frozenDates || [];
+    if (!state.frozenDates.includes(yesterdayStr)) {
+      state.frozenDates.push(yesterdayStr);
+    }
+
+    const streaks = calculateStreaks(
+      state.dailyListeningSeconds,
+      state.dictationHistory,
+      state.shadowingScores,
+      ref,
+      state.frozenDates
+    );
+    state.streakDays = streaks.currentStreak;
+    state.longestStreakDays = Math.max(state.longestStreakDays, streaks.longestStreak);
+
+    saveState(state);
+    return { protected: true, date: yesterdayStr, remaining: state.timeTurnersCount };
+  }
+
+  return { protected: false, remaining: timeTurners };
+}
+
+/**
+ * Gets current Time-Turner count and frozen dates.
+ * @returns {{ count: number, maxCount: number, frozenDates: string[] }}
+ */
+export function getTimeTurners() {
+  const state = loadState();
+  return {
+    count: state.timeTurnersCount ?? 1,
+    maxCount: 2,
+    frozenDates: state.frozenDates || []
+  };
+}
+
+/**
+ * Awards extra Time-Turners (up to max of 2).
+ * @param {number} [amount=1]
+ * @returns {number} new count
+ */
+export function awardTimeTurner(amount = 1) {
+  const toAdd = Math.max(1, Math.round(Number(amount) || 1));
+  const state = loadState();
+  state.timeTurnersCount = Math.min(2, (state.timeTurnersCount ?? 1) + toAdd);
+  saveState(state);
+  return state.timeTurnersCount;
+}
+
+/**
+ * Manually consumes 1 Time-Turner if available.
+ * @returns {boolean} whether consumption succeeded
+ */
+export function useTimeTurner() {
+  const state = loadState();
+  if ((state.timeTurnersCount ?? 1) > 0) {
+    state.timeTurnersCount = (state.timeTurnersCount ?? 1) - 1;
+    saveState(state);
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -467,6 +597,10 @@ export default {
   getRawAnalyticsData,
   calculateStreaks,
   getTodayDateStr,
+  checkAndApplyTimeTurnerProtection,
+  getTimeTurners,
+  awardTimeTurner,
+  useTimeTurner,
   STORAGE_KEY_PRIMARY,
   STORAGE_KEY_COMPAT
 };

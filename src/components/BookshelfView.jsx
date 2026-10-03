@@ -11,13 +11,16 @@ import {
   ChevronRight, 
   Layers, 
   Award, 
-  X,
-  Clock,
-  Compass,
-  CheckCircle2,
-  Search
+  X, 
+  Clock, 
+  Compass, 
+  CheckCircle2, 
+  Search,
+  BrainCircuit,
+  RotateCcw
 } from 'lucide-react';
 import { formatTime } from '../utils/vttParser';
+import { DailyGoalRing } from './DailyGoalRing';
 
 /**
  * BookshelfView — Classical iBooks-style Bookshelf for Young English Learners.
@@ -42,10 +45,14 @@ export function BookshelfView({
   streakDays = 0,
   vocabCount = 0,
   cachedChaptersCount = 0,
+  todayListeningSeconds = 0,
+  timeTurnersCount = 1,
+  dueWordsCount = 0,
   isParchment,
   onOpenVocab,
   onOpenAnalytics,
-  onOpenStorage
+  onOpenStorage,
+  onOpenSrs
 }) {
   // Modal state for viewing a specific book's chapters
   const [inspectingBook, setInspectingBook] = useState(null);
@@ -149,6 +156,14 @@ export function BookshelfView({
 
         {/* Quick Achievement Chips */}
         <div className="flex items-center flex-wrap gap-2 text-xs">
+          {/* Daily 5-Min Goal Progress Ring */}
+          <DailyGoalRing
+            todaySeconds={todayListeningSeconds}
+            targetSeconds={300}
+            onClick={onOpenAnalytics}
+            isParchment={isParchment}
+          />
+
           {/* Streak */}
           <button 
             onClick={onOpenAnalytics}
@@ -158,6 +173,36 @@ export function BookshelfView({
             <Flame size={14} className="text-orange-500" />
             <span>连续打卡 {streakDays} 天</span>
           </button>
+
+          {/* Duolingo Time-Turner Streak Freeze Badge */}
+          <div 
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/80 bg-amber-50/90 text-amber-950 font-bold transition-all shadow-xs"
+            title="时间转换器守护中：若某天漏打卡将自动消耗1个护体，保住连胜"
+          >
+            <RotateCcw size={13} className="text-amber-700 animate-spin-slow" />
+            <span>转换器 x{timeTurnersCount}</span>
+          </div>
+
+          {/* Duolingo Spaced Repetition Flashcards Action */}
+          {dueWordsCount > 0 ? (
+            <button 
+              onClick={onOpenSrs}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-amber-500 bg-amber-500 hover:bg-amber-600 text-white font-bold transition-all shadow-md active:scale-95 cursor-pointer animate-pulse"
+              title="今日有生词等待艾宾浩斯智能翻转闪卡复习"
+            >
+              <BrainCircuit size={14} className="text-amber-100" />
+              <span>今日待复习 ({dueWordsCount} 词)</span>
+            </button>
+          ) : vocabCount > 0 ? (
+            <button 
+              onClick={onOpenSrs}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer"
+              title="进入艾宾浩斯智能翻转闪卡强化记忆"
+            >
+              <BrainCircuit size={14} className="text-amber-600" />
+              <span>智能翻卡</span>
+            </button>
+          ) : null}
 
           {/* Vocab Notebook */}
           <button 

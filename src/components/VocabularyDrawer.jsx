@@ -9,7 +9,8 @@ import {
   Layers, 
   RotateCw,
   CheckCircle,
-  BookOpen
+  BookOpen,
+  BrainCircuit
 } from 'lucide-react';
 
 import { generateAnkiTSV, downloadAnkiFile } from '../utils/ankiExport';
@@ -20,7 +21,8 @@ export function VocabularyDrawer({
   vocabList,
   onRemoveWord,
   onClearAll,
-  isParchment
+  isParchment,
+  onOpenSrs
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isFlashcardMode, setIsFlashcardMode] = useState(false);
@@ -117,6 +119,20 @@ export function VocabularyDrawer({
             </div>
 
             <div className="flex items-center space-x-1.5">
+              {onOpenSrs && (
+                <button
+                  onClick={() => {
+                    onClose();
+                    onOpenSrs();
+                  }}
+                  className="px-2.5 py-1.5 rounded-xl border border-amber-400 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer"
+                  title="启动艾宾浩斯智能翻转闪卡 (SRS 遗忘曲线算法)"
+                >
+                  <BrainCircuit size={14} />
+                  <span>智能复习</span>
+                </button>
+              )}
+
               <button
                 onClick={() => setIsFlashcardMode(!isFlashcardMode)}
                 className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer ${

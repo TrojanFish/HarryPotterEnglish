@@ -8,6 +8,7 @@ import { SubtitleViewer } from './components/SubtitleViewer';
 import { DictationStudio } from './components/DictationStudio';
 import { WordModal } from './components/WordModal';
 import { VocabularyDrawer } from './components/VocabularyDrawer';
+import { SrsFlashcardModal } from './components/SrsFlashcardModal';
 import { ShadowingRecorder } from './components/ShadowingRecorder';
 import { ShortcutsModal } from './components/ShortcutsModal';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
@@ -15,10 +16,12 @@ import { StorageManagerModal } from './components/StorageManagerModal';
 import { HP_BOOKS, SAMPLE_CHAPTER_1_VTT } from './data/chapters';
 import { parseVTT } from './utils/vttParser';
 import { lookupWord } from './data/hpDictionary';
+import { ensureSrsMetadata, getDueWords } from './utils/srsEngine';
 import { 
   recordListeningSeconds, 
   markChapterCompleted, 
-  getAnalyticsSummary 
+  getAnalyticsSummary,
+  checkAndApplyTimeTurnerProtection 
 } from './utils/analyticsStore';
 import { 
   getCachedChapter, 
@@ -110,6 +113,7 @@ export function App() {
   const [currentRecordCue, setCurrentRecordCue] = useState(null);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isStorageOpen, setIsStorageOpen] = useState(false);
+  const [isSrsOpen, setIsSrsOpen] = useState(false);
   const [cachedChaptersCount, setCachedChaptersCount] = useState(0);
   const [isOfflinePlaying, setIsOfflinePlaying] = useState(false);
   const previousBlobUrlRef = useRef(null);
@@ -132,6 +136,10 @@ export function App() {
   };
 
   useEffect(() => {
+    try {
+      checkAndApplyTimeTurnerProtection();
+      setAnalyticsSummary(getAnalyticsSummary());
+    } catch {}
     refreshOfflineCount();
     return () => {
       if (previousBlobUrlRef.current) {
@@ -184,11 +192,12 @@ export function App() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
-  // Vocabulary list in localStorage
+  // Vocabulary list in localStorage with SRS metadata scaffolding
   const [vocabList, setVocabList] = useState(() => {
     try {
       const saved = localStorage.getItem('hp_vocab_list');
-      return saved ? JSON.parse(saved) : [];
+      const list = saved ? JSON.parse(saved) : [];
+      return Array.isArray(list) ? list.map(ensureSrsMetadata) : [];
     } catch {
       return [];
     }
@@ -198,6 +207,9 @@ export function App() {
   useEffect(() => {
     localStorage.setItem('hp_vocab_list', JSON.stringify(vocabList));
   }, [vocabList]);
+
+  // Duolingo SRS: count words due for review today
+  const dueWordsCount = getDueWords(vocabList).length;
 
   // PWA Install Event Listener
   useEffect(() => {
@@ -692,8 +704,12 @@ export function App() {
           streakDays={analyticsSummary?.streakDays || 0}
           vocabCount={vocabList.length}
           cachedChaptersCount={cachedChaptersCount}
+          todayListeningSeconds={analyticsSummary?.todayListeningSeconds || 0}
+          timeTurnersCount={analyticsSummary?.timeTurnersCount ?? 1}
+          dueWordsCount={dueWordsCount}
           isParchment={isParchment}
           onOpenVocab={() => setIsVocabOpen(true)}
+          onOpenSrs={() => setIsSrsOpen(true)}
           onOpenAnalytics={() => {
             setAnalyticsSummary(getAnalyticsSummary());
             setIsAnalyticsOpen(true);
@@ -833,6 +849,16 @@ export function App() {
         vocabList={vocabList}
         onRemoveWord={handleRemoveVocabWord}
         onClearAll={() => setVocabList([])}
+        isParchment={isParchment}
+        onOpenSrs={() => setIsSrsOpen(true)}
+      />
+
+      {/* Duolingo SRS Flashcard Spaced Repetition Modal */}
+      <SrsFlashcardModal
+        isOpen={isSrsOpen}
+        onClose={() => setIsSrsOpen(false)}
+        vocabList={vocabList}
+        onUpdateVocabList={setVocabList}
         isParchment={isParchment}
       />
 

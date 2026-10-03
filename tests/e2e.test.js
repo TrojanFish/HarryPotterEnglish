@@ -12,3 +12,4 @@ import './tier1-features.test.js';
 import './tier2-boundaries.test.js';
 import './tier3-combinations.test.js';
 import './tier4-scenarios.test.js';
+import './duolingo-srs.test.js';
