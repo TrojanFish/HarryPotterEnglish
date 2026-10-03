@@ -23,7 +23,7 @@ export function DuelingSurvivalBar({
   const isUrgent = timeRemaining <= 6;
 
   return (
-    <div className="p-3.5 sm:p-4 rounded-2xl border-2 border-amber-300 bg-gradient-to-r from-amber-50 via-white to-amber-50 shadow-sm flex flex-col gap-2.5 mb-5 select-none animate-fadeIn">
+    <div className="p-3.5 sm:p-4 rounded-2xl border-2 border-amber-300 bg-gradient-to-r from-amber-50 via-white to-amber-50 flex flex-col gap-2.5 mb-5 select-none animate-fadeIn">
       <div className="flex items-center justify-between">
         {/* Shields (Protego) */}
         <div className="flex items-center gap-2">
@@ -39,7 +39,7 @@ export function DuelingSurvivalBar({
                   key={idx}
                   className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all ${
                     isIntact
-                      ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-xs'
+                      ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-white'
                       : 'bg-slate-200 text-slate-400 border border-dashed border-slate-300'
                   }`}
                   title={isIntact ? '魔法护盾完好' : '护盾已破碎'}
@@ -54,7 +54,7 @@ export function DuelingSurvivalBar({
         {/* Combo & Golden Snitch status */}
         <div className="flex items-center gap-2">
           {streakCount >= 3 && (
-            <span className="flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-orange-500 to-amber-600 text-white text-xs font-bold rounded-full shadow-xs animate-pulse">
+            <span className="flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-orange-500 to-amber-600 text-white text-xs font-bold rounded-full animate-pulse">
               <Flame size={13} />
               <span>炽热连击 x{streakCount}</span>
             </span>

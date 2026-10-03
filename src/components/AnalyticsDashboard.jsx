@@ -140,7 +140,7 @@ export function AnalyticsDashboard({
       <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
 
       {/* Main Modal Container (Native Bottom Sheet on Mobile, Centered on Desktop) */}
-      <div className="relative w-full max-w-4xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-[0_20px_60px_-15px_rgba(44,34,30,0.15)] transition-all z-10 pb-safe flex flex-col scrollbar-none">
+      <div className="relative w-full max-w-4xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] transition-all z-10 pb-safe flex flex-col scrollbar-none">
         
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1 bg-stone-300 rounded-full mx-auto my-2 shrink-0" />
@@ -148,7 +148,7 @@ export function AnalyticsDashboard({
         {/* Header Bar */}
         <div className="sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[#eee5d8] bg-white/95 backdrop-blur-md gap-2">
           <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1">
-            <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shadow-xs shrink-0">
+            <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shrink-0">
               <BarChart2 size={18} className="text-amber-600 sm:w-5 sm:h-5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -176,7 +176,7 @@ export function AnalyticsDashboard({
 
             <button
               onClick={onClose}
-              className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer shrink-0"
+              className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
               title="关闭罗盘 (ESC)"
             >
               <X size={18} />
@@ -187,14 +187,14 @@ export function AnalyticsDashboard({
         {/* Content Body */}
         {showHonorScroll ? (
           <div className="p-6 sm:p-8 space-y-6 animate-fadeIn">
-            <div className="p-6 sm:p-8 rounded-3xl border-2 border-amber-400/80 bg-gradient-to-br from-white via-[#fbf9f5] to-amber-500/5 shadow-xl text-center relative overflow-hidden">
+            <div className="p-6 sm:p-8 rounded-3xl border-2 border-amber-400/80 bg-gradient-to-br from-white via-[#fbf9f5] to-amber-500/5 text-center relative overflow-hidden">
               {/* Background Watermark Accent */}
               <div className="absolute right-3 -bottom-6 pointer-events-none opacity-5 text-amber-700">
                 <Award size={200} />
               </div>
 
               {/* Scroll Crest Header */}
-              <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-400/50 text-xs font-bold mb-3 shadow-2xs">
+              <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-400/50 text-xs font-bold mb-3">
                 <Sparkles size={13} className="text-amber-700" />
                 <span>霍格沃茨学业喜报 · 魔法之星荣誉卷轴</span>
               </div>
@@ -208,7 +208,7 @@ export function AnalyticsDashboard({
 
               {/* 4 Pillars Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-7">
-                <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs">
+                <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white">
                   <div className="text-amber-700 flex items-center justify-center mb-1">
                     <Flame size={20} className="text-orange-500" />
                   </div>
@@ -218,7 +218,7 @@ export function AnalyticsDashboard({
                   <div className="text-xs text-stone-500 font-bold mt-0.5">连续坚持研读</div>
                 </div>
 
-                <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs">
+                <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white">
                   <div className="text-amber-700 flex items-center justify-center mb-1">
                     <Clock size={20} className="text-amber-600" />
                   </div>
@@ -228,7 +228,7 @@ export function AnalyticsDashboard({
                   <div className="text-xs text-stone-500 font-bold mt-0.5">本周专注精听</div>
                 </div>
 
-                <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs">
+                <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white">
                   <div className="text-amber-700 flex items-center justify-center mb-1">
                     <BookOpen size={20} className="text-emerald-600" />
                   </div>
@@ -238,7 +238,7 @@ export function AnalyticsDashboard({
                   <div className="text-xs text-stone-500 font-bold mt-0.5">攻克原声章节</div>
                 </div>
 
-                <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs">
+                <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white">
                   <div className="text-amber-700 flex items-center justify-center mb-1">
                     <Bookmark size={20} className="text-blue-600" />
                   </div>
@@ -275,7 +275,7 @@ export function AnalyticsDashboard({
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             
             {/* 1. Continuous Streak Days */}
-            <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs relative overflow-hidden flex flex-col justify-between">
+            <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white relative overflow-hidden flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-semibold text-stone-500">
                   连续打卡天数
@@ -299,7 +299,7 @@ export function AnalyticsDashboard({
             </div>
 
             {/* 2. Total Listening Time */}
-            <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs flex flex-col justify-between">
+            <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-semibold text-stone-500">
                   累计专注听力
@@ -324,7 +324,7 @@ export function AnalyticsDashboard({
             </div>
 
             {/* 3. Completed Chapters Count */}
-            <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs flex flex-col justify-between">
+            <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-semibold text-stone-500">
                   已学完章节
@@ -347,7 +347,7 @@ export function AnalyticsDashboard({
             </div>
 
             {/* 4. Mastered Vocabulary Count */}
-            <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs flex flex-col justify-between">
+            <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-semibold text-stone-500">
                   生词库收录
@@ -372,7 +372,7 @@ export function AnalyticsDashboard({
           </div>
 
           {/* Chart 1: Weekly Listening Minutes Bar Chart */}
-          <div className="p-5 rounded-3xl border border-[#eee5d8] bg-white shadow-xs">
+          <div className="p-5 rounded-3xl border border-[#eee5d8] bg-white">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
                 <Calendar size={16} className="text-amber-600" />
@@ -524,7 +524,7 @@ export function AnalyticsDashboard({
           </div>
 
           {/* Chart 2: Dictation Accuracy History Trend Curve */}
-          <div className="p-5 rounded-3xl border border-[#eee5d8] bg-white shadow-xs">
+          <div className="p-5 rounded-3xl border border-[#eee5d8] bg-white">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 mb-4">
               <div className="flex items-center space-x-2">
                 <TrendingUp size={16} className="text-emerald-500 shrink-0" />

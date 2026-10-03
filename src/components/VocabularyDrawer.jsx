@@ -112,7 +112,7 @@ export function VocabularyDrawer({
           {config.label}
         </span>
         {isDue && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold animate-pulse shadow-xs" title="记忆封印松动，需要艾宾浩斯重铸">
+          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold animate-pulse border border-amber-600" title="记忆封印松动，需要艾宾浩斯重铸">
             待重炼 · 封印松动
           </span>
         )}
@@ -128,7 +128,7 @@ export function VocabularyDrawer({
       <div className="absolute inset-y-0 right-0 max-w-full flex w-full sm:w-auto">
         <div 
           onClick={(e) => e.stopPropagation()}
-          className="w-full sm:w-screen sm:max-w-md shadow-2xl flex flex-col border-l border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe">
+          className="w-full sm:w-screen sm:max-w-md flex flex-col border-l border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe">
           {/* Drawer Header */}
           <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#eee5d8] bg-white flex items-center justify-between gap-2">
             <div className="flex items-center space-x-2 min-w-0 flex-1">
@@ -149,7 +149,7 @@ export function VocabularyDrawer({
                     onClose();
                     onOpenSrs();
                   }}
-                  className="duo-btn-primary min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="duo-btn-primary min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
                   title="启动艾宾浩斯智能翻转闪卡 (SRS 遗忘曲线算法)"
                 >
                   <BrainCircuit size={14} className="shrink-0" />
@@ -161,7 +161,7 @@ export function VocabularyDrawer({
               <button
                 disabled={vocabList.length === 0}
                 onClick={() => setIsFlashcardMode(!isFlashcardMode)}
-                className={`duo-btn-secondary min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed ${
+                className={`duo-btn-secondary min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed ${
                   isFlashcardMode ? 'ring-2 ring-amber-500' : ''
                 }`}
                 title="切换卡片翻转记忆模式与列表笔记"
@@ -173,7 +173,7 @@ export function VocabularyDrawer({
 
               <button
                 onClick={onClose}
-                className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer shrink-0"
+                className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
                 title="关闭生词本"
               >
                 <X size={18} />
@@ -186,7 +186,7 @@ export function VocabularyDrawer({
             <div className="flex-1 p-6 flex flex-col justify-between items-center overflow-y-auto">
               {filteredList.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center p-8 text-center my-auto">
-                  <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border-2 border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 shadow-sm">
+                  <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border-2 border-amber-300/80 flex items-center justify-center text-amber-600 mb-4">
                     <Bookmark size={28} className="text-amber-600" />
                   </div>
                   <h3 className="font-magical font-bold text-base text-amber-950 mb-1">
@@ -197,7 +197,7 @@ export function VocabularyDrawer({
                   </p>
                   <button
                     onClick={onClose}
-                    className="duo-btn-primary min-h-[42px] px-6 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer shadow-sm active:scale-95"
+                    className="duo-btn-primary min-h-[44px] px-6 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer active:scale-95"
                   >
                     <Sparkles size={15} />
                     <span>去精听挑词入库</span>
@@ -218,9 +218,9 @@ export function VocabularyDrawer({
                   {/* Flashcard Body */}
                   <div 
                     onClick={() => setIsCardFlipped(!isCardFlipped)}
-                    className={`w-full min-h-[300px] my-6 rounded-2xl p-6 border-2 cursor-pointer flex flex-col items-center justify-center text-center transition-all duration-300 transform shadow-md select-none ${
+                    className={`w-full min-h-[300px] my-6 rounded-2xl p-6 border-2 cursor-pointer flex flex-col items-center justify-center text-center transition-all duration-300 transform select-none ${
                       isCardFlipped 
-                        ? 'border-amber-400 bg-white text-amber-950 shadow-lg' 
+                        ? 'border-amber-400 bg-white text-amber-950' 
                         : 'border-[#eee5d8] bg-white text-[#1e1610] hover:border-amber-400'
                     }`}
                   >
@@ -272,14 +272,14 @@ export function VocabularyDrawer({
                         setIsCardFlipped(false);
                         setFlashcardIndex(prev => Math.max(0, prev - 1));
                       }}
-                      className="px-4 py-2 rounded-xl border border-amber-300/90 bg-white/95 text-amber-950 hover:bg-amber-50 hover:border-amber-400 font-bold text-xs shadow-xs hover:shadow active:scale-95 disabled:opacity-30 disabled:pointer-events-none cursor-pointer transition-all"
+                      className="px-4 py-2 min-h-[44px] rounded-xl border border-amber-300/90 bg-white/95 text-amber-950 hover:bg-amber-50 hover:border-amber-400 font-bold text-xs active:scale-95 disabled:opacity-30 disabled:pointer-events-none cursor-pointer transition-all"
                       title="翻看上一张生词卡"
                     >
                       上一张
                     </button>
                     <button
                       onClick={() => playPronunciation(currentFlashcard.word)}
-                      className="p-2.5 rounded-xl border border-amber-300/80 bg-white/90 text-amber-800 hover:bg-amber-50 hover:border-amber-400 shadow-xs hover:shadow active:scale-90 cursor-pointer transition-all"
+                      className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-amber-300/80 bg-white/90 text-amber-800 hover:bg-amber-50 hover:border-amber-400 active:scale-90 cursor-pointer transition-all"
                       title="朗读当前单词发音"
                     >
                       <Volume2 size={16} />
@@ -290,7 +290,7 @@ export function VocabularyDrawer({
                         setIsCardFlipped(false);
                         setFlashcardIndex(prev => Math.min(filteredList.length - 1, prev + 1));
                       }}
-                      className="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs disabled:opacity-30 disabled:pointer-events-none shadow-sm hover:shadow-md active:scale-95 cursor-pointer transition-all ring-1 ring-amber-300/30"
+                      className="px-5 py-2 min-h-[44px] rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs disabled:opacity-30 disabled:pointer-events-none active:scale-95 cursor-pointer transition-all border border-amber-600"
                       title="翻看下一张生词卡"
                     >
                       下一张
@@ -326,7 +326,7 @@ export function VocabularyDrawer({
               <div className="flex-1 overflow-y-auto p-4 space-y-3 ios-scroll">
                 {vocabList.length === 0 ? (
                   <div className="flex-1 flex flex-col items-center justify-center py-16 px-4 text-center my-auto">
-                    <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border-2 border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 shadow-sm animate-pulse">
+                    <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border-2 border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 animate-pulse">
                       <Bookmark size={28} className="text-amber-600" />
                     </div>
                     <h3 className="font-magical font-bold text-base text-amber-950 mb-1">
@@ -337,7 +337,7 @@ export function VocabularyDrawer({
                     </p>
                     <button
                       onClick={onClose}
-                      className="duo-btn-primary min-h-[42px] px-6 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer shadow-sm active:scale-95"
+                      className="duo-btn-primary min-h-[44px] px-6 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer active:scale-95"
                     >
                       <Sparkles size={15} />
                       <span>去精听挑词入库</span>
@@ -362,7 +362,7 @@ export function VocabularyDrawer({
                         key={item.id || item.word}
                         className={`p-3.5 rounded-2xl border transition-all ${
                           isDue
-                            ? 'bg-amber-500/5 border-amber-400/90 shadow-xs ring-1 ring-amber-400/30'
+                            ? 'bg-amber-500/5 border-amber-400/90 ring-1 ring-amber-400/30'
                             : 'duo-card duo-card-hover'
                         }`}
                       >
@@ -433,7 +433,7 @@ export function VocabularyDrawer({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handleExportAnki}
-                      className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs cursor-pointer"
+                      className="duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs cursor-pointer"
                       title="导出为标准 Anki 卡片牌组 (.tsv)"
                     >
                       <Sparkles size={14} className="text-amber-600" />
@@ -442,7 +442,7 @@ export function VocabularyDrawer({
 
                     <button
                       onClick={handleExportCSV}
-                      className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs cursor-pointer"
+                      className="duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs cursor-pointer"
                       title="导出为通用表格 CSV 格式"
                     >
                       <Download size={14} />
@@ -452,7 +452,7 @@ export function VocabularyDrawer({
 
                   <button
                     onClick={onClearAll}
-                    className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-stone-400 hover:text-rose-600 hover:bg-rose-50/80 transition-all active:scale-95 cursor-pointer"
+                    className="min-h-[44px] px-2.5 py-1.5 rounded-xl text-xs font-bold text-stone-400 hover:text-rose-600 hover:bg-rose-50/80 transition-all active:scale-95 cursor-pointer"
                     title="清空生词本内所有单词"
                   >
                     清空生词本
@@ -465,7 +465,7 @@ export function VocabularyDrawer({
           {/* Toast Feedback Notification */}
           {toastMessage && (
             <div className="absolute bottom-20 left-4 right-4 z-50 animate-bounce">
-              <div className="p-3 rounded-2xl bg-emerald-700/95 border border-emerald-500 text-white text-xs font-bold shadow-2xl flex items-center justify-center gap-2">
+              <div className="p-3 rounded-2xl bg-emerald-700/95 border border-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2">
                 <CheckCircle size={15} />
                 <span>{toastMessage}</span>
               </div>

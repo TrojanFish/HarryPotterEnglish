@@ -86,8 +86,8 @@ export function AccioWordPicker({
       {/* ── Active Word Answer Tray ──────────────────────────────── */}
       <div className={`min-h-[110px] p-5 sm:p-6 rounded-3xl border-2 transition-all flex flex-col justify-between ${
         isSentenceFullyCorrect
-          ? 'bg-emerald-500/10 border-emerald-500 shadow-emerald-500/10'
-          : 'bg-[#fbf9f5] border-[#eee5d8] shadow-inner'
+          ? 'bg-emerald-500/10 border-emerald-500'
+          : 'bg-[#fbf9f5] border-[#eee5d8]'
       }`}>
         <div className="flex items-center justify-between mb-3 text-xs font-semibold text-amber-800">
           <span className="flex items-center gap-1.5">
@@ -110,7 +110,7 @@ export function AccioWordPicker({
               <button
                 key={tile.id}
                 onClick={() => handleRemoveTile(idx)}
-                className="px-3.5 py-1.5 min-h-[40px] rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm sm:text-base border-b-3 border-amber-700 active:translate-y-0.5 active:border-b-1 shadow-sm cursor-pointer transition-all flex items-center gap-1.5 group select-none"
+                className="px-3.5 py-1.5 min-h-[40px] rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm sm:text-base border-b-3 border-amber-700 active:translate-y-0.5 active:border-b-1 cursor-pointer transition-all flex items-center gap-1.5 group select-none"
                 title="点击撤回此词"
               >
                 <span>{tile.text}</span>
@@ -164,7 +164,7 @@ export function AccioWordPicker({
                     ? 'opacity-20 scale-95 border-b-2 border-dashed border-amber-200 bg-amber-50/40 text-slate-400 cursor-not-allowed'
                     : isShaking
                     ? 'border-2 border-b-4 border-rose-500 bg-rose-50 text-rose-700 animate-bounce'
-                    : 'border-1.5 border-amber-300 border-b-4 border-b-amber-400/90 bg-white/95 text-amber-950 hover:bg-amber-50 hover:border-amber-400 hover:border-b-amber-500 active:translate-y-1 active:border-b-2 shadow-xs cursor-pointer'
+                    : 'border-1.5 border-amber-300 border-b-4 border-b-amber-400/90 bg-white/95 text-amber-950 hover:bg-amber-50 hover:border-amber-400 hover:border-b-amber-500 active:translate-y-1 active:border-b-2 cursor-pointer'
                 }`}
               >
                 {tile.text}

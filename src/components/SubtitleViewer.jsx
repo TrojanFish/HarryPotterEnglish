@@ -117,7 +117,7 @@ export function SubtitleViewer({
       {/* ── Subtitle Toolbar for Students (Sleek Single-Row Responsive Layout) ── */}
       <div className={`flex items-center justify-between gap-1.5 sm:gap-2 mb-3 sm:mb-4 px-2.5 sm:px-3.5 py-2 rounded-2xl border transition-colors ${
         isParchment
-          ? 'bg-white/95 border-[#eee5d8] shadow-2xs text-[#2b1f14]'
+          ? 'bg-white/95 border-[#eee5d8] text-[#2b1f14]'
           : 'bg-slate-900/80 border-slate-800 text-slate-300'
       }`}>
         {/* Left: Cue counts & status + Quick Toggles */}
@@ -189,7 +189,7 @@ export function SubtitleViewer({
                 }}
                 className={`px-1.5 sm:px-2 py-0.5 rounded-md transition-all active:scale-95 cursor-pointer ${
                   isSelected
-                    ? 'bg-amber-500 text-white font-bold shadow-2xs'
+                    ? 'bg-amber-500 text-white font-bold'
                     : 'text-stone-600 hover:text-amber-950'
                 }`}
                 title={sizeOpt.title}
@@ -219,7 +219,7 @@ export function SubtitleViewer({
               {isNewWaypoint && (
                 <div className="flex items-center gap-3 my-5 py-1 select-none">
                   <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent via-amber-300 to-amber-400/80" />
-                  <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-100/90 border border-amber-300 shadow-xs text-xs font-bold text-amber-950">
+                  <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-100/90 border border-amber-300 text-xs font-bold text-amber-950">
                     <Award size={14} className="text-amber-600" />
                     <span>第 {currentChunk} 哨所里程碑 · 已精听 {currentChunk * 5} 分钟</span>
                   </div>

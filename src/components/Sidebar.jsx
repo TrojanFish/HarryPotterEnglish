@@ -46,12 +46,12 @@ export function Sidebar({
       <div className="p-4 shrink-0">
         <div
           onClick={onOpenShelf}
-          className="relative group rounded-3xl p-3 border-2 border-[#eee5d8] bg-white hover:border-amber-400 transition-all cursor-pointer shadow-xs hover:shadow-sm"
+          className="relative group rounded-3xl p-3 border-2 border-[#eee5d8] bg-white hover:border-amber-400 transition-all cursor-pointer"
           title="点击切换其他魔法小说"
         >
           <div className="flex gap-3 items-center">
             {/* 3:4 Book Cover */}
-            <div className="w-16 h-22 aspect-[3/4] rounded-xl overflow-hidden border border-amber-400/60 shadow-md shrink-0 bg-slate-900 relative">
+            <div className="w-16 h-22 aspect-[3/4] rounded-xl overflow-hidden border border-amber-400/60 shrink-0 bg-slate-900 relative">
               {coverUrl && !coverError ? (
                 <img
                   src={coverUrl}
@@ -117,14 +117,14 @@ export function Sidebar({
           <button
             onClick={onRefreshCatalog}
             disabled={isRefreshing}
-            className="p-1.5 rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 shadow-2xs cursor-pointer disabled:opacity-50"
+            className="p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 cursor-pointer disabled:opacity-50"
             title="重新扫描目录"
           >
             <RotateCw size={12} className={isRefreshing ? 'animate-spin text-amber-500' : ''} />
           </button>
           <button
             onClick={() => setIsChaptersExpanded(!isChaptersExpanded)}
-            className="p-1.5 rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 shadow-2xs cursor-pointer"
+            className="p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 cursor-pointer"
             title={isChaptersExpanded ? '收起目录' : '展开目录'}
           >
             {isChaptersExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -143,7 +143,7 @@ export function Sidebar({
                 onClick={() => onSelectChapter(ch.id)}
                 className={`w-full text-left p-2.5 rounded-xl text-xs transition-all flex items-center gap-2.5 group cursor-pointer active:scale-[0.98] ${
                   isActive
-                    ? 'bg-amber-500/10 border-2 border-amber-500 text-amber-950 font-bold shadow-2xs'
+                    ? 'bg-amber-500/10 border-2 border-amber-500 text-amber-950 font-bold'
                     : 'hover:bg-stone-200/50 text-stone-700 border border-transparent'
                 }`}
               >
@@ -151,7 +151,7 @@ export function Sidebar({
                 <span
                   className={`w-7 h-7 rounded-lg flex items-center justify-center font-mono text-xs shrink-0 font-bold ${
                     isActive
-                      ? 'bg-amber-500 text-white shadow-2xs'
+                      ? 'bg-amber-500 text-white'
                       : 'bg-stone-200/80 text-stone-600'
                   }`}
                 >

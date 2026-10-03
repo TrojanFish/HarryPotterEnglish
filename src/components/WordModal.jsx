@@ -69,15 +69,15 @@ export function WordModal({
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#eee5d8] bg-white text-[#1e1610] shadow-[0_16px_48px_-8px_rgba(44,34,30,0.12)] p-5 sm:p-7 max-h-[88vh] overflow-y-auto transition-all duration-300 animate-slideUp sm:animate-none"
+        className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#eee5d8] bg-white text-[#1e1610] p-5 sm:p-7 max-h-[88vh] overflow-y-auto transition-all duration-300 animate-slideUp sm:animate-none pb-safe"
       >
         {/* Mobile Bottom Sheet Pull Handle */}
         <div className="sm:hidden w-10 h-1.5 rounded-full bg-stone-300 mx-auto mb-3" />
 
-        {/* Close Button */}
+        {/* Close Button with 44px touch target */}
         <button
           onClick={onClose}
-          className="absolute top-4 sm:top-5 right-4 sm:right-5 p-2 rounded-xl text-stone-400 hover:text-amber-950 hover:bg-amber-100/70 border border-transparent hover:border-amber-300/80 transition-all active:scale-90 cursor-pointer"
+          className="absolute top-4 sm:top-5 right-4 sm:right-5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-stone-400 hover:text-amber-950 hover:bg-amber-100/70 border border-transparent hover:border-amber-300/80 transition-all active:scale-90 cursor-pointer"
         >
           <X size={18} />
         </button>
@@ -90,7 +90,7 @@ export function WordModal({
                 {wordData.word}
               </h2>
               {wordData.isHpLore ? (
-                <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-red-800 text-amber-200 border border-amber-400/40 font-semibold shadow-xs">
+                <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-red-800 text-amber-200 border border-amber-400/40 font-semibold">
                   <Sparkles size={11} />
                   <span>原著魔法专属</span>
                 </span>
@@ -134,9 +134,9 @@ export function WordModal({
               )}
               <button
                 onClick={playPronunciation}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 min-h-[44px] rounded-full border text-xs font-bold transition-all active:scale-95 cursor-pointer ${
                   isPlayingAudio 
-                    ? 'bg-amber-500 text-white border-amber-500 scale-105 shadow-md' 
+                    ? 'bg-amber-500 text-white border-amber-500 scale-105' 
                     : 'border-amber-400/80 bg-amber-50/80 hover:bg-amber-100 text-amber-950 hover:border-amber-500'
                 }`}
                 title="点击试听纯正英音朗读"
@@ -150,7 +150,7 @@ export function WordModal({
 
         {/* Natural Phonics Guidance Box */}
         {phonicsInfo && (
-          <div className="mb-3.5 p-3 rounded-2xl border border-emerald-300/80 bg-emerald-50/60 text-xs text-emerald-950 flex items-start gap-2 shadow-2xs">
+          <div className="mb-3.5 p-3 rounded-2xl border border-emerald-300/80 bg-emerald-50/60 text-xs text-emerald-950 flex items-start gap-2">
             <Lightbulb size={15} className="text-emerald-700 shrink-0 mt-0.5" />
             <div>
               <span className="font-bold text-emerald-900">自然拼读点拨：</span>
@@ -202,7 +202,7 @@ export function WordModal({
               href={`https://dict.youdao.com/result?word=${encodeURIComponent(wordData.word.toLowerCase())}&lang=en`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-[#eee5d8] bg-stone-50 hover:bg-stone-100 text-stone-700 hover:text-amber-950 hover:border-amber-300 transition-all shadow-2xs"
+              className="flex items-center gap-1 px-2.5 py-1.5 min-h-[44px] rounded-xl border border-[#eee5d8] bg-stone-50 hover:bg-stone-100 text-stone-700 hover:text-amber-950 hover:border-amber-300 transition-all"
             >
               <span>有道词典</span>
               <ExternalLink size={11} className="text-amber-700" />
@@ -211,7 +211,7 @@ export function WordModal({
               href={`https://dictionary.cambridge.org/zhs/词典/英语-汉语-简体/${encodeURIComponent(wordData.word.toLowerCase())}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-[#eee5d8] bg-stone-50 hover:bg-stone-100 text-stone-700 hover:text-amber-950 hover:border-amber-300 transition-all shadow-2xs"
+              className="flex items-center gap-1 px-2.5 py-1.5 min-h-[44px] rounded-xl border border-[#eee5d8] bg-stone-50 hover:bg-stone-100 text-stone-700 hover:text-amber-950 hover:border-amber-300 transition-all"
             >
               <span>剑桥双解</span>
               <ExternalLink size={11} className="text-amber-700" />

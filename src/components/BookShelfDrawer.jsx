@@ -17,11 +17,11 @@ export function BookShelfDrawer({
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-black/70 backdrop-blur-md animate-fadeIn">
       <div className="absolute inset-y-0 right-0 max-w-full flex w-full sm:w-auto">
-        <div className="w-full sm:w-screen sm:max-w-xl shadow-2xl flex flex-col border-l border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe">
+        <div className="w-full sm:w-screen sm:max-w-xl flex flex-col border-l border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe">
           {/* Header */}
           <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#eee5d8] bg-white flex items-center justify-between gap-2">
             <div className="flex items-center space-x-2.5 min-w-0 flex-1">
-              <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shadow-2xs shrink-0">
+              <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shrink-0">
                 <Library className="w-5 h-5" />
               </div>
               <div className="min-w-0 flex-1">
@@ -46,7 +46,7 @@ export function BookShelfDrawer({
 
               <button
                 onClick={onClose}
-                className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer"
+                className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer"
                 title="关闭书架选单"
               >
                 <X size={18} />
@@ -71,12 +71,12 @@ export function BookShelfDrawer({
                   }}
                   className={`group relative rounded-3xl border-2 p-4 cursor-pointer transition-all duration-300 flex flex-col sm:flex-row gap-4 ${
                     isSelected
-                      ? 'border-amber-500 bg-amber-500/10 shadow-sm'
-                      : 'border-[#eee5d8] bg-white hover:border-amber-400 hover:shadow-md'
+                      ? 'border-amber-500 bg-amber-500/10'
+                      : 'border-[#eee5d8] bg-white hover:border-amber-400'
                   }`}
                 >
                   {/* Cover Art Image */}
-                  <div className="w-24 aspect-[3/4] rounded-2xl overflow-hidden border border-amber-400/50 shadow-md bg-stone-900 shrink-0 mx-auto sm:mx-0">
+                  <div className="w-24 aspect-[3/4] rounded-2xl overflow-hidden border border-amber-400/50 bg-stone-900 shrink-0 mx-auto sm:mx-0">
                     <img
                       src={coverUrl}
                       alt={book.title}
@@ -118,7 +118,7 @@ export function BookShelfDrawer({
                         <span>共 {chapterCount} 个精听章节</span>
                       </span>
 
-                      <span className={`px-3 py-1 rounded-xl text-xs font-bold transition-all shadow-2xs group-hover:shadow-sm ${
+                      <span className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
                         isSelected 
                           ? 'duo-btn-primary min-h-[32px] px-3 py-1 text-xs inline-flex items-center' 
                           : 'bg-stone-100 text-stone-700 border border-[#eee5d8] group-hover:bg-amber-500 group-hover:text-white group-hover:border-amber-500'

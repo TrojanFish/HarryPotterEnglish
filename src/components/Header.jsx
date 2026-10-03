@@ -88,8 +88,8 @@ export function Header({
     <header
       className={`h-16 shrink-0 sticky top-0 z-40 hidden md:flex items-center justify-between px-4 sm:px-6 border-b transition-colors duration-300 backdrop-blur-xl ${
         isParchment
-          ? 'bg-[#ffffff]/90 border-[#ede4d5] text-[#1e1610] shadow-[0_2px_12px_rgba(160,110,60,0.05)]'
-          : 'bg-[#0f172a]/95 border-[#1e293b] text-[#f1f5f9] shadow-lg'
+          ? 'bg-[#ffffff]/90 border-[#ede4d5] text-[#1e1610]'
+          : 'bg-[#0f172a]/95 border-[#1e293b] text-[#f1f5f9]'
       }`}
     >
       {/* ── LEFT: Logo, Navigation & Student Title ─────────────────── */}
@@ -118,7 +118,7 @@ export function Header({
           className="flex lg:hidden items-center gap-2.5 cursor-pointer group select-none"
           title="点击返回魔法书房"
         >
-          <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center text-white shadow-md shadow-amber-500/20 group-hover:scale-105 active:scale-95 transition-transform">
+          <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center text-white border border-amber-500 group-hover:scale-105 active:scale-95 transition-transform">
             <Sparkles className="w-5 h-5 text-amber-950" />
           </div>
           <div className="flex flex-col">
@@ -126,7 +126,7 @@ export function Header({
               <h1 className="font-magical font-bold text-base sm:text-lg tracking-wide text-amber-950 dark:text-amber-200">
                 霍格沃茨魔法英语
               </h1>
-              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-red-800 text-amber-100 font-sans font-bold shadow-2xs">
+              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-red-800 text-amber-100 font-sans font-bold">
                 <GraduationCap size={10} />
                 <span>少儿原版</span>
               </span>
@@ -149,7 +149,7 @@ export function Header({
         {currentView === 'player' && (
           <button
             onClick={onOpenShelf}
-            className="flex lg:hidden items-center gap-1 text-xs px-2.5 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 text-amber-950 font-bold truncate max-w-[170px] shadow-xs active:scale-95 transition-all"
+            className="flex lg:hidden items-center gap-1 text-xs px-2.5 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 text-amber-950 font-bold truncate max-w-[170px] active:scale-95 transition-all"
             title="切换原著故事"
           >
             <Library size={12} className="shrink-0 text-amber-600" />
@@ -162,10 +162,10 @@ export function Header({
       {/* ── CENTER: Clean Modern Segmented Pill Switcher ────────────── */}
       <div className="flex items-center justify-center">
         {currentView === 'bookshelf' ? (
-          <div className="flex rounded-2xl p-1 border border-[#e8ddcd] bg-[#f5ede2]/90 gap-1 shadow-inner">
+          <div className="flex rounded-2xl p-1 border border-[#e8ddcd] bg-[#f5ede2]/90 gap-1">
             <button
               onClick={() => onSwitchView && onSwitchView('bookshelf')}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-sm active:scale-95 transition-all select-none cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-amber-500 to-amber-600 text-white border border-amber-600 active:scale-95 transition-all select-none cursor-pointer"
             >
               <Library size={14} />
               <span>魔法书架</span>
@@ -180,7 +180,7 @@ export function Header({
             </button>
           </div>
         ) : (
-          <div className="flex rounded-2xl p-1 border border-[#e8ddcd] bg-[#f5ede2]/90 gap-1 shadow-inner">
+          <div className="flex rounded-2xl p-1 border border-[#e8ddcd] bg-[#f5ede2]/90 gap-1">
             {modes.map(({ key, label, icon, desc }) => {
               const isActive = studyMode === key;
               return (
@@ -189,7 +189,7 @@ export function Header({
                   onClick={() => setStudyMode(key)}
                   className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm transition-all select-none cursor-pointer active:scale-95 ${
                     isActive
-                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-sm font-bold'
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white border border-amber-600 font-bold'
                       : 'text-[#665039] hover:bg-white/70 hover:text-[#2d2217] font-semibold'
                   }`}
                   title={desc}
@@ -240,7 +240,7 @@ export function Header({
 
           {/* Floating Tools Dropdown Menu */}
           {showToolsMenu && (
-            <div className="absolute right-0 top-full mt-2 w-56 rounded-3xl bg-white/95 backdrop-blur-xl border-2 border-[#ece2d4] shadow-2xl p-2 z-50 animate-fadeIn select-none space-y-1">
+            <div className="absolute right-0 top-full mt-2 w-56 rounded-3xl bg-white/95 backdrop-blur-xl border-2 border-[#ece2d4] p-2 z-50 animate-fadeIn select-none space-y-1">
               <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-amber-100 mb-1">
                 魔法辅助工具
               </div>

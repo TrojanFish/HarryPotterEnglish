@@ -33,7 +33,7 @@ export function BookShowcase({
         <div className="p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-5">
           {/* Cover Art Image with Vintage Frame */}
           <div className="relative group shrink-0">
-            <div className="w-28 sm:w-32 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-amber-400 shadow-lg bg-amber-950/10 relative transform transition-transform group-hover:scale-105 duration-300">
+            <div className="w-28 sm:w-32 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-amber-400 bg-amber-950/10 relative transform transition-transform group-hover:scale-105 duration-300">
               <img
                 src={coverUrl}
                 alt={currentBook.title}
@@ -52,7 +52,7 @@ export function BookShowcase({
             </div>
 
             {/* Floating House Crest badge */}
-            <span className="absolute -bottom-2 -right-2 p-1.5 rounded-full bg-amber-500 text-white border-2 border-white shadow-md flex items-center justify-center">
+            <span className="absolute -bottom-2 -right-2 p-1.5 rounded-full bg-amber-500 text-white border-2 border-white flex items-center justify-center">
               <Sparkles size={12} />
             </span>
           </div>
@@ -66,7 +66,7 @@ export function BookShowcase({
                   Hogwarts Official Audio
                 </span>
                 {isOfflinePlaying ? (
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 border border-emerald-500/40 font-semibold flex items-center gap-1 shadow-sm animate-pulse">
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 border border-emerald-500/40 font-semibold flex items-center gap-1 animate-pulse">
                     <CheckCircle2 size={12} /> 离线极速畅听
                   </span>
                 ) : (
@@ -107,7 +107,7 @@ export function BookShowcase({
             <div className="mt-3 pt-2.5 border-t border-amber-200/80 flex items-center justify-between">
               <button
                 onClick={onOpenShelf}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 text-xs font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 text-xs font-bold transition-all active:scale-95 cursor-pointer"
                 title="打开魔法书架浏览全部原著"
               >
                 <Library size={14} />
@@ -116,7 +116,7 @@ export function BookShowcase({
 
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-50 text-amber-900 text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
+                className="flex items-center gap-1 px-2.5 py-1.5 min-h-[44px] rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-50 text-amber-900 text-xs font-bold transition-all active:scale-95 cursor-pointer"
                 title={isExpanded ? '收起本卷章节' : '展开本卷章节'}
               >
                 <span>{isExpanded ? '收起目录' : '展开本卷章节'}</span>
@@ -142,9 +142,9 @@ export function BookShowcase({
                       onSelectChapter(ch.id);
                       setIsExpanded(false);
                     }}
-                    className={`p-2 rounded-xl text-left text-xs border transition-all truncate flex flex-col justify-between cursor-pointer active:scale-95 shadow-2xs hover:shadow-xs ${
+                    className={`p-2 rounded-xl text-left text-xs border transition-all truncate flex flex-col justify-between cursor-pointer active:scale-95 ${
                       isCurrent
-                        ? 'border-amber-500 bg-amber-500/20 text-amber-950 font-bold shadow-sm'
+                        ? 'border-amber-500 bg-amber-500/20 text-amber-950 font-bold'
                         : 'border-[#eee5d8] bg-white hover:border-amber-400 text-amber-950 hover:bg-amber-50/70'
                     }`}
                   >

@@ -28,9 +28,9 @@ export function DailyGoalRing({
   return (
     <button
       onClick={onClick}
-      className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-2xl border transition-all duration-300 shadow-xs hover:shadow active:scale-95 cursor-pointer ${
+      className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-2xl border transition-all duration-300 active:scale-95 cursor-pointer ${
         isCompleted
-          ? 'bg-amber-100/90 border-amber-400/90 text-amber-950 ring-2 ring-amber-300/60 shadow-amber-200/50'
+          ? 'bg-amber-100/90 border-amber-400/90 text-amber-950 ring-2 ring-amber-300/60'
           : 'bg-white/90 border-amber-300/80 hover:bg-amber-50 text-amber-950 hover:border-amber-400'
       }`}
       title={`今日魔法契约: 已听 ${currentMinutes} / ${targetMinutes} 分钟 (${percent}%)`}

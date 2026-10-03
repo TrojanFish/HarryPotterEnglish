@@ -131,7 +131,7 @@ export function StorageManagerModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
       <div 
-        className="relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl shadow-[0_20px_60px_-15px_rgba(44,34,30,0.15)] border-t sm:border border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88vh] sm:max-h-[85vh] transition-all duration-300 pb-safe"
+        className="relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88vh] sm:max-h-[85vh] transition-all duration-300 pb-safe"
       >
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1 bg-stone-300 rounded-full mx-auto my-2 shrink-0" />
@@ -139,7 +139,7 @@ export function StorageManagerModal({
         {/* Header */}
         <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#eee5d8] bg-white flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2.5 min-w-0 flex-1">
-            <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-300/80 text-amber-700 shadow-2xs shrink-0">
+            <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-300/80 text-amber-700 shrink-0">
               <HardDrive size={18} className="sm:w-5 sm:h-5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -154,7 +154,7 @@ export function StorageManagerModal({
 
           <button
             onClick={onClose}
-            className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer shrink-0"
+            className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
             title="关闭魔法行囊"
           >
             <X size={18} />
@@ -174,7 +174,7 @@ export function StorageManagerModal({
           </div>
           <div className="w-full h-3 rounded-full overflow-hidden p-0.5 border border-[#eee5d8] bg-stone-100">
             <div 
-              className="h-full rounded-full bg-gradient-to-r from-amber-500 via-amber-500 to-emerald-500 transition-all duration-500 shadow-sm"
+              className="h-full rounded-full bg-gradient-to-r from-amber-500 via-amber-500 to-emerald-500 transition-all duration-500"
               style={{ width: `${Math.max(usedPercent, 2)}%` }}
             />
           </div>
@@ -208,7 +208,7 @@ export function StorageManagerModal({
                 ) : (
                   <button
                     onClick={handleDownloadCurrent}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs shadow-sm hover:shadow-md active:scale-95 cursor-pointer transition-all ring-1 ring-amber-300/30 shrink-0"
+                    className="flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs border border-amber-600 active:scale-95 cursor-pointer transition-all shrink-0"
                     title="离线缓存当前章节音频与同步字幕"
                   >
                     <DownloadCloud size={14} />
@@ -230,7 +230,7 @@ export function StorageManagerModal({
             </h3>
             <button
               onClick={refreshStorage}
-              className="text-xs flex items-center gap-1 px-2.5 py-1 rounded-xl border border-amber-300/70 bg-white/90 text-amber-900 hover:bg-amber-50 hover:border-amber-400 font-bold transition-all shadow-2xs hover:shadow-xs active:scale-95 cursor-pointer"
+              className="text-xs flex items-center gap-1 px-2.5 py-1 min-h-[36px] rounded-xl border border-amber-300/70 bg-white/90 text-amber-900 hover:bg-amber-50 hover:border-amber-400 font-bold transition-all active:scale-95 cursor-pointer"
               title="刷新本地离线存储信息"
             >
               <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} />
@@ -256,7 +256,7 @@ export function StorageManagerModal({
               return (
                 <div
                   key={ch.chapterId}
-                  className="p-3.5 rounded-2xl border border-[#eee5d8] bg-white hover:border-amber-300 flex items-center justify-between gap-3 transition-all shadow-xs"
+                  className="p-3.5 rounded-2xl border border-[#eee5d8] bg-white hover:border-amber-300 flex items-center justify-between gap-3 transition-all"
                 >
                   <div className="flex items-center space-x-3 min-w-0">
                     <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${

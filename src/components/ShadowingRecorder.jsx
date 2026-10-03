@@ -328,7 +328,7 @@ export function ShadowingRecorder({
         letter: 'O',
         title: '卓越 · Outstanding',
         quote: '“宛如赫敏·格兰杰般标准地道！纯正英伦腔调，格兰芬多为你加 10 分！”',
-        badgeClass: 'border-emerald-500 text-emerald-400 bg-emerald-950/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]',
+        badgeClass: 'border-emerald-500 text-emerald-400 bg-emerald-950/50',
         parchmentBadge: 'border-emerald-700 text-emerald-900 bg-emerald-100'
       };
     } else if (score >= 75) {
@@ -336,7 +336,7 @@ export function ShadowingRecorder({
         letter: 'E',
         title: '超乎期待 · Exceeds Expectations',
         quote: '“令人赞叹！节奏与发音都非常自然，展现出高年级学长的语调风范。”',
-        badgeClass: 'border-amber-400 text-amber-800 bg-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]',
+        badgeClass: 'border-amber-400 text-amber-800 bg-amber-500/20',
         parchmentBadge: 'border-amber-500 text-amber-900 bg-amber-100'
       };
     } else if (score >= 60) {
@@ -344,7 +344,7 @@ export function ShadowingRecorder({
         letter: 'A',
         title: '及格 · Acceptable',
         quote: '“通过考核！主体发音清晰，注意黄色标记词汇的发音与重音弱读。”',
-        badgeClass: 'border-amber-500 text-amber-400 bg-amber-950/50 shadow-[0_0_15px_rgba(245,158,11,0.3)]',
+        badgeClass: 'border-amber-500 text-amber-400 bg-amber-950/50',
         parchmentBadge: 'border-amber-700 text-amber-900 bg-amber-100'
       };
     } else {
@@ -352,7 +352,7 @@ export function ShadowingRecorder({
         letter: 'P',
         title: '尚需练习 · Needs Practice',
         quote: '“魔法共鸣稍弱。不妨点击‘播放原音’多听两遍原声，再重新录音跟读。”',
-        badgeClass: 'border-rose-500 text-rose-400 bg-rose-950/50 shadow-[0_0_15px_rgba(244,63,94,0.3)]',
+        badgeClass: 'border-rose-500 text-rose-400 bg-rose-950/50',
         parchmentBadge: 'border-rose-700 text-rose-900 bg-rose-100'
       };
     }
@@ -366,11 +366,11 @@ export function ShadowingRecorder({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-xl rounded-3xl border-2 border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-[0_20px_60px_-15px_rgba(44,34,30,0.15)] p-6 transition-all duration-300">
+      <div className="relative w-full max-w-xl rounded-3xl border-2 border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] p-6 transition-all duration-300">
         {/* Header */}
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#eee5d8]">
           <div className="flex items-center space-x-2">
-            <div className="p-1.5 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shadow-2xs">
+            <div className="p-1.5 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80">
               <Mic size={18} />
             </div>
             <h3 className="font-magical font-bold text-lg text-amber-950">
@@ -379,7 +379,7 @@ export function ShadowingRecorder({
           </div>
           <button
             onClick={onClose}
-            className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer"
+            className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer"
             title="关闭跟读录音"
           >
             <X size={18} />
@@ -387,7 +387,7 @@ export function ShadowingRecorder({
         </div>
 
         {/* Target Sentence Box & Word-Level Badges */}
-        <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white mb-4 transition-all shadow-xs">
+        <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white mb-4 transition-all">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-magical uppercase tracking-wider font-bold text-amber-900">
               原著朗读目标句 · Target Sentence
@@ -421,16 +421,16 @@ export function ShadowingRecorder({
                 let badgeStyle = '';
                 if (w.status === 'matched') {
                   badgeStyle = isParchment
-                    ? 'bg-emerald-100/90 border-emerald-600/40 text-emerald-900 shadow-sm'
-                    : 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 shadow-sm';
+                    ? 'bg-emerald-100/90 border-emerald-600/40 text-emerald-900'
+                    : 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300';
                 } else if (w.status === 'partial') {
                   badgeStyle = isParchment
-                    ? 'bg-amber-100/90 border-amber-600/40 text-amber-900 shadow-sm'
-                    : 'bg-amber-950/60 border-amber-500/50 text-amber-300 shadow-sm';
+                    ? 'bg-amber-100/90 border-amber-600/40 text-amber-900'
+                    : 'bg-amber-950/60 border-amber-500/50 text-amber-300';
                 } else {
                   badgeStyle = isParchment
-                    ? 'bg-rose-100/90 border-rose-600/40 text-rose-900 line-through opacity-85 shadow-sm'
-                    : 'bg-rose-950/60 border-rose-500/50 text-rose-300 line-through opacity-85 shadow-sm';
+                    ? 'bg-rose-100/90 border-rose-600/40 text-rose-900 line-through opacity-85'
+                    : 'bg-rose-950/60 border-rose-500/50 text-rose-300 line-through opacity-85';
                 }
 
                 const tooltipText = w.matchedSpokenWord
@@ -505,9 +505,9 @@ export function ShadowingRecorder({
 
         {/* Overall Score Badge Card & Hogwarts O.W.L. Grade */}
         {evaluationResult && gradeInfo && !isEvaluating && (
-          <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white mb-4 shadow-xs flex items-center justify-between">
+          <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white mb-4 flex items-center justify-between">
             <div className="flex items-center space-x-3.5">
-              <div className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl border-2 font-magical font-black text-xl shadow-inner ${gradeInfo.parchmentBadge}`}>
+              <div className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl border-2 font-magical font-black text-xl ${gradeInfo.parchmentBadge}`}>
                 <span>{evaluationResult.score}%</span>
                 <span className="text-[9px] uppercase tracking-wider -mt-1 font-sans">
                   等阶 {gradeInfo.letter}

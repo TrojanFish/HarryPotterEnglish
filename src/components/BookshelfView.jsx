@@ -143,7 +143,7 @@ export function BookshelfView({
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 mb-5">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="p-1.5 rounded-xl bg-amber-500/15 text-amber-600 shadow-2xs">
+              <span className="p-1.5 rounded-xl bg-amber-500/15 text-amber-600">
                 <Sparkles size={18} />
               </span>
               <h2 className="font-magical font-bold text-2xl sm:text-3xl text-amber-950 tracking-tight">
@@ -180,12 +180,12 @@ export function BookshelfView({
           
           {/* Left: Compact, Sleek Continue Adventure Card */}
           {currentBookObj && currentChapterObj ? (
-            <div className="lg:col-span-7 duo-card p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden border-2 border-amber-300/80 shadow-md">
+            <div className="lg:col-span-7 duo-card p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden border-2 border-amber-300/80">
               <div className="flex items-start gap-4 sm:gap-5 min-w-0">
                 {/* 3D Floating Book Preview (Compact) */}
                 <div 
                   onClick={onEnterPlayer}
-                  className="w-20 sm:w-24 aspect-[3/4] rounded-xl overflow-hidden border-2 border-amber-400 shadow-lg shrink-0 cursor-pointer ibooks-book ibooks-book-spine bg-slate-900 relative group transition-transform hover:scale-105"
+                  className="w-20 sm:w-24 aspect-[3/4] rounded-xl overflow-hidden border-2 border-amber-400 shrink-0 cursor-pointer ibooks-book ibooks-book-spine bg-slate-900 relative group transition-transform hover:scale-105"
                   title="点击直接进入精听教室"
                 >
                   {!coverErrorMap[currentBookObj.id] ? (
@@ -241,7 +241,7 @@ export function BookshelfView({
               <div className="flex items-center gap-2.5 pt-4 mt-3 border-t border-[#f0e6d6]">
                 <button
                   onClick={onEnterPlayer}
-                  className="duo-btn-primary flex-1 min-h-[42px] px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 shadow-sm"
+                  className="duo-btn-primary flex-1 min-h-[44px] px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5"
                   title="立即进入精听教室并继续播放"
                 >
                   <Play size={14} className="fill-current" />
@@ -250,7 +250,7 @@ export function BookshelfView({
 
                 <button
                   onClick={() => setInspectingBook(currentBookObj)}
-                  className="duo-btn-secondary min-h-[42px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 shadow-2xs"
+                  className="duo-btn-secondary min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1"
                   title="浏览完整章节目录"
                 >
                   <Layers size={13} />
@@ -315,7 +315,7 @@ export function BookshelfView({
                   <span>转换器 x{timeTurnersCount} (漏卡自动护体)</span>
                 </div>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-200 flex items-center justify-center text-orange-600 shrink-0 shadow-2xs">
+              <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-200 flex items-center justify-center text-orange-600 shrink-0">
                 <Flame size={20} />
               </div>
             </div>
@@ -342,13 +342,13 @@ export function BookshelfView({
                 {dueWordsCount > 0 ? (
                   <button
                     onClick={(e) => { e.stopPropagation(); onOpenSrs(); }}
-                    className="duo-btn-primary min-h-[36px] px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm animate-pulse"
+                    className="duo-btn-primary min-h-[36px] px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 animate-pulse"
                   >
                     <span>重炼</span>
                     <ChevronRight size={12} />
                   </button>
                 ) : (
-                  <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-2xs">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-200 flex items-center justify-center text-indigo-600">
                     <BrainCircuit size={20} />
                   </div>
                 )}
@@ -397,7 +397,7 @@ export function BookshelfView({
                 className="duo-card duo-card-hover p-6 flex flex-col justify-between relative group overflow-hidden border-2 hover:border-amber-400"
               >
                 {/* Level Ribbon draped from top right */}
-                <div className={`absolute top-0 right-6 z-20 px-3 py-1 rounded-b-xl text-[10px] font-bold shadow-md tracking-wider ${levelInfo.ribbonColor}`}>
+                <div className={`absolute top-0 right-6 z-20 px-3 py-1 rounded-b-xl text-[10px] font-bold tracking-wider ${levelInfo.ribbonColor}`}>
                   {levelInfo.ribbon}
                 </div>
 
@@ -407,7 +407,7 @@ export function BookshelfView({
                     {/* 3D Book Cover with Rounded Corners */}
                     <div 
                       onClick={() => setInspectingBook(book)}
-                      className="w-24 sm:w-28 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-amber-300 shadow-md shrink-0 cursor-pointer ibooks-book ibooks-book-spine bg-slate-900 relative"
+                      className="w-24 sm:w-28 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-amber-300 shrink-0 cursor-pointer ibooks-book ibooks-book-spine bg-slate-900 relative"
                       title={`点击翻开《${book.cnTitle || book.title}》章节选单`}
                     >
                       {!coverErrorMap[book.id] ? (
@@ -465,7 +465,7 @@ export function BookshelfView({
                       }
                       onEnterPlayer();
                     }}
-                    className="duo-btn-primary flex-1 min-h-[42px] py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm"
+                    className="duo-btn-primary flex-1 min-h-[44px] py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5"
                     title={`从第 1 章开始精听《${book.cnTitle || book.title}》`}
                   >
                     <Play size={13} className="fill-current" />
@@ -474,7 +474,7 @@ export function BookshelfView({
 
                   <button
                     onClick={() => setInspectingBook(book)}
-                    className="duo-btn-secondary min-h-[42px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 shadow-2xs"
+                    className="duo-btn-secondary min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1"
                     title={`翻开《${book.cnTitle || book.title}》完整章节选单`}
                   >
                     <Layers size={13} />
@@ -496,7 +496,7 @@ export function BookshelfView({
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-2xl max-h-[88vh] sm:max-h-[85vh] flex flex-col rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-2xl overflow-hidden transition-all pb-safe"
+            className="w-full max-w-2xl max-h-[88vh] sm:max-h-[85vh] flex flex-col rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] overflow-hidden transition-all pb-safe"
           >
             {/* Mobile Pull Handle Indicator */}
             <div className="sm:hidden w-10 h-1 bg-stone-300 rounded-full mx-auto my-2 shrink-0" />
@@ -504,7 +504,7 @@ export function BookshelfView({
             {/* Modal Header */}
             <div className="p-4 sm:p-5 border-b border-[#eee5d8] flex items-center justify-between shrink-0 bg-white gap-3">
               <div className="flex items-center gap-3 min-w-0 flex-1">
-                <div className="w-11 sm:w-12 aspect-[3/4] rounded-xl overflow-hidden border border-amber-400 shadow-sm shrink-0 bg-slate-900">
+                <div className="w-11 sm:w-12 aspect-[3/4] rounded-xl overflow-hidden border border-amber-400 shrink-0 bg-slate-900">
                   {!coverErrorMap[inspectingBook.id] ? (
                     <img 
                       src={`/api/raw/podcasts/${inspectingBook.id}/cover.jpg`} 
@@ -535,7 +535,7 @@ export function BookshelfView({
                   setInspectingBook(null);
                   setChapterSearch('');
                 }}
-                className="duo-touch-target p-2 rounded-xl border border-amber-200 bg-white hover:bg-amber-100 text-slate-600 hover:text-amber-900 transition-all active:scale-90 shadow-2xs cursor-pointer shrink-0"
+                className="duo-touch-target p-2 rounded-xl border border-amber-200 bg-white hover:bg-amber-100 text-slate-600 hover:text-amber-900 transition-all active:scale-90 cursor-pointer shrink-0"
                 title="关闭章节目录"
               >
                 <X size={18} />
@@ -593,14 +593,14 @@ export function BookshelfView({
                     }}
                     className={`flex items-center justify-between p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
                       isCurrent 
-                        ? 'border-amber-500 bg-amber-500/15 shadow-sm' 
-                        : 'border-[#eee5d8] bg-white hover:border-amber-400 hover:shadow-xs'
+                        ? 'border-amber-500 bg-amber-500/15' 
+                        : 'border-[#eee5d8] bg-white hover:border-amber-400'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-magical font-bold text-xs shrink-0 ${
                         isCurrent 
-                          ? 'bg-amber-500 text-white shadow' 
+                          ? 'bg-amber-500 text-white' 
                           : 'bg-amber-500/15 text-amber-800'
                       }`}>
                         {ch.number || idx + 1}
@@ -625,7 +625,7 @@ export function BookshelfView({
                     </div>
 
                     <button
-                      className="duo-btn-secondary min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1 shadow-2xs"
+                      className="duo-btn-secondary min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1"
                     >
                       <Play size={12} className="fill-current" />
                       <span>开始精听</span>
@@ -641,7 +641,7 @@ export function BookshelfView({
       {/* ── 5. Floating Mini-Player Capsule (when audio is active) ─────── */}
       {(currentTime > 0 || isPlaying) && currentChapterObj && (
         <div className="fixed bottom-4 left-4 right-4 max-w-3xl mx-auto z-40 animate-fade-in">
-          <div className="relative p-3 sm:p-4 rounded-3xl border-2 border-amber-300 bg-white/95 text-[#1e1610] shadow-2xl backdrop-blur-xl flex items-center justify-between gap-3 overflow-hidden">
+          <div className="relative p-3 sm:p-4 rounded-3xl border-2 border-amber-400 bg-white/95 text-[#1e1610] backdrop-blur-xl flex items-center justify-between gap-3 overflow-hidden">
             {/* Top Slim Audio Scrubber Line */}
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-amber-500/15">
               <div 
@@ -654,7 +654,7 @@ export function BookshelfView({
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <button
                 onClick={onTogglePlay}
-                className="w-12 h-12 rounded-2xl duo-btn-primary flex items-center justify-center shrink-0 shadow-md cursor-pointer"
+                className="w-12 h-12 rounded-2xl duo-btn-primary flex items-center justify-center shrink-0 cursor-pointer"
                 title={isPlaying ? '暂停音频 (空格键)' : '继续播放 (空格键)'}
               >
                 {isPlaying ? <Pause size={18} /> : <Play size={18} className="fill-current ml-0.5" />}
@@ -689,7 +689,7 @@ export function BookshelfView({
             {/* Enter Full Player CTA Button */}
             <button
               onClick={onEnterPlayer}
-              className="duo-btn-primary min-h-[42px] px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-sm shrink-0 cursor-pointer"
+              className="duo-btn-primary min-h-[44px] px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-1.5 shrink-0 cursor-pointer"
               title="进入全功能精听教室（字幕、查词、跟读、听写）"
             >
               <span>进入精听教室</span>

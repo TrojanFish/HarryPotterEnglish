@@ -16,6 +16,7 @@ build/
 
 # Agent internal files & transcripts
 .agents/
+!.agents/skills/
 
 # Logs
 npm-debug.log*

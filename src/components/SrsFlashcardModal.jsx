@@ -107,12 +107,12 @@ export function SrsFlashcardModal({
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-lg rounded-3xl border-2 border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-[0_20px_60px_-15px_rgba(44,34,30,0.15)] p-6 sm:p-7 flex flex-col justify-between min-h-[480px] transition-all"
+        className="w-full max-w-lg rounded-3xl border-2 border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] p-6 sm:p-7 flex flex-col justify-between min-h-[480px] transition-all"
       >
         {/* Top Header & Progress */}
         <div className="flex items-center justify-between pb-3 border-b border-[#eee5d8] mb-4">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shadow-2xs">
+            <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80">
               <BrainCircuit size={18} />
             </div>
             <div>
@@ -127,7 +127,7 @@ export function SrsFlashcardModal({
 
           <button
             onClick={onClose}
-            className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer"
+            className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer"
             title="关闭复习"
           >
             <X size={18} />
@@ -164,7 +164,7 @@ export function SrsFlashcardModal({
         ) : isFinished ? (
           /* Settlement Screen */
           <div className="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-4 animate-fadeIn">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center shadow-lg">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center border border-amber-500">
               <Trophy size={32} />
             </div>
             <h4 className="font-magical font-bold text-2xl text-amber-950">
@@ -187,7 +187,7 @@ export function SrsFlashcardModal({
 
             <button
               onClick={onClose}
-              className="duo-btn-primary min-h-[46px] px-8 py-3 rounded-2xl text-xs sm:text-sm shadow-md inline-flex items-center justify-center gap-2 cursor-pointer transition-all"
+              className="duo-btn-primary min-h-[46px] px-8 py-3 rounded-2xl text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer transition-all"
             >
               <span>收入魔法行囊并返回</span>
             </button>
@@ -196,7 +196,7 @@ export function SrsFlashcardModal({
           /* Flashcard Container with Flip Animation */
           <div 
             onClick={() => setIsFlipped(!isFlipped)}
-            className="flex-1 flex flex-col justify-between p-6 sm:p-7 rounded-3xl border-2 border-[#eee5d8] bg-white shadow-md cursor-pointer hover:border-amber-400 transition-all relative group"
+            className="flex-1 flex flex-col justify-between p-6 sm:p-7 rounded-3xl border-2 border-[#eee5d8] bg-white cursor-pointer hover:border-amber-400 transition-all relative group"
             title="点击卡片翻转查看释义"
           >
             {/* Front of Card (English Word & Phonics) */}
@@ -227,7 +227,7 @@ export function SrsFlashcardModal({
                       e.stopPropagation();
                       handlePlayAudio();
                     }}
-                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer ${
+                    className={`inline-flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-full border text-xs font-bold transition-all active:scale-95 cursor-pointer ${
                       isPlayingAudio
                         ? 'bg-amber-500 text-white border-amber-500 scale-105'
                         : 'border-amber-300 bg-amber-50/80 text-amber-950 hover:bg-amber-100'
@@ -284,7 +284,7 @@ export function SrsFlashcardModal({
           <div className="pt-4 border-t border-[#eee5d8] grid grid-cols-2 gap-3 mt-4">
             <button
               onClick={() => handleAnswer(false)}
-              className="duo-btn-danger min-h-[48px] py-3 px-4 rounded-2xl text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+              className="duo-btn-danger min-h-[48px] py-3 px-4 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <RotateCcw size={15} />
               <span>还需重炼 (没记住)</span>
@@ -292,7 +292,7 @@ export function SrsFlashcardModal({
 
             <button
               onClick={() => handleAnswer(true)}
-              className="duo-btn-success min-h-[48px] py-3 px-4 rounded-2xl text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+              className="duo-btn-success min-h-[48px] py-3 px-4 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Check size={16} className="stroke-[3]" />
               <span>已牢固掌握 (进阶)</span>

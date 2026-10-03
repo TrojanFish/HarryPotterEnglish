@@ -109,7 +109,7 @@ export function LumosClozeInput({
   return (
     <div className="space-y-5 animate-fadeIn">
       {/* ── Cloze Prompt Card ─────────────────────────────────────── */}
-      <div className={`p-6 rounded-2xl border-2 transition-all leading-loose text-base sm:text-lg font-reading shadow-inner ${
+      <div className={`p-6 rounded-2xl border-2 transition-all leading-loose text-base sm:text-lg font-reading ${
         isAllBlanksCorrect
           ? 'bg-emerald-500/10 border-emerald-500'
           : 'bg-[#fbf9f5] border-[#eee5d8] text-[#1e1610]'
@@ -161,7 +161,7 @@ export function LumosClozeInput({
                   placeholder={`${token.firstLetter}${'•'.repeat(Math.min(token.clean.length - 1, 4))}`}
                   className={`w-28 sm:w-32 px-2.5 py-1 text-center font-bold text-base rounded-xl border-2 focus:outline-none transition-all ${
                     status === 'correct'
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-xs'
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
                       : status === 'wrong'
                       ? 'border-red-400 bg-red-50 text-red-700'
                       : 'border-amber-400/90 bg-white text-amber-950 focus:border-amber-600 focus:ring-2 focus:ring-amber-400/20'
