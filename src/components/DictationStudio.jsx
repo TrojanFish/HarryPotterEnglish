@@ -98,6 +98,7 @@ export function DictationStudio({
   const [totalStars, setTotalStars] = useState(0);
   const [errorWords, setErrorWords] = useState([]);
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+  const [feedbackState, setFeedbackState] = useState(null);
 
   // Dueling Mode survival state
   const [shields, setShields] = useState(3);
@@ -115,7 +116,26 @@ export function DictationStudio({
     setShowAnswer(false);
     setHintCount(0);
     setTimeRemaining(25);
+    setFeedbackState(null);
   }, [activeCueIndex]);
+
+  // Handle advancing from feedback sheet
+  const handleFeedbackContinue = () => {
+    setFeedbackState(null);
+    handleNext();
+  };
+
+  // Keyboard shortcut: Press Enter on bottom sheet to advance immediately
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (feedbackState && e.key === 'Enter') {
+        e.preventDefault();
+        handleFeedbackContinue();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [feedbackState, activeCueIndex, cues.length]);
 
   // Dueling Mode: Timer countdown
   useEffect(() => {
@@ -214,6 +234,14 @@ export function DictationStudio({
     if (onRecordResult) {
       onRecordResult(sessionData);
     }
+
+    // Trigger Duolingo Bottom Feedback Sheet
+    setFeedbackState({
+      isCorrect: true,
+      accuracy: 100,
+      streak: streakCount + 1,
+      sentence: currentCue.text
+    });
   };
 
   // Handle advancing to next cue
@@ -474,6 +502,55 @@ export function DictationStudio({
         </div>
 
       </div>
+
+      {/* ── Duolingo Bottom Feedback Sheet ────────────────────────── */}
+      {feedbackState && (
+        <div 
+          className={`fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-5 border-t-2 shadow-2xl transition-all transform animate-fadeIn ${
+            feedbackState.isCorrect 
+              ? 'bg-[#d7f0db] border-emerald-500 text-emerald-950' 
+              : 'bg-[#fed7d7] border-rose-400 text-rose-950'
+          }`}
+        >
+          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 text-left w-full sm:w-auto">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
+                feedbackState.isCorrect ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
+              }`}>
+                {feedbackState.isCorrect ? (
+                  <CheckCircle2 size={28} className="stroke-[2.5]" />
+                ) : (
+                  <RotateCcw size={26} />
+                )}
+              </div>
+              <div>
+                <h4 className="font-magical font-bold text-lg sm:text-xl leading-tight">
+                  {feedbackState.isCorrect ? '太棒了！施法完全正确！' : '咒文存在微小偏差'}
+                </h4>
+                <p className="text-xs sm:text-sm font-reading mt-0.5 opacity-90">
+                  {feedbackState.isCorrect ? (
+                    feedbackState.streak >= 2 
+                      ? `连对第 ${feedbackState.streak} 句！魔法能量正在激增！` 
+                      : '精准拼写出整句咒语，获得满星魔力！'
+                  ) : (
+                    `标准咒语：${feedbackState.sentence || currentCue.text}`
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleFeedbackContinue}
+              className={`w-full sm:w-auto min-h-[48px] px-8 py-3 rounded-2xl text-sm sm:text-base font-bold shadow-md cursor-pointer transition-all flex items-center justify-center gap-2 ${
+                feedbackState.isCorrect ? 'duo-btn-success' : 'duo-btn-danger'
+              }`}
+            >
+              <span>{activeCueIndex >= cues.length - 1 ? '完成试炼并结算 (Enter)' : '继续下一句 (Enter)'}</span>
+              <SkipForward size={16} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── 5. Chapter Quest Summary Report Card Modal ─────────────── */}
       <DictationSummaryModal

@@ -592,7 +592,7 @@ export function ShadowingRecorder({
             <button
               onClick={() => onPlayOriginalSnippet(currentCue)}
               disabled={isRecording || isEvaluating}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 text-amber-950 hover:bg-amber-50 hover:border-amber-400 disabled:opacity-40 disabled:pointer-events-none text-xs font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer"
+              className="duo-btn-secondary min-h-[42px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
               title="播放当前句原著原声朗读"
             >
               <Volume2 size={14} />
@@ -625,7 +625,7 @@ export function ShadowingRecorder({
                 <button
                   onClick={startRecording}
                   disabled={isEvaluating}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 via-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white text-xs font-bold transition-all shadow-sm hover:shadow-md active:scale-95 cursor-pointer disabled:opacity-50 ring-1 ring-rose-400/30"
+                  className="duo-btn-danger min-h-[42px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs cursor-pointer disabled:opacity-50"
                   title="开始麦克风跟读录音与 AI 语音打分"
                 >
                   <Mic size={14} />
@@ -634,7 +634,7 @@ export function ShadowingRecorder({
               ) : (
                 <button
                   onClick={stopRecording}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 text-white animate-pulse text-xs font-bold shadow-md hover:shadow-lg active:scale-95 cursor-pointer ring-2 ring-rose-300"
+                  className="duo-btn-danger min-h-[42px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs animate-pulse cursor-pointer ring-2 ring-rose-300"
                   title="停止录音并触发 AI 评分"
                 >
                   <Square size={14} />
@@ -646,7 +646,7 @@ export function ShadowingRecorder({
                 <button
                   onClick={togglePlayRecording}
                   disabled={isEvaluating}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs font-bold transition-all shadow-sm hover:shadow-md active:scale-95 cursor-pointer disabled:opacity-50 ring-1 ring-amber-300/30"
+                  className="duo-btn-primary min-h-[42px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs cursor-pointer disabled:opacity-50"
                   title={isPlayingRecording ? '暂停回放' : '回放自己录制的音频'}
                 >
                   {isPlayingRecording ? <Pause size={14} /> : <Play size={14} />}
