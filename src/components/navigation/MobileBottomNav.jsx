@@ -56,7 +56,7 @@ export function MobileBottomNav({
   return (
     <nav 
       aria-label="移动端底部导航"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 h-14 bg-white/95 border-t-2 border-[#eee5d8] backdrop-blur-md flex items-center justify-around px-2 select-none shadow-[0_-2px_10px_rgba(0,0,0,0.03)]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 h-14 bg-white/95 border-t border-[#eee5d8] backdrop-blur-md flex items-center justify-around px-2 select-none"
     >
       {tabs.map((tab) => {
         const active = tab.isActive;

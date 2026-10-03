@@ -99,10 +99,10 @@ export function TabletRail({
       <div className="flex flex-col items-center gap-4 w-full">
         <div 
           onClick={() => onSwitchView && onSwitchView('bookshelf')}
-          className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-md active:scale-95 cursor-pointer"
+          className="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center text-white active:scale-95 cursor-pointer"
           title="霍格沃茨魔法英语"
         >
-          <Sparkles size={20} className="text-amber-950 stroke-[2.5]" />
+          <Sparkles size={20} className="text-white stroke-[2.5]" />
         </div>
 
         {/* Icon Nav List */}
@@ -113,9 +113,9 @@ export function TabletRail({
               <button
                 key={item.id}
                 onClick={item.onClick}
-                className={`relative w-11 h-11 rounded-2xl flex items-center justify-center transition-all cursor-pointer ${
+                className={`relative w-11 h-11 rounded-2xl flex items-center justify-center transition-colors cursor-pointer ${
                   active
-                    ? 'duo-btn-primary shadow-xs'
+                    ? 'bg-amber-500 text-white border border-amber-600'
                     : 'text-stone-500 hover:text-amber-950 hover:bg-white border border-transparent hover:border-[#eee5d8]'
                 }`}
                 title={item.title}
@@ -123,7 +123,7 @@ export function TabletRail({
               >
                 {item.icon}
                 {item.badge && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-600 text-white font-mono font-bold text-[9px] flex items-center justify-center border border-white shadow-xs">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-600 text-white font-mono font-bold text-[9px] flex items-center justify-center border border-white">
                     {item.badge > 99 ? '99+' : item.badge}
                   </span>
                 )}

@@ -36,7 +36,7 @@ export function MobileMiniPlayer({
 
   return (
     <div 
-      className="md:hidden fixed bottom-16 left-3 right-3 z-30 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-xl shadow-amber-900/20 border-2 border-amber-400/90 flex flex-col overflow-hidden select-none animate-slideUp"
+      className="md:hidden fixed bottom-16 left-3 right-3 z-30 rounded-2xl bg-amber-500 text-white border border-amber-600 flex flex-col overflow-hidden select-none animate-slideUp"
     >
       <div className="flex items-center justify-between p-2.5">
         {/* Clickable Info Area -> Enter Player */}
@@ -45,7 +45,7 @@ export function MobileMiniPlayer({
           className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer"
           title="点击进入全功能精听教室"
         >
-          <div className="w-8 h-8 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center font-bold text-xs text-white shrink-0 shadow-xs">
+          <div className="w-8 h-8 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center font-bold text-xs text-white shrink-0">
             <Headphones size={15} />
           </div>
           <div className="min-w-0 flex-1">
@@ -65,7 +65,7 @@ export function MobileMiniPlayer({
               e.stopPropagation();
               if (onTogglePlay) onTogglePlay();
             }}
-            className="w-8 h-8 rounded-full bg-white text-amber-700 flex items-center justify-center shadow-md active:scale-90 transition-transform cursor-pointer"
+            className="w-8 h-8 rounded-full bg-white text-amber-700 flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
             title={isPlaying ? '暂停' : '播放'}
           >
             {isPlaying ? (

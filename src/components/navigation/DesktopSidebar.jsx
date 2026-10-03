@@ -120,15 +120,15 @@ export function DesktopSidebar({
           className="flex items-center gap-2.5 px-2 cursor-pointer group"
           title="返回魔法书架"
         >
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center text-white shadow-md shadow-amber-500/20 group-hover:scale-105 active:scale-95 transition-transform">
-            <Sparkles size={20} className="text-amber-950 stroke-[2.5]" />
+          <div className="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center text-white group-hover:scale-105 active:scale-95 transition-transform">
+            <Sparkles size={20} className="text-white stroke-[2.5]" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <h1 className="font-magical font-bold text-base text-amber-950 tracking-tight">
                 霍格沃茨英语
               </h1>
-              <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-red-800 text-amber-100 font-sans font-bold shadow-2xs">
+              <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-red-800 text-amber-100 font-sans font-bold">
                 <GraduationCap size={10} />
                 <span>原版</span>
               </span>
@@ -147,10 +147,10 @@ export function DesktopSidebar({
               <button
                 key={item.id}
                 onClick={item.onClick}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all text-left cursor-pointer group ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-colors text-left cursor-pointer group ${
                   active
-                    ? 'duo-btn-primary shadow-xs'
-                    : 'text-stone-600 hover:text-amber-950 hover:bg-white/80 border border-transparent hover:border-[#eee5d8]'
+                    ? 'bg-amber-500 text-white border border-amber-600'
+                    : 'text-stone-600 hover:text-amber-950 hover:bg-white border border-transparent hover:border-[#eee5d8]'
                 }`}
                 title={item.desc}
               >
@@ -164,7 +164,7 @@ export function DesktopSidebar({
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold shrink-0 ${
                     active 
                       ? 'bg-white/20 text-white' 
-                      : 'bg-amber-500/15 text-amber-800 border border-amber-400/40'
+                      : 'bg-amber-500/15 text-amber-800 border border-amber-300'
                   }`}>
                     {item.badge}
                   </span>

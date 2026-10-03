@@ -33,6 +33,7 @@ import { TabletRail } from './components/navigation/TabletRail';
 import { MobileTopBar } from './components/navigation/MobileTopBar';
 import { MobileBottomNav } from './components/navigation/MobileBottomNav';
 import { MobileMiniPlayer } from './components/navigation/MobileMiniPlayer';
+import { ReaderTopBar } from './components/navigation/ReaderTopBar';
 import { Loader2 } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
@@ -710,38 +711,6 @@ export function App() {
           onInstallPwa={handleInstallPwa}
         />
 
-        {/* Desktop & Tablet Contextual Top Header (>= 768px) */}
-        <Header
-          books={books}
-          selectedBook={selectedBook}
-          setSelectedBook={setSelectedBook}
-          selectedChapter={selectedChapter}
-          setSelectedChapter={setSelectedChapter}
-          studyMode={studyMode}
-          setStudyMode={setStudyMode}
-          isParchment={isParchment}
-          onOpenVocab={() => setIsVocabOpen(true)}
-          onOpenShortcuts={() => setIsShortcutsOpen(true)}
-          onOpenShelf={() => setIsShelfOpen(true)}
-          onRefreshCatalog={() => fetchCatalog(true)}
-          isRefreshing={isRefreshing}
-          onInstallPwa={handleInstallPwa}
-          canInstallPwa={canInstallPwa}
-          vocabCount={vocabList.length}
-          onOpenAnalytics={() => {
-            setAnalyticsSummary(getAnalyticsSummary());
-            setIsAnalyticsOpen(true);
-          }}
-          streakDays={analyticsSummary?.streakDays || 0}
-          onOpenStorageManager={() => {
-            refreshOfflineCount();
-            setIsStorageOpen(true);
-          }}
-          cachedChaptersCount={cachedChaptersCount}
-          currentView={currentView}
-          onSwitchView={setCurrentView}
-        />
-
         {/* ── Content Viewport: Bookshelf vs Player Studio ── */}
         <div className="flex-1 overflow-hidden min-h-0 flex flex-col">
           {currentView === 'bookshelf' ? (
@@ -797,20 +766,22 @@ export function App() {
               }}
             />
           ) : (
-            <div className="flex flex-1 overflow-hidden min-h-0">
-              {/* Left Chapter list Sidebar on Desktop in Player View */}
-              <Sidebar
-                currentBook={currentBookObj}
-                currentChapter={currentChapterObj}
-                onSelectChapter={setSelectedChapter}
-                onOpenShelf={() => setIsShelfOpen(true)}
-                onRefreshCatalog={() => fetchCatalog(true)}
-                isRefreshing={isRefreshing}
-                isParchment={isParchment}
-                isOfflinePlaying={isOfflinePlaying}
-              />
+            <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              {/* Desktop/Tablet Clean Contextual Reading Bar (No duplicate sidebars or headers) */}
+              <div className="hidden md:block">
+                <ReaderTopBar
+                  currentBook={currentBookObj}
+                  currentChapter={currentChapterObj}
+                  onOpenShelf={() => setIsShelfOpen(true)}
+                  studyMode={studyMode}
+                  setStudyMode={setStudyMode}
+                  showTranslation={showTranslation}
+                  setShowTranslation={setShowTranslation}
+                  onOpenShortcuts={() => setIsShortcutsOpen(true)}
+                />
+              </div>
 
-              {/* Main Content Area */}
+              {/* Main Content Area: Centered, spacious, calm */}
               <main className="flex-1 overflow-y-auto min-w-0 pb-28 md:pb-24">
                 {isLoadingContent ? (
                   <div className="flex-1 flex items-center justify-center py-32 text-amber-600">

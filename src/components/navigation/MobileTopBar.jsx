@@ -53,20 +53,20 @@ export function MobileTopBar({
   }, [showTools]);
 
   return (
-    <header className="md:hidden sticky top-0 z-30 h-13 bg-white/95 border-b-2 border-[#eee5d8] backdrop-blur-md px-3 flex items-center justify-between select-none shadow-xs">
+    <header className="md:hidden sticky top-0 z-30 h-13 bg-white/95 border-b border-[#eee5d8] backdrop-blur-md px-3 flex items-center justify-between select-none">
       {/* ── Left: Context Action ──────────────────────────────────── */}
       <div className="flex items-center gap-2 min-w-0">
         {currentView === 'player' ? (
           <button
             onClick={() => onSwitchView && onSwitchView('bookshelf')}
-            className="duo-touch-target p-1.5 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] hover:bg-stone-100 text-stone-700 active:scale-95 transition-all"
+            className="duo-touch-target p-1.5 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] hover:bg-stone-100 text-stone-700 active:scale-95 transition-colors"
             title="返回魔法书架"
           >
             <ArrowLeft size={16} />
           </button>
         ) : (
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-xs shrink-0">
-            <Sparkles size={16} className="text-amber-950 stroke-[2.5]" />
+          <div className="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center text-white shrink-0">
+            <Sparkles size={16} className="text-white stroke-[2.5]" />
           </div>
         )}
 
@@ -100,7 +100,7 @@ export function MobileTopBar({
           <button
             onClick={() => setStudyMode('normal')}
             className={`p-1 rounded-lg transition-all ${
-              studyMode === 'normal' ? 'bg-amber-500 text-white shadow-xs' : 'text-stone-500'
+              studyMode === 'normal' ? 'bg-amber-500 text-white' : 'text-stone-500'
             }`}
             title="双语精听"
           >
@@ -109,7 +109,7 @@ export function MobileTopBar({
           <button
             onClick={() => setStudyMode('blind')}
             className={`p-1 rounded-lg transition-all ${
-              studyMode === 'blind' ? 'bg-amber-500 text-white shadow-xs' : 'text-stone-500'
+              studyMode === 'blind' ? 'bg-amber-500 text-white' : 'text-stone-500'
             }`}
             title="魔法磨耳朵"
           >
@@ -118,7 +118,7 @@ export function MobileTopBar({
           <button
             onClick={() => setStudyMode('dictation')}
             className={`p-1 rounded-lg transition-all ${
-              studyMode === 'dictation' ? 'bg-amber-500 text-white shadow-xs' : 'text-stone-500'
+              studyMode === 'dictation' ? 'bg-amber-500 text-white' : 'text-stone-500'
             }`}
             title="拼写大闯关"
           >
@@ -132,7 +132,7 @@ export function MobileTopBar({
         {/* Streak Pill */}
         <button
           onClick={onOpenAnalytics}
-          className="flex items-center gap-1 px-2 py-1 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] text-xs font-mono font-bold text-orange-600 shadow-2xs active:scale-95"
+          className="flex items-center gap-1 px-2 py-1 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] text-xs font-mono font-bold text-orange-600 active:scale-95 transition-colors"
           title={`连续打卡 ${streakDays} 天`}
         >
           <Flame size={13} className="fill-orange-500 text-orange-500" />
@@ -143,7 +143,7 @@ export function MobileTopBar({
         <div className="relative">
           <button
             onClick={() => setShowTools(!showTools)}
-            className="duo-touch-target p-1.5 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] text-stone-600 hover:text-amber-950 active:scale-95 transition-all"
+            className="duo-touch-target p-1.5 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] text-stone-600 hover:text-amber-950 active:scale-95 transition-colors"
             title="更多工具"
           >
             <SlidersHorizontal size={15} />
@@ -151,7 +151,7 @@ export function MobileTopBar({
 
           {/* Tools Popover */}
           {showTools && (
-            <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl border-2 border-[#eee5d8] bg-white p-2 shadow-xl z-50 animate-fadeIn space-y-1">
+            <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl border border-[#eee5d8] bg-white p-2 z-50 animate-fadeIn space-y-1">
               <button
                 onClick={() => {
                   setShowTools(false);
