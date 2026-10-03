@@ -63,17 +63,20 @@ export function WordModal({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-fadeIn"
       onClick={onClose}
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-lg rounded-3xl border-2 border-[#eee5d8] bg-white text-[#1e1610] shadow-[0_16px_48px_-8px_rgba(44,34,30,0.12)] p-6 sm:p-7 transition-all duration-300"
+        className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#eee5d8] bg-white text-[#1e1610] shadow-[0_16px_48px_-8px_rgba(44,34,30,0.12)] p-5 sm:p-7 max-h-[88vh] overflow-y-auto transition-all duration-300 animate-slideUp sm:animate-none"
       >
+        {/* Mobile Bottom Sheet Pull Handle */}
+        <div className="sm:hidden w-10 h-1.5 rounded-full bg-stone-300 mx-auto mb-3" />
+
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-xl text-stone-400 hover:text-amber-950 hover:bg-amber-100/70 border border-transparent hover:border-amber-300/80 transition-all active:scale-90 cursor-pointer"
+          className="absolute top-4 sm:top-5 right-4 sm:right-5 p-2 rounded-xl text-stone-400 hover:text-amber-950 hover:bg-amber-100/70 border border-transparent hover:border-amber-300/80 transition-all active:scale-90 cursor-pointer"
         >
           <X size={18} />
         </button>

@@ -86,7 +86,7 @@ export function Header({
 
   return (
     <header
-      className={`h-16 shrink-0 sticky top-0 z-40 flex items-center justify-between px-3 sm:px-6 border-b transition-colors duration-300 backdrop-blur-xl ${
+      className={`h-16 shrink-0 sticky top-0 z-40 hidden md:flex items-center justify-between px-4 sm:px-6 border-b transition-colors duration-300 backdrop-blur-xl ${
         isParchment
           ? 'bg-[#ffffff]/90 border-[#ede4d5] text-[#1e1610] shadow-[0_2px_12px_rgba(160,110,60,0.05)]'
           : 'bg-[#0f172a]/95 border-[#1e293b] text-[#f1f5f9] shadow-lg'
@@ -102,11 +102,11 @@ export function Header({
             title="返回霍格沃茨书架选书"
           >
             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform text-amber-700" />
-            <span className="hidden sm:inline">返回书架</span>
-            <span className="sm:hidden">书架</span>
+            <span>返回书架</span>
           </button>
         )}
 
+        {/* Brand Logo (shown on tablet, hidden on desktop where DesktopSidebar has it) */}
         <div 
           onClick={() => {
             if (currentView === 'player' && onSwitchView) {
@@ -115,7 +115,7 @@ export function Header({
               onOpenShelf();
             }
           }}
-          className="flex items-center gap-2.5 cursor-pointer group select-none"
+          className="flex lg:hidden items-center gap-2.5 cursor-pointer group select-none"
           title="点击返回魔法书房"
         >
           <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center text-white shadow-md shadow-amber-500/20 group-hover:scale-105 active:scale-95 transition-transform">
@@ -131,17 +131,25 @@ export function Header({
                 <span>少儿原版</span>
               </span>
             </div>
-            <p className="text-[11px] hidden md:block font-medium text-[#7a644c]">
+            <p className="text-[11px] font-medium text-[#7a644c]">
               听魔法原著 · 轻松学地道英语
             </p>
           </div>
         </div>
 
-        {/* Mobile book switcher */}
+        {/* Desktop breadcrumb when in bookshelf */}
+        {currentView === 'bookshelf' && (
+          <div className="hidden lg:flex items-center gap-2 text-xs font-bold text-amber-950">
+            <span className="text-stone-400 font-reading">当前位置：</span>
+            <span className="font-magical text-amber-900">魔法书房 · 原著全卷藏书阁</span>
+          </div>
+        )}
+
+        {/* Tablet book switcher */}
         {currentView === 'player' && (
           <button
             onClick={onOpenShelf}
-            className="flex lg:hidden items-center gap-1 text-xs px-2.5 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 text-amber-950 font-bold truncate max-w-[130px] sm:max-w-[170px] shadow-xs active:scale-95 transition-all"
+            className="flex lg:hidden items-center gap-1 text-xs px-2.5 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 text-amber-950 font-bold truncate max-w-[170px] shadow-xs active:scale-95 transition-all"
             title="切换原著故事"
           >
             <Library size={12} className="shrink-0 text-amber-600" />
