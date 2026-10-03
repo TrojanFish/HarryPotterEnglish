@@ -512,6 +512,78 @@ export function App() {
     }
   }, []);
 
+  // Apple Web & iOS Media Session API (Lock screen, Dynamic Island, Control Center, AirPods)
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
+
+    if (currentBookObj && currentChapter) {
+      const chapterTitle = currentChapter.title || currentBookObj.cnTitle || '魔法英语精听';
+      const artistName = 'J.K. Rowling · 霍格沃茨魔法学院';
+      const albumName = currentBookObj.cnTitle || currentBookObj.title || '哈利·波特原版有声书';
+      const origin = window.location.origin;
+      const coverUrl = currentBookObj.id 
+        ? `${origin}/api/raw/podcasts/${currentBookObj.id}/cover.jpg` 
+        : `${origin}/apple-touch-icon.png`;
+
+      try {
+        navigator.mediaSession.metadata = new window.MediaMetadata({
+          title: chapterTitle,
+          artist: artistName,
+          album: albumName,
+          artwork: [
+            { src: coverUrl, sizes: '512x512', type: 'image/jpeg' },
+            { src: `${origin}/apple-touch-icon.png`, sizes: '180x180', type: 'image/png' },
+            { src: `${origin}/icon-192.png`, sizes: '192x192', type: 'image/png' },
+            { src: `${origin}/icon-512.png`, sizes: '512x512', type: 'image/png' }
+          ]
+        });
+      } catch (e) {
+        console.warn('MediaSession metadata error:', e);
+      }
+    }
+
+    try {
+      navigator.mediaSession.setActionHandler('play', () => {
+        if (audioRef.current) {
+          audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+        }
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          setIsPlaying(false);
+        }
+      });
+      navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+        const offset = details.seekOffset || 5;
+        if (audioRef.current) {
+          audioRef.current.currentTime = Math.max(audioRef.current.currentTime - offset, 0);
+        }
+      });
+      navigator.mediaSession.setActionHandler('seekforward', (details) => {
+        const offset = details.seekOffset || 5;
+        if (audioRef.current) {
+          audioRef.current.currentTime = Math.min(audioRef.current.currentTime + offset, audioRef.current.duration || 9999);
+        }
+      });
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        handlePrevSentence();
+      });
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        handleNextSentence();
+      });
+    } catch (e) {
+      console.warn('MediaSession actions error:', e);
+    }
+  }, [currentBookObj, currentChapter, audioUrl, handlePrevSentence, handleNextSentence]);
+
+  // Sync playbackState to MediaSession
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && 'mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+    }
+  }, [isPlaying]);
+
   // Word Click -> Open Dictionary Modal
   const handleWordClick = useCallback(async (rawWord, sentenceCue) => {
     const lookupResult = await lookupWord(rawWord);
@@ -640,6 +712,8 @@ export function App() {
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleEnded}
         preload="auto"
+        playsInline
+        webkit-playsinline="true"
       />
 
       {/* ── 1. Desktop Left Permanent Sidebar (>= 1024px) ───────────── */}

@@ -192,6 +192,8 @@ export function BookshelfView({
                     <img 
                       src={`/api/raw/podcasts/${currentBookObj.id}/cover.jpg`}
                       alt={currentBookObj.title}
+                      loading="lazy"
+                      decoding="async"
                       onError={() => handleImageError(currentBookObj.id)}
                       className="w-full h-full object-cover transition-transform group-hover:scale-105"
                     />
@@ -412,6 +414,8 @@ export function BookshelfView({
                         <img 
                           src={`/api/raw/podcasts/${book.id}/cover.jpg`}
                           alt={book.title}
+                          loading="lazy"
+                          decoding="async"
                           onError={() => handleImageError(book.id)}
                           className="w-full h-full object-cover transition-transform group-hover:scale-105"
                         />
@@ -505,6 +509,8 @@ export function BookshelfView({
                     <img 
                       src={`/api/raw/podcasts/${inspectingBook.id}/cover.jpg`} 
                       alt="Cover" 
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover" 
                       onError={() => handleImageError(inspectingBook.id)}
                     />
@@ -541,26 +547,30 @@ export function BookshelfView({
               <div className="relative">
                 <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
-                  type="text"
+                  type="search"
+                  enterKeyHint="search"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
                   value={chapterSearch}
                   onChange={(e) => setChapterSearch(e.target.value)}
                   placeholder="按关键词快速筛选章节（如：第一章、Boy、魔药）..."
-                  className="w-full pl-9 pr-8 py-2 rounded-xl text-xs font-reading border border-amber-200 bg-white text-amber-950 focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all"
+                  className="w-full pl-9 pr-8 py-2 rounded-xl text-base sm:text-xs font-reading border border-amber-200 bg-white text-amber-950 focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all"
                 />
                 {chapterSearch && (
                   <button
                     onClick={() => setChapterSearch('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 active:scale-90 cursor-pointer transition-all"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-slate-700 active:scale-90 cursor-pointer transition-all duo-touch-target"
                     title="清空搜索"
                   >
-                    <X size={13} />
+                    <X size={14} />
                   </button>
                 )}
               </div>
             </div>
 
             {/* Chapters List */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-2.5">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-2.5 ios-scroll">
               {(inspectingBook.chapters || [])
                 .filter(ch => {
                   if (!chapterSearch.trim()) return true;

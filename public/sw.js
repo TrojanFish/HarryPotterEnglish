@@ -1,12 +1,14 @@
 // Hogwarts Audio English - PWA Service Worker
-const CACHE_NAME = 'hogwarts-audio-v1.1';
+const CACHE_NAME = 'hogwarts-audio-v1.2';
 
 // Static Shell Assets to pre-cache
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/icon.svg'
+  '/icon.svg',
+  '/icon-192.png',
+  '/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (event) => {

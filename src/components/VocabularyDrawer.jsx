@@ -308,18 +308,22 @@ export function VocabularyDrawer({
                   <div className="relative">
                     <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
                     <input
-                      type="text"
+                      type="search"
+                      enterKeyHint="search"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      spellCheck="false"
                       placeholder="搜索生词或中文释义..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[#eee5d8] bg-stone-50 text-[#1e1610] focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition-all"
+                      className="w-full pl-9 pr-3 py-2 text-base sm:text-xs rounded-xl border border-[#eee5d8] bg-stone-50 text-[#1e1610] focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition-all"
                     />
                   </div>
                 </div>
               )}
 
               {/* Vocab Cards List */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 ios-scroll">
                 {vocabList.length === 0 ? (
                   <div className="flex-1 flex flex-col items-center justify-center py-16 px-4 text-center my-auto">
                     <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border-2 border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 shadow-sm animate-pulse">

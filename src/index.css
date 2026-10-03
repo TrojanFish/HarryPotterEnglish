@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: #fbf9f4;
@@ -11,6 +16,20 @@
       radial-gradient(circle at 50% 0%, rgba(217, 119, 6, 0.06) 0%, transparent 70%),
       radial-gradient(circle at 100% 100%, rgba(185, 28, 28, 0.04) 0%, transparent 60%);
     background-attachment: fixed;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent iOS Safari auto-zoom on input focus by guaranteeing 16px minimum on mobile */
+  @media screen and (max-width: 640px) {
+    input[type="text"],
+    input[type="search"],
+    input[type="number"],
+    input[type="password"],
+    input[type="email"],
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
   }
 
   /* Custom scrollbar for student-friendly UI */
@@ -257,6 +276,7 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
   box-shadow: none !important;
   transition: all 0.15s ease;
   user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .duo-pill:hover {
@@ -284,6 +304,7 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
   box-shadow: none !important;
   transition: all 0.15s ease;
   user-select: none;
+  -webkit-touch-callout: none;
   cursor: pointer;
 }
 .duo-btn-primary:hover {
@@ -303,6 +324,7 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
   box-shadow: none !important;
   transition: all 0.15s ease;
   user-select: none;
+  -webkit-touch-callout: none;
   cursor: pointer;
 }
 .duo-btn-success:hover {
@@ -322,6 +344,7 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
   box-shadow: none !important;
   transition: all 0.15s ease;
   user-select: none;
+  -webkit-touch-callout: none;
   cursor: pointer;
 }
 .duo-btn-danger:hover {
@@ -341,6 +364,7 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
   box-shadow: none !important;
   transition: all 0.15s ease;
   user-select: none;
+  -webkit-touch-callout: none;
   cursor: pointer;
 }
 .duo-btn-secondary:hover {
@@ -368,7 +392,23 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
 .pt-safe {
   padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
 }
+.pl-safe {
+  padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+}
+.pr-safe {
+  padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+}
+.px-safe {
+  padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+  padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+}
 .mb-safe {
   margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* iOS momentum scrolling & overscroll boundary containment */
+.ios-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 

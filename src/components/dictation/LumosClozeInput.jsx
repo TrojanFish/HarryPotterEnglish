@@ -150,11 +150,16 @@ export function LumosClozeInput({
                 <input
                   ref={el => inputRefs.current[blankIdx] = el}
                   type="text"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck="false"
+                  inputMode="text"
                   value={typedVal}
                   onChange={(e) => handleChange(blankIdx, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(blankIdx, e)}
                   placeholder={`${token.firstLetter}${'•'.repeat(Math.min(token.clean.length - 1, 4))}`}
-                  className={`w-28 sm:w-32 px-2.5 py-1 text-center font-bold text-sm sm:text-base rounded-xl border-2 focus:outline-none transition-all ${
+                  className={`w-28 sm:w-32 px-2.5 py-1 text-center font-bold text-base rounded-xl border-2 focus:outline-none transition-all ${
                     status === 'correct'
                       ? 'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-xs'
                       : status === 'wrong'
