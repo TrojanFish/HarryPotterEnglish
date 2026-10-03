@@ -470,6 +470,31 @@ export function getStemCandidates(word) {
   return [...new Set(candidates)];
 }
 
+// Junior High / Middle School English Curriculum Core Vocabulary (中考核心词汇)
+export const ZHONGKAO_CORE_WORDS = new Set([
+  'boy', 'live', 'lived', 'proud', 'normal', 'family', 'strange', 'involved', 'nonsense',
+  'director', 'company', 'firm', 'drill', 'drills', 'neck', 'blonde', 'garden', 'neighbour',
+  'neighbor', 'good', 'secret', 'fear', 'discover', 'bear', 'sister', 'pretend', 'meet',
+  'shudder', 'arrive', 'drive', 'street', 'cloudy', 'hum', 'pick', 'tie', 'gossip', 'wrestle',
+  'tawny', 'owl', 'flutter', 'past', 'window', 'briefcase', 'peck', 'cheek', 'kiss', 'tantrum',
+  'cereal', 'tyke', 'chuckle', 'car', 'corner', 'notice', 'read', 'map', 'cat', 'stare',
+  'mirror', 'cloak', 'crowd', 'whisper', 'excited', 'news', 'potter', 'son', 'harry', 'cup',
+  'coffee', 'walk', 'office', 'shout', 'phone', 'letter', 'day', 'night', 'morning', 'school',
+  'book', 'listen', 'hear', 'see', 'look', 'watch', 'time', 'world', 'house', 'room',
+  'door', 'hand', 'eye', 'head', 'face', 'father', 'mother', 'brother', 'child', 'children',
+  'friend', 'people', 'man', 'woman', 'girl', 'teacher', 'student', 'place', 'water', 'food',
+  'happy', 'sad', 'angry', 'afraid', 'big', 'small', 'young', 'old', 'new', 'great', 'little'
+]);
+
+// Helper to determine curriculum tier
+export function getCurriculumTag(cleanWord, baseWord, hasLore) {
+  if (hasLore) return '原著魔法';
+  if (ZHONGKAO_CORE_WORDS.has(cleanWord) || (baseWord && ZHONGKAO_CORE_WORDS.has(baseWord.toLowerCase()))) {
+    return '中考核心';
+  }
+  return '进阶拓展';
+}
+
 // Async function to lookup word in local HP glossary or Free Dictionary API
 export async function lookupWord(rawWord) {
   if (!rawWord) return null;
@@ -482,6 +507,7 @@ export async function lookupWord(rawWord) {
   for (const c of candidates) {
     if (HP_LORE_DICTIONARY[c]) {
       const item = HP_LORE_DICTIONARY[c];
+      const hasLore = Boolean(item.lore);
       return {
         word: rawWord,
         baseWord: item.word,
@@ -489,7 +515,8 @@ export async function lookupWord(rawWord) {
         pos: item.pos || '单词',
         translation: item.translation,
         lore: item.lore || null,
-        isHpLore: Boolean(item.lore),
+        isHpLore: hasLore,
+        tag: getCurriculumTag(cleanWord, item.word, hasLore),
         audioUrl: null
       };
     }
@@ -538,6 +565,7 @@ export async function lookupWord(rawWord) {
           translation: cnTranslation || `【${cnPos}】可点击底部“有道词典”或“剑桥双解”详查`,
           lore: null,
           isHpLore: false,
+          tag: getCurriculumTag(cleanWord, entry.word, false),
           audioUrl: audioObj?.audio || null
         };
       }
@@ -554,6 +582,7 @@ export async function lookupWord(rawWord) {
     translation: '可点击底部“有道词典”或“剑桥双解”查看中文释义',
     lore: null,
     isHpLore: false,
+    tag: getCurriculumTag(cleanWord, cleanWord, false),
     audioUrl: null
   };
 }

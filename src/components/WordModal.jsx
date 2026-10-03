@@ -7,7 +7,8 @@ import {
   Check, 
   ExternalLink,
   BookOpen,
-  Lightbulb
+  Lightbulb,
+  GraduationCap
 } from 'lucide-react';
 import { formatSyllables, getPhonicsTip } from '../utils/phonicsHelper';
 
@@ -88,10 +89,20 @@ export function WordModal({
               <h2 className="text-2xl sm:text-3xl font-bold font-magical tracking-wide text-amber-950">
                 {wordData.word}
               </h2>
-              {wordData.isHpLore && (
+              {wordData.isHpLore ? (
                 <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-red-800 text-amber-200 border border-amber-400/40 font-semibold shadow-xs">
                   <Sparkles size={11} />
-                  <span>魔法专有名词</span>
+                  <span>原著魔法专属</span>
+                </span>
+              ) : wordData.tag === '中考核心' ? (
+                <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-semibold">
+                  <BookOpen size={11} />
+                  <span>中考核心词汇</span>
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-300 font-semibold">
+                  <GraduationCap size={11} />
+                  <span>进阶拓展词汇</span>
                 </span>
               )}
             </div>

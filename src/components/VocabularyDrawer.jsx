@@ -377,9 +377,17 @@ export function VocabularyDrawer({
                                 {item.phonetic}
                               </span>
                             )}
-                            {item.isHpLore && (
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-300/80 font-bold shadow-2xs">
-                                魔法词
+                            {item.isHpLore ? (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-900 border border-red-300/80 font-bold">
+                                原著魔法
+                              </span>
+                            ) : item.tag === '中考核心' ? (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300/80 font-bold">
+                                中考核心
+                              </span>
+                            ) : (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-300 font-bold">
+                                进阶拓展
                               </span>
                             )}
                           </div>

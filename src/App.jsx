@@ -34,7 +34,7 @@ import { MobileTopBar } from './components/navigation/MobileTopBar';
 import { MobileBottomNav } from './components/navigation/MobileBottomNav';
 import { MobileMiniPlayer } from './components/navigation/MobileMiniPlayer';
 import { ReaderTopBar } from './components/navigation/ReaderTopBar';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, WifiOff } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -45,6 +45,24 @@ export function App() {
 
   useEffect(() => {
     document.body.classList.add('theme-parchment');
+  }, []);
+
+  // Offline status tracking (W3C Network API)
+  const [isOffline, setIsOffline] = useState(typeof navigator !== 'undefined' ? !navigator.onLine : false);
+  // Adolescent 35-minute eye-care reminder state (20-20-20 rule)
+  const [showEyeCarePrompt, setShowEyeCarePrompt] = useState(false);
+  const continuousListeningSecondsRef = useRef(0);
+  const hasShownEyeCarePromptRef = useRef(false);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   const [studyMode, setStudyMode] = useState('normal'); // 'normal' | 'blind' | 'dictation'
@@ -418,8 +436,17 @@ export function App() {
     if (now - lastTimeUpdateRef.current >= 250) {
       lastTimeUpdateRef.current = now;
       setCurrentTime(curTime);
+
+      // Adolescent Visual Health: Track continuous listening duration for 35min reminder
+      if (isPlaying) {
+        continuousListeningSecondsRef.current += 0.25;
+        if (continuousListeningSecondsRef.current >= 2100 && !hasShownEyeCarePromptRef.current) {
+          hasShownEyeCarePromptRef.current = true;
+          setShowEyeCarePrompt(true);
+        }
+      }
     }
-  }, [cues, activeCueIndex, isLoopSentence, duration, selectedChapter]);
+  }, [cues, activeCueIndex, isLoopSentence, duration, selectedChapter, isPlaying]);
 
   const handleLoadedMetadata = useCallback(() => {
     if (audioRef.current) {
@@ -457,11 +484,21 @@ export function App() {
     setCurrentTime(time);
   }, []);
 
-  // Seek to specific cue
+  // Seek to specific cue with audio engineering soft seek volume transition (prevent headphone pop/click)
   const handleSeekToCue = useCallback((cue) => {
     if (!audioRef.current) return;
-    audioRef.current.currentTime = cue.startTime;
-    setCurrentTime(cue.startTime);
+    if (isPlaying) {
+      const origVol = audioRef.current.volume;
+      audioRef.current.volume = 0;
+      audioRef.current.currentTime = cue.startTime;
+      setCurrentTime(cue.startTime);
+      setTimeout(() => {
+        if (audioRef.current) audioRef.current.volume = origVol;
+      }, 20);
+    } else {
+      audioRef.current.currentTime = cue.startTime;
+      setCurrentTime(cue.startTime);
+    }
     const idx = cues.findIndex(c => c.id === cue.id);
     if (idx !== -1) setActiveCueIndex(idx);
     if (!isPlaying) {
@@ -664,6 +701,33 @@ export function App() {
         return;
       }
 
+      if (e.key === 'Escape') {
+        if (selectedWordData) {
+          setSelectedWordData(null);
+          return;
+        }
+        if (isShortcutsOpen) {
+          setIsShortcutsOpen(false);
+          return;
+        }
+        if (isStorageOpen) {
+          setIsStorageOpen(false);
+          return;
+        }
+        if (isAnalyticsOpen) {
+          setIsAnalyticsOpen(false);
+          return;
+        }
+        if (isVocabOpen) {
+          setIsVocabOpen(false);
+          return;
+        }
+        if (isBookShelfDrawerOpen) {
+          setIsBookShelfDrawerOpen(false);
+          return;
+        }
+      }
+
       if (e.code === 'Space') {
         e.preventDefault();
         togglePlayPause();
@@ -693,7 +757,7 @@ export function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPlaying, activeCueIndex, cues, isLoopSentence, volume, studyMode]);
+  }, [isPlaying, activeCueIndex, cues, isLoopSentence, volume, studyMode, selectedWordData, isShortcutsOpen, isStorageOpen, isAnalyticsOpen, isVocabOpen, isBookShelfDrawerOpen]);
 
   const activeCue = cues[activeCueIndex];
   const isWordSaved = selectedWordData 
@@ -1067,6 +1131,35 @@ export function App() {
           setIsStorageOpen(false);
         }}
       />
+
+      {/* ── Adolescent Visual Health Sentinel (20-20-20 Eye Care Standard) ── */}
+      {showEyeCarePrompt && (
+        <div className="fixed top-14 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-stone-900/95 text-stone-100 px-4 py-3 rounded-2xl border border-amber-400/60 backdrop-blur-md flex items-center justify-between gap-3 animate-fadeIn">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center shrink-0 text-amber-300">
+              <Eye size={18} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-amber-200">视力关怀 · 已专注精听 35 分钟</p>
+              <p className="text-[11px] text-stone-300 leading-tight">建议远眺 6 米外的窗外 20 秒，放松眼部睫状肌哦</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowEyeCarePrompt(false)}
+            className="shrink-0 px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs font-bold transition-all cursor-pointer"
+          >
+            我知道啦
+          </button>
+        </div>
+      )}
+
+      {/* ── Offline Network Status Notification (W3C Network API) ── */}
+      {isOffline && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-stone-900/90 text-amber-200 border border-amber-400/40 backdrop-blur-sm flex items-center gap-2 text-xs font-bold animate-fadeIn">
+          <WifiOff size={14} className="text-amber-400 shrink-0" />
+          <span>离线魔法模式 · 正在畅享已下载本地章节</span>
+        </div>
+      )}
     </div>
   );
 }

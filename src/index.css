@@ -32,6 +32,16 @@
     }
   }
 
+  /* W3C WCAG 2.2: Respect student's reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
   /* Custom scrollbar for student-friendly UI */
   ::-webkit-scrollbar {
     width: 8px;
@@ -51,7 +61,7 @@
 }
 
 /* ───────────────────────────────────────────────────────────
-   Theme System:
+   Theme System & Accessibility Contrast:
    .theme-parchment = 魔法学院·日间明亮版 (Bright Academy Day Mode)
    default (dark body) = 星空夜读·夜间守护版 (Starry Night Mode)
 ─────────────────────────────────────────────────────────── */
@@ -64,6 +74,18 @@
     radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.08) 0%, transparent 65%),
     radial-gradient(circle at 100% 100%, rgba(220, 38, 38, 0.03) 0%, transparent 50%),
     radial-gradient(circle at 0% 100%, rgba(37, 99, 235, 0.03) 0%, transparent 50%) !important;
+}
+
+/* WCAG AAA Contrast enhancement for parchment muted labels */
+.theme-parchment .text-stone-400,
+.theme-parchment .text-slate-400 {
+  color: #78716c;
+}
+
+/* Web Vitals: High performance rendering for long chapter subtitle transcripts */
+.subtitle-item-render {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 96px;
 }
 
 .theme-parchment ::-webkit-scrollbar-track {

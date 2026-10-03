@@ -31,9 +31,30 @@ function openDatabase() {
       }
     };
 
-    req.onsuccess = () => resolve(req.result);
+    req.onsuccess = () => {
+      // W3C Storage Standard: Proactively request persistent quota to prevent eviction
+      requestPersistentStorage().catch(() => {});
+      resolve(req.result);
+    };
     req.onerror = () => reject(req.error || new Error('Failed to open IndexedDB'));
   });
+}
+
+/**
+ * Request persistent storage quota from browser (W3C Storage Standard).
+ * Upgrades best-effort quota to persistent storage to prevent OS/browser from 
+ * silently evicting cached audiobook chapters when space is low.
+ * @returns {Promise<boolean>}
+ */
+export async function requestPersistentStorage() {
+  if (globalThis.navigator && globalThis.navigator.storage && typeof globalThis.navigator.storage.persist === 'function') {
+    try {
+      return await globalThis.navigator.storage.persist();
+    } catch (e) {
+      return false;
+    }
+  }
+  return false;
 }
 
 /**

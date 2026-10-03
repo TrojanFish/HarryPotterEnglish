@@ -229,7 +229,7 @@ export function SubtitleViewer({
 
               <div
                 ref={isActive ? activeCueRef : null}
-                className={`group relative rounded-2xl p-3.5 sm:p-5 transition-colors duration-200 border ${
+                className={`group relative rounded-2xl p-3.5 sm:p-5 transition-colors duration-200 border subtitle-item-render ${
                   isActive
                     ? 'border-amber-400 bg-amber-500/5 border-l-4 border-l-amber-500'
                     : 'border-[#eee5d8] bg-white hover:border-amber-300'
@@ -320,7 +320,7 @@ export function SubtitleViewer({
 
               {/* English Text with Clickable Words (Clean Typography without Intrusive Sparkles) */}
               <div 
-                className={`font-reading ${getFontSizeClass()} select-text transition-all duration-300 leading-normal ${
+                className={`font-reading ${getFontSizeClass()} select-text transition-all duration-300 leading-[1.75] ${
                   studyMode === 'blind' && !isRevealed && !isActive
                     ? 'blur-[6px] hover:blur-none select-none opacity-40'
                     : ''
