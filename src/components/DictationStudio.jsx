@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Play, 
   Pause, 
@@ -7,32 +7,55 @@ import {
   SkipForward, 
   SkipBack, 
   CheckCircle2, 
-  Eye, 
-  EyeOff, 
-  PenTool,
-  Trophy,
-  Flame,
-  Star,
-  Lightbulb
+  Trophy, 
+  Flame, 
+  Star, 
+  Lightbulb,
+  Volume2,
+  VolumeX,
+  Shield,
+  Zap,
+  Award
 } from 'lucide-react';
 import { tokenizeSentence } from '../utils/vttParser';
 import { recordDictationSession } from '../utils/analyticsStore';
+import { cleanWord } from '../utils/dictationEngine';
+import { 
+  toggleSpellSound, 
+  getSpellSoundStatus, 
+  playCorrectChime, 
+  playComboArpeggio, 
+  playMistakeThud, 
+  playVictoryFanfare 
+} from '../utils/spellAudioSynthesizer';
+
+import { AccioWordPicker } from './dictation/AccioWordPicker';
+import { LumosClozeInput } from './dictation/LumosClozeInput';
+import { AurorFullTyping } from './dictation/AurorFullTyping';
+import { DuelingSurvivalBar } from './dictation/DuelingSurvivalBar';
+import { DictationSummaryModal } from './dictation/DictationSummaryModal';
 
 /**
- * DictationStudio — Gamified Spell Challenge (魔法拼写大闯关)
- * Designed specifically for primary and junior high school students:
- * - Word-by-word visual blank feedback
- * - Star rating system (3 stars for clean spelling)
- * - Combo streak tracking (连对计数)
- * - Slow replay audio & Magic Quill hints (羽毛笔提示)
+ * DictationStudio — Hogwarts Gamified Spell Quest (魔法拼写大闯关)
+ * 4 Progressive Difficulty Levels:
+ * 1. 见习巫师 · 飞来字块 (Accio) — Word puzzle builder with distractors
+ * 2. 高阶学徒 · 荧光挖空 (Lumos) — Core content word cloze with first-letter micro-glow
+ * 3. 傲罗特训 · 全句盲听 (Auror) — Classic full sentence typing with fog of war
+ * 4. 决斗俱乐部 · 限时生存 (Dueling) — 3 Protego shields + 25s timer per sentence
+ * 
+ * Features:
+ * - Pure Web Audio synthetic chimes & fanfares
+ * - Potion Crucible (错词魔药重炼)
+ * - House cup points settlement report card
+ * - Zero emojis, pure parchment daylight palette
  */
 export function DictationStudio({
-  cues,
-  activeCueIndex,
+  cues = [],
+  activeCueIndex = 0,
   onSeekToCue,
   onPlayPause,
-  isPlaying,
-  isParchment,
+  isPlaying = false,
+  isParchment = true,
   onNextCue,
   onPrevCue,
   chapterId = '',
@@ -42,28 +65,77 @@ export function DictationStudio({
   onChangePlaybackRate
 }) {
   const currentCue = cues[activeCueIndex];
+
+  // 1. Difficulty Mode Selector ('accio' | 'lumos' | 'auror' | 'dueling')
+  const [difficultyMode, setDifficultyMode] = useState(() => {
+    try {
+      return localStorage.getItem('hp_dictation_mode') || 'accio';
+    } catch {
+      return 'accio';
+    }
+  });
+
+  const handleDifficultyChange = (mode) => {
+    setDifficultyMode(mode);
+    try {
+      localStorage.setItem('hp_dictation_mode', mode);
+    } catch {}
+  };
+
+  // Sound effects toggle
+  const [soundEnabled, setSoundEnabled] = useState(() => getSpellSoundStatus());
+
+  const handleToggleSound = () => {
+    const newState = toggleSpellSound();
+    setSoundEnabled(newState);
+  };
+
+  // 2. Gameplay state
   const [userInput, setUserInput] = useState('');
   const [showAnswer, setShowAnswer] = useState(false);
   const [hintCount, setHintCount] = useState(0);
   const [streakCount, setStreakCount] = useState(0);
   const [totalStars, setTotalStars] = useState(0);
+  const [errorWords, setErrorWords] = useState([]);
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+
+  // Dueling Mode survival state
+  const [shields, setShields] = useState(3);
+  const [timeRemaining, setTimeRemaining] = useState(25);
+
   const [stats, setStats] = useState({
     completedCount: 0,
     totalWords: 0,
     correctWords: 0,
   });
 
-  const inputRef = useRef(null);
-
-  // When active cue changes, reset user input and hints
+  // Reset inputs when active sentence changes
   useEffect(() => {
     setUserInput('');
     setShowAnswer(false);
     setHintCount(0);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    setTimeRemaining(25);
   }, [activeCueIndex]);
+
+  // Dueling Mode: Timer countdown
+  useEffect(() => {
+    if (difficultyMode !== 'dueling') return;
+    if (shields <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          // Timeout! Deduct 1 shield
+          playMistakeThud();
+          setShields(s => Math.max(0, s - 1));
+          return 25; // Reset timer for next try
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [difficultyMode, shields, activeCueIndex]);
 
   if (!currentCue) {
     return (
@@ -77,151 +149,206 @@ export function DictationStudio({
   const targetTokens = tokenizeSentence(currentCue.text);
   const targetWords = targetTokens
     .filter(t => t.isWord)
-    .map(t => t.text.toLowerCase().replace(/[^a-z'’\-]/g, ''));
+    .map(t => cleanWord(t.text));
 
-  // Tokenize user's typed input into words
-  const userTokens = tokenizeSentence(userInput);
-  const userWords = userTokens
-    .filter(t => t.isWord)
-    .map(t => t.text.toLowerCase().replace(/[^a-z'’\-]/g, ''));
-
-  // Calculate live word matching sequentially by word index
-  let wordIdx = 0;
-  const comparison = targetTokens.map((token) => {
-    if (!token.isWord) {
-      return { text: token.text, status: 'symbol' };
+  // Audio replay handlers
+  const handleReplayCurrent = (slow = false) => {
+    if (slow && onChangePlaybackRate) {
+      onChangePlaybackRate(0.8);
+    } else if (!slow && onChangePlaybackRate && playbackRate !== 1.0) {
+      onChangePlaybackRate(1.0);
     }
-
-    const cleanTarget = token.text.toLowerCase().replace(/[^a-z'’\-]/g, '');
-    const normTarget = cleanTarget.replace(/['’\-]/g, '');
-    const currentWordIndex = wordIdx++;
-
-    if (currentWordIndex < userWords.length) {
-      const typed = userWords[currentWordIndex];
-      const normTyped = typed.replace(/['’\-]/g, '');
-      if (typed === cleanTarget || (normTyped && normTyped === normTarget)) {
-        return { text: token.text, status: 'correct', typed };
-      } else {
-        return { text: token.text, status: 'wrong', typed };
-      }
+    if (onSeekToCue) {
+      onSeekToCue(currentCue);
     }
+  };
 
-    return { text: token.text, status: 'pending' };
-  });
-
-  // Calculate sentence accuracy
-  const correctCount = comparison.filter(c => c.status === 'correct').length;
-  const totalTargetWords = targetWords.length || 1;
-  const accuracy = Math.round((correctCount / totalTargetWords) * 100);
-  const isAllCorrect = correctCount === targetWords.length && targetWords.length > 0;
-
-  // Star rating calculation
-  const currentSentenceStars = isAllCorrect ? (hintCount === 0 ? 3 : hintCount === 1 ? 2 : 1) : 0;
-
-  // Quill Hint: reveal next pending word
+  // Quill Hint: auto-advance or fill word
   const handleQuillHint = () => {
+    const userWords = tokenizeSentence(userInput)
+      .filter(t => t.isWord)
+      .map(t => cleanWord(t.text));
+
     const nextPending = targetWords[userWords.length];
     if (nextPending) {
       setUserInput(prev => (prev.trim() ? `${prev.trim()} ${nextPending} ` : `${nextPending} `));
       setHintCount(prev => prev + 1);
-      if (inputRef.current) inputRef.current.focus();
+      // Track hint words into error/review pool
+      if (!errorWords.includes(nextPending)) {
+        setErrorWords(prev => [...prev, nextPending]);
+      }
     }
   };
 
-  // Replay current sentence
-  const handleReplayCurrent = (slow = false) => {
-    if (slow && onChangePlaybackRate) {
-      onChangePlaybackRate(0.8);
-    }
-    onSeekToCue(currentCue);
-  };
+  // Handle successful completion from sub-mode components
+  const handleSubModeComplete = (result) => {
+    const earnedStars = hintCount === 0 ? 3 : hintCount === 1 ? 2 : 1;
+    const newStreak = streakCount + 1;
+    setStreakCount(newStreak);
+    setTotalStars(t => t + earnedStars);
 
-  // Submit and advance to next sentence
-  const handleNext = () => {
-    const earnedStars = isAllCorrect ? (hintCount === 0 ? 3 : 2) : 1;
-    if (isAllCorrect) {
-      setStreakCount(s => s + 1);
-      setTotalStars(t => t + earnedStars);
-    } else {
-      setStreakCount(0);
+    if (newStreak >= 3) {
+      playComboArpeggio();
+      // Dueling bonus: restore shield on 3+ combo
+      if (difficultyMode === 'dueling' && shields < 3) {
+        setShields(s => Math.min(3, s + 1));
+      }
     }
 
+    setStats(prev => ({
+      completedCount: prev.completedCount + 1,
+      totalWords: prev.totalWords + (result.totalWords || targetWords.length),
+      correctWords: prev.correctWords + (result.correctWords || targetWords.length)
+    }));
+
+    // Record session data
     const sessionData = {
       chapterId: chapterId || 'hp-chapter',
       chapterTitle: chapterTitle || 'Hogwarts Dictation Practice',
       totalWords: targetWords.length,
-      correctWords: correctCount,
-      accuracy: accuracy
+      correctWords: targetWords.length,
+      accuracy: 100
     };
 
-    setStats(prev => ({
-      completedCount: prev.completedCount + 1,
-      totalWords: prev.totalWords + targetWords.length,
-      correctWords: prev.correctWords + correctCount
-    }));
-
-    if (targetWords.length > 0) {
-      recordDictationSession(sessionData);
-      if (onRecordResult) {
-        onRecordResult(sessionData);
-      }
+    recordDictationSession(sessionData);
+    if (onRecordResult) {
+      onRecordResult(sessionData);
     }
-
-    onNextCue();
   };
 
+  // Handle advancing to next cue
+  const handleNext = () => {
+    // If on last cue of chapter, open summary report card
+    if (activeCueIndex >= cues.length - 1) {
+      playVictoryFanfare();
+      setIsSummaryOpen(true);
+      return;
+    }
+
+    if (onNextCue) {
+      onNextCue();
+    }
+  };
+
+  // Save error words into user vocabulary list
+  const handleSaveErrorsToVocab = (wordsToSave) => {
+    try {
+      const saved = localStorage.getItem('hp_vocab_list');
+      const currentList = saved ? JSON.parse(saved) : [];
+      const newItems = wordsToSave
+        .filter(w => !currentList.some(item => item.word.toLowerCase() === w.toLowerCase()))
+        .map(w => ({
+          id: Date.now() + Math.random().toString(),
+          word: w,
+          front: w,
+          translation: '魔法拼写错词重炼',
+          context: currentCue ? currentCue.text : '',
+          chapterId: chapterId || '',
+          dateAdded: new Date().toLocaleDateString()
+        }));
+      localStorage.setItem('hp_vocab_list', JSON.stringify([...newItems, ...currentList]));
+    } catch {}
+  };
+
+  const overallAccuracy = stats.totalWords > 0 
+    ? Math.round((stats.correctWords / stats.totalWords) * 100) 
+    : 100;
+
+  const maxStarsPossible = cues.length * 3;
+
   return (
-    <div className="flex-1 max-w-4xl mx-auto px-4 py-6 w-full flex flex-col justify-between pb-8">
-      {/* ── Gamified Quest Header ─────────────────────────────────── */}
-      <div className={`p-4 rounded-2xl border mb-5 flex flex-wrap items-center justify-between gap-3 shadow-sm ${
+    <div className="flex-1 max-w-4xl mx-auto px-4 py-6 w-full flex flex-col justify-between pb-8 select-none">
+      
+      {/* ── 1. Gamified Quest Top Status Bar ──────────────────────── */}
+      <div className={`p-4 rounded-3xl border-2 mb-5 flex flex-wrap items-center justify-between gap-3 shadow-sm ${
         isParchment
           ? 'bg-[#ffffff] border-[#e8dcb9] text-[#2d241c]'
           : 'bg-slate-900 border-slate-800 text-slate-200'
       }`}>
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-md">
-            <Trophy size={20} />
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-md">
+            <Trophy size={22} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-magical font-bold text-base sm:text-lg text-amber-800 dark:text-amber-400">
+              <span className="font-magical font-bold text-base sm:text-lg text-amber-900">
                 魔法拼写大闯关 (Spell Quest)
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-600/15 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-500/30">
-                闯关中
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-800 font-bold border border-emerald-500/30">
+                第 {activeCueIndex + 1} / {cues.length} 句
               </span>
             </div>
-            <p className="text-xs text-slate-500 font-mono mt-0.5 flex items-center gap-1">
-              <span>第 {activeCueIndex + 1} / {cues.length} 句</span>
-              <span>·</span>
-              <Star size={12} className="text-amber-500 fill-amber-500 inline" />
+            <p className="text-xs text-slate-500 font-mono mt-0.5 flex items-center gap-1.5">
+              <Star size={13} className="text-amber-500 fill-amber-500 inline" />
               <span>已斩获 {totalStars} 颗魔法星</span>
+              <span>·</span>
+              <span>连对 {streakCount} 句</span>
             </p>
           </div>
         </div>
 
-        {/* Combo & Accuracy */}
+        {/* Combo & Sound Controls */}
         <div className="flex items-center space-x-2">
-          {streakCount > 1 && (
-            <span className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full font-bold text-xs shadow-md animate-bounce">
+          {streakCount >= 2 && (
+            <span className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full font-bold text-xs shadow-md animate-bounce">
               <Flame size={13} />
-              <span>连对 {streakCount} 句!</span>
+              <span>连对 x{streakCount}!</span>
             </span>
           )}
 
-          <span className={`px-3 py-1 rounded-full font-mono font-bold text-xs shadow-sm ${
-            accuracy >= 80 
-              ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40' 
-              : accuracy >= 50
-                ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40'
-                : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-          }`}>
-            准确率: {accuracy}%
-          </span>
+          {/* Sound Toggle Button */}
+          <button
+            onClick={handleToggleSound}
+            className={`p-2 rounded-xl border transition-all active:scale-90 cursor-pointer ${
+              soundEnabled
+                ? 'border-amber-300 bg-amber-50 text-amber-800'
+                : 'border-slate-300 bg-slate-100 text-slate-400'
+            }`}
+            title={soundEnabled ? '魔咒合成音效: 已开启 (点击静音)' : '魔咒合成音效: 已静音 (点击开启)'}
+          >
+            {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+          </button>
         </div>
       </div>
 
-      {/* ── Main Dictation Paper Card ─────────────────────────────── */}
+      {/* ── 2. Difficulty Tier Selector Tabs ───────────────────────── */}
+      <div className="flex items-center justify-between gap-1.5 p-1.5 bg-[#f0e7d5] rounded-2xl mb-5 border border-amber-200/80 overflow-x-auto">
+        {[
+          { key: 'accio',   label: '见习巫师 · 飞来字块', desc: '字块拼句', icon: <Sparkles size={13} /> },
+          { key: 'lumos',   label: '高阶学徒 · 荧光挖空', desc: '核心挖空', icon: <Lightbulb size={13} /> },
+          { key: 'auror',   label: '傲罗特训 · 全句盲听', desc: '全句默写', icon: <Award size={13} /> },
+          { key: 'dueling', label: '决斗俱乐部 · 限时生存', desc: '护盾血量', icon: <Shield size={13} /> },
+        ].map((tier) => {
+          const isActive = difficultyMode === tier.key;
+          return (
+            <button
+              key={tier.key}
+              onClick={() => handleDifficultyChange(tier.key)}
+              className={`flex-1 min-w-[120px] py-2 px-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                isActive
+                  ? 'bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 text-white shadow-sm'
+                  : 'text-amber-950/80 hover:text-amber-950 hover:bg-white/60'
+              }`}
+            >
+              {tier.icon}
+              <span className="truncate">{tier.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── 3. Mode 4 Special: Dueling Club Survival Bar ───────────── */}
+      {difficultyMode === 'dueling' && (
+        <DuelingSurvivalBar
+          shields={shields}
+          maxShields={3}
+          timeRemaining={timeRemaining}
+          maxTime={25}
+          streakCount={streakCount}
+        />
+      )}
+
+      {/* ── 4. Main Dictation Paper Card ───────────────────────────── */}
       <div className={`p-6 sm:p-8 rounded-3xl border-2 transition-all shadow-md ${
         isParchment 
           ? 'bg-[#ffffff] border-[#e8dcb9] text-[#2c221e]' 
@@ -252,7 +379,7 @@ export function DictationStudio({
             )}
 
             <button
-              onClick={() => onPlayPause()}
+              onClick={() => onPlayPause && onPlayPause()}
               className="p-2 rounded-xl border border-amber-200/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 transition-all active:scale-95 shadow-xs cursor-pointer"
               title="播放 / 暂停"
             >
@@ -260,138 +387,69 @@ export function DictationStudio({
             </button>
           </div>
 
-          {/* Reveal Answer Toggle */}
-          <button
-            onClick={() => setShowAnswer(!showAnswer)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-200/60 bg-white/60 hover:bg-amber-50 text-xs text-amber-900 font-semibold transition-all active:scale-95 shadow-2xs cursor-pointer"
-          >
-            {showAnswer ? <EyeOff size={14} className="text-amber-700" /> : <Eye size={14} className="text-amber-700" />}
-            <span>{showAnswer ? '隐藏原句' : '偷看原句'}</span>
-          </button>
+          <span className="text-xs font-mono font-bold text-slate-400">
+            {difficultyMode === 'accio' && '飞来字块拼装'}
+            {difficultyMode === 'lumos' && '核心词汇挖空'}
+            {difficultyMode === 'auror' && '全句盲听默写'}
+            {difficultyMode === 'dueling' && '限时生存试炼'}
+          </span>
         </div>
 
-        {/* Real-time Visual Word Matching Display */}
-        <div className={`min-h-[100px] p-5 rounded-2xl border font-reading text-lg sm:text-xl leading-relaxed mb-6 ${
-          isParchment 
-            ? 'bg-[#faf6ee] border-[#e8dcb9]' 
-            : 'bg-slate-950/70 border-slate-800'
-        }`}>
-          {showAnswer ? (
-            <div className="text-amber-700 dark:text-amber-300 animate-fadeIn">
-              <span className="text-xs uppercase tracking-wider text-slate-400 block mb-1 font-mono">
-                原著标准文本：
-              </span>
-              "{currentCue.text}"
-            </div>
-          ) : (
-            <div className="flex flex-wrap items-baseline gap-2">
-              {comparison.map((item, i) => {
-                if (item.status === 'symbol') {
-                  return <span key={i} className="text-slate-400">{item.text}</span>;
-                }
-
-                if (item.status === 'correct') {
-                  return (
-                    <span 
-                      key={i} 
-                      className="text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-500/15 px-2 py-0.5 rounded-lg border-b-2 border-emerald-500 animate-fadeIn"
-                    >
-                      {item.typed}
-                    </span>
-                  );
-                }
-
-                if (item.status === 'wrong') {
-                  return (
-                    <span 
-                      key={i} 
-                      className="text-red-700 dark:text-red-300 line-through bg-red-500/15 px-2 py-0.5 rounded-lg border-b-2 border-red-500"
-                      title={`输入了: ${item.typed}，应为: ${item.text}`}
-                    >
-                      {item.typed}
-                    </span>
-                  );
-                }
-
-                // Pending word blank
-                return (
-                  <span 
-                    key={i} 
-                    className={`inline-flex items-center justify-center min-w-[54px] px-2.5 py-0.5 rounded-lg border border-dashed text-xs font-mono font-bold select-none transition-all ${
-                      isParchment
-                        ? 'border-amber-400/80 bg-amber-50/70 text-amber-600/70'
-                        : 'border-slate-700 bg-slate-900/60 text-slate-500'
-                    }`}
-                    title={`待拼写单词 (${item.text.length} 个字母)`}
-                  >
-                    {Array(Math.min(item.text.length, 6)).fill('•').join(' ')}
-                  </span>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Chinese Translation Clue */}
-          {currentCue.translation && (
-            <div className="mt-3.5 pt-2.5 border-t border-dashed border-inherit text-xs sm:text-sm font-reading text-amber-900/80 dark:text-slate-400">
-              中文释义线索：{currentCue.translation}
-            </div>
-          )}
-        </div>
-
-        {/* Student Typing Textarea */}
-        <div className="relative">
-          <textarea
-            ref={inputRef}
-            rows={3}
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Tab') {
-                e.preventDefault();
-                handleQuillHint();
-              } else if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleNext();
-              }
-            }}
-            placeholder="仔细听原声，在这里输入英文单词... (按 Tab 获取羽毛笔提示，按 Enter 提交进入下一句)"
-            className={`w-full p-4 rounded-2xl text-base sm:text-lg font-reading border-2 focus:outline-none transition-all resize-none ${
-              isAllCorrect
-                ? 'border-emerald-500 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100 shadow-sm'
-                : isParchment
-                ? 'border-amber-300 focus:border-amber-500 bg-[#fffdfa] text-[#2c221e] focus:ring-2 focus:ring-amber-400/20'
-                : 'border-slate-700 focus:border-amber-400 bg-slate-950 text-slate-100 focus:ring-2 focus:ring-amber-400/20'
-            }`}
+        {/* ── Sub-Mode Interactive Components ─────────────────────── */}
+        {difficultyMode === 'accio' && (
+          <AccioWordPicker
+            sentenceText={currentCue.text}
+            isParchment={isParchment}
+            onComplete={handleSubModeComplete}
+            onReset={() => setHintCount(0)}
           />
+        )}
 
-          {isAllCorrect && (
-            <div className="absolute right-4 bottom-4 flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-xs font-bold animate-bounce shadow-lg">
-              <CheckCircle2 size={16} />
-              <span>拼写全对！获得满星评分</span>
-            </div>
-          )}
-        </div>
+        {difficultyMode === 'lumos' && (
+          <LumosClozeInput
+            sentenceText={currentCue.text}
+            isParchment={isParchment}
+            onComplete={handleSubModeComplete}
+            onQuillHintTrigger={handleQuillHint}
+          />
+        )}
+
+        {(difficultyMode === 'auror' || difficultyMode === 'dueling') && (
+          <AurorFullTyping
+            currentCue={currentCue}
+            userInput={userInput}
+            setUserInput={setUserInput}
+            showAnswer={showAnswer}
+            setShowAnswer={setShowAnswer}
+            isParchment={isParchment}
+            onEnterNext={handleNext}
+            onQuillHint={handleQuillHint}
+          />
+        )}
 
         {/* Action Controls & Navigation */}
-        <div className="mt-5 pt-3 border-t border-inherit flex flex-wrap items-center justify-between gap-3">
-          {/* Left aids */}
+        <div className="mt-6 pt-4 border-t border-inherit flex flex-wrap items-center justify-between gap-3">
+          {/* Left aids (Quill hint for Auror/Dueling mode) */}
           <div className="flex items-center space-x-2">
-            <button
-              onClick={handleQuillHint}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-amber-400 bg-amber-50/80 hover:bg-amber-100/90 text-amber-950 hover:border-amber-500 text-xs font-bold transition-all active:scale-95 shadow-xs cursor-pointer"
-              title="羽毛笔魔法提示：自动补齐下一个单词 (快捷键: Tab)"
-            >
-              <Sparkles size={14} className="text-amber-600" />
-              <span>羽毛笔提示 (Tab)</span>
-            </button>
+            {(difficultyMode === 'auror' || difficultyMode === 'dueling') && (
+              <button
+                onClick={handleQuillHint}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-amber-400 bg-amber-50/80 hover:bg-amber-100/90 text-amber-950 hover:border-amber-500 text-xs font-bold transition-all active:scale-95 shadow-xs cursor-pointer"
+                title="羽毛笔魔法提示：自动补齐下一个单词 (快捷键: Tab)"
+              >
+                <Sparkles size={14} className="text-amber-600" />
+                <span>羽毛笔提示 (Tab)</span>
+              </button>
+            )}
 
-            <button
-              onClick={() => setUserInput('')}
-              className="px-3.5 py-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-rose-50 text-xs text-slate-500 hover:text-rose-600 hover:border-rose-300 transition-all active:scale-95 cursor-pointer shadow-2xs"
-            >
-              清空重来
-            </button>
+            {(difficultyMode === 'auror' || difficultyMode === 'dueling') && (
+              <button
+                onClick={() => setUserInput('')}
+                className="px-3.5 py-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-rose-50 text-xs text-slate-500 hover:text-rose-600 hover:border-rose-300 transition-all active:scale-95 cursor-pointer shadow-2xs"
+              >
+                清空重来
+              </button>
+            )}
           </div>
 
           {/* Right Navigation */}
@@ -407,9 +465,9 @@ export function DictationStudio({
 
             <button
               onClick={handleNext}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white hover:shadow-md text-xs font-bold transition-all active:scale-95 shadow-sm cursor-pointer"
+              className="flex items-center gap-1.5 px-6 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white hover:shadow-md text-xs font-bold transition-all active:scale-95 shadow-sm cursor-pointer"
             >
-              <span>{activeCueIndex >= cues.length - 1 ? '完成全章挑战' : '下一句 (Enter)'}</span>
+              <span>{activeCueIndex >= cues.length - 1 ? '完成试炼并结算' : '下一句 (Enter)'}</span>
               <SkipForward size={14} />
             </button>
           </div>
@@ -417,12 +475,28 @@ export function DictationStudio({
 
       </div>
 
-      {/* Keyboard Shortcuts Hint */}
-      <div className="mt-4 text-center text-xs text-slate-400 flex items-center justify-center gap-4">
-        <span><kbd className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-slate-800 text-amber-800 dark:text-amber-300 font-mono">Tab</kbd> 羽毛笔提示</span>
-        <span><kbd className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-slate-800 text-amber-800 dark:text-amber-300 font-mono">Enter</kbd> 提交下一句</span>
-        <span><kbd className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-slate-800 text-amber-800 dark:text-amber-300 font-mono">Space</kbd> 暂停/播放</span>
-      </div>
+      {/* ── 5. Chapter Quest Summary Report Card Modal ─────────────── */}
+      <DictationSummaryModal
+        isOpen={isSummaryOpen}
+        onClose={() => setIsSummaryOpen(false)}
+        stats={stats}
+        totalStars={totalStars}
+        maxStars={maxStarsPossible}
+        accuracy={overallAccuracy}
+        mode={difficultyMode}
+        errorWords={errorWords}
+        chapterTitle={chapterTitle}
+        onRetryErrors={() => {
+          setIsSummaryOpen(false);
+          // Restart first cue
+          if (onSeekToCue && cues[0]) onSeekToCue(cues[0]);
+        }}
+        onSaveErrorWordsToVocab={handleSaveErrorsToVocab}
+        isParchment={isParchment}
+      />
+
     </div>
   );
 }
+
+export default DictationStudio;
