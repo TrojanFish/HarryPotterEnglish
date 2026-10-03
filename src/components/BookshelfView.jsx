@@ -136,7 +136,7 @@ export function BookshelfView({
   const resumeProgressPercent = duration > 0 ? Math.round((currentTime / duration) * 100) : 0;
 
   return (
-    <div className="flex-1 overflow-y-auto pb-44 sm:pb-32 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full select-none">
+    <div className="flex-1 overflow-y-auto pb-64 sm:pb-32 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full select-none">
       
       {/* ── 1. Unified Student Quest & Resume Hub ───────────────────── */}
       <section className="mb-10">

@@ -114,28 +114,25 @@ export function SubtitleViewer({
 
   return (
     <div className="relative flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 max-w-4xl mx-auto w-full pb-16" ref={containerRef}>
-      {/* ── Subtitle Toolbar for Students ─────────────────────────── */}
-      <div className={`flex flex-wrap items-center justify-between gap-2 mb-3.5 sm:mb-5 p-2.5 sm:p-3.5 rounded-2xl border transition-colors ${
+      {/* ── Subtitle Toolbar for Students (Sleek Single-Row Responsive Layout) ── */}
+      <div className={`flex items-center justify-between gap-1.5 sm:gap-2 mb-3 sm:mb-4 px-2.5 sm:px-3.5 py-2 rounded-2xl border transition-colors ${
         isParchment
-          ? 'bg-white/95 border-[#eee5d8] shadow-xs text-[#2b1f14]'
+          ? 'bg-white/95 border-[#eee5d8] shadow-2xs text-[#2b1f14]'
           : 'bg-slate-900/80 border-slate-800 text-slate-300'
       }`}>
-        {/* Left: Cue counts & status */}
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs font-medium">
-          <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-800 font-bold font-mono">
-            <Headphones size={13} />
-            <span>全章 {cues.length} 个精听句</span>
+        {/* Left: Cue counts & status + Quick Toggles */}
+        <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
+          <span className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/15 text-amber-800 font-bold font-mono text-[11px] sm:text-xs shrink-0">
+            <Headphones size={12} className="text-amber-700" />
+            <span className="hidden sm:inline">全章 </span>{cues.length}<span className="hidden sm:inline"> 个精听</span>句
           </span>
 
           {studyMode === 'blind' && (
-            <span className="text-amber-800 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-400/30 flex items-center gap-1 font-semibold">
-              <EyeOff size={13} /> 魔法磨耳朵模式（迷雾遮罩）
+            <span className="text-amber-800 bg-amber-500/10 px-2 py-1 rounded-lg border border-amber-400/30 flex items-center gap-1 font-semibold text-[11px] sm:text-xs shrink-0">
+              <EyeOff size={12} /> <span className="hidden sm:inline">磨耳朵模式</span><span className="sm:hidden">迷雾</span>
             </span>
           )}
-        </div>
 
-        {/* Right: Reading controls for students */}
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           {/* Follow audio toggle */}
           <button
             onClick={() => {
@@ -143,62 +140,65 @@ export function SubtitleViewer({
               setIsFollowActive(next);
               if (next) scrollToActiveCue();
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all active:scale-95 shadow-xs cursor-pointer ${
+            className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg border text-[11px] sm:text-xs font-bold transition-all active:scale-95 cursor-pointer shrink-0 ${
               isFollowActive
                 ? 'bg-amber-500/20 border-amber-400 text-amber-950 font-bold'
-                : 'border-amber-200/80 bg-white/80 text-slate-600 hover:bg-amber-50 hover:border-amber-400'
+                : 'border-[#eee5d8] bg-white/80 text-stone-500 hover:bg-amber-50'
             }`}
             title="开启/关闭滚动跟随朗读进度"
           >
-            <LocateFixed size={13} className="text-amber-700" />
-            <span>{isFollowActive ? '跟随朗读：开' : '跟随朗读：关'}</span>
+            <LocateFixed size={12} className="text-amber-700" />
+            <span className="hidden sm:inline">跟随朗读: {isFollowActive ? '开' : '关'}</span>
+            <span className="sm:hidden">{isFollowActive ? '跟随' : '静止'}</span>
           </button>
-
-          {/* 3-Level Font Size Segmented Selector (Kid-friendly eye protection) */}
-          <div className="flex items-center rounded-xl border border-amber-200/80 bg-white/80 p-0.5 shadow-xs text-xs font-bold">
-            <span className="px-2 text-slate-500 flex items-center gap-1">
-              <Type size={13} className="text-amber-700" />
-              <span className="hidden sm:inline">字号:</span>
-            </span>
-            {[
-              { id: 'normal', label: '标准', title: '标准字号 (18px)' },
-              { id: 'large',  label: '大号', title: '大号字号 (22px，推荐视力保护)' },
-              { id: 'huge',   label: '超大', title: '超大字号 (26px，适合大屏/平板)' }
-            ].map((sizeOpt) => {
-              const isSelected = fontSize === sizeOpt.id;
-              return (
-                <button
-                  key={sizeOpt.id}
-                  onClick={() => {
-                    setFontSize(sizeOpt.id);
-                    try { localStorage.setItem('hp_subtitle_font_size', sizeOpt.id); } catch {}
-                  }}
-                  className={`px-2.5 py-1 rounded-lg transition-all active:scale-95 cursor-pointer ${
-                    isSelected
-                      ? 'bg-amber-500 text-white font-bold shadow-xs'
-                      : 'text-amber-950/80 hover:text-amber-950 hover:bg-amber-50'
-                  }`}
-                  title={sizeOpt.title}
-                >
-                  {sizeOpt.label}
-                </button>
-              );
-            })}
-          </div>
 
           {/* Translation Toggle */}
           <button
             onClick={() => setShowTranslation(!showTranslation)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all active:scale-95 shadow-xs cursor-pointer ${
+            className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg border text-[11px] sm:text-xs font-bold transition-all active:scale-95 cursor-pointer shrink-0 ${
               showTranslation
-                ? 'bg-amber-500/20 border-amber-400 text-amber-950 shadow-xs'
-                : 'border-amber-200/80 bg-white/80 text-slate-600 hover:bg-amber-50 hover:border-amber-400'
+                ? 'bg-amber-500/20 border-amber-400 text-amber-950 font-bold'
+                : 'border-[#eee5d8] bg-white/80 text-stone-500 hover:bg-amber-50'
             }`}
             title="开启/关闭中文双语译文"
           >
-            <Languages size={14} className="text-amber-700" />
-            <span>{showTranslation ? '双语译文：开' : '双语译文：关'}</span>
+            <Languages size={12} className="text-amber-700" />
+            <span className="hidden sm:inline">双语译文: {showTranslation ? '开' : '关'}</span>
+            <span className="sm:hidden">{showTranslation ? '译文' : '隐译'}</span>
           </button>
+        </div>
+
+        {/* Right: 3-Level Font Size Segmented Selector */}
+        <div className="flex items-center rounded-lg border border-[#eee5d8] bg-stone-50/80 p-0.5 text-[11px] sm:text-xs font-bold shrink-0">
+          <span className="hidden md:flex px-1.5 text-stone-500 items-center gap-1">
+            <Type size={12} className="text-amber-700" />
+            <span>字号:</span>
+          </span>
+          {[
+            { id: 'normal', label: '标准', short: '中', title: '标准字号' },
+            { id: 'large',  label: '大号', short: '大', title: '大号字号 (推荐)' },
+            { id: 'huge',   label: '超大', short: '特', title: '超大字号' }
+          ].map((sizeOpt) => {
+            const isSelected = fontSize === sizeOpt.id;
+            return (
+              <button
+                key={sizeOpt.id}
+                onClick={() => {
+                  setFontSize(sizeOpt.id);
+                  try { localStorage.setItem('hp_subtitle_font_size', sizeOpt.id); } catch {}
+                }}
+                className={`px-1.5 sm:px-2 py-0.5 rounded-md transition-all active:scale-95 cursor-pointer ${
+                  isSelected
+                    ? 'bg-amber-500 text-white font-bold shadow-2xs'
+                    : 'text-stone-600 hover:text-amber-950'
+                }`}
+                title={sizeOpt.title}
+              >
+                <span className="hidden sm:inline">{sizeOpt.label}</span>
+                <span className="sm:hidden">{sizeOpt.short}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -229,27 +229,27 @@ export function SubtitleViewer({
 
               <div
                 ref={isActive ? activeCueRef : null}
-                className={`group relative rounded-2xl p-4 sm:p-5 transition-colors duration-200 border ${
+                className={`group relative rounded-2xl p-3.5 sm:p-5 transition-colors duration-200 border ${
                   isActive
                     ? 'border-amber-400 bg-amber-500/5 border-l-4 border-l-amber-500'
                     : 'border-[#eee5d8] bg-white hover:border-amber-300'
                 }`}
               >
               {/* Cue Header with Controls */}
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-2">
-                  <span className={`text-xs px-2 py-0.5 rounded-lg font-mono font-bold ${
+              <div className="flex items-center justify-between mb-2 gap-2">
+                <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+                  <span className={`text-[11px] sm:text-xs px-2 py-0.5 rounded-lg font-mono font-bold shrink-0 ${
                     isActive 
                       ? 'bg-amber-500 text-white' 
                       : 'bg-stone-100 text-stone-500'
                   }`}>
                     第 {idx + 1} 句
                   </span>
-                  <span className="font-mono text-xs text-stone-400">
+                  <span className="font-mono text-[11px] sm:text-xs text-stone-400 shrink-0">
                     {formatTime(cue.startTime)} - {formatTime(cue.endTime)}
                   </span>
                   {isActive && (
-                    <span className="flex items-center gap-1 text-xs text-amber-700 font-bold">
+                    <span className="hidden sm:inline-flex items-center gap-1 text-xs text-amber-700 font-bold shrink-0">
                       <Sparkles size={12} />
                       <span>正在朗读</span>
                     </span>
@@ -257,23 +257,23 @@ export function SubtitleViewer({
                 </div>
 
                 {/* Sentence Action Buttons: Clean on active, hover-only on inactive */}
-                <div className={`flex items-center space-x-1.5 transition-opacity ${
+                <div className={`flex items-center space-x-1 sm:space-x-1.5 shrink-0 transition-opacity ${
                   isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                 }`}>
                   {/* Replay this sentence */}
                   <button
                     onClick={() => onSeekToCue(cue)}
-                    className="p-1.5 rounded-lg border border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
+                    className="p-1 sm:p-1.5 rounded-lg border border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
                     title="从原声音频播放本句"
                   >
                     <Play size={13} className="fill-current" />
                   </button>
 
-                  {/* Clean British TTS Speak */}
+                  {/* Clean British TTS Speak (Desktop/Tablet only to avoid mobile crowding) */}
                   {isActive && (
                     <button
                       onClick={() => handleSpeakSentence(cue)}
-                      className={`p-1.5 rounded-lg border transition-colors active:scale-95 cursor-pointer ${
+                      className={`hidden sm:inline-flex p-1.5 rounded-lg border transition-colors active:scale-95 cursor-pointer ${
                         speakingCueId === cue.id 
                           ? 'text-amber-900 bg-amber-100 border-amber-300 font-bold' 
                           : 'border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950'
@@ -284,11 +284,11 @@ export function SubtitleViewer({
                     </button>
                   )}
 
-                  {/* Copy sentence text */}
+                  {/* Copy sentence text (Desktop/Tablet only) */}
                   {isActive && (
                     <button
                       onClick={() => handleCopySentence(cue)}
-                      className="p-1.5 rounded-lg border border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
+                      className="hidden sm:inline-flex p-1.5 rounded-lg border border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
                       title={copiedCueId === cue.id ? "已复制本句英文" : "复制本句英文"}
                     >
                       {copiedCueId === cue.id ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
@@ -298,7 +298,7 @@ export function SubtitleViewer({
                   {/* Shadowing Voice Recording */}
                   <button
                     onClick={() => onRecordCue(cue)}
-                    className="px-2.5 py-1 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center gap-1 font-bold text-xs"
+                    className="px-2 sm:px-2.5 py-1 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center gap-1 font-bold text-xs"
                     title="跟读施咒（AI发音评分）"
                   >
                     <Mic size={13} className="text-amber-700" />
@@ -309,7 +309,7 @@ export function SubtitleViewer({
                   {studyMode === 'blind' && (
                     <button
                       onClick={() => toggleSentenceReveal(cue.id)}
-                      className="p-1.5 rounded-lg border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 transition-colors active:scale-95 cursor-pointer"
+                      className="p-1 sm:p-1.5 rounded-lg border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 transition-colors active:scale-95 cursor-pointer"
                       title={isRevealed ? "开启迷雾遮罩" : "驱散迷雾显形"}
                     >
                       {isRevealed ? <EyeOff size={13} /> : <Eye size={13} />}
@@ -318,7 +318,7 @@ export function SubtitleViewer({
                 </div>
               </div>
 
-              {/* English Text with Clickable Words */}
+              {/* English Text with Clickable Words (Clean Typography without Intrusive Sparkles) */}
               <div 
                 className={`font-reading ${getFontSizeClass()} select-text transition-all duration-300 leading-normal ${
                   studyMode === 'blind' && !isRevealed && !isActive
@@ -332,25 +332,23 @@ export function SubtitleViewer({
                   }
 
                   const cleanWord = token.text.toLowerCase().replace(/[^a-z]/g, '');
-                  const isHpTerm = Boolean(HP_LORE_DICTIONARY[cleanWord]);
+                  // Only treat words that have HP lore notes as magical lore terms
+                  const isHpTerm = Boolean(HP_LORE_DICTIONARY[cleanWord]?.lore);
 
                   return (
                     <span
                       key={tokenIdx}
                       onClick={() => onWordClick(token.text, cue)}
-                      className={`cursor-pointer rounded transition-colors inline group/word relative ${
+                      className={`cursor-pointer transition-colors inline group/word relative ${
                         isHpTerm 
-                          ? 'border-b-2 border-amber-500 font-semibold text-amber-800 dark:text-amber-300 bg-amber-500/10 hover:bg-amber-500/25 px-0.5' 
+                          ? 'border-b border-amber-400 text-amber-900 font-medium hover:bg-amber-100/50 px-0.5 rounded-xs' 
                           : isActive 
-                            ? 'font-medium text-amber-950 dark:text-amber-100 hover:bg-amber-400/20 hover:text-amber-800 active:bg-amber-400/30' 
-                            : 'hover:bg-amber-400/15 hover:text-amber-800 active:bg-amber-400/25'
+                            ? 'text-amber-950 font-normal hover:bg-amber-400/20 hover:text-amber-900 rounded-xs' 
+                            : 'text-[#1e1610] hover:bg-amber-400/15 hover:text-amber-900 rounded-xs'
                       }`}
-                      title={isHpTerm ? `魔法专有名词: ${token.text} (点击查看百科背景)` : '点击查看中文释义与纯正英音发音'}
+                      title={isHpTerm ? `魔法专有名词: ${token.text} (点击查看百科背景与发音)` : '点击查看中文释义与发音'}
                     >
                       {token.text}
-                      {isHpTerm && (
-                        <Sparkles className="w-2.5 h-2.5 text-amber-500 inline ml-0.5 align-super" />
-                      )}
                     </span>
                   );
                 })}

@@ -38,7 +38,7 @@ export function MobileMiniPlayer({
 
   return (
     <div 
-      className="md:hidden fixed bottom-[calc(4.2rem+env(safe-area-inset-bottom,0px))] left-3 right-3 z-30 rounded-2xl bg-amber-500 text-white border border-amber-600 flex flex-col overflow-hidden select-none animate-slideUp"
+      className="md:hidden fixed bottom-[calc(3.2rem+max(0.875rem,calc(env(safe-area-inset-bottom,0px)+0.375rem)))] left-2.5 right-2.5 z-30 rounded-2xl bg-amber-500 text-white border border-amber-600 shadow-lg flex flex-col overflow-hidden select-none animate-slideUp"
     >
       <div className="flex items-center justify-between p-2.5">
         {/* Clickable Info Area -> Enter Player */}

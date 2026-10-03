@@ -152,13 +152,13 @@ export function AnalyticsDashboard({
               <BarChart2 size={18} className="text-amber-600 sm:w-5 sm:h-5" />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="text-base sm:text-xl font-bold font-magical tracking-wide text-amber-950 truncate flex items-center gap-2">
+              <h2 className="text-sm sm:text-xl font-bold font-magical tracking-wide text-amber-950 truncate flex items-center gap-1.5 sm:gap-2">
                 <span>霍格沃茨学业数据罗盘</span>
                 <span className="hidden sm:inline-flex text-[11px] font-sans px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-300/80 font-bold shrink-0">
                   学情追踪
                 </span>
               </h2>
-              <p className="text-[11px] sm:text-xs text-stone-500 truncate">
+              <p className="text-[10px] sm:text-xs text-stone-500 truncate">
                 学习习惯追踪 · 听力专注时长 · 听写准确度
               </p>
             </div>
@@ -525,14 +525,14 @@ export function AnalyticsDashboard({
 
           {/* Chart 2: Dictation Accuracy History Trend Curve */}
           <div className="p-5 rounded-3xl border border-[#eee5d8] bg-white shadow-xs">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 mb-4">
               <div className="flex items-center space-x-2">
-                <TrendingUp size={16} className="text-emerald-500" />
-                <h3 className="font-bold text-sm tracking-wide text-amber-950">
+                <TrendingUp size={16} className="text-emerald-500 shrink-0" />
+                <h3 className="font-bold text-xs sm:text-sm tracking-wide text-amber-950">
                   听写练习准确率走势 (最近 10 次练习)
                 </h3>
               </div>
-              <span className="text-xs text-stone-500">
+              <span className="text-[11px] sm:text-xs text-stone-500 font-medium">
                 优秀基准线: 80% (O.W.L.s 优秀)
               </span>
             </div>
