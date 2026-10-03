@@ -621,6 +621,84 @@ export function App() {
     }
   }, [isPlaying]);
 
+  // W3C Screen Wake Lock API: Prevent mobile screen timeout during active audiobook listening
+  const wakeLockRef = useRef(null);
+
+  const requestWakeLock = useCallback(async () => {
+    if (typeof navigator !== 'undefined' && 'wakeLock' in navigator && document.visibilityState === 'visible') {
+      try {
+        if (!wakeLockRef.current) {
+          wakeLockRef.current = await navigator.wakeLock.request('screen');
+        }
+      } catch (err) {
+        // Fail silently if battery saver restricts or unsupported
+      }
+    }
+  }, []);
+
+  const releaseWakeLock = useCallback(async () => {
+    if (wakeLockRef.current) {
+      try {
+        await wakeLockRef.current.release();
+      } catch (err) {}
+      wakeLockRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isPlaying) {
+      requestWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+    return () => {
+      releaseWakeLock();
+    };
+  }, [isPlaying, requestWakeLock, releaseWakeLock]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isPlaying) {
+        requestWakeLock();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [isPlaying, requestWakeLock]);
+
+  // Resilient Audio Stalled / Waiting Auto-Recovery
+  const stallTimeoutRef = useRef(null);
+
+  const handleWaiting = useCallback(() => {
+    if (stallTimeoutRef.current) clearTimeout(stallTimeoutRef.current);
+    // If audio stalls/waits for data for over 3 seconds during active playback, trigger light recovery
+    stallTimeoutRef.current = setTimeout(() => {
+      if (isPlaying && audioRef.current && audioRef.current.paused) {
+        audioRef.current.play().catch(() => {});
+      }
+    }, 3000);
+  }, [isPlaying]);
+
+  const handleCanPlay = useCallback(() => {
+    if (stallTimeoutRef.current) {
+      clearTimeout(stallTimeoutRef.current);
+      stallTimeoutRef.current = null;
+    }
+  }, []);
+
+  const handleAudioError = useCallback((e) => {
+    console.warn('Audio transient streaming error, attempting recovery:', e);
+    if (audioRef.current && isPlaying && currentTime > 0) {
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.load();
+          audioRef.current.currentTime = currentTime;
+          audioRef.current.play().catch(() => {});
+        }
+      }, 1000);
+    }
+  }, [isPlaying, currentTime]);
+
   // Word Click -> Open Dictionary Modal
   const handleWordClick = useCallback(async (rawWord, sentenceCue) => {
     const lookupResult = await lookupWord(rawWord);
@@ -775,6 +853,9 @@ export function App() {
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleEnded}
+        onWaiting={handleWaiting}
+        onCanPlay={handleCanPlay}
+        onError={handleAudioError}
         preload="auto"
         playsInline
         webkit-playsinline="true"

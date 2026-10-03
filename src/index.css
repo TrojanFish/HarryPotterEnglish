@@ -17,6 +17,26 @@
       radial-gradient(circle at 100% 100%, rgba(185, 28, 28, 0.04) 0%, transparent 60%);
     background-attachment: fixed;
     -webkit-tap-highlight-color: transparent;
+    /* W3C CLREQ: Strict Chinese & Western text line breaking, punctuation prohibition, overflow containment */
+    line-break: strict;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  /* W3C Pointer Events: 0ms tap latency by removing mobile 300ms double-tap zoom delay */
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  .duo-btn-primary,
+  .duo-btn-success,
+  .duo-btn-danger,
+  .duo-btn-secondary,
+  .duo-pill,
+  .duo-touch-target {
+    touch-action: manipulation;
   }
 
   /* Prevent iOS Safari auto-zoom on input focus by guaranteeing 16px minimum on mobile */
