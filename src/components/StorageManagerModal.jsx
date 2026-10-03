@@ -90,7 +90,7 @@ export function StorageManagerModal({
     if (!currentChapter || !currentChapter.id) return;
     const chapterId = currentChapter.id;
     const title = currentChapter.title || `Chapter ${chapterId}`;
-    const audioUrl = currentChapter.audioUrl || `/api/media/podcasts/${currentBook?.id || 'hp-book-1'}/episodes/${chapterId}/audio.mp3`;
+    const audioUrl = currentChapter.audioUrl || `/api/stream/audio/podcasts/${currentBook?.id || 'hp-book-1'}/episodes/${chapterId}`;
     const vttUrl = currentChapter.vttUrl || `/api/subtitles/podcasts/${currentBook?.id || 'hp-book-1'}/episodes/${chapterId}/subtitle.vtt`;
 
     setDownloadProgress({ chapterId, progress: 0 });

@@ -46,7 +46,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // 1. Audio media streaming (HTTP 206 Range requests): Bypass SW cache for direct native streaming
-  if (url.pathname.startsWith('/api/media/')) {
+  if (url.pathname.startsWith('/api/media/') || url.pathname.startsWith('/api/stream/')) {
     return;
   }
 

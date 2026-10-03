@@ -341,14 +341,30 @@ app.get('/api/subtitles/*', async (req, res) => {
   }
 });
 
-// 3. Audio streaming endpoint with Range support & backpressure disconnection handling
-app.get('/api/media/*', async (req, res) => {
+// 3. Audio streaming endpoint with Range support, anti-sniffing & inline protection
+app.get(['/api/stream/audio/*', '/api/media/*'], async (req, res) => {
   if (!s3Client) {
     return res.status(503).json({ error: 'R2 storage credentials not configured' });
   }
 
   let key = req.params[0];
-  if (!key.endsWith('.mp3')) key = `${key}.mp3`;
+  // Auto-append .mp3 if not already present in the key
+  if (!AUDIO_REGEX.test(key)) {
+    key = `${key}.mp3`;
+  }
+
+  // Anti-leech: verify Referer header if present
+  const referer = req.headers.referer || req.headers.origin;
+  if (referer) {
+    try {
+      const refUrl = new URL(referer);
+      const host = req.headers.host;
+      const isAllowed = !host || refUrl.host === host || refUrl.hostname === 'localhost' || refUrl.hostname === '127.0.0.1';
+      if (!isAllowed) {
+        return res.status(403).json({ error: 'Forbidden: unauthorized media referer' });
+      }
+    } catch {}
+  }
 
   try {
     const range = req.headers.range;
@@ -363,10 +379,12 @@ app.get('/api/media/*', async (req, res) => {
 
     res.set({
       'Content-Type': 'audio/mpeg',
+      'Content-Disposition': 'inline; filename="stream.dat"',
+      'X-Content-Type-Options': 'nosniff',
       'Accept-Ranges': 'bytes',
       'Content-Length': response.ContentLength,
       'Content-Range': response.ContentRange,
-      'Cache-Control': 'public, max-age=604800, immutable',
+      'Cache-Control': 'private, no-transform, max-age=604800',
     });
 
     res.status(range ? 206 : 200);

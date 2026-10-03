@@ -297,34 +297,60 @@ export function App() {
         console.warn('Offline cache lookup error:', cacheErr);
       }
 
-      // Online playback fallback through backend proxy
+      // Online playback: fetch in-memory Blob to prevent IDM hijacking and secure media
       setIsOfflinePlaying(false);
       const audioKey = currentChapterObj.audioKey || `podcasts/${selectedBook}/episodes/${currentChapterObj.epId || 'ep01'}/audio.mp3`;
       const subKey = currentChapterObj.subtitleKey || `podcasts/${selectedBook}/episodes/${currentChapterObj.epId || 'ep01'}/subtitle.vtt`;
 
-      const newAudioUrl = `${API_BASE}/api/media/${audioKey}`;
+      // Strip .mp3 extension to bypass IDM file-extension auto-intercept
+      const streamKey = audioKey.replace(/\.(mp3|m4a|wav|aac|ogg|flac)$/i, '');
+      const streamAudioUrl = `${API_BASE}/api/stream/audio/${streamKey}`;
       const newVttUrl = `${API_BASE}/api/subtitles/${subKey}`;
 
-      if (!cancelled) setAudioUrl(newAudioUrl);
-
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3500);
-        const res = await fetch(newVttUrl, { signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (res.ok) {
-          const text = await res.text();
-          if (!cancelled) setCues(parseVTT(text));
-        } else {
-          console.warn(`Subtitle fetch returned ${res.status}, using sample`);
+      // Concurrently fetch VTT subtitles and in-memory audio Blob
+      const subPromise = (async () => {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3500);
+          const res = await fetch(newVttUrl, { signal: controller.signal });
+          clearTimeout(timeoutId);
+          if (res.ok) {
+            const text = await res.text();
+            if (!cancelled) setCues(parseVTT(text));
+          } else {
+            console.warn(`Subtitle fetch returned ${res.status}, using sample`);
+            if (!cancelled) setCues(parseVTT(SAMPLE_CHAPTER_1_VTT));
+          }
+        } catch (err) {
+          console.warn('VTT fetch timed out or failed, using local chapter sample:', err.message);
           if (!cancelled) setCues(parseVTT(SAMPLE_CHAPTER_1_VTT));
         }
-      } catch (err) {
-        console.warn('VTT fetch timed out or failed, using local chapter sample:', err.message);
-        if (!cancelled) setCues(parseVTT(SAMPLE_CHAPTER_1_VTT));
-      } finally {
-        if (!cancelled) setIsLoadingContent(false);
-      }
+      })();
+
+      const audioPromise = (async () => {
+        try {
+          const audioRes = await fetch(streamAudioUrl, {
+            headers: { 'X-Requested-With': 'HogwartsAudioPlayer' }
+          });
+          if (audioRes.ok) {
+            const audioBlob = await audioRes.blob();
+            if (!cancelled) {
+              const blobUrl = URL.createObjectURL(audioBlob);
+              previousBlobUrlRef.current = blobUrl;
+              setAudioUrl(blobUrl);
+              return;
+            }
+          }
+          // Fallback to obfuscated stream URL if blob conversion was not completed
+          if (!cancelled) setAudioUrl(streamAudioUrl);
+        } catch (err) {
+          console.warn('In-memory audio blob fetch failed, falling back to stream URL:', err.message);
+          if (!cancelled) setAudioUrl(streamAudioUrl);
+        }
+      })();
+
+      await Promise.all([subPromise, audioPromise]);
+      if (!cancelled) setIsLoadingContent(false);
     }
 
     loadContent();
