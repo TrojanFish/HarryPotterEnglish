@@ -188,10 +188,10 @@ export function BookshelfView({
             <button 
               onClick={onOpenSrs}
               className="duo-btn-primary min-h-[44px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs shadow-md transition-all animate-pulse"
-              title="今日有生词等待艾宾浩斯智能翻转闪卡复习"
+              title={`有 ${dueWordsCount} 个生词魔法封印开始松动，点击立即重铸！`}
             >
               <BrainCircuit size={14} className="text-amber-100" />
-              <span>今日待复习 ({dueWordsCount} 词)</span>
+              <span>今日待重炼 ({dueWordsCount} 词封印松动)</span>
             </button>
           ) : vocabCount > 0 ? (
             <button 

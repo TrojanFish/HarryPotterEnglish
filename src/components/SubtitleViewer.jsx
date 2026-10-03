@@ -12,7 +12,8 @@ import {
   Headphones,
   Copy,
   Check,
-  LocateFixed
+  LocateFixed,
+  Award
 } from 'lucide-react';
 import { tokenizeSentence, formatTime } from '../utils/vttParser';
 import { HP_LORE_DICTIONARY } from '../data/hpDictionary';
@@ -106,9 +107,9 @@ export function SubtitleViewer({
   };
 
   const getFontSizeClass = () => {
-    if (fontSize === 'huge') return 'text-xl sm:text-2xl leading-loose';
-    if (fontSize === 'large') return 'text-lg sm:text-xl leading-relaxed';
-    return 'text-base sm:text-lg leading-relaxed';
+    if (fontSize === 'huge') return 'text-xl sm:text-2xl leading-loose tracking-wide';
+    if (fontSize === 'large') return 'text-lg sm:text-xl leading-relaxed tracking-wide';
+    return 'text-base sm:text-lg leading-relaxed tracking-wide';
   };
 
   return (
@@ -207,21 +208,37 @@ export function SubtitleViewer({
           const isActive = idx === activeCueIndex;
           const tokens = tokenizeSentence(cue.text);
           const isRevealed = revealedSentences[cue.id];
+          const prevCue = idx > 0 ? cues[idx - 1] : null;
+          const currentChunk = Math.floor((cue.startTime || 0) / 300);
+          const prevChunk = prevCue ? Math.floor((prevCue.startTime || 0) / 300) : 0;
+          const isNewWaypoint = idx > 0 && currentChunk > prevChunk && (cue.startTime || 0) >= 300;
 
           return (
-            <div
-              key={cue.id}
-              ref={isActive ? activeCueRef : null}
-              className={`group relative rounded-2xl p-4 sm:p-5 transition-all duration-300 border-2 ${
-                isActive
-                  ? isParchment
-                    ? 'lumos-active bg-[#fffcf5] border-amber-500 border-l-[6px] border-l-amber-500 shadow-md ring-2 ring-amber-400/20'
-                    : 'lumos-active bg-slate-900 border-amber-400 border-l-[6px] border-l-amber-400 shadow-xl'
-                  : isParchment
-                  ? 'bg-[#ffffff] border-[#e7ddc8] hover:border-amber-300 hover:shadow-sm'
-                  : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
-              }`}
-            >
+            <React.Fragment key={cue.id}>
+              {/* Duolingo Micro-Waypoint 5-minute chunk milestone divider */}
+              {isNewWaypoint && (
+                <div className="flex items-center gap-3 my-5 py-1 select-none">
+                  <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent via-amber-300 to-amber-400/80" />
+                  <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-100/90 border border-amber-300 shadow-xs text-xs font-bold text-amber-950">
+                    <Award size={14} className="text-amber-600" />
+                    <span>第 {currentChunk} 哨所里程碑 · 已精听 {currentChunk * 5} 分钟</span>
+                  </div>
+                  <div className="h-0.5 flex-1 bg-gradient-to-r from-amber-400/80 via-amber-300 to-transparent" />
+                </div>
+              )}
+
+              <div
+                ref={isActive ? activeCueRef : null}
+                className={`group relative rounded-2xl p-4 sm:p-5 transition-all duration-300 border-2 ${
+                  isActive
+                    ? isParchment
+                      ? 'lumos-active bg-[#fffcf5] border-amber-500 border-l-[6px] border-l-amber-500 shadow-md ring-2 ring-amber-400/20'
+                      : 'lumos-active bg-slate-900 border-amber-400 border-l-[6px] border-l-amber-400 shadow-xl'
+                    : isParchment
+                    ? 'bg-[#ffffff] border-[#e7ddc8] hover:border-amber-300 hover:shadow-sm'
+                    : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                }`}
+              >
               {/* Cue Header with Controls */}
               <div className="flex items-center justify-between mb-2.5">
                 <div className="flex items-center space-x-2">
@@ -366,8 +383,9 @@ export function SubtitleViewer({
                 </div>
               )}
             </div>
-          );
-        })}
+          </React.Fragment>
+        );
+      })}
       </div>
 
       {/* Floating Locate Active Cue Button */}

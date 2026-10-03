@@ -10,9 +10,11 @@ import {
   VolumeX, 
   Gauge,
   Sparkles,
-  Mic
+  Mic,
+  Award
 } from 'lucide-react';
 import { formatTime } from '../utils/vttParser';
+import { playCorrectChime } from '../utils/spellAudioSynthesizer';
 
 /**
  * AudioPlayer — Elder Wand Bottom Audio Player designed for Students.
@@ -89,15 +91,79 @@ export function AudioPlayer({
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
   const coverUrl = currentBook ? `/api/raw/podcasts/${currentBook.id}/cover.jpg` : null;
 
+  // ── Duolingo Micro-Waypoints (5-minute chunk milestones) ─────────
+  const celebratedWaypointsRef = useRef(new Set());
+  const [activeMilestoneToast, setActiveMilestoneToast] = useState(null);
+
+  const waypoints = React.useMemo(() => {
+    if (!duration || duration <= 0) return [];
+    const list = [];
+    const interval = 300; // 5 minutes in seconds
+    if (duration > 360) {
+      for (let t = interval; t < duration - 45; t += interval) {
+        const idx = list.length + 1;
+        list.push({
+          id: `wp_${t}`,
+          time: t,
+          percent: (t / duration) * 100,
+          label: `第 ${idx} 哨所 (${Math.round(t / 60)} 分钟)`,
+          passed: currentTime >= t
+        });
+      }
+    } else if (duration > 120) {
+      [0.33, 0.66].forEach((ratio, idx) => {
+        const t = Math.round(duration * ratio);
+        list.push({
+          id: `wp_${t}`,
+          time: t,
+          percent: ratio * 100,
+          label: `微关卡 ${idx + 1}`,
+          passed: currentTime >= t
+        });
+      });
+    }
+    return list;
+  }, [duration, currentTime]);
+
+  // Reset celebrated waypoints when chapter changes
+  useEffect(() => {
+    celebratedWaypointsRef.current.clear();
+    setActiveMilestoneToast(null);
+  }, [currentChapter?.id]);
+
+  // Trigger celebration when user passes a new micro-waypoint during playback
+  useEffect(() => {
+    if (!isPlaying || !duration || duration <= 0) return;
+    waypoints.forEach((wp) => {
+      if (wp.passed && !celebratedWaypointsRef.current.has(wp.id)) {
+        celebratedWaypointsRef.current.add(wp.id);
+        setActiveMilestoneToast(`抵达 ${wp.label}！连续精听已达成，魔力充盈！`);
+        playCorrectChime();
+        const timer = setTimeout(() => {
+          setActiveMilestoneToast(null);
+        }, 4000);
+        return () => clearTimeout(timer);
+      }
+    });
+  }, [currentTime, isPlaying, duration, waypoints]);
+
   return (
-    <div className={`shrink-0 border-t transition-colors duration-300 shadow-xl backdrop-blur-md select-none ${
+    <div className={`shrink-0 border-t transition-colors duration-300 shadow-xl backdrop-blur-md select-none relative ${
       isParchment 
         ? 'bg-[#ffffff]/95 border-[#e8dcb9] text-[#2c221e]' 
         : 'bg-[#0f172a]/95 border-slate-800 text-slate-100'
     }`}>
-      {/* ── Elder Wand Scrubber Bar with Lumos Sparkle Tip ───────────── */}
+      {/* ── Micro-Waypoint Celebration Floating Toast ─────────────── */}
+      {activeMilestoneToast && (
+        <div className="absolute -top-12 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-amber-900 text-white font-bold text-xs shadow-xl border border-amber-400/80 flex items-center gap-2 animate-bounce z-50 pointer-events-none">
+          <Sparkles size={14} className="text-amber-300" />
+          <span>{activeMilestoneToast}</span>
+        </div>
+      )}
+
+      {/* ── Elder Wand Scrubber Bar with Lumos Sparkle Tip & Discrete Waypoints ── */}
       <div 
-        className="w-full h-2.5 bg-amber-100/80 cursor-pointer relative group"
+        className="w-full h-3 bg-amber-100/80 cursor-pointer relative group"
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           const clickX = e.clientX - rect.left;
@@ -114,6 +180,24 @@ export function AudioPlayer({
           {/* Elder wand lumos tip */}
           <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white wand-pulse border-2 border-amber-500 transform scale-90 group-hover:scale-125 transition-transform" />
         </div>
+
+        {/* Discrete Micro-Waypoint Milestone Jewel Pins */}
+        {waypoints.map((wp) => (
+          <div
+            key={wp.id}
+            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 transition-all duration-300 pointer-events-auto cursor-pointer ${
+              wp.passed
+                ? 'w-3.5 h-3.5 rotate-45 bg-amber-400 border-2 border-amber-600 shadow-[0_0_8px_rgba(245,158,11,0.9)] scale-110'
+                : 'w-2.5 h-2.5 rotate-45 bg-amber-100/95 border border-amber-400/80 hover:scale-125 hover:bg-amber-200'
+            }`}
+            style={{ left: `${wp.percent}%` }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSeek(wp.time);
+            }}
+            title={`${wp.label} · ${wp.passed ? '已点亮' : '点击前往'}`}
+          />
+        ))}
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-2 sm:py-2.5 flex items-center justify-between gap-3">
@@ -154,6 +238,15 @@ export function AudioPlayer({
               {totalCues > 0 && (
                 <span className="hidden sm:inline text-amber-700 font-bold">
                   (第 {activeCueIndex + 1}/{totalCues} 句)
+                </span>
+              )}
+              {waypoints.length > 0 && (
+                <span 
+                  className="hidden md:inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-900 border border-amber-400/40"
+                  title="5分钟微关卡达成进度"
+                >
+                  <Award size={11} className="text-amber-600" />
+                  <span>关卡 {waypoints.filter(w => w.passed).length}/{waypoints.length}</span>
                 </span>
               )}
             </div>

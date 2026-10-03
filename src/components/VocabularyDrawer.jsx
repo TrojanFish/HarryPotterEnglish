@@ -111,8 +111,8 @@ export function VocabularyDrawer({
           {config.label}
         </span>
         {isDue && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-500 text-white font-bold animate-pulse shadow-xs">
-            待复习
+          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold animate-pulse shadow-xs" title="记忆封印松动，需要艾宾浩斯重铸">
+            待重炼 · 封印松动
           </span>
         )}
       </div>
@@ -326,15 +326,21 @@ export function VocabularyDrawer({
                     <p className="text-xs">在精听模式下轻点任意英文单词，即可收入生词本</p>
                   </div>
                 ) : (
-                  filteredList.map((item) => (
-                    <div
-                      key={item.id || item.word}
-                      className={`p-3.5 rounded-2xl border transition-all ${
-                        isParchment 
-                          ? 'bg-[#ffffff] border-[#e8dcb9] hover:border-amber-400 shadow-sm' 
-                          : 'bg-[#18202d]/80 border-[#2b394e] hover:border-[#3f5370]'
-                      }`}
-                    >
+                  filteredList.map((item) => {
+                    const isDue = !item.nextReviewDate || item.nextReviewDate <= todayStr;
+                    return (
+                      <div
+                        key={item.id || item.word}
+                        className={`p-3.5 rounded-2xl border transition-all ${
+                          isDue
+                            ? isParchment
+                              ? 'bg-amber-50/60 border-amber-400/90 shadow-xs ring-1 ring-amber-400/30'
+                              : 'bg-amber-950/20 border-amber-500/70 shadow-xs ring-1 ring-amber-500/20'
+                            : isParchment 
+                            ? 'bg-[#ffffff] border-[#e8dcb9] hover:border-amber-400 shadow-sm' 
+                            : 'bg-[#18202d]/80 border-[#2b394e] hover:border-[#3f5370]'
+                        }`}
+                      >
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0 pr-2">
                           <div className="flex items-center space-x-2 flex-wrap">
@@ -387,8 +393,9 @@ export function VocabularyDrawer({
                         </p>
                       )}
                     </div>
-                  ))
-                )}
+                  );
+                })
+              )}
               </div>
 
               {/* Bottom Actions */}
