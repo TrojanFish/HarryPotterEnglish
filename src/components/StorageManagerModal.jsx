@@ -116,34 +116,45 @@ export function StorageManagerModal({
     }
   };
 
-  const usedMB = (storageInfo.usedBytes / (1024 * 1024)).toFixed(1);
-  const quotaMB = (storageInfo.quotaBytes / (1024 * 1024)).toFixed(0);
+  const formatQuota = (bytes) => {
+    if (!bytes) return '0 MB';
+    const mb = bytes / (1024 * 1024);
+    if (mb >= 1024) {
+      return `${(mb / 1024).toFixed(1)} GB`;
+    }
+    return `${mb.toFixed(0)} MB`;
+  };
+  const usedStr = formatQuota(storageInfo.usedBytes);
+  const quotaStr = formatQuota(storageInfo.quotaBytes);
   const usedPercent = Math.min(100, Math.max(0, ((storageInfo.usedBytes / storageInfo.quotaBytes) * 100).toFixed(1)));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
       <div 
-        className="relative w-full max-w-2xl rounded-3xl shadow-[0_20px_60px_-15px_rgba(44,34,30,0.15)] border border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[85vh] transition-all duration-300"
+        className="relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl shadow-[0_20px_60px_-15px_rgba(44,34,30,0.15)] border-t sm:border border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88vh] sm:max-h-[85vh] transition-all duration-300 pb-safe"
       >
+        {/* Mobile Pull Handle Indicator */}
+        <div className="sm:hidden w-10 h-1 bg-stone-300 rounded-full mx-auto my-2 shrink-0" />
+
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#eee5d8] bg-white flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-300/80 text-amber-700 shadow-2xs">
-              <HardDrive size={20} />
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#eee5d8] bg-white flex items-center justify-between gap-2">
+          <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+            <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-300/80 text-amber-700 shadow-2xs shrink-0">
+              <HardDrive size={18} className="sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <h2 className="font-magical text-base sm:text-lg font-bold text-amber-950 flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <h2 className="font-magical text-base sm:text-lg font-bold text-amber-950 flex items-center gap-2 truncate">
                 魔法行囊 · 离线存储管理
               </h2>
-              <p className="text-xs text-stone-500">
-                IndexedDB 原生双轨缓存 · 离线 MP3 极速音频与 WebVTT 同步字幕
+              <p className="text-[11px] sm:text-xs text-stone-500 truncate">
+                原版双轨离线缓存 · 随时随地无网畅听
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer"
+            className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer shrink-0"
             title="关闭魔法行囊"
           >
             <X size={18} />
@@ -151,14 +162,14 @@ export function StorageManagerModal({
         </div>
 
         {/* Storage Quota Bar */}
-        <div className="p-5 border-b border-[#eee5d8] bg-white">
+        <div className="p-4 sm:p-5 border-b border-[#eee5d8] bg-white">
           <div className="flex items-center justify-between text-xs mb-2">
             <span className="font-semibold text-stone-700 flex items-center gap-1.5">
               <Layers size={14} className="text-amber-600" />
               设备存储占用情况
             </span>
             <span className="font-mono text-stone-500">
-              {usedMB} MB / {quotaMB} MB ({usedPercent}%)
+              {usedStr} / {quotaStr} ({usedPercent}%)
             </span>
           </div>
           <div className="w-full h-3 rounded-full overflow-hidden p-0.5 border border-[#eee5d8] bg-stone-100">
@@ -170,20 +181,20 @@ export function StorageManagerModal({
 
           {/* Quick Download Current Chapter Bar */}
           {currentChapter && (
-            <div className="mt-4 p-3.5 rounded-2xl border border-amber-300/80 bg-amber-500/10 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="flex items-center space-x-2.5 w-full sm:w-auto">
+            <div className="mt-3.5 sm:mt-4 p-3 sm:p-3.5 rounded-2xl border border-amber-300/80 bg-amber-500/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center space-x-2.5 w-full sm:w-auto min-w-0 flex-1">
                 <Sparkles className="w-5 h-5 text-amber-600 shrink-0" />
-                <div>
-                  <div className="text-xs font-bold text-amber-950 truncate max-w-[280px]">
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-bold text-amber-950 truncate">
                     当前章节：{currentChapter.title || `Chapter ${currentChapter.id}`}
                   </div>
-                  <div className="text-[11px] text-stone-600">
+                  <div className="text-[11px] text-stone-600 truncate">
                     {isCurrentCached ? '已保存在魔法行囊中，可 100% 离线顺畅精听' : '尚未缓存，可提前下载完整音频与字幕'}
                   </div>
                 </div>
               </div>
 
-              <div className="w-full sm:w-auto flex justify-end">
+              <div className="w-full sm:w-auto flex justify-end shrink-0">
                 {isCurrentCached ? (
                   <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">
                     <CheckCircle2 size={14} />
@@ -197,7 +208,7 @@ export function StorageManagerModal({
                 ) : (
                   <button
                     onClick={handleDownloadCurrent}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs shadow-sm hover:shadow-md active:scale-95 cursor-pointer transition-all ring-1 ring-amber-300/30"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs shadow-sm hover:shadow-md active:scale-95 cursor-pointer transition-all ring-1 ring-amber-300/30 shrink-0"
                     title="离线缓存当前章节音频与同步字幕"
                   >
                     <DownloadCloud size={14} />
@@ -301,13 +312,13 @@ export function StorageManagerModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3.5 border-t border-[#eee5d8] bg-white flex items-center justify-between text-xs">
-          <span className="text-[11px] text-stone-500">
-            基于 HTML5 Blob URL 技术 · 断网即点即听
+        <div className="px-4 sm:px-6 py-3 border-t border-[#eee5d8] bg-white flex items-center justify-between text-xs pb-safe gap-2">
+          <span className="text-[11px] text-stone-500 truncate">
+            原声与双语文字已安全封入行囊，无网即点即听
           </span>
           <button
             onClick={onClose}
-            className="duo-btn-primary min-h-[38px] px-6 py-1.5 rounded-xl text-xs font-bold cursor-pointer"
+            className="duo-btn-primary min-h-[36px] sm:min-h-[38px] px-5 sm:px-6 py-1.5 rounded-xl text-xs font-bold cursor-pointer shrink-0"
           >
             完成
           </button>

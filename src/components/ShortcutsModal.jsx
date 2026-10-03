@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
-import { X, Keyboard } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { X, Keyboard, Smartphone, Hand, Sparkles, Volume2, Mic, Repeat, MoveHorizontal, BookOpen } from 'lucide-react';
 
 export function ShortcutsModal({ isOpen, onClose, isParchment }) {
+  const [activeTab, setActiveTab] = useState('touch'); // 'touch' | 'keyboard'
+
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e) => {
@@ -15,44 +17,123 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
 
   if (!isOpen) return null;
 
-  const shortcuts = [
+  const keyboardShortcuts = [
     { key: 'Space', desc: '播放 / 暂停音频' },
     { key: '← / →', desc: '跳转至 上一句 / 下一句' },
     { key: 'R', desc: '从头重播当前句子' },
     { key: 'L', desc: '切换 单句精听循环' },
-    { key: 'M', desc: '切换 盲听遮罩 / 听写模式' },
+    { key: 'M', desc: '切换 磨耳朵 / 听写模式' },
     { key: '↑ / ↓', desc: '调节音量大小' },
+  ];
+
+  const touchGestures = [
+    { 
+      icon: <Hand size={16} className="text-amber-600" />, 
+      action: '轻点任意英文单词', 
+      desc: '即时听英音示范、查看中文释义与魔法百科' 
+    },
+    { 
+      icon: <MoveHorizontal size={16} className="text-amber-600" />, 
+      action: '上一句 / 下一句按钮', 
+      desc: '精准按句定位，不漏听任何难点短语' 
+    },
+    { 
+      icon: <Repeat size={16} className="text-amber-600" />, 
+      action: '开启单句循环', 
+      desc: '高频反复磨耳朵，直至听清连读与弱读' 
+    },
+    { 
+      icon: <Mic size={16} className="text-amber-600" />, 
+      action: '轻点跟读施咒', 
+      desc: '录下自己的发音，AI 毫秒级评分纠音' 
+    }
   ];
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
       onClick={onClose}
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-md rounded-3xl border-2 border-[#eee5d8] bg-white text-[#1e1610] shadow-[0_16px_48px_-8px_rgba(44,34,30,0.12)] p-6 transition-all duration-300"
+        className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#eee5d8] bg-white text-[#1e1610] shadow-2xl p-5 sm:p-6 pb-safe transition-all duration-300 flex flex-col"
       >
-        <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#eee5d8]">
-          <div className="flex items-center space-x-2">
-            <div className="p-1.5 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shadow-2xs">
-              <Keyboard size={18} />
+        {/* Mobile Pull Handle Indicator */}
+        <div className="sm:hidden w-10 h-1 bg-stone-300 rounded-full mx-auto mb-3 shrink-0" />
+
+        <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#eee5d8] gap-2">
+          <div className="flex items-center space-x-2 min-w-0 flex-1">
+            <div className="p-1.5 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shadow-2xs shrink-0">
+              <Smartphone size={18} className="sm:hidden" />
+              <Keyboard size={18} className="hidden sm:block" />
             </div>
-            <h3 className="font-magical font-bold text-lg text-amber-950">
-              精听快捷键指南
-            </h3>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-magical font-bold text-base sm:text-lg text-amber-950 truncate">
+                精听操作指南
+              </h3>
+              <p className="text-[11px] sm:text-xs text-stone-500 truncate">触屏手势与高效学习指引</p>
+            </div>
           </div>
-          <button 
-            onClick={onClose} 
-            className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer"
-            title="关闭快捷键指南 (ESC)"
-          >
-            <X size={18} />
-          </button>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Tab switch for desktop/mobile */}
+            <div className="hidden sm:flex rounded-xl p-0.5 border border-[#eee5d8] bg-stone-100 text-xs">
+              <button
+                onClick={() => setActiveTab('touch')}
+                className={`px-2 py-1 rounded-lg font-bold transition-all ${
+                  activeTab === 'touch' ? 'bg-amber-500 text-white' : 'text-stone-600 hover:text-amber-950'
+                }`}
+              >
+                触屏手势
+              </button>
+              <button
+                onClick={() => setActiveTab('keyboard')}
+                className={`px-2 py-1 rounded-lg font-bold transition-all ${
+                  activeTab === 'keyboard' ? 'bg-amber-500 text-white' : 'text-stone-600 hover:text-amber-950'
+                }`}
+              >
+                键盘快捷键
+              </button>
+            </div>
+
+            <button 
+              onClick={onClose} 
+              className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer shrink-0"
+              title="关闭指南 (ESC)"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
-        <div className="space-y-2.5 my-3">
-          {shortcuts.map((sc, i) => (
+        {/* Mobile View: Touch Gestures (Always on mobile, or when activeTab === 'touch') */}
+        <div className={`space-y-2.5 my-2 ${activeTab === 'keyboard' ? 'hidden sm:hidden' : 'block'}`}>
+          {touchGestures.map((item, i) => (
+            <div 
+              key={i} 
+              className="flex items-start gap-3 p-3 rounded-2xl border border-[#eee5d8] bg-[#fbf9f5]"
+            >
+              <div className="p-2 rounded-xl bg-white border border-[#eee5d8] shrink-0 mt-0.5 shadow-2xs">
+                {item.icon}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="text-xs sm:text-sm font-bold text-amber-950">
+                  {item.action}
+                </h4>
+                <p className="text-[11px] sm:text-xs text-stone-600 mt-0.5 leading-relaxed font-reading">
+                  {item.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop View: Keyboard Shortcuts */}
+        <div className={`space-y-2 my-2 ${activeTab === 'keyboard' ? 'block' : 'hidden sm:block'}`}>
+          <div className="text-xs font-bold text-stone-400 mb-1.5 hidden sm:block">
+            键盘操作快捷键（电脑 / 外接键盘）：
+          </div>
+          {keyboardShortcuts.map((sc, i) => (
             <div 
               key={i} 
               className="flex items-center justify-between p-2.5 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] text-xs sm:text-sm"
@@ -68,20 +149,21 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
         </div>
 
         {/* Student Study Tips */}
-        <div className="p-3.5 rounded-2xl border border-amber-300/80 bg-amber-500/10 text-stone-700 text-xs space-y-1.5 mt-4">
+        <div className="p-3.5 rounded-2xl border border-amber-300/80 bg-amber-500/10 text-stone-700 text-xs space-y-1.5 mt-3">
           <div className="font-bold text-amber-900 flex items-center gap-1.5">
-            <span>中小学高效精听四步法：</span>
+            <Sparkles size={14} className="text-amber-700" />
+            <span>高效精听四步法：</span>
           </div>
           <ol className="list-decimal list-inside space-y-1 text-[11px] leading-relaxed text-stone-600">
-            <li><strong>泛听感知</strong>：以 0.85x 或 1.0x 完整通听整章，掌握大意</li>
-            <li><strong>逐句精析</strong>：打开双语译文，轻点生词查看纯正中文释义</li>
-            <li><strong>磨耳朵盲听</strong>：开启迷雾遮罩，脱离文字单纯锻炼听辨能力</li>
-            <li><strong>拼写闯关</strong>：进入听写教室，敲键盘闯关斩获魔法五角星</li>
+            <li><strong>泛听感知</strong>：以原速完整通听整章，掌握故事情节</li>
+            <li><strong>逐句精析</strong>：打开双语译文，轻点生词记录百科释义</li>
+            <li><strong>磨耳朵盲听</strong>：开启遮罩，脱离文字单凭听觉辨音</li>
+            <li><strong>拼写大闯关</strong>：进入听写教室，拼写单词斩获魔法五角星</li>
           </ol>
         </div>
 
-        <p className="text-xs text-center mt-3 text-stone-500">
-          随时使用键盘空格键与方向键，无需鼠标即可行云流水地练习精听！
+        <p className="text-[11px] sm:text-xs text-center mt-3 text-stone-500">
+          支持手机触屏单手轻松操作，随时随地开启英语原声探险！
         </p>
       </div>
     </div>

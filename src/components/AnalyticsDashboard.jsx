@@ -140,7 +140,7 @@ export function AnalyticsDashboard({
       <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
 
       {/* Main Modal Container (Native Bottom Sheet on Mobile, Centered on Desktop) */}
-      <div className="relative w-full max-w-4xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-[0_20px_60px_-15px_rgba(44,34,30,0.15)] transition-all z-10 pb-safe flex flex-col">
+      <div className="relative w-full max-w-4xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-[0_20px_60px_-15px_rgba(44,34,30,0.15)] transition-all z-10 pb-safe flex flex-col scrollbar-none">
         
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1 bg-stone-300 rounded-full mx-auto my-2 shrink-0" />
@@ -543,7 +543,7 @@ export function AnalyticsDashboard({
                 <Sparkles size={28} className="text-amber-500 animate-bounce" />
                 <p className="text-sm font-semibold text-stone-700">暂无听写练习记录</p>
                 <p className="text-xs max-w-sm text-stone-500">
-                  切换至顶部【听写工坊】完成第 1 篇逐句听写，准确率走势图将在此自动绘制！
+                  点击顶部闪电图标【拼写大闯关】完成第 1 篇逐句听写，准确率走势图将在此自动绘制！
                 </p>
               </div>
             ) : (
@@ -687,18 +687,20 @@ export function AnalyticsDashboard({
         )}
 
         {/* Footer info note */}
-        <div className="px-6 py-3.5 border-t border-[#eee5d8] bg-white text-[11px] text-stone-500 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <Info size={13} className="text-amber-600" />
-            <span>数据已采用双键冗余持久化同步至本地存储，随时离线学习。</span>
+        {!showHonorScroll && (
+          <div className="px-4 sm:px-6 py-3 sm:py-3.5 border-t border-[#eee5d8] bg-white text-[11px] text-stone-500 flex flex-wrap items-center justify-between gap-2 shrink-0">
+            <div className="flex items-center gap-1.5">
+              <Info size={13} className="text-amber-600 shrink-0" />
+              <span>学情数据已安全保存在本地，离线也能持续研学。</span>
+            </div>
+            <button
+              onClick={onClose}
+              className="duo-btn-primary min-h-[38px] px-5 py-1.5 rounded-xl text-xs font-bold cursor-pointer"
+            >
+              完成查看
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="duo-btn-primary min-h-[38px] px-5 py-1.5 rounded-xl text-xs font-bold cursor-pointer"
-          >
-            完成查看
-          </button>
-        </div>
+        )}
 
       </div>
     </div>

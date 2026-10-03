@@ -10,7 +10,8 @@ import {
   RotateCw,
   CheckCircle,
   BookOpen,
-  BrainCircuit
+  BrainCircuit,
+  Bookmark
 } from 'lucide-react';
 
 import { generateAnkiTSV, downloadAnkiFile } from '../utils/ankiExport';
@@ -143,11 +144,12 @@ export function VocabularyDrawer({
             <div className="flex items-center space-x-1.5 shrink-0">
               {onOpenSrs && (
                 <button
+                  disabled={vocabList.length === 0}
                   onClick={() => {
                     onClose();
                     onOpenSrs();
                   }}
-                  className="duo-btn-primary min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0"
+                  className="duo-btn-primary min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
                   title="启动艾宾浩斯智能翻转闪卡 (SRS 遗忘曲线算法)"
                 >
                   <BrainCircuit size={14} className="shrink-0" />
@@ -157,8 +159,9 @@ export function VocabularyDrawer({
               )}
 
               <button
+                disabled={vocabList.length === 0}
                 onClick={() => setIsFlashcardMode(!isFlashcardMode)}
-                className={`duo-btn-secondary min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 ${
+                className={`duo-btn-secondary min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed ${
                   isFlashcardMode ? 'ring-2 ring-amber-500' : ''
                 }`}
                 title="切换卡片翻转记忆模式与列表笔记"
@@ -182,8 +185,23 @@ export function VocabularyDrawer({
           {isFlashcardMode ? (
             <div className="flex-1 p-6 flex flex-col justify-between items-center overflow-y-auto">
               {filteredList.length === 0 ? (
-                <div className="text-center py-20 text-[#8c9ba5]">
-                  <p>生词本还是空的，快去听力中点击单词收藏吧！</p>
+                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center my-auto">
+                  <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border-2 border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 shadow-sm">
+                    <Bookmark size={28} className="text-amber-600" />
+                  </div>
+                  <h3 className="font-magical font-bold text-base text-amber-950 mb-1">
+                    生词卡片库暂无卡片
+                  </h3>
+                  <p className="text-xs text-stone-500 max-w-xs leading-relaxed mb-6">
+                    先去听力播放中收藏几个生词，即可开启智能翻转卡片记忆训练！
+                  </p>
+                  <button
+                    onClick={onClose}
+                    className="duo-btn-primary min-h-[42px] px-6 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer shadow-sm active:scale-95"
+                  >
+                    <Sparkles size={15} />
+                    <span>去精听挑词入库</span>
+                  </button>
                 </div>
               ) : (
                 <>
@@ -284,26 +302,53 @@ export function VocabularyDrawer({
           ) : (
             // List Mode
             <>
-              {/* Search input */}
-              <div className="p-3 border-b border-[#eee5d8] bg-white">
-                <div className="relative">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
-                  <input
-                    type="text"
-                    placeholder="搜索生词或中文释义..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[#eee5d8] bg-stone-50 text-[#1e1610] focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition-all"
-                  />
+              {/* Search input - only show when vocabList has items */}
+              {vocabList.length > 0 && (
+                <div className="p-3 border-b border-[#eee5d8] bg-white">
+                  <div className="relative">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+                    <input
+                      type="text"
+                      placeholder="搜索生词或中文释义..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[#eee5d8] bg-stone-50 text-[#1e1610] focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition-all"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Vocab Cards List */}
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                {filteredList.length === 0 ? (
+                {vocabList.length === 0 ? (
+                  <div className="flex-1 flex flex-col items-center justify-center py-16 px-4 text-center my-auto">
+                    <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border-2 border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 shadow-sm animate-pulse">
+                      <Bookmark size={28} className="text-amber-600" />
+                    </div>
+                    <h3 className="font-magical font-bold text-base text-amber-950 mb-1">
+                      魔杖尚未收录新词
+                    </h3>
+                    <p className="text-xs text-stone-500 max-w-xs leading-relaxed mb-6">
+                      在精听研读原著时，轻点任意英文单词即可实时查看权威释义，并一键收录至专属魔法生词本！
+                    </p>
+                    <button
+                      onClick={onClose}
+                      className="duo-btn-primary min-h-[42px] px-6 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer shadow-sm active:scale-95"
+                    >
+                      <Sparkles size={15} />
+                      <span>去精听挑词入库</span>
+                    </button>
+                  </div>
+                ) : filteredList.length === 0 ? (
                   <div className="text-center py-16 text-stone-400 text-xs">
-                    <p className="font-bold text-sm text-stone-700 mb-1">生词本暂无内容</p>
-                    <p className="text-xs">在精听模式下轻点任意英文单词，即可收入生词本</p>
+                    <p className="font-bold text-sm text-stone-700 mb-1">未找到匹配生词</p>
+                    <p className="text-xs mb-3">没有搜索到包含 “{searchTerm}” 的生词或释义</p>
+                    <button
+                      onClick={() => setSearchTerm('')}
+                      className="duo-btn-secondary px-3 py-1.5 rounded-xl text-xs font-bold text-amber-900 cursor-pointer"
+                    >
+                      清除搜索条件
+                    </button>
                   </div>
                 ) : (
                   filteredList.map((item) => {
@@ -370,39 +415,38 @@ export function VocabularyDrawer({
               )}
               </div>
 
-              {/* Bottom Actions */}
-              <div className="p-4 border-t border-[#eee5d8] bg-white flex flex-wrap items-center justify-between gap-2 text-xs pb-safe">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleExportAnki}
-                    disabled={vocabList.length === 0}
-                    className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs disabled:opacity-30 disabled:pointer-events-none"
-                    title="导出为标准 Anki 卡片牌组 (.tsv)"
-                  >
-                    <Sparkles size={14} className="text-amber-600" />
-                    <span>导出至 Anki (TSV)</span>
-                  </button>
+              {/* Bottom Actions - only show when vocabList has items */}
+              {vocabList.length > 0 && (
+                <div className="p-4 border-t border-[#eee5d8] bg-white flex flex-wrap items-center justify-between gap-2 text-xs pb-safe">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleExportAnki}
+                      className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs cursor-pointer"
+                      title="导出为标准 Anki 卡片牌组 (.tsv)"
+                    >
+                      <Sparkles size={14} className="text-amber-600" />
+                      <span>导出至 Anki (TSV)</span>
+                    </button>
+
+                    <button
+                      onClick={handleExportCSV}
+                      className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs cursor-pointer"
+                      title="导出为通用表格 CSV 格式"
+                    >
+                      <Download size={14} />
+                      <span>导出 CSV</span>
+                    </button>
+                  </div>
 
                   <button
-                    onClick={handleExportCSV}
-                    disabled={vocabList.length === 0}
-                    className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs disabled:opacity-30 disabled:pointer-events-none"
-                    title="导出为通用表格 CSV 格式"
+                    onClick={onClearAll}
+                    className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-stone-400 hover:text-rose-600 hover:bg-rose-50/80 transition-all active:scale-95 cursor-pointer"
+                    title="清空生词本内所有单词"
                   >
-                    <Download size={14} />
-                    <span>导出 CSV</span>
+                    清空生词本
                   </button>
                 </div>
-
-                <button
-                  onClick={onClearAll}
-                  disabled={vocabList.length === 0}
-                  className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-stone-400 hover:text-rose-600 hover:bg-rose-50/80 transition-all active:scale-95 cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
-                  title="清空生词本内所有单词"
-                >
-                  清空生词本
-                </button>
-              </div>
+              )}
             </>
           )}
 
