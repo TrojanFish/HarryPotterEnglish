@@ -138,8 +138,8 @@ export function BookshelfView({
   return (
     <div className="flex-1 overflow-y-auto pb-32 pt-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full select-none">
       
-      {/* ── 1. Greeting & 3-Card Gamified Quest Dashboard ──────────── */}
-      <section className="mb-8">
+      {/* ── 1. Unified Student Quest & Resume Hub ───────────────────── */}
+      <section className="mb-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 mb-5">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
@@ -175,204 +175,188 @@ export function BookshelfView({
           </div>
         </div>
 
-        {/* 3 Gamified Modern Quest Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Unified Dashboard Grid: Left Hero Continue Card (7 cols) + Right Quest Cards (5 cols) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           
-          {/* Card 1: 5-Minute Daily Goal Progress */}
-          <div 
-            onClick={onOpenAnalytics}
-            className="duo-card duo-card-hover p-4 sm:p-5 flex items-center justify-between gap-4 cursor-pointer"
-            title="点击查看学业罗盘与今日听力分布"
-          >
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-800 mb-1">
-                <Sparkles size={14} className="text-amber-600" />
-                <span>今日 5 分钟契约</span>
-              </div>
-              <h3 className="font-magical font-bold text-lg text-amber-950 truncate">
-                {todayListeningSeconds >= 300 ? '今日契约已达成！' : `还差 ${Math.max(1, Math.ceil((300 - todayListeningSeconds) / 60))} 分钟`}
-              </h3>
-              <p className="text-xs text-slate-500 font-reading mt-0.5">
-                已精听 {Math.floor(todayListeningSeconds / 60)} 分钟 · 达成即获魔力石
-              </p>
-            </div>
-            <div className="shrink-0">
-              <DailyGoalRing
-                todaySeconds={todayListeningSeconds}
-                targetSeconds={300}
-                onClick={onOpenAnalytics}
-                isParchment={isParchment}
-              />
-            </div>
-          </div>
-
-          {/* Card 2: Streak & Time-Turner Freeze Shield */}
-          <div 
-            onClick={onOpenAnalytics}
-            className="duo-card duo-card-hover p-4 sm:p-5 flex items-center justify-between gap-4 cursor-pointer"
-            title="点击查看连胜记录与时间转换器状态"
-          >
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-orange-700 mb-1">
-                <Flame size={14} className="text-orange-500 animate-pulse" />
-                <span>连续打卡天数</span>
-              </div>
-              <h3 className="font-magical font-bold text-lg text-amber-950 truncate flex items-center gap-2">
-                <span>{streakDays} 天连胜</span>
-                {streakDays >= 3 && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold border border-orange-200">
-                    火热连击
-                  </span>
-                )}
-              </h3>
-              <div className="flex items-center gap-1 text-xs text-amber-800 font-reading mt-0.5">
-                <RotateCcw size={11} className="text-amber-600 animate-spin-slow" />
-                <span>时间转换器 x{timeTurnersCount} (漏打卡自动护体)</span>
-              </div>
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-200 flex items-center justify-center text-orange-600 shrink-0 shadow-2xs">
-              <Flame size={24} />
-            </div>
-          </div>
-
-          {/* Card 3: Duolingo Leitner SRS Review Card */}
-          <div 
-            onClick={onOpenSrs}
-            className="duo-card duo-card-hover p-4 sm:p-5 flex items-center justify-between gap-4 cursor-pointer"
-            title="进入艾宾浩斯智能翻转闪卡强化记忆"
-          >
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 mb-1">
-                <BrainCircuit size={14} className="text-indigo-600" />
-                <span>艾宾浩斯记忆重铸</span>
-              </div>
-              <h3 className="font-magical font-bold text-lg text-amber-950 truncate">
-                {dueWordsCount > 0 ? `${dueWordsCount} 词封印松动` : '记忆封印稳固'}
-              </h3>
-              <p className="text-xs text-slate-500 font-reading mt-0.5">
-                {dueWordsCount > 0 ? '艾宾浩斯复习期已到，点击重铸' : `共收录 ${vocabCount} 个原著生词`}
-              </p>
-            </div>
-            <div className="shrink-0">
-              {dueWordsCount > 0 ? (
-                <button
-                  onClick={(e) => { e.stopPropagation(); onOpenSrs(); }}
-                  className="duo-btn-primary min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm animate-pulse"
+          {/* Left: Compact, Sleek Continue Adventure Card */}
+          {currentBookObj && currentChapterObj ? (
+            <div className="lg:col-span-7 duo-card p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden border-2 border-amber-300/80 shadow-md">
+              <div className="flex items-start gap-4 sm:gap-5 min-w-0">
+                {/* 3D Floating Book Preview (Compact) */}
+                <div 
+                  onClick={onEnterPlayer}
+                  className="w-20 sm:w-24 aspect-[3/4] rounded-xl overflow-hidden border-2 border-amber-400 shadow-lg shrink-0 cursor-pointer ibooks-book ibooks-book-spine bg-slate-900 relative group transition-transform hover:scale-105"
+                  title="点击直接进入精听教室"
                 >
-                  <span>立即重炼</span>
-                  <ChevronRight size={13} />
-                </button>
-              ) : (
-                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-2xs">
-                  <BrainCircuit size={24} />
+                  {!coverErrorMap[currentBookObj.id] ? (
+                    <img 
+                      src={`/api/raw/podcasts/${currentBookObj.id}/cover.jpg`}
+                      alt={currentBookObj.title}
+                      onError={() => handleImageError(currentBookObj.id)}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center bg-amber-950/40 text-amber-400">
+                      <BookOpen size={22} className="mb-1" />
+                      <span className="font-magical text-[10px] font-bold">{currentBookObj.code || 'HP'}</span>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
                 </div>
-              )}
+
+                {/* Info Column */}
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-900 text-[11px] font-bold border border-amber-300/40">
+                    <Clock size={11} className="text-amber-700" />
+                    <span>上次研读进度 · 随时续播</span>
+                  </div>
+
+                  <h3 className="font-magical font-bold text-lg sm:text-xl text-amber-950 truncate">
+                    {currentBookObj.cnTitle || currentBookObj.title}
+                  </h3>
+
+                  <p className="text-xs font-semibold text-amber-800 truncate">
+                    第 {currentChapterObj.number || 1} 章 · {currentChapterObj.cnTitle || currentChapterObj.title}
+                  </p>
+
+                  {/* Progress Line */}
+                  <div className="pt-1">
+                    <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500 mb-1">
+                      <span>本章进度</span>
+                      <span className="font-mono text-amber-700 font-bold">{resumeProgressPercent > 0 ? `已听 ${resumeProgressPercent}%` : '即刻开启'}</span>
+                    </div>
+                    <div className="w-full h-2 rounded-full bg-amber-100 overflow-hidden border border-amber-200/80">
+                      <div 
+                        className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full transition-all duration-300"
+                        style={{ width: `${Math.max(5, resumeProgressPercent)}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2.5 pt-4 mt-3 border-t border-[#f0e6d6]">
+                <button
+                  onClick={onEnterPlayer}
+                  className="duo-btn-primary flex-1 min-h-[42px] px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 shadow-sm"
+                  title="立即进入精听教室并继续播放"
+                >
+                  <Play size={14} className="fill-current" />
+                  <span>继续精听本章</span>
+                </button>
+
+                <button
+                  onClick={() => setInspectingBook(currentBookObj)}
+                  className="duo-btn-secondary min-h-[42px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 shadow-2xs"
+                  title="浏览完整章节目录"
+                >
+                  <Layers size={13} />
+                  <span>目录</span>
+                </button>
+              </div>
             </div>
+          ) : null}
+
+          {/* Right: 3 Compact Gamified Quest Cards */}
+          <div className={`${currentBookObj && currentChapterObj ? 'lg:col-span-5' : 'lg:col-span-12'} flex flex-col justify-between gap-3`}>
+            
+            {/* Card 1: 5-Minute Daily Goal Progress */}
+            <div 
+              onClick={onOpenAnalytics}
+              className="duo-card duo-card-hover p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer flex-1"
+              title="点击查看学业罗盘与今日听力分布"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-800 mb-0.5">
+                  <Sparkles size={13} className="text-amber-600" />
+                  <span>今日 5 分钟契约</span>
+                </div>
+                <h4 className="font-magical font-bold text-base text-amber-950 truncate">
+                  {todayListeningSeconds >= 300 ? '今日契约已达成！' : `还差 ${Math.max(1, Math.ceil((300 - todayListeningSeconds) / 60))} 分钟`}
+                </h4>
+                <p className="text-[11px] text-slate-500 font-reading">
+                  已精听 {Math.floor(todayListeningSeconds / 60)} 分钟 · 达成获魔力石
+                </p>
+              </div>
+              <div className="shrink-0 scale-90">
+                <DailyGoalRing
+                  todaySeconds={todayListeningSeconds}
+                  targetSeconds={300}
+                  onClick={onOpenAnalytics}
+                  isParchment={isParchment}
+                />
+              </div>
+            </div>
+
+            {/* Card 2: Streak & Time-Turner Freeze Shield */}
+            <div 
+              onClick={onOpenAnalytics}
+              className="duo-card duo-card-hover p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer flex-1"
+              title="点击查看连胜记录与时间转换器状态"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-orange-700 mb-0.5">
+                  <Flame size={13} className="text-orange-500" />
+                  <span>连续打卡天数</span>
+                </div>
+                <h4 className="font-magical font-bold text-base text-amber-950 truncate flex items-center gap-1.5">
+                  <span>{streakDays} 天连胜</span>
+                  {streakDays >= 3 && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold border border-orange-200">
+                      连击
+                    </span>
+                  )}
+                </h4>
+                <div className="flex items-center gap-1 text-[11px] text-amber-800 font-reading">
+                  <RotateCcw size={10} className="text-amber-600 animate-spin-slow" />
+                  <span>转换器 x{timeTurnersCount} (漏卡自动护体)</span>
+                </div>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-200 flex items-center justify-center text-orange-600 shrink-0 shadow-2xs">
+                <Flame size={20} />
+              </div>
+            </div>
+
+            {/* Card 3: Duolingo Leitner SRS Review Card */}
+            <div 
+              onClick={onOpenSrs}
+              className="duo-card duo-card-hover p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer flex-1"
+              title="进入艾宾浩斯智能翻转闪卡强化记忆"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 mb-0.5">
+                  <BrainCircuit size={13} className="text-indigo-600" />
+                  <span>艾宾浩斯记忆重铸</span>
+                </div>
+                <h4 className="font-magical font-bold text-base text-amber-950 truncate">
+                  {dueWordsCount > 0 ? `${dueWordsCount} 词封印松动` : '记忆封印稳固'}
+                </h4>
+                <p className="text-[11px] text-slate-500 font-reading">
+                  {dueWordsCount > 0 ? '复习期已到，点击重铸' : `共收录 ${vocabCount} 词`}
+                </p>
+              </div>
+              <div className="shrink-0">
+                {dueWordsCount > 0 ? (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onOpenSrs(); }}
+                    className="duo-btn-primary min-h-[36px] px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm animate-pulse"
+                  >
+                    <span>重炼</span>
+                    <ChevronRight size={12} />
+                  </button>
+                ) : (
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-2xs">
+                    <BrainCircuit size={20} />
+                  </div>
+                )}
+              </div>
+            </div>
+
           </div>
 
         </div>
       </section>
-
-      {/* ── 2. "上次学到 · 随时续播" Hero Adventure Card ────────────── */}
-      {currentBookObj && currentChapterObj && (
-        <section className="mb-10">
-          <div className="duo-card p-6 sm:p-7 relative overflow-hidden border-2 border-amber-300/80 shadow-md">
-            
-            {/* Subtle Crest Watermark Background */}
-            <div className="absolute right-4 -bottom-8 pointer-events-none opacity-5 text-amber-600">
-              <Compass size={240} />
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 relative z-10">
-              
-              {/* Modern 3D Floating Book Preview */}
-              <div 
-                onClick={onEnterPlayer}
-                className="w-28 sm:w-32 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-amber-400 shadow-xl shrink-0 cursor-pointer ibooks-book ibooks-book-spine bg-slate-900 relative group transition-transform hover:scale-105"
-                title="点击直接进入精听教室"
-              >
-                {!coverErrorMap[currentBookObj.id] ? (
-                  <img 
-                    src={`/api/raw/podcasts/${currentBookObj.id}/cover.jpg`}
-                    alt={currentBookObj.title}
-                    onError={() => handleImageError(currentBookObj.id)}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center bg-amber-950/40 text-amber-400">
-                    <BookOpen size={28} className="mb-1" />
-                    <span className="font-magical text-xs font-bold">{currentBookObj.code || 'HP'}</span>
-                  </div>
-                )}
-                {/* Glow Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-                <span className="absolute bottom-2 left-0 right-0 text-center font-magical text-[11px] text-amber-200 font-bold">
-                  {currentBookObj.code || 'HP'}
-                </span>
-              </div>
-
-              {/* Information & Action Column */}
-              <div className="flex-1 min-w-0 text-center sm:text-left space-y-2.5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-900 text-xs font-bold border border-amber-300/40">
-                  <Clock size={12} className="text-amber-700" />
-                  <span>上次学习进度 · 随时无缝续播</span>
-                </div>
-
-                <div>
-                  <h3 className="font-magical font-bold text-xl sm:text-2xl text-amber-950 truncate">
-                    {currentBookObj.cnTitle || currentBookObj.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm font-reading italic text-slate-500 truncate">
-                    {currentBookObj.title}
-                  </p>
-                </div>
-
-                {/* Current Chapter Progress */}
-                <div className="pt-1">
-                  <div className="flex items-center justify-between text-xs font-semibold mb-1.5">
-                    <span className="text-amber-800 font-bold truncate">
-                      第 {currentChapterObj.number || 1} 章 · {currentChapterObj.cnTitle || currentChapterObj.title}
-                    </span>
-                    <span className="text-slate-500 shrink-0 font-mono ml-2">
-                      {resumeProgressPercent > 0 ? `已听 ${resumeProgressPercent}%` : '即刻开启'}
-                    </span>
-                  </div>
-
-                  {/* Progress Line */}
-                  <div className="w-full h-2.5 rounded-full bg-amber-100/90 overflow-hidden p-0.5 border border-amber-200">
-                    <div 
-                      className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full transition-all duration-300"
-                      style={{ width: `${Math.max(5, resumeProgressPercent)}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Duolingo 3D CTA Buttons */}
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 pt-2">
-                  <button
-                    onClick={onEnterPlayer}
-                    className="duo-btn-primary min-h-[46px] flex items-center gap-2 px-6 py-2.5 rounded-2xl text-sm shadow-md transition-all cursor-pointer"
-                    title="立即进入精听教室并继续播放"
-                  >
-                    <Play size={16} className="fill-current" />
-                    <span>继续精听本章</span>
-                  </button>
-
-                  <button
-                    onClick={() => setInspectingBook(currentBookObj)}
-                    className="duo-btn-secondary min-h-[46px] flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-2xs transition-all cursor-pointer"
-                    title="浏览《哈利·波特》完整章节目录"
-                  >
-                    <Layers size={15} />
-                    <span>查看完整章节目录</span>
-                  </button>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* ── 3. Modern Story Library Cards Grid (No Wooden Planks) ──── */}
       <section className="mb-14">
