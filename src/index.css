@@ -360,3 +360,15 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
   align-items: center;
   justify-content: center;
 }
+
+/* iOS Safe Area Utilities for Mobile Web / PWA */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+}
+.pt-safe {
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+}
+.mb-safe {
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+

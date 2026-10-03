@@ -135,45 +135,48 @@ export function AnalyticsDashboard({
     : '';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
       {/* Click outside backdrop */}
       <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
 
-      {/* Main Modal Container */}
-      <div className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl border border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-[0_20px_60px_-15px_rgba(44,34,30,0.15)] transition-all z-10">
+      {/* Main Modal Container (Native Bottom Sheet on Mobile, Centered on Desktop) */}
+      <div className="relative w-full max-w-4xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-[0_20px_60px_-15px_rgba(44,34,30,0.15)] transition-all z-10 pb-safe flex flex-col">
         
+        {/* Mobile Pull Handle Indicator */}
+        <div className="sm:hidden w-10 h-1 bg-stone-300 rounded-full mx-auto my-2 shrink-0" />
+
         {/* Header Bar */}
-        <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 border-b border-[#eee5d8] bg-white/95 backdrop-blur-md">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shadow-xs">
-              <BarChart2 size={20} className="text-amber-600" />
+        <div className="sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[#eee5d8] bg-white/95 backdrop-blur-md gap-2">
+          <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1">
+            <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shadow-xs shrink-0">
+              <BarChart2 size={18} className="text-amber-600 sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <h2 className="text-lg sm:text-xl font-bold font-magical tracking-wide text-amber-950 flex items-center gap-2">
-                霍格沃茨学业数据罗盘
-                <span className="text-[11px] font-sans px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-300/80 font-bold">
+            <div className="min-w-0 flex-1">
+              <h2 className="text-base sm:text-xl font-bold font-magical tracking-wide text-amber-950 truncate flex items-center gap-2">
+                <span>霍格沃茨学业数据罗盘</span>
+                <span className="hidden sm:inline-flex text-[11px] font-sans px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-300/80 font-bold shrink-0">
                   学情追踪
                 </span>
               </h2>
-              <p className="text-xs text-stone-500">
-                学习习惯追踪 · 听力专注时长 · 听写准确度罗盘
+              <p className="text-[11px] sm:text-xs text-stone-500 truncate">
+                学习习惯追踪 · 听力专注时长 · 听写准确度
               </p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
             <button
               onClick={() => setShowHonorScroll(!showHonorScroll)}
-              className="duo-btn-primary min-h-[38px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold cursor-pointer"
+              className="duo-btn-primary min-h-[36px] sm:min-h-[38px] flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold cursor-pointer whitespace-nowrap shrink-0"
               title="生成精美羊皮纸学业喜报，便于分享给家长或班级群"
             >
-              <Award size={14} />
-              <span>{showHonorScroll ? '返回学情图表' : '魔法学业喜报'}</span>
+              <Award size={14} className="shrink-0" />
+              <span>{showHonorScroll ? '返回图表' : '学业喜报'}</span>
             </button>
 
             <button
               onClick={onClose}
-              className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer"
+              className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer shrink-0"
               title="关闭罗盘 (ESC)"
             >
               <X size={18} />

@@ -106,7 +106,11 @@ const AUDIO_REGEX = /\.(mp3|m4a|wav|aac|ogg|flac)$/i;
 
 function stripEmojis(str) {
   if (!str) return '';
-  return str.replace(/\p{Extended_Pictographic}/gu, '').replace(/\s+/g, ' ').trim();
+  return str
+    .replace(/\p{Extended_Pictographic}/gu, '')
+    .replace(/\b([A-Za-z]+)\s+([stmd]|ll|ve|re)\b/g, "$1'$2")
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 async function scanR2Catalog(bypassCache = false) {

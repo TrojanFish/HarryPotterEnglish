@@ -27,8 +27,8 @@ export default {
       },
       fontFamily: {
         magical: ['"Cinzel"', '"Cinzel Decorative"', 'Georgia', 'serif'],
-        reading: ['"Lora"', '"Merriweather"', 'Georgia', 'serif'],
-        sans: ['"Inter"', 'system-ui', 'sans-serif'],
+        reading: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Rounded"', '"SF Pro Text"', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+        sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
       },
       boxShadow: {
         'glow-gold': '0 0 15px rgba(203, 163, 88, 0.45)',

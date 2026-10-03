@@ -13,6 +13,7 @@ import {
   EyeOff,
   Zap
 } from 'lucide-react';
+import { formatEnglishText } from '../../utils/vttParser';
 
 /**
  * MobileTopBar — Minimalist Top App Bar for Mobile Phones (< 768px)
@@ -52,8 +53,11 @@ export function MobileTopBar({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showTools]);
 
+  const rawChapterTitle = currentChapter ? (currentChapter.cnTitle || currentChapter.title) : '选择章节';
+  const cleanChapterTitle = formatEnglishText(rawChapterTitle);
+
   return (
-    <header className="md:hidden sticky top-0 z-30 h-13 bg-white/95 border-b border-[#eee5d8] backdrop-blur-md px-3 flex items-center justify-between select-none">
+    <header className="md:hidden sticky top-0 z-30 pt-safe bg-white/95 border-b border-[#eee5d8] backdrop-blur-md px-3 flex items-center justify-between select-none min-h-[3.25rem]">
       {/* ── Left: Context Action ──────────────────────────────────── */}
       <div className="flex items-center gap-2 min-w-0">
         {currentView === 'player' ? (
@@ -78,7 +82,7 @@ export function MobileTopBar({
             title="点击切换书籍与章节"
           >
             <span className="truncate">
-              {currentChapter ? (currentChapter.cnTitle || currentChapter.title) : '选择章节'}
+              {cleanChapterTitle}
             </span>
             <ChevronDown size={13} className="shrink-0 text-amber-700" />
           </button>

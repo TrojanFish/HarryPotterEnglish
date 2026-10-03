@@ -93,7 +93,7 @@ export function parseVTT(vttText) {
 
     // Ensure no trailing standalone cue index at the end of sentence (e.g. "something. 2" -> "something.", "(1)", "[1]")
     const trailingNumRegex = /\s*[\(\[\{＃#]?\d+[\)\]\}]?\s*$/;
-    text = text.replace(trailingNumRegex, '').replace(/\s+([.,!?;:])/g, '$1').replace(/\s+/g, ' ').trim();
+    text = formatEnglishText(text.replace(trailingNumRegex, ''));
     if (translation) {
       translation = translation.replace(trailingNumRegex, '').trim();
     }
@@ -145,3 +145,19 @@ export function formatTime(seconds) {
   const remMins = mins % 60;
   return `${hours}:${remMins < 10 ? '0' : ''}${remMins}:${formattedSecs}`;
 }
+
+/**
+ * Format and normalize English text, repairing stripped contractions and extra punctuation spaces
+ * e.g. "Dementor s" -> "Dementor's", "word ," -> "word,"
+ * @param {string} str 
+ * @returns {string}
+ */
+export function formatEnglishText(str) {
+  if (!str) return '';
+  return str
+    .replace(/\b([A-Za-z]+)\s+([stmd]|ll|ve|re)\b/g, "$1'$2")
+    .replace(/\s+([.,!?;:])/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+

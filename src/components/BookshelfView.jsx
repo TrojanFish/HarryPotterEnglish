@@ -19,7 +19,7 @@ import {
   BrainCircuit,
   RotateCcw
 } from 'lucide-react';
-import { formatTime } from '../utils/vttParser';
+import { formatTime, formatEnglishText } from '../utils/vttParser';
 import { DailyGoalRing } from './DailyGoalRing';
 
 /**
@@ -136,7 +136,7 @@ export function BookshelfView({
   const resumeProgressPercent = duration > 0 ? Math.round((currentTime / duration) * 100) : 0;
 
   return (
-    <div className="flex-1 overflow-y-auto pb-32 pt-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full select-none">
+    <div className="flex-1 overflow-y-auto pb-44 sm:pb-32 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full select-none">
       
       {/* ── 1. Unified Student Quest & Resume Hub ───────────────────── */}
       <section className="mb-10">
@@ -484,20 +484,23 @@ export function BookshelfView({
         </div>
       </section>
 
-      {/* ── 4. Chapter Selection Modal ───────────────────────────────── */}
+      {/* ── 4. Chapter Selection Modal (Native Bottom Sheet on Mobile) ── */}
       {inspectingBook && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
           onClick={() => { setInspectingBook(null); setChapterSearch(''); }}
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl border-2 border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-2xl overflow-hidden transition-all"
+            className="w-full max-w-2xl max-h-[88vh] sm:max-h-[85vh] flex flex-col rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-2xl overflow-hidden transition-all pb-safe"
           >
+            {/* Mobile Pull Handle Indicator */}
+            <div className="sm:hidden w-10 h-1 bg-stone-300 rounded-full mx-auto my-2 shrink-0" />
+
             {/* Modal Header */}
-            <div className="p-5 border-b border-[#eee5d8] flex items-center justify-between shrink-0 bg-white">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 aspect-[3/4] rounded-xl overflow-hidden border border-amber-400 shadow-sm shrink-0 bg-slate-900">
+            <div className="p-4 sm:p-5 border-b border-[#eee5d8] flex items-center justify-between shrink-0 bg-white gap-3">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="w-11 sm:w-12 aspect-[3/4] rounded-xl overflow-hidden border border-amber-400 shadow-sm shrink-0 bg-slate-900">
                   {!coverErrorMap[inspectingBook.id] ? (
                     <img 
                       src={`/api/raw/podcasts/${inspectingBook.id}/cover.jpg`} 
@@ -511,11 +514,11 @@ export function BookshelfView({
                     </div>
                   )}
                 </div>
-                <div>
-                  <h3 className="font-magical font-bold text-lg text-amber-950">
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-magical font-bold text-base sm:text-lg text-amber-950 truncate">
                     {inspectingBook.cnTitle || inspectingBook.title}
                   </h3>
-                  <p className="text-xs text-slate-500 font-reading italic">
+                  <p className="text-[11px] sm:text-xs text-slate-500 font-reading italic truncate">
                     全卷共 {(inspectingBook.chapters || []).length} 个精听章节 · 原版同步
                   </p>
                 </div>
@@ -526,7 +529,7 @@ export function BookshelfView({
                   setInspectingBook(null);
                   setChapterSearch('');
                 }}
-                className="duo-touch-target p-2 rounded-xl border border-amber-200 bg-white hover:bg-amber-100 text-slate-600 hover:text-amber-900 transition-all active:scale-90 shadow-2xs cursor-pointer"
+                className="duo-touch-target p-2 rounded-xl border border-amber-200 bg-white hover:bg-amber-100 text-slate-600 hover:text-amber-900 transition-all active:scale-90 shadow-2xs cursor-pointer shrink-0"
                 title="关闭章节目录"
               >
                 <X size={18} />
@@ -534,7 +537,7 @@ export function BookshelfView({
             </div>
 
             {/* Quick Search Input */}
-            <div className="px-5 pt-3 pb-1 shrink-0">
+            <div className="px-4 sm:px-5 pt-3 pb-1 shrink-0">
               <div className="relative">
                 <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
@@ -566,6 +569,9 @@ export function BookshelfView({
                 })
                 .map((ch, idx) => {
                 const isCurrent = inspectingBook.id === selectedBook && ch.id === selectedChapter;
+                const cleanTitle = formatEnglishText(ch.title);
+                const hasDistinctCn = ch.cnTitle && ch.cnTitle.trim() !== '' && ch.cnTitle.trim() !== cleanTitle;
+
                 return (
                   <div
                     key={ch.id}
@@ -592,7 +598,7 @@ export function BookshelfView({
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <h4 className="font-magical font-bold text-sm text-amber-950 truncate">
-                            {ch.cnTitle || ch.title}
+                            {hasDistinctCn ? ch.cnTitle : cleanTitle}
                           </h4>
                           {isCurrent && (
                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500 text-white font-bold shrink-0">
@@ -600,9 +606,11 @@ export function BookshelfView({
                             </span>
                           )}
                         </div>
-                        <p className="text-[11px] text-slate-500 font-reading italic truncate">
-                          {ch.title}
-                        </p>
+                        {hasDistinctCn && (
+                          <p className="text-[11px] text-slate-500 font-reading italic truncate">
+                            {cleanTitle}
+                          </p>
+                        )}
                       </div>
                     </div>
 

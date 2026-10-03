@@ -5,6 +5,7 @@ import {
   SkipForward,
   Headphones
 } from 'lucide-react';
+import { formatEnglishText } from '../../utils/vttParser';
 
 /**
  * MobileMiniPlayer — Floating Capsule Audio Player for Mobile (< 768px)
@@ -33,10 +34,11 @@ export function MobileMiniPlayer({
   };
 
   const percent = duration > 0 ? Math.min(100, Math.round((currentTime / duration) * 100)) : 0;
+  const cleanTitle = formatEnglishText(currentChapter.cnTitle || currentChapter.title);
 
   return (
     <div 
-      className="md:hidden fixed bottom-16 left-3 right-3 z-30 rounded-2xl bg-amber-500 text-white border border-amber-600 flex flex-col overflow-hidden select-none animate-slideUp"
+      className="md:hidden fixed bottom-[calc(4.2rem+env(safe-area-inset-bottom,0px))] left-3 right-3 z-30 rounded-2xl bg-amber-500 text-white border border-amber-600 flex flex-col overflow-hidden select-none animate-slideUp"
     >
       <div className="flex items-center justify-between p-2.5">
         {/* Clickable Info Area -> Enter Player */}
@@ -50,7 +52,7 @@ export function MobileMiniPlayer({
           </div>
           <div className="min-w-0 flex-1">
             <h4 className="text-xs font-bold text-white truncate leading-tight">
-              {currentChapter.cnTitle || currentChapter.title}
+              {cleanTitle}
             </h4>
             <p className="text-[10px] text-amber-100 font-mono font-medium truncate mt-0.5">
               {formatTime(currentTime)} / {formatTime(duration)} · {isPlaying ? '播放中' : '已暂停'}

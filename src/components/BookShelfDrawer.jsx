@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, BookOpen, Sparkles, Headphones, Layers, RotateCw, Library } from 'lucide-react';
+import { formatEnglishText } from '../utils/vttParser';
 
 export function BookShelfDrawer({
   isOpen,
@@ -15,19 +16,19 @@ export function BookShelfDrawer({
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-black/70 backdrop-blur-md animate-fadeIn">
-      <div className="absolute inset-y-0 right-0 max-w-full flex pl-8 sm:pl-16">
-        <div className="w-screen max-w-xl shadow-2xl flex flex-col border-l border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300">
+      <div className="absolute inset-y-0 right-0 max-w-full flex w-full sm:w-auto">
+        <div className="w-full sm:w-screen sm:max-w-xl shadow-2xl flex flex-col border-l border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-[#eee5d8] bg-white flex items-center justify-between">
-            <div className="flex items-center space-x-2.5">
-              <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shadow-2xs">
+          <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#eee5d8] bg-white flex items-center justify-between gap-2">
+            <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+              <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shadow-2xs shrink-0">
                 <Library className="w-5 h-5" />
               </div>
-              <div>
-                <h3 className="font-magical font-bold text-lg sm:text-xl text-amber-950">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-magical font-bold text-base sm:text-xl text-amber-950 truncate">
                   霍格沃茨魔法书架 (Magic Library)
                 </h3>
-                <p className="text-xs text-stone-500">原版有声小说 · 挑选你的专属英语故事</p>
+                <p className="text-[11px] sm:text-xs text-stone-500 truncate">原版有声小说 · 挑选你的专属英语故事</p>
               </div>
             </div>
 

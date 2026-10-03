@@ -124,51 +124,53 @@ export function VocabularyDrawer({
       className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm"
       onClick={onClose}
     >
-      <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
+      <div className="absolute inset-y-0 right-0 max-w-full flex w-full sm:w-auto">
         <div 
           onClick={(e) => e.stopPropagation()}
-          className="w-screen max-w-md shadow-2xl flex flex-col border-l border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300">
+          className="w-full sm:w-screen sm:max-w-md shadow-2xl flex flex-col border-l border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe">
           {/* Drawer Header */}
-          <div className="px-5 py-4 border-b border-[#eee5d8] bg-white flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <BookOpen className="w-5 h-5 text-amber-600" />
-              <div>
-                <h2 className="font-magical font-bold text-lg text-amber-950">
+          <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#eee5d8] bg-white flex items-center justify-between gap-2">
+            <div className="flex items-center space-x-2 min-w-0 flex-1">
+              <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <h2 className="font-magical font-bold text-base sm:text-lg text-amber-950 truncate whitespace-nowrap">
                   魔法生词本 ({vocabList.length})
                 </h2>
-                <p className="text-xs text-stone-500">精听原著词汇与例句笔记</p>
+                <p className="text-[11px] sm:text-xs text-stone-500 truncate">精听原著词汇与例句笔记</p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-1.5">
+            <div className="flex items-center space-x-1.5 shrink-0">
               {onOpenSrs && (
                 <button
                   onClick={() => {
                     onClose();
                     onOpenSrs();
                   }}
-                  className="duo-btn-primary min-h-[38px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  className="duo-btn-primary min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0"
                   title="启动艾宾浩斯智能翻转闪卡 (SRS 遗忘曲线算法)"
                 >
-                  <BrainCircuit size={14} />
-                  <span>智能复习</span>
+                  <BrainCircuit size={14} className="shrink-0" />
+                  <span className="hidden sm:inline">智能复习</span>
+                  <span className="sm:hidden">复习</span>
                 </button>
               )}
 
               <button
                 onClick={() => setIsFlashcardMode(!isFlashcardMode)}
-                className={`duo-btn-secondary min-h-[38px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer ${
+                className={`duo-btn-secondary min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 ${
                   isFlashcardMode ? 'ring-2 ring-amber-500' : ''
                 }`}
                 title="切换卡片翻转记忆模式与列表笔记"
               >
-                <Layers size={14} />
-                <span>{isFlashcardMode ? '列表笔记' : '卡片背词'}</span>
+                <Layers size={14} className="shrink-0" />
+                <span className="hidden sm:inline">{isFlashcardMode ? '列表笔记' : '卡片背词'}</span>
+                <span className="sm:hidden">{isFlashcardMode ? '列表' : '背词'}</span>
               </button>
 
               <button
                 onClick={onClose}
-                className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer"
+                className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer shrink-0"
                 title="关闭生词本"
               >
                 <X size={18} />
@@ -369,7 +371,7 @@ export function VocabularyDrawer({
               </div>
 
               {/* Bottom Actions */}
-              <div className="p-4 border-t border-[#eee5d8] bg-white flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className="p-4 border-t border-[#eee5d8] bg-white flex flex-wrap items-center justify-between gap-2 text-xs pb-safe">
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleExportAnki}

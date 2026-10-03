@@ -9,6 +9,7 @@ import {
   LocateFixed,
   HelpCircle
 } from 'lucide-react';
+import { formatEnglishText } from '../../utils/vttParser';
 
 /**
  * ReaderTopBar — Minimalist Contextual Header for Study Classroom
@@ -37,7 +38,8 @@ export function ReaderTopBar({
   ];
 
   const bookTitle = currentBook ? (currentBook.cnTitle || currentBook.title) : '魔法故事';
-  const chapterTitle = currentChapter ? (currentChapter.cnTitle || currentChapter.title) : '选择章节';
+  const rawChapterTitle = currentChapter ? (currentChapter.cnTitle || currentChapter.title) : '选择章节';
+  const chapterTitle = formatEnglishText(rawChapterTitle);
 
   return (
     <div className="h-13 shrink-0 border-b border-[#eee5d8] bg-white/95 px-4 sm:px-6 flex items-center justify-between select-none">

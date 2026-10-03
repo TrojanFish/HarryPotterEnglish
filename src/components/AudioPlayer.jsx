@@ -13,7 +13,7 @@ import {
   Mic,
   Award
 } from 'lucide-react';
-import { formatTime } from '../utils/vttParser';
+import { formatTime, formatEnglishText } from '../utils/vttParser';
 import { playCorrectChime } from '../utils/spellAudioSynthesizer';
 
 /**
@@ -147,8 +147,11 @@ export function AudioPlayer({
     });
   }, [currentTime, isPlaying, duration, waypoints]);
 
+  const rawChapterTitle = currentChapter ? (currentChapter.cnTitle || currentChapter.title) : 'Chapter';
+  const cleanChapterTitle = formatEnglishText(rawChapterTitle);
+
   return (
-    <div className={`shrink-0 border-t-2 transition-colors duration-300 backdrop-blur-xl select-none relative ${
+    <div className={`shrink-0 border-t-2 transition-colors duration-300 backdrop-blur-xl select-none relative pb-safe ${
       isParchment 
         ? 'bg-[#ffffff]/98 border-[#eee5d8] text-[#1e1610]' 
         : 'bg-[#0f172a]/95 border-slate-800 text-slate-100'
@@ -200,10 +203,10 @@ export function AudioPlayer({
         ))}
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 flex items-center justify-between gap-3 sm:gap-4">
         
         {/* ── Left: Thumbnail + Chapter Title + Progress (No text wrapping) ── */}
-        <div className="flex items-center space-x-3 min-w-0 flex-1 sm:max-w-xs md:max-w-sm">
+        <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1 sm:max-w-xs md:max-w-sm">
           {coverUrl && (
             <div className="w-9 h-12 aspect-[3/4] rounded-lg border border-[#eee5d8] overflow-hidden shrink-0 hidden sm:block bg-stone-100">
               <img
@@ -226,13 +229,13 @@ export function AudioPlayer({
               )}
               <span 
                 className="font-bold text-xs sm:text-sm text-amber-950 truncate" 
-                title={currentChapter ? (currentChapter.cnTitle ? `${currentChapter.cnTitle} · ${currentChapter.title}` : currentChapter.title) : 'Chapter'}
+                title={cleanChapterTitle}
               >
-                {currentChapter ? (currentChapter.cnTitle || currentChapter.title) : 'Chapter'}
+                {cleanChapterTitle}
               </span>
             </div>
 
-            <div className="flex items-center space-x-2 text-xs font-mono mt-0.5 text-stone-500 truncate">
+            <div className="flex items-center space-x-1.5 sm:space-x-2 text-[11px] sm:text-xs font-mono mt-0.5 text-stone-500 truncate">
               <span className="text-amber-700 font-bold">
                 {formatTime(currentTime)}
               </span>
@@ -240,7 +243,10 @@ export function AudioPlayer({
               <span>{formatTime(duration)}</span>
               {totalCues > 0 && (
                 <span className="text-stone-400">
-                  · 第 {activeCueIndex + 1}/{totalCues} 句
+                  <span className="hidden sm:inline">· 第 </span>
+                  <span className="sm:hidden">· </span>
+                  {activeCueIndex + 1}/{totalCues}
+                  <span className="hidden sm:inline"> 句</span>
                 </span>
               )}
             </div>

@@ -107,21 +107,21 @@ export function SubtitleViewer({
   };
 
   const getFontSizeClass = () => {
-    if (fontSize === 'huge') return 'text-xl sm:text-2xl leading-loose tracking-wide';
-    if (fontSize === 'large') return 'text-lg sm:text-xl leading-relaxed tracking-wide';
-    return 'text-base sm:text-lg leading-relaxed tracking-wide';
+    if (fontSize === 'huge') return 'text-xl sm:text-2xl leading-relaxed';
+    if (fontSize === 'large') return 'text-lg sm:text-xl leading-relaxed';
+    return 'text-base sm:text-lg leading-relaxed';
   };
 
   return (
-    <div className="relative flex-1 overflow-y-auto px-3 sm:px-6 py-4 max-w-4xl mx-auto w-full pb-16" ref={containerRef}>
+    <div className="relative flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 max-w-4xl mx-auto w-full pb-16" ref={containerRef}>
       {/* ── Subtitle Toolbar for Students ─────────────────────────── */}
-      <div className={`flex flex-wrap items-center justify-between gap-2.5 mb-5 p-3.5 rounded-3xl border transition-colors ${
+      <div className={`flex flex-wrap items-center justify-between gap-2 mb-3.5 sm:mb-5 p-2.5 sm:p-3.5 rounded-2xl border transition-colors ${
         isParchment
           ? 'bg-white/95 border-[#eee5d8] shadow-xs text-[#2b1f14]'
           : 'bg-slate-900/80 border-slate-800 text-slate-300'
       }`}>
         {/* Left: Cue counts & status */}
-        <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs font-medium">
           <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-800 font-bold font-mono">
             <Headphones size={13} />
             <span>全章 {cues.length} 个精听句</span>
@@ -320,7 +320,7 @@ export function SubtitleViewer({
 
               {/* English Text with Clickable Words */}
               <div 
-                className={`font-reading ${getFontSizeClass()} select-text transition-all duration-300 ${
+                className={`font-reading ${getFontSizeClass()} select-text transition-all duration-300 leading-normal ${
                   studyMode === 'blind' && !isRevealed && !isActive
                     ? 'blur-[6px] hover:blur-none select-none opacity-40'
                     : ''
@@ -338,12 +338,12 @@ export function SubtitleViewer({
                     <span
                       key={tokenIdx}
                       onClick={() => onWordClick(token.text, cue)}
-                      className={`cursor-pointer px-1 py-0.5 rounded-md transition-all inline-block group/word relative ${
+                      className={`cursor-pointer rounded transition-colors inline group/word relative ${
                         isHpTerm 
-                          ? 'border-b-2 border-amber-500 font-semibold text-amber-800 dark:text-amber-300 bg-amber-500/10 hover:bg-amber-500/25' 
+                          ? 'border-b-2 border-amber-500 font-semibold text-amber-800 dark:text-amber-300 bg-amber-500/10 hover:bg-amber-500/25 px-0.5' 
                           : isActive 
-                            ? 'font-medium text-amber-950 dark:text-amber-100 hover:bg-amber-400/20 hover:text-amber-700' 
-                            : 'hover:bg-amber-400/15 hover:text-amber-700 dark:hover:text-amber-300'
+                            ? 'font-medium text-amber-950 dark:text-amber-100 hover:bg-amber-400/20 hover:text-amber-800 active:bg-amber-400/30' 
+                            : 'hover:bg-amber-400/15 hover:text-amber-800 active:bg-amber-400/25'
                       }`}
                       title={isHpTerm ? `魔法专有名词: ${token.text} (点击查看百科背景)` : '点击查看中文释义与纯正英音发音'}
                     >
