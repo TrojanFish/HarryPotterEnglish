@@ -140,30 +140,22 @@ export function AnalyticsDashboard({
       <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
 
       {/* Main Modal Container */}
-      <div className={`relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl border shadow-2xl transition-all z-10 ${
-        isParchment
-          ? 'bg-[#fbf6ea] border-[#dec9a5] text-[#2d1e12]'
-          : 'bg-[#0e1422] border-[#223147] text-[#e2d9c8]'
-      }`}>
+      <div className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl border border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-[0_20px_60px_-15px_rgba(44,34,30,0.15)] transition-all z-10">
         
         {/* Header Bar */}
-        <div className={`sticky top-0 z-20 flex items-center justify-between px-6 py-4 border-b backdrop-blur-md ${
-          isParchment
-            ? 'bg-[#f7eed9]/95 border-[#dec9a5]'
-            : 'bg-[#0d131f]/95 border-[#202b3c]'
-        }`}>
+        <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 border-b border-[#eee5d8] bg-white/95 backdrop-blur-md">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-[#740001] to-[#ae0001] text-amber-200 border border-amber-500/40 shadow-md">
-              <BarChart2 size={20} className="text-[#fce498]" />
+            <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shadow-xs">
+              <BarChart2 size={20} className="text-amber-600" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-bold font-magical tracking-wide text-[#d3a625] text-gold-glow flex items-center gap-2">
+              <h2 className="text-lg sm:text-xl font-bold font-magical tracking-wide text-amber-950 flex items-center gap-2">
                 霍格沃茨学业数据罗盘
-                <span className="text-[11px] font-sans px-2 py-0.5 rounded-full bg-[#d3a625]/20 text-[#f3d38c] border border-[#d3a625]/30">
+                <span className="text-[11px] font-sans px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-300/80 font-bold">
                   学情追踪
                 </span>
               </h2>
-              <p className={`text-xs ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>
+              <p className="text-xs text-stone-500">
                 学习习惯追踪 · 听力专注时长 · 听写准确度罗盘
               </p>
             </div>
@@ -172,7 +164,7 @@ export function AnalyticsDashboard({
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setShowHonorScroll(!showHonorScroll)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/80 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
+              className="duo-btn-primary min-h-[38px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold cursor-pointer"
               title="生成精美羊皮纸学业喜报，便于分享给家长或班级群"
             >
               <Award size={14} />
@@ -181,7 +173,7 @@ export function AnalyticsDashboard({
 
             <button
               onClick={onClose}
-              className="p-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
+              className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer"
               title="关闭罗盘 (ESC)"
             >
               <X size={18} />
@@ -192,14 +184,14 @@ export function AnalyticsDashboard({
         {/* Content Body */}
         {showHonorScroll ? (
           <div className="p-6 sm:p-8 space-y-6 animate-fadeIn">
-            <div className="p-6 sm:p-8 rounded-3xl border-2 border-amber-400/80 bg-gradient-to-br from-[#fffdf8] via-[#faf6ee] to-[#f5ecda] shadow-xl text-center relative overflow-hidden">
+            <div className="p-6 sm:p-8 rounded-3xl border-2 border-amber-400/80 bg-gradient-to-br from-white via-[#fbf9f5] to-amber-500/5 shadow-xl text-center relative overflow-hidden">
               {/* Background Watermark Accent */}
               <div className="absolute right-3 -bottom-6 pointer-events-none opacity-5 text-amber-700">
                 <Award size={200} />
               </div>
 
               {/* Scroll Crest Header */}
-              <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-500/20 text-amber-900 border border-amber-400/40 text-xs font-bold mb-3 shadow-2xs">
+              <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-400/50 text-xs font-bold mb-3 shadow-2xs">
                 <Sparkles size={13} className="text-amber-700" />
                 <span>霍格沃茨学业喜报 · 魔法之星荣誉卷轴</span>
               </div>
@@ -207,50 +199,50 @@ export function AnalyticsDashboard({
               <h3 className="text-2xl sm:text-3xl font-bold font-magical text-amber-950 mb-2">
                 学海探秘 · 见证卓越成长
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 font-reading max-w-lg mx-auto mb-7 leading-relaxed">
+              <p className="text-xs sm:text-sm text-stone-600 font-reading max-w-lg mx-auto mb-7 leading-relaxed">
                 “以好奇为魔杖，以坚持为魔药。每一个专注聆听的清晨与夜晚，都在构筑你的纯正英语语感！”
               </p>
 
               {/* 4 Pillars Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-7">
-                <div className="p-4 rounded-2xl border border-amber-200/90 bg-white/90 shadow-xs">
+                <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs">
                   <div className="text-amber-700 flex items-center justify-center mb-1">
                     <Flame size={20} className="text-orange-500" />
                   </div>
                   <div className="font-magical font-bold text-2xl text-amber-950">
-                    {currentSummary.streakDays} <span className="text-xs text-slate-400 font-normal">天</span>
+                    {currentSummary.streakDays} <span className="text-xs text-stone-400 font-normal">天</span>
                   </div>
-                  <div className="text-xs text-slate-500 font-bold mt-0.5">连续坚持研读</div>
+                  <div className="text-xs text-stone-500 font-bold mt-0.5">连续坚持研读</div>
                 </div>
 
-                <div className="p-4 rounded-2xl border border-amber-200/90 bg-white/90 shadow-xs">
+                <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs">
                   <div className="text-amber-700 flex items-center justify-center mb-1">
                     <Clock size={20} className="text-amber-600" />
                   </div>
                   <div className="font-magical font-bold text-2xl text-amber-950">
-                    {weeklyMinutesTotal} <span className="text-xs text-slate-400 font-normal">分</span>
+                    {weeklyMinutesTotal} <span className="text-xs text-stone-400 font-normal">分</span>
                   </div>
-                  <div className="text-xs text-slate-500 font-bold mt-0.5">本周专注精听</div>
+                  <div className="text-xs text-stone-500 font-bold mt-0.5">本周专注精听</div>
                 </div>
 
-                <div className="p-4 rounded-2xl border border-amber-200/90 bg-white/90 shadow-xs">
+                <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs">
                   <div className="text-amber-700 flex items-center justify-center mb-1">
                     <BookOpen size={20} className="text-emerald-600" />
                   </div>
                   <div className="font-magical font-bold text-2xl text-amber-950">
-                    {currentSummary.completedChaptersCount} <span className="text-xs text-slate-400 font-normal">章</span>
+                    {currentSummary.completedChaptersCount} <span className="text-xs text-stone-400 font-normal">章</span>
                   </div>
-                  <div className="text-xs text-slate-500 font-bold mt-0.5">攻克原声章节</div>
+                  <div className="text-xs text-stone-500 font-bold mt-0.5">攻克原声章节</div>
                 </div>
 
-                <div className="p-4 rounded-2xl border border-amber-200/90 bg-white/90 shadow-xs">
+                <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs">
                   <div className="text-amber-700 flex items-center justify-center mb-1">
                     <Bookmark size={20} className="text-blue-600" />
                   </div>
                   <div className="font-magical font-bold text-2xl text-amber-950">
-                    {vocabCount} <span className="text-xs text-slate-400 font-normal">词</span>
+                    {vocabCount} <span className="text-xs text-stone-400 font-normal">词</span>
                   </div>
-                  <div className="text-xs text-slate-500 font-bold mt-0.5">魔法生词收录</div>
+                  <div className="text-xs text-stone-500 font-bold mt-0.5">魔法生词收录</div>
                 </div>
               </div>
 
@@ -258,7 +250,7 @@ export function AnalyticsDashboard({
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                 <button
                   onClick={handleCopyHonorReport}
-                  className="flex items-center gap-2 px-7 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg active:scale-95 cursor-pointer transition-all"
+                  className="duo-btn-primary min-h-[44px] flex items-center gap-2 px-7 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer"
                 >
                   {isCopied ? <Check size={16} /> : <Copy size={16} />}
                   <span>{isCopied ? '喜报文本已复制！可发给家长' : '一键复制喜报文本'}</span>
@@ -266,7 +258,7 @@ export function AnalyticsDashboard({
 
                 <button
                   onClick={() => setShowHonorScroll(false)}
-                  className="px-5 py-2.5 rounded-2xl border border-amber-300/80 bg-white hover:bg-amber-50 text-amber-950 font-bold text-xs sm:text-sm shadow-xs active:scale-95 cursor-pointer transition-all"
+                  className="duo-btn-secondary min-h-[44px] px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer"
                 >
                   查看详细学情图表
                 </button>
@@ -280,113 +272,95 @@ export function AnalyticsDashboard({
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             
             {/* 1. Continuous Streak Days */}
-            <div className={`p-4 rounded-xl border relative overflow-hidden flex flex-col justify-between ${
-              isParchment
-                ? 'bg-[#fffdf8] border-[#dec9a5] shadow-sm'
-                : 'bg-[#131b2a] border-[#223147] shadow-lg'
-            }`}>
+            <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs relative overflow-hidden flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-semibold ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>
+                <span className="text-xs font-semibold text-stone-500">
                   连续打卡天数
                 </span>
-                <div className="p-1.5 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30">
-                  <Flame size={16} className={currentSummary.streakDays > 0 ? 'animate-pulse text-orange-400' : 'text-gray-500'} />
+                <div className="p-1.5 rounded-xl bg-orange-500/15 text-orange-500 border border-orange-500/30">
+                  <Flame size={16} className={currentSummary.streakDays > 0 ? 'animate-pulse text-orange-500' : 'text-stone-400'} />
                 </div>
               </div>
               <div>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="text-3xl font-black font-mono text-orange-400">
+                  <span className="text-3xl font-black font-mono text-orange-500">
                     {currentSummary.streakDays}
                   </span>
-                  <span className={`text-xs ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>天</span>
+                  <span className="text-xs text-stone-400">天</span>
                 </div>
-                <div className={`text-[11px] mt-1.5 flex items-center gap-1 ${
-                  isParchment ? 'text-[#8c745c]' : 'text-[#708294]'
-                }`}>
-                  <Zap size={11} className="text-amber-400" />
+                <div className="text-[11px] mt-1.5 flex items-center gap-1 text-stone-500 font-medium">
+                  <Zap size={11} className="text-amber-500" />
                   <span>历史最长: {currentSummary.longestStreakDays} 天</span>
                 </div>
               </div>
             </div>
 
             {/* 2. Total Listening Time */}
-            <div className={`p-4 rounded-xl border flex flex-col justify-between ${
-              isParchment
-                ? 'bg-[#fffdf8] border-[#dec9a5] shadow-sm'
-                : 'bg-[#131b2a] border-[#223147] shadow-lg'
-            }`}>
+            <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-semibold ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>
+                <span className="text-xs font-semibold text-stone-500">
                   累计专注听力
                 </span>
-                <div className="p-1.5 rounded-lg bg-amber-500/20 text-[#d3a625] border border-amber-500/30">
+                <div className="p-1.5 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80">
                   <Clock size={16} />
                 </div>
               </div>
               <div>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="text-3xl font-black font-mono text-[#d3a625]">
+                  <span className="text-3xl font-black font-mono text-amber-700">
                     {totalHours > 0 ? `${totalHours}h` : ''}{totalMinutes}
                   </span>
-                  <span className={`text-xs ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>
+                  <span className="text-xs text-stone-400">
                     {totalHours > 0 ? '分钟' : '分钟'}
                   </span>
                 </div>
-                <div className={`text-[11px] mt-1.5 ${isParchment ? 'text-[#8c745c]' : 'text-[#708294]'}`}>
+                <div className="text-[11px] mt-1.5 text-stone-500">
                   共 {currentSummary.totalListeningSeconds} 秒精听输入
                 </div>
               </div>
             </div>
 
             {/* 3. Completed Chapters Count */}
-            <div className={`p-4 rounded-xl border flex flex-col justify-between ${
-              isParchment
-                ? 'bg-[#fffdf8] border-[#dec9a5] shadow-sm'
-                : 'bg-[#131b2a] border-[#223147] shadow-lg'
-            }`}>
+            <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-semibold ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>
+                <span className="text-xs font-semibold text-stone-500">
                   已学完章节
                 </span>
-                <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <div className="p-1.5 rounded-xl bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">
                   <BookOpen size={16} />
                 </div>
               </div>
               <div>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="text-3xl font-black font-mono text-emerald-400">
+                  <span className="text-3xl font-black font-mono text-emerald-600">
                     {currentSummary.completedChaptersCount}
                   </span>
-                  <span className={`text-xs ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>篇</span>
+                  <span className="text-xs text-stone-400">篇</span>
                 </div>
-                <div className={`text-[11px] mt-1.5 ${isParchment ? 'text-[#8c745c]' : 'text-[#708294]'}`}>
+                <div className="text-[11px] mt-1.5 text-stone-500">
                   原著有声书通读成就
                 </div>
               </div>
             </div>
 
             {/* 4. Mastered Vocabulary Count */}
-            <div className={`p-4 rounded-xl border flex flex-col justify-between ${
-              isParchment
-                ? 'bg-[#fffdf8] border-[#dec9a5] shadow-sm'
-                : 'bg-[#131b2a] border-[#223147] shadow-lg'
-            }`}>
+            <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white shadow-xs flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-semibold ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>
+                <span className="text-xs font-semibold text-stone-500">
                   生词库收录
                 </span>
-                <div className="p-1.5 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                <div className="p-1.5 rounded-xl bg-purple-500/15 text-purple-600 border border-purple-500/30">
                   <Bookmark size={16} />
                 </div>
               </div>
               <div>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="text-3xl font-black font-mono text-purple-400">
+                  <span className="text-3xl font-black font-mono text-purple-600">
                     {vocabCount}
                   </span>
-                  <span className={`text-xs ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>词</span>
+                  <span className="text-xs text-stone-400">词</span>
                 </div>
-                <div className={`text-[11px] mt-1.5 ${isParchment ? 'text-[#8c745c]' : 'text-[#708294]'}`}>
+                <div className="text-[11px] mt-1.5 text-stone-500">
                   支持一键导出至 Anki
                 </div>
               </div>
@@ -395,19 +369,15 @@ export function AnalyticsDashboard({
           </div>
 
           {/* Chart 1: Weekly Listening Minutes Bar Chart */}
-          <div className={`p-5 rounded-2xl border ${
-            isParchment
-              ? 'bg-[#fffdf8] border-[#dec9a5]'
-              : 'bg-[#131b2a] border-[#223147]'
-          }`}>
+          <div className="p-5 rounded-3xl border border-[#eee5d8] bg-white shadow-xs">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
-                <Calendar size={16} className="text-[#d3a625]" />
-                <h3 className="font-bold text-sm tracking-wide">
+                <Calendar size={16} className="text-amber-600" />
+                <h3 className="font-bold text-sm tracking-wide text-amber-950">
                   本周听力时长分布 (最近 7 天)
                 </h3>
               </div>
-              <span className={`text-xs ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>
+              <span className="text-xs text-stone-500">
                 单位: 分钟 (min)
               </span>
             </div>
@@ -420,12 +390,12 @@ export function AnalyticsDashboard({
               >
                 <defs>
                   <linearGradient id="goldBarGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#f3d38c" />
-                    <stop offset="100%" stopColor="#d3a625" />
+                    <stop offset="0%" stopColor="#fcd34d" />
+                    <stop offset="100%" stopColor="#f59e0b" />
                   </linearGradient>
                   <linearGradient id="activeBarGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#ffb020" />
-                    <stop offset="100%" stopColor="#e67e22" />
+                    <stop offset="0%" stopColor="#fb923c" />
+                    <stop offset="100%" stopColor="#ea580c" />
                   </linearGradient>
                 </defs>
 
@@ -440,7 +410,7 @@ export function AnalyticsDashboard({
                         y1={y} 
                         x2={chartWidth} 
                         y2={y} 
-                        stroke={isParchment ? '#e8dcbe' : '#1e293b'} 
+                        stroke="#eee5d8" 
                         strokeDasharray={ratio === 0 ? '0' : '4 4'}
                         strokeWidth="1"
                       />
@@ -448,7 +418,7 @@ export function AnalyticsDashboard({
                         x="4" 
                         y={y - 4} 
                         fontSize="9" 
-                        fill={isParchment ? '#998369' : '#64748b'}
+                        fill="#a89985"
                         fontFamily="monospace"
                       >
                         {val}m
@@ -478,7 +448,7 @@ export function AnalyticsDashboard({
                         y={10}
                         width={barWidth + barGap}
                         height={chartHeight + 20}
-                        fill={isHovered ? (isParchment ? 'rgba(211,166,37,0.1)' : 'rgba(211,166,37,0.08)') : 'transparent'}
+                        fill={isHovered ? 'rgba(245,158,11,0.08)' : 'transparent'}
                         rx="6"
                       />
 
@@ -490,7 +460,7 @@ export function AnalyticsDashboard({
                         height={Math.max(3, barH)}
                         rx="6"
                         fill={isToday ? 'url(#activeBarGradient)' : 'url(#goldBarGradient)'}
-                        stroke={isHovered ? '#ffffff' : (isToday ? '#f39c12' : '#cba358')}
+                        stroke={isHovered ? '#ffffff' : (isToday ? '#f97316' : '#f59e0b')}
                         strokeWidth={isHovered ? 2 : 1}
                         className="transition-all duration-200"
                       />
@@ -504,7 +474,7 @@ export function AnalyticsDashboard({
                           fontSize="10"
                           fontWeight="bold"
                           fontFamily="monospace"
-                          fill={isHovered ? '#d3a625' : (isParchment ? '#2d1e12' : '#e2d9c8')}
+                          fill={isHovered ? '#d97706' : '#1e1610'}
                         >
                           {d.minutes}m
                         </text>
@@ -517,7 +487,7 @@ export function AnalyticsDashboard({
                         textAnchor="middle"
                         fontSize="11"
                         fontWeight={isToday ? 'bold' : 'normal'}
-                        fill={isToday ? '#d3a625' : (isParchment ? '#5c4834' : '#94a3b8')}
+                        fill={isToday ? '#d97706' : '#78716c'}
                       >
                         {dayZhMap[d.day] || d.day}
                         {isToday ? ' (今)' : ''}
@@ -530,7 +500,7 @@ export function AnalyticsDashboard({
                         textAnchor="middle"
                         fontSize="9"
                         fontFamily="monospace"
-                        fill={isParchment ? '#8c745c' : '#64748b'}
+                        fill="#a89985"
                       >
                         {d.date ? d.date.slice(5) : ''}
                       </text>
@@ -542,9 +512,7 @@ export function AnalyticsDashboard({
 
             {/* Hover Tooltip Info */}
             {hoveredBarIndex !== null && weeklyData[hoveredBarIndex] && (
-              <div className={`mt-2 text-xs flex items-center justify-center gap-2 font-mono py-1 rounded-lg ${
-                isParchment ? 'bg-[#ede2c9] text-[#2d1e12]' : 'bg-[#182335] text-[#f3d38c]'
-              }`}>
+              <div className="mt-2 text-xs flex items-center justify-center gap-2 font-mono py-1 rounded-xl bg-stone-100 border border-[#eee5d8] text-[#1e1610]">
                 <span>{weeklyData[hoveredBarIndex].date} ({dayZhMap[weeklyData[hoveredBarIndex].day] || weeklyData[hoveredBarIndex].day})</span>
                 <span>•</span>
                 <span>听力时长: <strong>{weeklyData[hoveredBarIndex].minutes}</strong> 分钟</span>
@@ -553,19 +521,15 @@ export function AnalyticsDashboard({
           </div>
 
           {/* Chart 2: Dictation Accuracy History Trend Curve */}
-          <div className={`p-5 rounded-2xl border ${
-            isParchment
-              ? 'bg-[#fffdf8] border-[#dec9a5]'
-              : 'bg-[#131b2a] border-[#223147]'
-          }`}>
+          <div className="p-5 rounded-3xl border border-[#eee5d8] bg-white shadow-xs">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
-                <TrendingUp size={16} className="text-emerald-400" />
-                <h3 className="font-bold text-sm tracking-wide">
+                <TrendingUp size={16} className="text-emerald-500" />
+                <h3 className="font-bold text-sm tracking-wide text-amber-950">
                   听写练习准确率走势 (最近 10 次练习)
                 </h3>
               </div>
-              <span className={`text-xs ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>
+              <span className="text-xs text-stone-500">
                 优秀基准线: 80% (O.W.L.s 优秀)
               </span>
             </div>
@@ -573,9 +537,9 @@ export function AnalyticsDashboard({
             {dictationData.length === 0 ? (
               // Empty State
               <div className="py-12 flex flex-col items-center justify-center text-center space-y-2">
-                <Sparkles size={28} className="text-[#cba358] animate-bounce" />
-                <p className="text-sm font-semibold">暂无听写练习记录</p>
-                <p className={`text-xs max-w-sm ${isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'}`}>
+                <Sparkles size={28} className="text-amber-500 animate-bounce" />
+                <p className="text-sm font-semibold text-stone-700">暂无听写练习记录</p>
+                <p className="text-xs max-w-sm text-stone-500">
                   切换至顶部【听写工坊】完成第 1 篇逐句听写，准确率走势图将在此自动绘制！
                 </p>
               </div>
@@ -606,7 +570,7 @@ export function AnalyticsDashboard({
                           y2={y80} 
                           stroke="#10b981" 
                           strokeDasharray="4 4" 
-                          strokeWidth="1.5"
+                          strokeWidth="1.5" 
                           strokeOpacity="0.6"
                         />
                         <text 
@@ -631,7 +595,7 @@ export function AnalyticsDashboard({
                         y1={y0} 
                         x2={trendSvgWidth - trendPaddingX} 
                         y2={y0} 
-                        stroke={isParchment ? '#dec9a5' : '#1e293b'} 
+                        stroke="#eee5d8" 
                         strokeWidth="1.5"
                       />
                     );
@@ -649,7 +613,7 @@ export function AnalyticsDashboard({
                       fill="none" 
                       stroke="#10b981" 
                       strokeWidth="2.5" 
-                      strokeLinecap="round"
+                      strokeLinecap="round" 
                       strokeLinejoin="round"
                     />
                   )}
@@ -670,7 +634,7 @@ export function AnalyticsDashboard({
                           cy={pt.y}
                           r={isHovered ? 7 : 5}
                           fill={isExcellent ? '#10b981' : '#f59e0b'}
-                          stroke={isHovered ? '#ffffff' : (isParchment ? '#fbf6ea' : '#0e1422')}
+                          stroke="#ffffff"
                           strokeWidth="2"
                           className="transition-all duration-150"
                         />
@@ -695,7 +659,7 @@ export function AnalyticsDashboard({
                           textAnchor="middle"
                           fontSize="9"
                           fontFamily="monospace"
-                          fill={isParchment ? '#8c745c' : '#64748b'}
+                          fill="#a89985"
                         >
                           {pt.date ? pt.date.slice(5) : `#${idx + 1}`}
                         </text>
@@ -708,9 +672,7 @@ export function AnalyticsDashboard({
 
             {/* Hover Tooltip for Trend Point */}
             {hoveredPointIndex !== null && trendPoints[hoveredPointIndex] && (
-              <div className={`mt-2 text-xs flex items-center justify-center gap-2 font-mono py-1 rounded-lg ${
-                isParchment ? 'bg-[#ede2c9] text-[#2d1e12]' : 'bg-[#182335] text-emerald-300'
-              }`}>
+              <div className="mt-2 text-xs flex items-center justify-center gap-2 font-mono py-1 rounded-xl bg-stone-100 border border-[#eee5d8] text-emerald-800">
                 <span>练习日期: {trendPoints[hoveredPointIndex].date}</span>
                 <span>•</span>
                 <span>听写准确率: <strong>{trendPoints[hoveredPointIndex].accuracy}%</strong></span>
@@ -722,18 +684,14 @@ export function AnalyticsDashboard({
         )}
 
         {/* Footer info note */}
-        <div className={`px-6 py-3 border-t text-[11px] flex items-center justify-between ${
-          isParchment 
-            ? 'bg-[#f7eed9] border-[#dec9a5] text-[#7d6852]' 
-            : 'bg-[#0d131f] border-[#202b3c] text-[#8c9ba5]'
-        }`}>
+        <div className="px-6 py-3.5 border-t border-[#eee5d8] bg-white text-[11px] text-stone-500 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <Info size={13} className="text-[#cba358]" />
+            <Info size={13} className="text-amber-600" />
             <span>数据已采用双键冗余持久化同步至本地存储，随时离线学习。</span>
           </div>
           <button
             onClick={onClose}
-            className="px-5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs shadow-xs hover:shadow active:scale-95 cursor-pointer transition-all ring-1 ring-amber-300/30"
+            className="duo-btn-primary min-h-[38px] px-5 py-1.5 rounded-xl text-xs font-bold cursor-pointer"
           >
             完成查看
           </button>

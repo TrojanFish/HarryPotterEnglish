@@ -84,12 +84,10 @@ export function AccioWordPicker({
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* ── Active Word Answer Tray ──────────────────────────────── */}
-      <div className={`min-h-[110px] p-5 sm:p-6 rounded-2xl border-2 transition-all shadow-inner flex flex-col justify-between ${
+      <div className={`min-h-[110px] p-5 sm:p-6 rounded-3xl border-2 transition-all flex flex-col justify-between ${
         isSentenceFullyCorrect
           ? 'bg-emerald-500/10 border-emerald-500 shadow-emerald-500/10'
-          : isParchment
-          ? 'bg-[#faf6ee] border-[#dec9a5]'
-          : 'bg-[#18202d] border-[#253245]'
+          : 'bg-[#fbf9f5] border-[#eee5d8] shadow-inner'
       }`}>
         <div className="flex items-center justify-between mb-3 text-xs font-semibold text-amber-800">
           <span className="flex items-center gap-1.5">

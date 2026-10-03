@@ -40,21 +40,13 @@ export function Sidebar({
 
   return (
     <aside
-      className={`hidden lg:flex flex-col w-[280px] shrink-0 border-r overflow-hidden transition-colors duration-300 select-none ${
-        isParchment
-          ? 'bg-[#faf6ee] border-[#e7dbc2]'
-          : 'bg-[#0f172a] border-slate-800'
-      }`}
+      className="hidden lg:flex flex-col w-[280px] shrink-0 border-r border-[#eee5d8] bg-[#fbf9f5] overflow-hidden transition-colors duration-300 select-none"
     >
       {/* ── Book Card & Reading Level ──────────────────────────────── */}
       <div className="p-4 shrink-0">
         <div
           onClick={onOpenShelf}
-          className={`relative group rounded-2xl p-3 border-2 transition-all cursor-pointer shadow-sm hover:shadow-md ${
-            isParchment
-              ? 'bg-[#ffffff] border-[#e5d6ba] hover:border-amber-400'
-              : 'bg-slate-800/80 border-slate-700 hover:border-amber-400'
-          }`}
+          className="relative group rounded-3xl p-3 border-2 border-[#eee5d8] bg-white hover:border-amber-400 transition-all cursor-pointer shadow-xs hover:shadow-sm"
           title="点击切换其他魔法小说"
         >
           <div className="flex gap-3 items-center">
@@ -79,7 +71,7 @@ export function Sidebar({
 
             {/* Book Info for Young Learners */}
             <div className="flex-1 min-w-0">
-              <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-800 dark:text-amber-300 text-[10px] font-bold mb-1">
+              <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-900 text-[10px] font-bold mb-1">
                 <Sparkles size={10} />
                 <span>
                   {currentBook.id?.includes('book-1') 
@@ -95,10 +87,10 @@ export function Sidebar({
                     : '原版精选 · 有声精听'}
                 </span>
               </div>
-              <h2 className="font-magical font-bold text-sm leading-snug text-amber-900 dark:text-amber-300 line-clamp-2">
+              <h2 className="font-magical font-bold text-sm leading-snug text-amber-950 line-clamp-2">
                 {currentBook.cnTitle || currentBook.title}
               </h2>
-              <p className="text-[11px] text-slate-500 font-reading italic truncate mt-0.5">
+              <p className="text-[11px] text-stone-500 font-reading italic truncate mt-0.5">
                 {currentBook.title}
               </p>
             </div>
@@ -106,7 +98,7 @@ export function Sidebar({
 
           {/* Offline badge */}
           {isOfflinePlaying && (
-            <div className="mt-2 flex items-center justify-center gap-1.5 py-1 px-2 bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs font-bold">
+            <div className="mt-2 flex items-center justify-center gap-1.5 py-1 px-2 bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 rounded-lg text-xs font-bold">
               <WifiOff size={12} />
               <span>已进入离线畅听模式</span>
             </div>
@@ -115,8 +107,8 @@ export function Sidebar({
       </div>
 
       {/* ── Chapter List Header ────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-4 py-2 shrink-0 border-t border-b border-inherit">
-        <div className="flex items-center gap-1.5 text-xs font-bold font-mono text-amber-800 dark:text-amber-300">
+      <div className="flex items-center justify-between px-4 py-2 shrink-0 border-t border-b border-[#eee5d8] bg-white">
+        <div className="flex items-center gap-1.5 text-xs font-bold font-mono text-amber-900">
           <BookOpen size={14} />
           <span>全书目录 ({chapters.length} 章节)</span>
         </div>
@@ -125,14 +117,14 @@ export function Sidebar({
           <button
             onClick={onRefreshCatalog}
             disabled={isRefreshing}
-            className="p-1.5 rounded-xl border border-amber-300/60 bg-white/80 hover:bg-amber-100 text-[#8c7452] hover:text-amber-950 transition-all active:scale-90 shadow-2xs cursor-pointer disabled:opacity-50"
+            className="p-1.5 rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 shadow-2xs cursor-pointer disabled:opacity-50"
             title="重新扫描目录"
           >
             <RotateCw size={12} className={isRefreshing ? 'animate-spin text-amber-500' : ''} />
           </button>
           <button
             onClick={() => setIsChaptersExpanded(!isChaptersExpanded)}
-            className="p-1.5 rounded-xl border border-amber-300/60 bg-white/80 hover:bg-amber-100 text-[#8c7452] hover:text-amber-950 transition-all active:scale-90 shadow-2xs cursor-pointer"
+            className="p-1.5 rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 shadow-2xs cursor-pointer"
             title={isChaptersExpanded ? '收起目录' : '展开目录'}
           >
             {isChaptersExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -151,16 +143,16 @@ export function Sidebar({
                 onClick={() => onSelectChapter(ch.id)}
                 className={`w-full text-left p-2.5 rounded-xl text-xs transition-all flex items-center gap-2.5 group cursor-pointer active:scale-[0.98] ${
                   isActive
-                    ? 'bg-amber-500/15 border-2 border-amber-500 text-amber-950 font-bold shadow-sm'
-                    : 'hover:bg-amber-100/60 text-[#5c4a35] border border-transparent'
+                    ? 'bg-amber-500/10 border-2 border-amber-500 text-amber-950 font-bold shadow-2xs'
+                    : 'hover:bg-stone-200/50 text-stone-700 border border-transparent'
                 }`}
               >
                 {/* Chapter Number Badge */}
                 <span
                   className={`w-7 h-7 rounded-lg flex items-center justify-center font-mono text-xs shrink-0 font-bold ${
                     isActive
-                      ? 'bg-amber-500 text-white shadow-sm'
-                      : 'bg-[#ede0ca] text-[#7a6042]'
+                      ? 'bg-amber-500 text-white shadow-2xs'
+                      : 'bg-stone-200/80 text-stone-600'
                   }`}
                 >
                   {String(ch.number).padStart(2, '0')}
@@ -172,12 +164,12 @@ export function Sidebar({
                     {ch.cnTitle || ch.title}
                   </div>
                   {ch.cnTitle && (
-                    <div className="text-[11px] font-reading text-slate-500 truncate mt-0.5">
+                    <div className="text-[11px] font-reading text-stone-500 truncate mt-0.5">
                       {ch.title}
                     </div>
                   )}
                   {ch.duration && (
-                    <div className="text-[10px] font-mono text-slate-400 mt-0.5">
+                    <div className="text-[10px] font-mono text-stone-400 mt-0.5">
                       {ch.duration}
                     </div>
                   )}
@@ -191,7 +183,7 @@ export function Sidebar({
                     <span className="w-1 h-2.5 bg-amber-500 rounded-full animate-wave-3" />
                   </div>
                 ) : (
-                  <CheckCircle2 size={13} className="text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <CheckCircle2 size={13} className="text-stone-300 opacity-0 group-hover:opacity-100 transition-opacity" />
                 )}
               </button>
             );
@@ -200,10 +192,10 @@ export function Sidebar({
       )}
 
       {/* ── Bottom Library Switcher ────────────────────────────────── */}
-      <div className="p-3 border-t border-inherit shrink-0">
+      <div className="p-3 border-t border-[#eee5d8] bg-white shrink-0">
         <button
           onClick={onOpenShelf}
-          className="w-full py-2.5 px-3 rounded-xl border border-amber-300/90 bg-white/95 text-amber-950 hover:bg-amber-50 hover:border-amber-400 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer"
+          className="duo-btn-secondary min-h-[40px] w-full text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
           title="翻开霍格沃茨书架"
         >
           <Library size={15} />

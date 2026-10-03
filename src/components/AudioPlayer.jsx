@@ -375,7 +375,7 @@ export function AudioPlayer({
             </button>
 
             {showSpeedMenu && (
-              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 rounded-2xl shadow-xl border border-[#e8dcb9] bg-[#ffffff] p-1.5 z-50 flex flex-col min-w-[170px]">
+              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 rounded-2xl shadow-xl border-2 border-[#eee5d8] bg-white p-1.5 z-50 flex flex-col min-w-[170px]">
                 {speedOptions.map(({ rate, label }) => (
                   <button
                     key={rate}

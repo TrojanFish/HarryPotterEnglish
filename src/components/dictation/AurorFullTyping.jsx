@@ -76,9 +76,7 @@ export function AurorFullTyping({
       <div className={`min-h-[110px] p-5 sm:p-6 rounded-2xl border-2 font-reading text-lg sm:text-xl leading-relaxed transition-all shadow-inner ${
         isAllCorrect
           ? 'bg-emerald-500/10 border-emerald-500'
-          : isParchment
-          ? 'bg-[#faf6ee] border-[#dec9a5] text-[#2c221e]'
-          : 'bg-[#18202d] border-[#253245] text-slate-100'
+          : 'bg-[#fbf9f5] border-[#eee5d8] text-[#1e1610]'
       }`}>
         <div className="flex items-center justify-between mb-3 pb-2 border-b border-inherit text-xs font-semibold text-amber-800">
           <span className="flex items-center gap-1.5">
@@ -173,7 +171,7 @@ export function AurorFullTyping({
           className={`w-full p-4 rounded-2xl text-base sm:text-lg font-reading border-2 focus:outline-none transition-all resize-none shadow-sm ${
             isAllCorrect
               ? 'border-emerald-500 bg-emerald-500/10 text-emerald-950'
-              : 'border-amber-300 focus:border-amber-500 bg-[#fffdfa] text-[#2c221e] focus:ring-2 focus:ring-amber-400/20'
+              : 'border-[#eee5d8] focus:border-amber-500 bg-white text-[#1e1610] focus:ring-2 focus:ring-amber-400/20'
           }`}
         />
 

@@ -80,14 +80,10 @@ export function DictationSummaryModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div 
         onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-xl max-h-[90vh] flex flex-col rounded-3xl border-2 shadow-2xl overflow-hidden transition-all ${
-          isParchment
-            ? 'bg-[#fcf9f2] border-[#e2d2b4] text-[#2d241c]'
-            : 'bg-slate-900 border-amber-500/40 text-slate-100'
-        }`}
+        className="w-full max-w-xl max-h-[90vh] flex flex-col rounded-3xl border-2 border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-2xl overflow-hidden transition-all"
       >
         {/* Modal Header */}
-        <div className="p-6 border-b border-amber-200/80 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-amber-500/10 text-center shrink-0">
+        <div className="p-6 border-b border-[#eee5d8] bg-white text-center shrink-0">
           <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg">
             <Trophy size={28} />
           </div>
@@ -103,7 +99,7 @@ export function DictationSummaryModal({
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           
           {/* 1. Honorific Rank Banner */}
-          <div className="p-4 rounded-2xl border border-amber-300/80 bg-white/90 text-center shadow-xs">
+          <div className="p-4 rounded-2xl border-2 border-[#eee5d8] bg-white text-center shadow-xs">
             <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${rank.badgeColor}`}>
               {rank.title}
             </span>
@@ -114,7 +110,7 @@ export function DictationSummaryModal({
 
           {/* 2. Key Metrics Grid */}
           <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="p-3.5 rounded-2xl border border-amber-200/80 bg-white/80">
+            <div className="p-3.5 rounded-2xl border-2 border-[#eee5d8] bg-white shadow-xs">
               <div className="flex items-center justify-center gap-1 text-amber-600 mb-1">
                 <Star size={16} className="fill-amber-500 text-amber-500" />
               </div>
@@ -124,7 +120,7 @@ export function DictationSummaryModal({
               <div className="text-[11px] text-slate-500 font-bold mt-0.5">魔法星斩获</div>
             </div>
 
-            <div className="p-3.5 rounded-2xl border border-amber-200/80 bg-white/80">
+            <div className="p-3.5 rounded-2xl border-2 border-[#eee5d8] bg-white shadow-xs">
               <div className="flex items-center justify-center gap-1 text-emerald-600 mb-1">
                 <CheckCircle2 size={16} />
               </div>
@@ -134,7 +130,7 @@ export function DictationSummaryModal({
               <div className="text-[11px] text-slate-500 font-bold mt-0.5">全句准确率</div>
             </div>
 
-            <div className="p-3.5 rounded-2xl border border-amber-200/80 bg-white/80">
+            <div className="p-3.5 rounded-2xl border-2 border-[#eee5d8] bg-white shadow-xs">
               <div className="flex items-center justify-center gap-1 text-amber-600 mb-1">
                 <Award size={16} />
               </div>
@@ -146,10 +142,10 @@ export function DictationSummaryModal({
           </div>
 
           {/* 3. House Affiliation Selector */}
-          <div className="p-4 rounded-2xl border border-amber-200 bg-amber-50/50">
+          <div className="p-4 rounded-2xl border-2 border-[#eee5d8] bg-white shadow-xs">
             <div className="text-xs font-bold text-amber-900 mb-2 flex items-center justify-between">
               <span>代表学院积分入账：</span>
-              <span className="text-[11px] text-amber-700">{selectedHouse.name} (+{housePoints} 分)</span>
+              <span className="text-[11px] text-amber-700 font-semibold">{selectedHouse.name} (+{housePoints} 分)</span>
             </div>
             <div className="grid grid-cols-4 gap-2">
               {HOGWARTS_HOUSES.map((house) => {
@@ -158,10 +154,10 @@ export function DictationSummaryModal({
                   <button
                     key={house.id}
                     onClick={() => handleHouseChange(house.id)}
-                    className={`py-2 px-1 rounded-xl text-xs font-bold transition-all text-center border cursor-pointer ${
+                    className={`py-2 px-1 rounded-xl text-xs font-bold transition-all text-center border-2 cursor-pointer ${
                       isSelected
-                        ? 'border-amber-500 bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-xs'
-                        : 'border-amber-200/80 bg-white/80 text-amber-900 hover:bg-amber-100/60'
+                        ? 'border-amber-500 bg-amber-500 text-white shadow-xs'
+                        : 'border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] hover:bg-stone-100'
                     }`}
                   >
                     {house.name}
@@ -217,11 +213,11 @@ export function DictationSummaryModal({
         </div>
 
         {/* Modal Footer Actions */}
-        <div className="p-5 border-t border-amber-200/80 bg-white flex items-center justify-between gap-3 shrink-0">
+        <div className="p-5 border-t border-[#eee5d8] bg-white flex items-center justify-between gap-3 shrink-0">
           {errorWords.length > 0 && onRetryErrors ? (
             <button
               onClick={onRetryErrors}
-              className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border border-amber-300/80 bg-white hover:bg-amber-50 text-amber-950 font-bold text-xs sm:text-sm shadow-xs active:scale-95 cursor-pointer transition-all"
+              className="duo-btn-secondary min-h-[42px] flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer"
             >
               <RotateCcw size={14} />
               <span>重炼错词</span>
@@ -230,7 +226,7 @@ export function DictationSummaryModal({
 
           <button
             onClick={onClose}
-            className="flex items-center gap-2 px-7 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg active:scale-95 cursor-pointer transition-all ring-1 ring-amber-300/30 ml-auto"
+            className="duo-btn-primary min-h-[42px] flex items-center gap-2 px-7 py-2.5 rounded-2xl text-xs sm:text-sm font-bold shadow-md cursor-pointer ml-auto"
           >
             <span>完成本章试炼</span>
             <ChevronRight size={16} />

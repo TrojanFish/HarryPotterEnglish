@@ -49,7 +49,7 @@ export function DailyGoalRing({
             cy={size / 2}
             r={radius}
             fill="transparent"
-            stroke={isCompleted ? '#fcd34d' : '#e8dcc4'}
+            stroke={isCompleted ? '#fcd34d' : '#eee5d8'}
             strokeWidth={strokeWidth}
           />
           {/* Animated Progress Stroke */}
@@ -58,7 +58,7 @@ export function DailyGoalRing({
             cy={size / 2}
             r={radius}
             fill="transparent"
-            stroke={isCompleted ? '#d97706' : '#cba358'}
+            stroke={isCompleted ? '#10b981' : '#f59e0b'}
             strokeWidth={strokeWidth}
             strokeDasharray={circumference}
             strokeDashoffset={offset}
@@ -94,7 +94,7 @@ export function DailyGoalRing({
             </>
           )}
         </div>
-        <span className="text-[11px] font-reading text-[#7a6448] leading-tight">
+        <span className="text-[11px] font-reading text-stone-500 leading-tight">
           {currentMinutes}/{targetMinutes} 分钟
         </span>
       </div>

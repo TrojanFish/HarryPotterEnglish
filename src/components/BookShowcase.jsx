@@ -28,14 +28,12 @@ export function BookShowcase({
 
   return (
     <div className="max-w-5xl mx-auto px-4 pt-4 pb-2 w-full">
-      <div className={`book-frame transition-all duration-300 overflow-hidden ${
-        isParchment ? 'text-[#2c221e]' : 'text-[#e2d9c8]'
-      }`}>
+      <div className="duo-card overflow-hidden text-[#1e1610]">
         {/* Main Banner Card */}
         <div className="p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-5">
           {/* Cover Art Image with Vintage Frame */}
           <div className="relative group shrink-0">
-            <div className="w-28 sm:w-32 aspect-[3/4] rounded-lg overflow-hidden border-2 border-[#cba358]/60 shadow-2xl bg-black/40 relative transform transition-transform group-hover:scale-105 duration-300">
+            <div className="w-28 sm:w-32 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-amber-400 shadow-lg bg-amber-950/10 relative transform transition-transform group-hover:scale-105 duration-300">
               <img
                 src={coverUrl}
                 alt={currentBook.title}
@@ -54,7 +52,7 @@ export function BookShowcase({
             </div>
 
             {/* Floating House Crest badge */}
-            <span className="absolute -bottom-2 -right-2 p-1.5 rounded-full bg-[#740001] text-amber-200 border border-[#cba358] shadow-md flex items-center justify-center">
+            <span className="absolute -bottom-2 -right-2 p-1.5 rounded-full bg-amber-500 text-white border-2 border-white shadow-md flex items-center justify-center">
               <Sparkles size={12} />
             </span>
           </div>
@@ -64,39 +62,39 @@ export function BookShowcase({
             <div>
               {/* Top Meta tag */}
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#cba358]/20 text-[#cba358] border border-[#cba358]/30 font-semibold font-mono">
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-800 border border-amber-500/30 font-semibold font-mono">
                   Hogwarts Official Audio
                 </span>
                 {isOfflinePlaying ? (
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-semibold flex items-center gap-1 shadow-sm animate-pulse">
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 border border-emerald-500/40 font-semibold flex items-center gap-1 shadow-sm animate-pulse">
                     <CheckCircle2 size={12} /> 离线极速畅听
                   </span>
                 ) : (
-                  <span className="text-[11px] text-[#8c9ba5] flex items-center gap-1">
+                  <span className="text-[11px] text-stone-500 flex items-center gap-1">
                     <Headphones size={12} /> 原版朗读 · 316 句同步
                   </span>
                 )}
               </div>
 
               {/* Title */}
-              <h2 className="text-xl sm:text-2xl font-magical font-bold text-[#f3d38c] text-gold-glow tracking-wide line-clamp-1">
+              <h2 className="text-xl sm:text-2xl font-magical font-bold text-amber-950 tracking-wide line-clamp-1">
                 {currentBook.cnTitle || currentBook.title}
               </h2>
-              <p className="text-xs text-[#8c9ba5] font-reading italic mt-0.5">
+              <p className="text-xs text-stone-500 font-reading italic mt-0.5">
                 {currentBook.title}
               </p>
 
               {/* Current Episode Highlight */}
               {currentChapter && (
-                <div className="mt-3 p-2.5 rounded-lg bg-black/20 border border-gray-700/40 flex items-center justify-between text-xs">
+                <div className="mt-3 p-2.5 rounded-xl bg-amber-50/60 border border-amber-200/80 flex items-center justify-between text-xs">
                   <div className="flex items-center space-x-2 truncate">
-                    <Sparkles size={14} className="text-[#cba358] shrink-0" />
-                    <span className="font-semibold text-[#f3d38c] truncate">
+                    <Sparkles size={14} className="text-amber-600 shrink-0" />
+                    <span className="font-semibold text-amber-950 truncate">
                       第 {currentChapter.number} 章: {currentChapter.title}
                     </span>
                   </div>
                   {currentChapter.duration && (
-                    <span className="flex items-center gap-1 text-[11px] text-[#8c9ba5] shrink-0 font-mono ml-2">
+                    <span className="flex items-center gap-1 text-[11px] text-stone-500 shrink-0 font-mono ml-2">
                       <Clock size={12} />
                       {currentChapter.duration}
                     </span>
@@ -147,7 +145,7 @@ export function BookShowcase({
                     className={`p-2 rounded-xl text-left text-xs border transition-all truncate flex flex-col justify-between cursor-pointer active:scale-95 shadow-2xs hover:shadow-xs ${
                       isCurrent
                         ? 'border-amber-500 bg-amber-500/20 text-amber-950 font-bold shadow-sm'
-                        : 'border-[#dec9a5] bg-[#fffdf8] hover:border-amber-400 text-amber-950 hover:bg-amber-50/70'
+                        : 'border-[#eee5d8] bg-white hover:border-amber-400 text-amber-950 hover:bg-amber-50/70'
                     }`}
                   >
                     <div className="truncate font-reading">

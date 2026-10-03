@@ -107,23 +107,19 @@ export function SrsFlashcardModal({
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-lg rounded-3xl border-2 shadow-2xl p-6 sm:p-7 flex flex-col justify-between min-h-[480px] transition-all ${
-          isParchment 
-            ? 'bg-[#fcf9f2] border-[#e2d2b4] text-[#2c221e]' 
-            : 'bg-slate-900 border-slate-700 text-slate-100'
-        }`}
+        className="w-full max-w-lg rounded-3xl border-2 border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-[0_20px_60px_-15px_rgba(44,34,30,0.15)] p-6 sm:p-7 flex flex-col justify-between min-h-[480px] transition-all"
       >
         {/* Top Header & Progress */}
-        <div className="flex items-center justify-between pb-3 border-b border-amber-200/80 mb-4">
+        <div className="flex items-center justify-between pb-3 border-b border-[#eee5d8] mb-4">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-800 border border-amber-400/40 shadow-xs">
-              <BrainCircuit size={18} className="text-amber-700" />
+            <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shadow-2xs">
+              <BrainCircuit size={18} />
             </div>
             <div>
               <h3 className="font-magical font-bold text-base text-amber-950">
                 艾宾浩斯魔法闪卡复习
               </h3>
-              <p className="text-[11px] text-slate-500 font-reading">
+              <p className="text-[11px] text-stone-500 font-reading">
                 {dueWords.length === 0 ? '暂无待复习生词' : `今日待复习: 第 ${currentIndex + 1} / ${dueWords.length} 词`}
               </p>
             </div>
@@ -131,7 +127,7 @@ export function SrsFlashcardModal({
 
           <button
             onClick={onClose}
-            className="duo-touch-target rounded-xl text-slate-400 hover:text-amber-950 hover:bg-amber-100/70 border border-transparent hover:border-amber-300 transition-all active:scale-90 cursor-pointer"
+            className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer"
             title="关闭复习"
           >
             <X size={18} />
@@ -139,7 +135,7 @@ export function SrsFlashcardModal({
         </div>
 
         {/* Progress Bar Line */}
-        <div className="w-full h-2 rounded-full bg-amber-200/60 overflow-hidden mb-5">
+        <div className="w-full h-2 rounded-full bg-stone-200 overflow-hidden mb-5">
           <div 
             className="h-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-300 rounded-full"
             style={{ width: `${progressPercent}%` }}
@@ -155,12 +151,12 @@ export function SrsFlashcardModal({
             <h4 className="font-magical font-bold text-xl text-amber-950">
               今日魔法词汇全部复习完毕！
             </h4>
-            <p className="text-xs text-slate-600 font-reading max-w-xs leading-relaxed">
+            <p className="text-xs text-stone-600 font-reading max-w-xs leading-relaxed">
               暂无已到期的待复习生词。艾宾浩斯记忆曲线将在下个记忆衰减节点（明天）自动为你提醒。
             </p>
             <button
               onClick={onClose}
-              className="mt-3 px-6 py-2 rounded-xl bg-amber-500 text-white font-bold text-xs shadow-xs hover:bg-amber-600 active:scale-95 cursor-pointer"
+              className="duo-btn-primary min-h-[40px] mt-3 px-6 py-2 rounded-xl text-xs font-bold cursor-pointer"
             >
               完成返回
             </button>
@@ -174,7 +170,7 @@ export function SrsFlashcardModal({
             <h4 className="font-magical font-bold text-2xl text-amber-950">
               太棒了！今日闪卡复习圆满达成
             </h4>
-            <p className="text-xs text-slate-600 font-reading leading-relaxed">
+            <p className="text-xs text-stone-600 font-reading leading-relaxed">
               本次巩固了 {dueWords.length} 个魔法单词，艾宾浩斯算法已为你重新调整下次复习周期。
             </p>
 
@@ -200,7 +196,7 @@ export function SrsFlashcardModal({
           /* Flashcard Container with Flip Animation */
           <div 
             onClick={() => setIsFlipped(!isFlipped)}
-            className="flex-1 flex flex-col justify-between p-6 sm:p-7 rounded-2xl border-2 border-amber-300/80 bg-white/95 shadow-md cursor-pointer hover:border-amber-400 transition-all relative group"
+            className="flex-1 flex flex-col justify-between p-6 sm:p-7 rounded-3xl border-2 border-[#eee5d8] bg-white shadow-md cursor-pointer hover:border-amber-400 transition-all relative group"
             title="点击卡片翻转查看释义"
           >
             {/* Front of Card (English Word & Phonics) */}
@@ -249,31 +245,31 @@ export function SrsFlashcardModal({
             ) : (
               /* Back of Card (Chinese Translation, Context & Lore) */
               <div className="space-y-4 my-auto animate-fadeIn text-left">
-                <div className="border-b border-amber-200/80 pb-2 flex items-center justify-between">
-                  <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">
+                <div className="border-b border-[#eee5d8] pb-2 flex items-center justify-between">
+                  <span className="text-xs font-bold text-amber-900 uppercase tracking-wider">
                     {currentWord.word} · 详细解析
                   </span>
-                  <span className="text-[11px] text-slate-400 font-mono">
+                  <span className="text-[11px] text-stone-400 font-mono">
                     {currentWord.pos || '单词'}
                   </span>
                 </div>
 
-                <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50/60">
-                  <span className="text-xs font-bold text-amber-800 block mb-0.5">中文释义：</span>
+                <div className="p-3.5 rounded-2xl border border-[#eee5d8] bg-stone-50">
+                  <span className="text-xs font-bold text-amber-900 block mb-0.5">中文释义：</span>
                   <p className="font-bold text-lg font-reading text-amber-950 leading-snug">
                     {currentWord.translation || currentWord.definition || '暂无释义'}
                   </p>
                 </div>
 
                 {currentWord.context && (
-                  <div className="p-3 rounded-xl border border-dashed border-amber-300 bg-white text-xs font-reading text-slate-700 leading-relaxed">
-                    <span className="text-amber-800 font-bold block mb-0.5">原著语境例句：</span>
+                  <div className="p-3 rounded-2xl border border-dashed border-[#eee5d8] bg-white text-xs font-reading text-stone-700 leading-relaxed">
+                    <span className="text-amber-900 font-bold block mb-0.5">原著语境例句：</span>
                     "{currentWord.context}"
                   </div>
                 )}
 
                 {phonics && (
-                  <div className="p-2.5 rounded-xl border border-emerald-300 bg-emerald-50/60 text-xs text-emerald-950">
+                  <div className="p-2.5 rounded-2xl border border-emerald-300/80 bg-emerald-500/10 text-xs text-emerald-950">
                     <span className="font-bold text-emerald-900">自然拼读助记：</span>
                     <span>{phonics.tip}</span>
                   </div>
@@ -285,7 +281,7 @@ export function SrsFlashcardModal({
 
         {/* ── Bottom Action Buttons ─────────────────────────────────── */}
         {!isFinished && dueWords.length > 0 && (
-          <div className="pt-4 border-t border-amber-200/80 grid grid-cols-2 gap-3 mt-4">
+          <div className="pt-4 border-t border-[#eee5d8] grid grid-cols-2 gap-3 mt-4">
             <button
               onClick={() => handleAnswer(false)}
               className="duo-btn-danger min-h-[48px] py-3 px-4 rounded-2xl text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 cursor-pointer"

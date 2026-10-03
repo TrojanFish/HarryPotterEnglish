@@ -492,10 +492,10 @@ export function BookshelfView({
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl border-2 border-[#e2d2b4] bg-[#fbf9f5] text-[#1e1610] shadow-2xl overflow-hidden transition-all"
+            className="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl border-2 border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] shadow-2xl overflow-hidden transition-all"
           >
             {/* Modal Header */}
-            <div className="p-5 border-b border-[#ebdcc7] flex items-center justify-between shrink-0 bg-amber-500/5">
+            <div className="p-5 border-b border-[#eee5d8] flex items-center justify-between shrink-0 bg-white">
               <div className="flex items-center gap-3.5">
                 <div className="w-12 aspect-[3/4] rounded-xl overflow-hidden border border-amber-400 shadow-sm shrink-0 bg-slate-900">
                   {!coverErrorMap[inspectingBook.id] ? (
@@ -578,7 +578,7 @@ export function BookshelfView({
                     className={`flex items-center justify-between p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
                       isCurrent 
                         ? 'border-amber-500 bg-amber-500/15 shadow-sm' 
-                        : 'border-[#ede2d2] bg-white hover:border-amber-400 hover:shadow-xs'
+                        : 'border-[#eee5d8] bg-white hover:border-amber-400 hover:shadow-xs'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">

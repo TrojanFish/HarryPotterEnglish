@@ -68,16 +68,12 @@ export function WordModal({
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className={`relative w-full max-w-lg rounded-3xl border-2 shadow-2xl p-6 sm:p-7 transition-all duration-300 ${
-          isParchment 
-            ? 'bg-[#ffffff] border-[#e8dcb9] text-[#2c221e]' 
-            : 'bg-slate-900 border-slate-700 text-slate-100'
-        }`}
+        className="relative w-full max-w-lg rounded-3xl border-2 border-[#eee5d8] bg-white text-[#1e1610] shadow-[0_16px_48px_-8px_rgba(44,34,30,0.12)] p-6 sm:p-7 transition-all duration-300"
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-amber-950 hover:bg-amber-100/70 border border-transparent hover:border-amber-300/80 transition-all active:scale-90 cursor-pointer"
+          className="absolute top-5 right-5 p-2 rounded-xl text-stone-400 hover:text-amber-950 hover:bg-amber-100/70 border border-transparent hover:border-amber-300/80 transition-all active:scale-90 cursor-pointer"
         >
           <X size={18} />
         </button>
@@ -151,7 +147,7 @@ export function WordModal({
 
         {/* Translation & Definitions (Pure Chinese for Chinese Students) */}
         <div className="space-y-3.5 my-4">
-          <div className="p-4 rounded-2xl border border-amber-200/80 bg-amber-50/50">
+          <div className="p-4 rounded-2xl border border-[#eee5d8] bg-stone-50/70">
             <h4 className="text-xs font-bold uppercase tracking-wider text-amber-800 mb-1 flex items-center gap-1.5">
               <BookOpen size={13} className="text-amber-700" />
               <span>中文释义</span>
@@ -163,7 +159,7 @@ export function WordModal({
 
           {/* Special Harry Potter Lore Box */}
           {wordData.lore && (
-            <div className="p-4 rounded-2xl border border-amber-400/60 bg-gradient-to-br from-amber-500/10 via-red-500/5 to-transparent text-xs sm:text-sm">
+            <div className="p-4 rounded-2xl border border-amber-300/80 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent text-xs sm:text-sm">
               <div className="flex items-center gap-1.5 text-amber-900 font-bold font-magical mb-1.5">
                 <Sparkles size={14} className="text-amber-600" />
                 <span>霍格沃茨原著背景与魔法百科：</span>
@@ -176,9 +172,9 @@ export function WordModal({
 
           {/* Context Sentence */}
           {currentSentence && (
-            <div className="p-3.5 rounded-xl bg-white border border-amber-200/80 text-xs">
-              <span className="text-slate-400 block mb-1">原书句子出处：</span>
-              <p className="italic font-reading text-slate-700 leading-relaxed">
+            <div className="p-3.5 rounded-xl bg-white border border-[#eee5d8] text-xs">
+              <span className="text-stone-400 block mb-1">原书句子出处：</span>
+              <p className="italic font-reading text-stone-700 leading-relaxed">
                 "{currentSentence.text}"
               </p>
             </div>
@@ -186,13 +182,13 @@ export function WordModal({
         </div>
 
         {/* Action Footer */}
-        <div className="mt-5 pt-3 border-t border-amber-200/80 flex items-center justify-between">
+        <div className="mt-5 pt-3 border-t border-[#eee5d8] flex items-center justify-between">
           <div className="flex items-center space-x-2 text-xs">
             <a
               href={`https://dict.youdao.com/result?word=${encodeURIComponent(wordData.word.toLowerCase())}&lang=en`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-amber-200/70 bg-white/70 hover:bg-amber-50 text-slate-600 hover:text-amber-950 hover:border-amber-400 transition-all shadow-2xs"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-[#eee5d8] bg-stone-50 hover:bg-stone-100 text-stone-700 hover:text-amber-950 hover:border-amber-300 transition-all shadow-2xs"
             >
               <span>有道词典</span>
               <ExternalLink size={11} className="text-amber-700" />
@@ -201,7 +197,7 @@ export function WordModal({
               href={`https://dictionary.cambridge.org/zhs/词典/英语-汉语-简体/${encodeURIComponent(wordData.word.toLowerCase())}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-amber-200/70 bg-white/70 hover:bg-amber-50 text-slate-600 hover:text-amber-950 hover:border-amber-400 transition-all shadow-2xs"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-[#eee5d8] bg-stone-50 hover:bg-stone-100 text-stone-700 hover:text-amber-950 hover:border-amber-300 transition-all shadow-2xs"
             >
               <span>剑桥双解</span>
               <ExternalLink size={11} className="text-amber-700" />
@@ -210,10 +206,10 @@ export function WordModal({
 
           <button
             onClick={() => onSaveToVocab(wordData, currentSentence)}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl text-sm font-bold transition-all shadow-md active:scale-95 cursor-pointer ${
+            className={`min-h-[44px] flex items-center gap-2 px-6 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer transition-all ${
               isSaved
-                ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/25'
-                : 'bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white hover:shadow-lg hover:shadow-amber-500/25'
+                ? 'duo-btn-success'
+                : 'duo-btn-primary'
             }`}
           >
             {isSaved ? (

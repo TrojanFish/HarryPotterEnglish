@@ -127,22 +127,16 @@ export function VocabularyDrawer({
       <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
         <div 
           onClick={(e) => e.stopPropagation()}
-          className={`w-screen max-w-md shadow-2xl flex flex-col border-l transition-colors duration-300 ${
-          isParchment 
-            ? 'bg-[#fbf6ea] border-[#dec9a5] text-[#2c221e]' 
-            : 'bg-[#121824] border-[#253245] text-[#e2d9c8]'
-        }`}>
+          className="w-screen max-w-md shadow-2xl flex flex-col border-l border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300">
           {/* Drawer Header */}
-          <div className={`px-5 py-4 border-b flex items-center justify-between ${
-            isParchment ? 'border-amber-200/80 bg-[#f7eedc]' : 'border-gray-700/40'
-          }`}>
+          <div className="px-5 py-4 border-b border-[#eee5d8] bg-white flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <BookOpen className="w-5 h-5 text-amber-700 dark:text-amber-400" />
+              <BookOpen className="w-5 h-5 text-amber-600" />
               <div>
-                <h2 className="font-magical font-bold text-lg text-amber-950 dark:text-[#cba358]">
+                <h2 className="font-magical font-bold text-lg text-amber-950">
                   魔法生词本 ({vocabList.length})
                 </h2>
-                <p className={`text-xs ${isParchment ? 'text-[#7a644c]' : 'text-[#8c9ba5]'}`}>精听原著词汇与例句笔记</p>
+                <p className="text-xs text-stone-500">精听原著词汇与例句笔记</p>
               </div>
             </div>
 
@@ -174,7 +168,7 @@ export function VocabularyDrawer({
 
               <button
                 onClick={onClose}
-                className="duo-touch-target rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
+                className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 shadow-2xs cursor-pointer"
                 title="关闭生词本"
               >
                 <X size={18} />
@@ -195,7 +189,7 @@ export function VocabularyDrawer({
                     <span>卡片进度: {flashcardIndex + 1} / {filteredList.length}</span>
                     <button 
                       onClick={() => setIsCardFlipped(!isCardFlipped)}
-                      className="text-[#cba358] hover:underline flex items-center gap-1"
+                      className="text-amber-700 font-semibold hover:underline flex items-center gap-1"
                     >
                       <RotateCw size={12} /> 点击卡片翻转
                     </button>
@@ -204,55 +198,45 @@ export function VocabularyDrawer({
                   {/* Flashcard Body */}
                   <div 
                     onClick={() => setIsCardFlipped(!isCardFlipped)}
-                    className={`w-full min-h-[300px] my-6 rounded-2xl p-6 border-2 cursor-pointer flex flex-col items-center justify-center text-center transition-all duration-300 transform shadow-xl select-none ${
-                      isParchment
-                        ? isCardFlipped 
-                          ? 'border-amber-400 bg-[#fffdf9] text-amber-950 shadow-md' 
-                          : 'border-amber-200 bg-[#faf6ee] text-[#2c221e] hover:border-amber-400'
-                        : isCardFlipped 
-                          ? 'border-[#cba358] bg-[#182333]/90 text-amber-100' 
-                          : 'border-[#384860] bg-[#141b26]/70 text-[#e2d9c8] hover:border-[#cba358]/60'
+                    className={`w-full min-h-[300px] my-6 rounded-2xl p-6 border-2 cursor-pointer flex flex-col items-center justify-center text-center transition-all duration-300 transform shadow-md select-none ${
+                      isCardFlipped 
+                        ? 'border-amber-400 bg-white text-amber-950 shadow-lg' 
+                        : 'border-[#eee5d8] bg-white text-[#1e1610] hover:border-amber-400'
                     }`}
                   >
                     {!isCardFlipped ? (
                       <div>
-                        <span className="text-xs font-mono uppercase tracking-widest text-[#8c9ba5] block mb-2">
+                        <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block mb-2">
                           正面 · QUESTION
                         </span>
-                        <h3 className="text-3xl font-magical font-bold text-amber-700 dark:text-[#f3d38c] mb-2">
+                        <h3 className="text-3xl font-magical font-bold text-amber-800 mb-2">
                           {currentFlashcard.word}
                         </h3>
                         {currentFlashcard.phonetic && (
-                          <span className="font-mono text-sm text-[#8c9ba5] block mb-4">
+                          <span className="font-mono text-sm text-stone-500 block mb-4">
                             {currentFlashcard.phonetic}
                           </span>
                         )}
-                        <p className={`text-xs mt-4 ${isParchment ? 'text-amber-800/70' : 'text-gray-400'}`}>
+                        <p className="text-xs mt-4 text-stone-500">
                           轻点卡片翻转查看中文释义与例句
                         </p>
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <span className="text-xs font-mono uppercase tracking-widest text-amber-600 dark:text-[#cba358] block">
+                        <span className="text-xs font-mono uppercase tracking-widest text-amber-700 block">
                           背面释义 · ANSWER
                         </span>
-                        <h4 className="text-xl font-bold text-amber-900 dark:text-amber-200 font-reading">
+                        <h4 className="text-xl font-bold text-amber-950 font-reading">
                           {currentFlashcard.translation}
                         </h4>
                         {currentFlashcard.lore && (
-                          <div className={`text-xs p-2.5 rounded-lg border flex items-start gap-1.5 text-left ${
-                            isParchment
-                              ? 'bg-amber-100/80 text-amber-950 border-amber-300'
-                              : 'bg-[#740001]/30 text-amber-100/80 border-amber-400/30'
-                          }`}>
-                            <Sparkles size={13} className="text-amber-500 shrink-0 mt-0.5" />
+                          <div className="text-xs p-2.5 rounded-xl border border-amber-300/80 bg-amber-500/10 text-amber-950 flex items-start gap-1.5 text-left">
+                            <Sparkles size={13} className="text-amber-600 shrink-0 mt-0.5" />
                             <span>{currentFlashcard.lore}</span>
                           </div>
                         )}
                         {currentFlashcard.context && (
-                          <p className={`text-xs italic font-reading mt-2 border-t pt-2 ${
-                            isParchment ? 'text-[#6b553e] border-amber-200' : 'text-gray-300 border-gray-700/40'
-                          }`}>
+                          <p className="text-xs italic font-reading mt-2 border-t border-[#eee5d8] pt-2 text-stone-600">
                             "{currentFlashcard.context}"
                           </p>
                         )}
@@ -299,21 +283,15 @@ export function VocabularyDrawer({
             // List Mode
             <>
               {/* Search input */}
-              <div className={`p-3 border-b ${
-                isParchment ? 'border-amber-200/80 bg-[#f9f2e3]' : 'border-gray-700/30'
-              }`}>
+              <div className="p-3 border-b border-[#eee5d8] bg-white">
                 <div className="relative">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
                   <input
                     type="text"
                     placeholder="搜索生词或中文释义..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className={`w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border focus:outline-none transition-all ${
-                      isParchment 
-                        ? 'bg-white border-amber-200 text-amber-950 focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20' 
-                        : 'bg-[#18202d] border-[#2d3a4f] text-[#e2d9c8] focus:ring-1 focus:ring-[#cba358]'
-                    }`}
+                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[#eee5d8] bg-stone-50 text-[#1e1610] focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition-all"
                   />
                 </div>
               </div>
@@ -321,8 +299,8 @@ export function VocabularyDrawer({
               {/* Vocab Cards List */}
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {filteredList.length === 0 ? (
-                  <div className="text-center py-16 text-slate-500 text-xs">
-                    <p className="font-bold text-sm text-amber-900/80 mb-1">生词本暂无内容</p>
+                  <div className="text-center py-16 text-stone-400 text-xs">
+                    <p className="font-bold text-sm text-stone-700 mb-1">生词本暂无内容</p>
                     <p className="text-xs">在精听模式下轻点任意英文单词，即可收入生词本</p>
                   </div>
                 ) : (
@@ -333,12 +311,8 @@ export function VocabularyDrawer({
                         key={item.id || item.word}
                         className={`p-3.5 rounded-2xl border transition-all ${
                           isDue
-                            ? isParchment
-                              ? 'bg-amber-50/60 border-amber-400/90 shadow-xs ring-1 ring-amber-400/30'
-                              : 'bg-amber-950/20 border-amber-500/70 shadow-xs ring-1 ring-amber-500/20'
-                            : isParchment 
-                            ? 'bg-[#ffffff] border-[#e8dcb9] hover:border-amber-400 shadow-sm' 
-                            : 'bg-[#18202d]/80 border-[#2b394e] hover:border-[#3f5370]'
+                            ? 'bg-amber-500/5 border-amber-400/90 shadow-xs ring-1 ring-amber-400/30'
+                            : 'duo-card duo-card-hover'
                         }`}
                       >
                       <div className="flex items-start justify-between">
@@ -353,7 +327,7 @@ export function VocabularyDrawer({
                               </span>
                             )}
                             {item.isHpLore && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#740001] text-amber-200 font-semibold shadow-sm">
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-300/80 font-bold shadow-2xs">
                                 魔法词
                               </span>
                             )}
@@ -364,14 +338,14 @@ export function VocabularyDrawer({
                         <div className="flex items-center space-x-1 shrink-0">
                           <button
                             onClick={() => playPronunciation(item.word)}
-                            className="duo-touch-target rounded-xl border border-transparent hover:border-amber-300/80 bg-transparent hover:bg-amber-50 text-slate-500 hover:text-amber-800 transition-all active:scale-90 cursor-pointer"
+                            className="duo-touch-target rounded-xl border border-transparent hover:border-amber-300/80 bg-transparent hover:bg-amber-50 text-stone-500 hover:text-amber-800 transition-all active:scale-90 cursor-pointer"
                             title="试听纯正英音发音"
                           >
                             <Volume2 size={16} />
                           </button>
                           <button
                             onClick={() => onRemoveWord(item.word)}
-                            className="duo-touch-target rounded-xl border border-transparent hover:border-rose-300/80 bg-transparent hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-all active:scale-90 cursor-pointer"
+                            className="duo-touch-target rounded-xl border border-transparent hover:border-rose-300/80 bg-transparent hover:bg-rose-50 text-stone-400 hover:text-rose-600 transition-all active:scale-90 cursor-pointer"
                             title="从生词本移除"
                           >
                             <Trash2 size={16} />
@@ -379,16 +353,12 @@ export function VocabularyDrawer({
                         </div>
                       </div>
 
-                      <p className={`text-xs sm:text-sm font-reading mt-1.5 font-bold ${
-                        isParchment ? 'text-amber-950' : 'text-amber-200/90'
-                      }`}>
+                      <p className="text-xs sm:text-sm font-reading mt-1.5 font-bold text-amber-950">
                         {item.translation}
                       </p>
 
                       {item.context && (
-                        <p className={`text-[11px] font-reading italic mt-2 border-t pt-1.5 line-clamp-2 ${
-                          isParchment ? 'text-[#735839] border-amber-200/80' : 'text-gray-400 border-gray-700/30'
-                        }`}>
+                        <p className="text-[11px] font-reading italic mt-2 border-t border-[#eee5d8] pt-1.5 line-clamp-2 text-stone-600">
                           "{item.context}"
                         </p>
                       )}
@@ -399,9 +369,7 @@ export function VocabularyDrawer({
               </div>
 
               {/* Bottom Actions */}
-              <div className={`p-4 border-t flex flex-wrap items-center justify-between gap-2 text-xs ${
-                isParchment ? 'border-amber-200/80 bg-[#f7eedc]' : 'border-gray-700/40'
-              }`}>
+              <div className="p-4 border-t border-[#eee5d8] bg-white flex flex-wrap items-center justify-between gap-2 text-xs">
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleExportAnki}
@@ -427,7 +395,7 @@ export function VocabularyDrawer({
                 <button
                   onClick={onClearAll}
                   disabled={vocabList.length === 0}
-                  className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-rose-600 hover:bg-rose-50/80 transition-all active:scale-95 cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
+                  className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-stone-400 hover:text-rose-600 hover:bg-rose-50/80 transition-all active:scale-95 cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
                   title="清空生词本内所有单词"
                 >
                   清空生词本
