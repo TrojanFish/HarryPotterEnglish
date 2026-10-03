@@ -250,6 +250,26 @@ export function AudioPlayer({
             <SkipForward size={16} />
           </button>
 
+          {/* Quick 0.8x Slow Listening Toggle (Kid-friendly acoustic training) */}
+          <button
+            onClick={() => {
+              if (playbackRate === 0.8) {
+                onChangePlaybackRate(1.0);
+              } else {
+                onChangePlaybackRate(0.8);
+              }
+            }}
+            className={`hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all active:scale-95 shadow-xs cursor-pointer ${
+              playbackRate === 0.8
+                ? 'bg-amber-500 text-white border-amber-500 shadow-sm scale-105'
+                : 'border-amber-200/80 bg-white/80 text-amber-900 hover:bg-amber-50 hover:border-amber-400'
+            }`}
+            title={playbackRate === 0.8 ? "当前为 0.8x 慢速磨耳朵模式，点击恢复 1.0x 原速" : "一键开启 0.8x 慢速磨耳朵精听（辨析连读与爆破音）"}
+          >
+            <Sparkles size={12} className={playbackRate === 0.8 ? 'text-white' : 'text-amber-600'} />
+            <span>{playbackRate === 0.8 ? '0.8x 慢速中' : '0.8x 慢速'}</span>
+          </button>
+
           {/* Student Speed Selector */}
           <div className="relative" ref={speedMenuContainerRef}>
             <button

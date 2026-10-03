@@ -6,14 +6,17 @@ import {
   Sparkles, 
   Check, 
   ExternalLink,
-  BookOpen
+  BookOpen,
+  Lightbulb
 } from 'lucide-react';
+import { formatSyllables, getPhonicsTip } from '../utils/phonicsHelper';
 
 /**
  * WordModal — Chinese Student Vocabulary Card
  * - Designed for Chinese elementary & middle school students:
  * - Pure Chinese definitions (中文释义)
  * - British pronunciation speech audio button
+ * - Syllable breakdown and natural phonics rules
  * - Zero emoji symbols (uses clean Lucide icons)
  * - Links to Cambridge Chinese & Youdao dictionaries
  */
@@ -38,6 +41,8 @@ export function WordModal({
   }, [onClose]);
 
   if (!wordData) return null;
+
+  const phonicsInfo = getPhonicsTip(wordData.word, wordData.phonetic);
 
   const playPronunciation = () => {
     if (wordData.audioUrl) {
@@ -81,7 +86,7 @@ export function WordModal({
         <div className="flex items-start justify-between pr-8 mb-4">
           <div>
             <div className="flex items-center space-x-2">
-              <h2 className="text-2xl sm:text-3xl font-bold font-magical tracking-wide text-amber-950 dark:text-amber-300">
+              <h2 className="text-2xl sm:text-3xl font-bold font-magical tracking-wide text-amber-950">
                 {wordData.word}
               </h2>
               {wordData.isHpLore && (
@@ -92,8 +97,21 @@ export function WordModal({
               )}
             </div>
 
+            {/* Syllable Breakdown & Natural Phonics Tag for Students */}
+            <div className="flex items-center flex-wrap gap-2 mt-1.5">
+              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-amber-200/70 text-amber-950 border border-amber-300/90" title="音节拆分助记">
+                音节: {formatSyllables(wordData.word)}
+              </span>
+              {phonicsInfo && (
+                <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-100/90 text-emerald-900 border border-emerald-300 flex items-center gap-1">
+                  <Sparkles size={11} className="text-emerald-700" />
+                  <span>{phonicsInfo.rule}</span>
+                </span>
+              )}
+            </div>
+
             {/* Phonetic & Pronunciation */}
-            <div className="flex items-center space-x-3 mt-2">
+            <div className="flex items-center space-x-3 mt-2.5">
               {wordData.phonetic && (
                 <span className="font-mono text-sm px-2.5 py-0.5 rounded-lg bg-amber-100 text-amber-950 font-bold border border-amber-200/80">
                   {wordData.phonetic}
@@ -119,6 +137,17 @@ export function WordModal({
             </div>
           </div>
         </div>
+
+        {/* Natural Phonics Guidance Box */}
+        {phonicsInfo && (
+          <div className="mb-3.5 p-3 rounded-2xl border border-emerald-300/80 bg-emerald-50/60 text-xs text-emerald-950 flex items-start gap-2 shadow-2xs">
+            <Lightbulb size={15} className="text-emerald-700 shrink-0 mt-0.5" />
+            <div>
+              <span className="font-bold text-emerald-900">自然拼读点拨：</span>
+              <span className="font-reading">{phonicsInfo.tip}</span>
+            </div>
+          </div>
+        )}
 
         {/* Translation & Definitions (Pure Chinese for Chinese Students) */}
         <div className="space-y-3.5 my-4">

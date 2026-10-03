@@ -42,7 +42,13 @@ export function SubtitleViewer({
   const activeCueRef = useRef(null);
   const containerRef = useRef(null);
   const [revealedSentences, setRevealedSentences] = useState({});
-  const [fontSize, setFontSize] = useState('large'); // 'normal' | 'large' | 'huge'
+  const [fontSize, setFontSize] = useState(() => {
+    try {
+      return localStorage.getItem('hp_subtitle_font_size') || 'large';
+    } catch {
+      return 'large';
+    }
+  }); // 'normal' | 'large' | 'huge'
   const [isFollowActive, setIsFollowActive] = useState(true);
   const [copiedCueId, setCopiedCueId] = useState(null);
   const [speakingCueId, setSpeakingCueId] = useState(null);
@@ -115,13 +121,13 @@ export function SubtitleViewer({
       }`}>
         {/* Left: Cue counts & status */}
         <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
-          <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-800 dark:text-amber-300 font-bold font-mono">
+          <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-800 font-bold font-mono">
             <Headphones size={13} />
             <span>全章 {cues.length} 个精听句</span>
           </span>
 
           {studyMode === 'blind' && (
-            <span className="text-indigo-600 dark:text-indigo-300 bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-400/30 flex items-center gap-1 font-semibold">
+            <span className="text-amber-800 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-400/30 flex items-center gap-1 font-semibold">
               <EyeOff size={13} /> 魔法磨耳朵模式（迷雾遮罩）
             </span>
           )}
@@ -147,17 +153,37 @@ export function SubtitleViewer({
             <span>{isFollowActive ? '跟随朗读：开' : '跟随朗读：关'}</span>
           </button>
 
-          {/* Font Size Selector (Very important for students!) */}
-          <button
-            onClick={() => {
-              setFontSize(prev => prev === 'normal' ? 'large' : prev === 'large' ? 'huge' : 'normal');
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-50 text-amber-950 hover:border-amber-400 text-xs font-bold transition-all active:scale-95 shadow-xs cursor-pointer"
-            title="调整阅读字号（大字号更护眼）"
-          >
-            <Type size={14} className="text-amber-700" />
-            <span className="font-mono text-xs uppercase">{fontSize === 'normal' ? '标准' : fontSize === 'large' ? '大字' : '特大'}</span>
-          </button>
+          {/* 3-Level Font Size Segmented Selector (Kid-friendly eye protection) */}
+          <div className="flex items-center rounded-xl border border-amber-200/80 bg-white/80 p-0.5 shadow-xs text-xs font-bold">
+            <span className="px-2 text-slate-500 flex items-center gap-1">
+              <Type size={13} className="text-amber-700" />
+              <span className="hidden sm:inline">字号:</span>
+            </span>
+            {[
+              { id: 'normal', label: '标准', title: '标准字号 (18px)' },
+              { id: 'large',  label: '大号', title: '大号字号 (22px，推荐视力保护)' },
+              { id: 'huge',   label: '超大', title: '超大字号 (26px，适合大屏/平板)' }
+            ].map((sizeOpt) => {
+              const isSelected = fontSize === sizeOpt.id;
+              return (
+                <button
+                  key={sizeOpt.id}
+                  onClick={() => {
+                    setFontSize(sizeOpt.id);
+                    try { localStorage.setItem('hp_subtitle_font_size', sizeOpt.id); } catch {}
+                  }}
+                  className={`px-2.5 py-1 rounded-lg transition-all active:scale-95 cursor-pointer ${
+                    isSelected
+                      ? 'bg-amber-500 text-white font-bold shadow-xs'
+                      : 'text-amber-950/80 hover:text-amber-950 hover:bg-amber-50'
+                  }`}
+                  title={sizeOpt.title}
+                >
+                  {sizeOpt.label}
+                </button>
+              );
+            })}
+          </div>
 
           {/* Translation Toggle */}
           <button

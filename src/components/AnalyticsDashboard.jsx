@@ -11,7 +11,9 @@ import {
   Sparkles, 
   Calendar,
   Zap,
-  Info
+  Info,
+  Copy,
+  Check
 } from 'lucide-react';
 import { getAnalyticsSummary } from '../utils/analyticsStore';
 
@@ -24,6 +26,8 @@ export function AnalyticsDashboard({
   const [summary, setSummary] = useState(null);
   const [hoveredBarIndex, setHoveredBarIndex] = useState(null);
   const [hoveredPointIndex, setHoveredPointIndex] = useState(null);
+  const [showHonorScroll, setShowHonorScroll] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   // Reload statistics whenever modal opens
   useEffect(() => {
@@ -67,6 +71,24 @@ export function AnalyticsDashboard({
   // Convert total listening time to hours and minutes
   const totalHours = Math.floor(currentSummary.totalListeningSeconds / 3600);
   const totalMinutes = Math.floor((currentSummary.totalListeningSeconds % 3600) / 60);
+  const weeklyMinutesTotal = (currentSummary.weeklyListeningMinutes || []).reduce((acc, d) => acc + (d.minutes || 0), 0);
+
+  // Copy honor scroll text for parents/teachers (100% 0-emoji compliant)
+  const handleCopyHonorReport = () => {
+    const text = `【霍格沃茨学业喜报 · 魔法之星荣誉卷轴】\n` +
+      `[打卡] 连续研学打卡：${currentSummary.streakDays} 天（历史最长连续 ${currentSummary.longestStreakDays} 天）\n` +
+      `[听力] 本周专注精听：${weeklyMinutesTotal} 分钟（累计精听 ${totalHours} 小时 ${totalMinutes} 分钟）\n` +
+      `[章节] 攻克原声章节：${currentSummary.completedChaptersCount} 章\n` +
+      `[词汇] 魔法生词累计：${vocabCount} 个\n` +
+      `[寄语] “以好奇为魔杖，以坚持为魔药。每一个专注聆听的清晨与夜晚，都在构筑纯正英语语感！”`;
+    
+    if (navigator && navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      }).catch(e => console.warn(e));
+    }
+  };
 
   // Bar Chart calculations
   const weeklyData = currentSummary.weeklyListeningMinutes || [];
@@ -147,16 +169,111 @@ export function AnalyticsDashboard({
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
-            title="关闭罗盘 (ESC)"
-          >
-            <X size={18} />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowHonorScroll(!showHonorScroll)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/80 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
+              title="生成精美羊皮纸学业喜报，便于分享给家长或班级群"
+            >
+              <Award size={14} />
+              <span>{showHonorScroll ? '返回学情图表' : '魔法学业喜报'}</span>
+            </button>
+
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
+              title="关闭罗盘 (ESC)"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Content Body */}
+        {showHonorScroll ? (
+          <div className="p-6 sm:p-8 space-y-6 animate-fadeIn">
+            <div className="p-6 sm:p-8 rounded-3xl border-2 border-amber-400/80 bg-gradient-to-br from-[#fffdf8] via-[#faf6ee] to-[#f5ecda] shadow-xl text-center relative overflow-hidden">
+              {/* Background Watermark Accent */}
+              <div className="absolute right-3 -bottom-6 pointer-events-none opacity-5 text-amber-700">
+                <Award size={200} />
+              </div>
+
+              {/* Scroll Crest Header */}
+              <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-500/20 text-amber-900 border border-amber-400/40 text-xs font-bold mb-3 shadow-2xs">
+                <Sparkles size={13} className="text-amber-700" />
+                <span>霍格沃茨学业喜报 · 魔法之星荣誉卷轴</span>
+              </div>
+
+              <h3 className="text-2xl sm:text-3xl font-bold font-magical text-amber-950 mb-2">
+                学海探秘 · 见证卓越成长
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 font-reading max-w-lg mx-auto mb-7 leading-relaxed">
+                “以好奇为魔杖，以坚持为魔药。每一个专注聆听的清晨与夜晚，都在构筑你的纯正英语语感！”
+              </p>
+
+              {/* 4 Pillars Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-7">
+                <div className="p-4 rounded-2xl border border-amber-200/90 bg-white/90 shadow-xs">
+                  <div className="text-amber-700 flex items-center justify-center mb-1">
+                    <Flame size={20} className="text-orange-500" />
+                  </div>
+                  <div className="font-magical font-bold text-2xl text-amber-950">
+                    {currentSummary.streakDays} <span className="text-xs text-slate-400 font-normal">天</span>
+                  </div>
+                  <div className="text-xs text-slate-500 font-bold mt-0.5">连续坚持研读</div>
+                </div>
+
+                <div className="p-4 rounded-2xl border border-amber-200/90 bg-white/90 shadow-xs">
+                  <div className="text-amber-700 flex items-center justify-center mb-1">
+                    <Clock size={20} className="text-amber-600" />
+                  </div>
+                  <div className="font-magical font-bold text-2xl text-amber-950">
+                    {weeklyMinutesTotal} <span className="text-xs text-slate-400 font-normal">分</span>
+                  </div>
+                  <div className="text-xs text-slate-500 font-bold mt-0.5">本周专注精听</div>
+                </div>
+
+                <div className="p-4 rounded-2xl border border-amber-200/90 bg-white/90 shadow-xs">
+                  <div className="text-amber-700 flex items-center justify-center mb-1">
+                    <BookOpen size={20} className="text-emerald-600" />
+                  </div>
+                  <div className="font-magical font-bold text-2xl text-amber-950">
+                    {currentSummary.completedChaptersCount} <span className="text-xs text-slate-400 font-normal">章</span>
+                  </div>
+                  <div className="text-xs text-slate-500 font-bold mt-0.5">攻克原声章节</div>
+                </div>
+
+                <div className="p-4 rounded-2xl border border-amber-200/90 bg-white/90 shadow-xs">
+                  <div className="text-amber-700 flex items-center justify-center mb-1">
+                    <Bookmark size={20} className="text-blue-600" />
+                  </div>
+                  <div className="font-magical font-bold text-2xl text-amber-950">
+                    {vocabCount} <span className="text-xs text-slate-400 font-normal">词</span>
+                  </div>
+                  <div className="text-xs text-slate-500 font-bold mt-0.5">魔法生词收录</div>
+                </div>
+              </div>
+
+              {/* Share Action Bar */}
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <button
+                  onClick={handleCopyHonorReport}
+                  className="flex items-center gap-2 px-7 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg active:scale-95 cursor-pointer transition-all"
+                >
+                  {isCopied ? <Check size={16} /> : <Copy size={16} />}
+                  <span>{isCopied ? '喜报文本已复制！可发给家长' : '一键复制喜报文本'}</span>
+                </button>
+
+                <button
+                  onClick={() => setShowHonorScroll(false)}
+                  className="px-5 py-2.5 rounded-2xl border border-amber-300/80 bg-white hover:bg-amber-50 text-amber-950 font-bold text-xs sm:text-sm shadow-xs active:scale-95 cursor-pointer transition-all"
+                >
+                  查看详细学情图表
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
         <div className="p-5 sm:p-6 space-y-6">
 
           {/* 4 Habit Tracking Metric Cards */}
@@ -602,6 +719,7 @@ export function AnalyticsDashboard({
           </div>
 
         </div>
+        )}
 
         {/* Footer info note */}
         <div className={`px-6 py-3 border-t text-[11px] flex items-center justify-between ${
