@@ -228,3 +228,87 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
 .incendio-glow {
   animation: incendioGlow 1.8s infinite ease-in-out;
 }
+
+/* ───────────────────────────────────────────────────────────
+   Duolingo-style 3D Squishy Buttons & Tactile Feedback
+─────────────────────────────────────────────────────────── */
+
+.duo-btn-primary {
+  background-color: #d97706;
+  border-bottom: 4px solid #92400e;
+  color: #ffffff;
+  font-weight: 700;
+  transition: all 0.08s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.duo-btn-primary:hover {
+  background-color: #b45309;
+}
+.duo-btn-primary:active {
+  transform: translateY(3px);
+  border-bottom-width: 1px;
+}
+
+.duo-btn-success {
+  background-color: #059669;
+  border-bottom: 4px solid #065f46;
+  color: #ffffff;
+  font-weight: 700;
+  transition: all 0.08s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.duo-btn-success:hover {
+  background-color: #047857;
+}
+.duo-btn-success:active {
+  transform: translateY(3px);
+  border-bottom-width: 1px;
+}
+
+.duo-btn-danger {
+  background-color: #e11d48;
+  border-bottom: 4px solid #9f1239;
+  color: #ffffff;
+  font-weight: 700;
+  transition: all 0.08s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.duo-btn-danger:hover {
+  background-color: #be123c;
+}
+.duo-btn-danger:active {
+  transform: translateY(3px);
+  border-bottom-width: 1px;
+}
+
+.duo-btn-secondary {
+  background-color: #ffffff;
+  border: 1.5px solid #d5c7b3;
+  border-bottom: 4px solid #c4b39b;
+  color: #2d241c;
+  font-weight: 700;
+  transition: all 0.08s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.duo-btn-secondary:hover {
+  background-color: #faf5eb;
+  border-color: #b8a387;
+  border-bottom-color: #a89172;
+}
+.duo-btn-secondary:active {
+  transform: translateY(3px);
+  border-bottom-width: 1.5px;
+}
+
+/* Ensure touch targets meet 44px minimum for young learners */
+.duo-touch-target {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

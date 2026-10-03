@@ -112,11 +112,11 @@ export function AccioWordPicker({
               <button
                 key={tile.id}
                 onClick={() => handleRemoveTile(idx)}
-                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 text-white font-bold text-sm sm:text-base shadow-sm hover:shadow active:scale-95 cursor-pointer transition-all border border-amber-300/40 flex items-center gap-1.5 group"
+                className="px-3.5 py-1.5 min-h-[40px] rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm sm:text-base border-b-3 border-amber-700 active:translate-y-0.5 active:border-b-1 shadow-sm cursor-pointer transition-all flex items-center gap-1.5 group select-none"
                 title="点击撤回此词"
               >
                 <span>{tile.text}</span>
-                <Undo2 size={12} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                <Undo2 size={12} className="opacity-70 group-hover:opacity-100 transition-opacity" />
               </button>
             ))
           )}
@@ -161,12 +161,12 @@ export function AccioWordPicker({
                 key={tile.id}
                 disabled={isUsed || isSentenceFullyCorrect}
                 onClick={() => handleSelectTile(tile)}
-                className={`px-4 py-2 rounded-xl text-sm sm:text-base font-bold transition-all shadow-xs ${
+                className={`px-4 py-2 min-h-[44px] rounded-xl text-sm sm:text-base font-bold transition-all select-none ${
                   isUsed
-                    ? 'opacity-25 scale-95 border-dashed border-amber-200 bg-amber-50/50 text-slate-400 cursor-not-allowed'
+                    ? 'opacity-20 scale-95 border-b-2 border-dashed border-amber-200 bg-amber-50/40 text-slate-400 cursor-not-allowed'
                     : isShaking
-                    ? 'border-2 border-red-500 bg-red-50 text-red-700 animate-pulse'
-                    : 'border-2 border-amber-300/80 bg-white/95 text-amber-950 hover:border-amber-500 hover:bg-amber-50 hover:shadow-md active:scale-95 cursor-pointer'
+                    ? 'border-2 border-b-4 border-rose-500 bg-rose-50 text-rose-700 animate-bounce'
+                    : 'border-1.5 border-amber-300 border-b-4 border-b-amber-400/90 bg-white/95 text-amber-950 hover:bg-amber-50 hover:border-amber-400 hover:border-b-amber-500 active:translate-y-1 active:border-b-2 shadow-xs cursor-pointer'
                 }`}
               >
                 {tile.text}

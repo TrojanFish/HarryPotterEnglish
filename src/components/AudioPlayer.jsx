@@ -227,10 +227,10 @@ export function AudioPlayer({
             <SkipBack size={16} />
           </button>
 
-          {/* Main Play / Pause Button (Hero 48px) */}
+          {/* Main Play / Pause Button (Hero 48px with 3D physical depth) */}
           <button
             onClick={onPlayPause}
-            className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-md hover:shadow-lg hover:shadow-amber-500/30 border-2 border-white/80 cursor-pointer"
+            className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-white flex items-center justify-center border-b-4 border-amber-700 active:border-b-0 active:translate-y-1 transition-all shadow-md hover:shadow-lg hover:shadow-amber-500/30 cursor-pointer"
             title="播放 / 暂停 (快捷键: 空格键 Space)"
           >
             {isPlaying ? (
@@ -244,7 +244,7 @@ export function AudioPlayer({
           <button
             onClick={onNextSentence}
             disabled={activeCueIndex >= totalCues - 1}
-            className="p-2.5 rounded-xl border border-amber-200/80 bg-white/80 text-slate-600 hover:text-amber-800 hover:border-amber-400 hover:bg-amber-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 shadow-xs cursor-pointer"
+            className="duo-touch-target p-2.5 rounded-xl border border-amber-200/80 bg-white/80 text-slate-600 hover:text-amber-800 hover:border-amber-400 hover:bg-amber-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 shadow-xs cursor-pointer"
             title="下一句 (快捷键: 右箭头 →)"
           >
             <SkipForward size={16} />

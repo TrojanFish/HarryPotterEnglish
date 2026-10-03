@@ -457,7 +457,7 @@ export function DictationStudio({
             <button
               onClick={onPrevCue}
               disabled={activeCueIndex <= 0}
-              className="px-3.5 py-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-50 text-slate-700 hover:text-amber-950 hover:border-amber-400 text-xs disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 font-bold transition-all active:scale-95 shadow-xs cursor-pointer"
+              className="duo-btn-secondary min-h-[42px] px-4 py-2 rounded-xl text-xs disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 font-bold shadow-xs cursor-pointer"
             >
               <SkipBack size={14} />
               <span>上一句</span>
@@ -465,7 +465,7 @@ export function DictationStudio({
 
             <button
               onClick={handleNext}
-              className="flex items-center gap-1.5 px-6 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white hover:shadow-md text-xs font-bold transition-all active:scale-95 shadow-sm cursor-pointer"
+              className="duo-btn-primary min-h-[42px] flex items-center gap-1.5 px-6 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-md cursor-pointer"
             >
               <span>{activeCueIndex >= cues.length - 1 ? '完成试炼并结算' : '下一句 (Enter)'}</span>
               <SkipForward size={14} />

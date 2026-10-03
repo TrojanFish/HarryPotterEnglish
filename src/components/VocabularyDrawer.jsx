@@ -90,6 +90,34 @@ export function VocabularyDrawer({
   };
 
   const currentFlashcard = filteredList[flashcardIndex];
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  const renderSrsBadge = (item) => {
+    const level = item.srsLevel || item.srsBox || 1;
+    const isDue = !item.nextReviewDate || item.nextReviewDate <= todayStr;
+
+    const levelConfigs = {
+      1: { label: 'Box 1 · 初学', color: 'bg-amber-100/90 text-amber-900 border-amber-300' },
+      2: { label: 'Box 2 · 巩固', color: 'bg-amber-200/70 text-amber-950 border-amber-400' },
+      3: { label: 'Box 3 · 熟记', color: 'bg-blue-100/90 text-blue-900 border-blue-300' },
+      4: { label: 'Box 4 · 长效', color: 'bg-purple-100/90 text-purple-900 border-purple-300' },
+      5: { label: 'Box 5 · 永久掌握', color: 'bg-emerald-100 text-emerald-900 border-emerald-400 font-bold' }
+    };
+    const config = levelConfigs[level] || levelConfigs[1];
+
+    return (
+      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+        <span className={`text-[10px] px-2 py-0.5 rounded-md border font-semibold ${config.color}`}>
+          {config.label}
+        </span>
+        {isDue && (
+          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-500 text-white font-bold animate-pulse shadow-xs">
+            待复习
+          </span>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div 
@@ -125,7 +153,7 @@ export function VocabularyDrawer({
                     onClose();
                     onOpenSrs();
                   }}
-                  className="px-2.5 py-1.5 rounded-xl border border-amber-400 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer"
+                  className="duo-btn-primary min-h-[38px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
                   title="启动艾宾浩斯智能翻转闪卡 (SRS 遗忘曲线算法)"
                 >
                   <BrainCircuit size={14} />
@@ -135,10 +163,8 @@ export function VocabularyDrawer({
 
               <button
                 onClick={() => setIsFlashcardMode(!isFlashcardMode)}
-                className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer ${
-                  isFlashcardMode 
-                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-500 shadow-sm' 
-                    : 'border-amber-300/80 bg-white/90 text-amber-950 hover:bg-amber-50 hover:border-amber-400'
+                className={`duo-btn-secondary min-h-[38px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer ${
+                  isFlashcardMode ? 'ring-2 ring-amber-500' : ''
                 }`}
                 title="切换卡片翻转记忆模式与列表笔记"
               >
@@ -148,7 +174,7 @@ export function VocabularyDrawer({
 
               <button
                 onClick={onClose}
-                className="p-2 rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
+                className="duo-touch-target rounded-xl border border-amber-200/80 bg-white/80 hover:bg-amber-100/70 text-slate-600 hover:text-amber-900 hover:border-amber-400 transition-all active:scale-90 shadow-2xs cursor-pointer"
                 title="关闭生词本"
               >
                 <X size={18} />
@@ -310,36 +336,39 @@ export function VocabularyDrawer({
                       }`}
                     >
                       <div className="flex items-start justify-between">
-                        <div className="flex items-center space-x-2">
-                          <h4 className="font-magical font-bold text-base text-amber-950 dark:text-[#cba358]">
-                            {item.word}
-                          </h4>
-                          {item.phonetic && (
-                            <span className="font-mono text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-800 dark:text-[#8c9ba5] font-semibold">
-                              {item.phonetic}
-                            </span>
-                          )}
-                          {item.isHpLore && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#740001] text-amber-200 font-semibold shadow-sm">
-                              魔法词
-                            </span>
-                          )}
+                        <div className="flex-1 min-w-0 pr-2">
+                          <div className="flex items-center space-x-2 flex-wrap">
+                            <h4 className="font-magical font-bold text-base text-amber-950">
+                              {item.word}
+                            </h4>
+                            {item.phonetic && (
+                              <span className="font-mono text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-800 font-semibold">
+                                {item.phonetic}
+                              </span>
+                            )}
+                            {item.isHpLore && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#740001] text-amber-200 font-semibold shadow-sm">
+                                魔法词
+                              </span>
+                            )}
+                          </div>
+                          {renderSrsBadge(item)}
                         </div>
 
-                        <div className="flex items-center space-x-1">
+                        <div className="flex items-center space-x-1 shrink-0">
                           <button
                             onClick={() => playPronunciation(item.word)}
-                            className="p-1.5 rounded-xl border border-transparent hover:border-amber-300/80 bg-transparent hover:bg-amber-50 text-slate-400 hover:text-amber-800 transition-all active:scale-90 cursor-pointer"
+                            className="duo-touch-target rounded-xl border border-transparent hover:border-amber-300/80 bg-transparent hover:bg-amber-50 text-slate-500 hover:text-amber-800 transition-all active:scale-90 cursor-pointer"
                             title="试听纯正英音发音"
                           >
-                            <Volume2 size={15} />
+                            <Volume2 size={16} />
                           </button>
                           <button
                             onClick={() => onRemoveWord(item.word)}
-                            className="p-1.5 rounded-xl border border-transparent hover:border-rose-300/80 bg-transparent hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-all active:scale-90 cursor-pointer"
+                            className="duo-touch-target rounded-xl border border-transparent hover:border-rose-300/80 bg-transparent hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-all active:scale-90 cursor-pointer"
                             title="从生词本移除"
                           >
-                            <Trash2 size={15} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </div>
@@ -370,20 +399,20 @@ export function VocabularyDrawer({
                   <button
                     onClick={handleExportAnki}
                     disabled={vocabList.length === 0}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/90 bg-amber-50/90 hover:bg-amber-100/80 text-amber-950 hover:border-amber-400 font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
+                    className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs disabled:opacity-30 disabled:pointer-events-none"
                     title="导出为标准 Anki 卡片牌组 (.tsv)"
                   >
-                    <Sparkles size={13} className="text-amber-600" />
+                    <Sparkles size={14} className="text-amber-600" />
                     <span>导出至 Anki (TSV)</span>
                   </button>
 
                   <button
                     onClick={handleExportCSV}
                     disabled={vocabList.length === 0}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-amber-300/70 bg-white/90 hover:bg-amber-50 text-amber-900 hover:border-amber-400 font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
+                    className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs disabled:opacity-30 disabled:pointer-events-none"
                     title="导出为通用表格 CSV 格式"
                   >
-                    <Download size={13} />
+                    <Download size={14} />
                     <span>导出 CSV</span>
                   </button>
                 </div>

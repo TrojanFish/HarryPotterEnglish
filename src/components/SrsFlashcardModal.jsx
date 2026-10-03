@@ -131,7 +131,7 @@ export function SrsFlashcardModal({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-amber-950 hover:bg-amber-100/70 border border-transparent hover:border-amber-300 transition-all active:scale-90 cursor-pointer"
+            className="duo-touch-target rounded-xl text-slate-400 hover:text-amber-950 hover:bg-amber-100/70 border border-transparent hover:border-amber-300 transition-all active:scale-90 cursor-pointer"
             title="关闭复习"
           >
             <X size={18} />
@@ -191,9 +191,9 @@ export function SrsFlashcardModal({
 
             <button
               onClick={onClose}
-              className="px-7 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 text-white font-bold text-xs shadow-md active:scale-95 cursor-pointer hover:shadow-lg transition-all"
+              className="duo-btn-primary min-h-[46px] px-8 py-3 rounded-2xl text-xs sm:text-sm shadow-md inline-flex items-center justify-center gap-2 cursor-pointer transition-all"
             >
-              收入魔法行囊并返回
+              <span>收入魔法行囊并返回</span>
             </button>
           </div>
         ) : (
@@ -288,7 +288,7 @@ export function SrsFlashcardModal({
           <div className="pt-4 border-t border-amber-200/80 grid grid-cols-2 gap-3 mt-4">
             <button
               onClick={() => handleAnswer(false)}
-              className="py-3 px-4 rounded-2xl border-2 border-rose-300 bg-rose-50/80 hover:bg-rose-100 text-rose-900 font-bold text-xs sm:text-sm shadow-xs active:scale-95 cursor-pointer transition-all flex items-center justify-center gap-1.5"
+              className="duo-btn-danger min-h-[48px] py-3 px-4 rounded-2xl text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <RotateCcw size={15} />
               <span>还需重炼 (没记住)</span>
@@ -296,9 +296,9 @@ export function SrsFlashcardModal({
 
             <button
               onClick={() => handleAnswer(true)}
-              className="py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg active:scale-95 cursor-pointer transition-all flex items-center justify-center gap-1.5"
+              className="duo-btn-success min-h-[48px] py-3 px-4 rounded-2xl text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <Check size={16} />
+              <Check size={16} className="stroke-[3]" />
               <span>已牢固掌握 (进阶)</span>
             </button>
           </div>

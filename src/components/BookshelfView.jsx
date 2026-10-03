@@ -187,7 +187,7 @@ export function BookshelfView({
           {dueWordsCount > 0 ? (
             <button 
               onClick={onOpenSrs}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-amber-500 bg-amber-500 hover:bg-amber-600 text-white font-bold transition-all shadow-md active:scale-95 cursor-pointer animate-pulse"
+              className="duo-btn-primary min-h-[44px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs shadow-md transition-all animate-pulse"
               title="今日有生词等待艾宾浩斯智能翻转闪卡复习"
             >
               <BrainCircuit size={14} className="text-amber-100" />
@@ -196,7 +196,7 @@ export function BookshelfView({
           ) : vocabCount > 0 ? (
             <button 
               onClick={onOpenSrs}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer"
+              className="duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs shadow-2xs transition-all"
               title="进入艾宾浩斯智能翻转闪卡强化记忆"
             >
               <BrainCircuit size={14} className="text-amber-600" />
@@ -305,7 +305,7 @@ export function BookshelfView({
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
                   <button
                     onClick={onEnterPlayer}
-                    className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-sm shadow-md hover:shadow-lg active:scale-95 cursor-pointer transition-all ring-1 ring-amber-300/30"
+                    className="duo-btn-primary min-h-[46px] flex items-center gap-2 px-6 py-2.5 rounded-2xl text-sm shadow-md transition-all ring-1 ring-amber-300/30"
                     title="立即进入精听教室并继续播放"
                   >
                     <Play size={16} className="fill-current" />
@@ -314,7 +314,7 @@ export function BookshelfView({
 
                   <button
                     onClick={() => setInspectingBook(currentBookObj)}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border border-amber-300/90 bg-white/95 hover:bg-amber-50/90 text-amber-950 hover:border-amber-400 font-bold text-xs sm:text-sm shadow-xs hover:shadow active:scale-95 cursor-pointer transition-all"
+                    className="duo-btn-secondary min-h-[46px] flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-xs transition-all"
                     title="浏览《哈利·波特》完整章节目录"
                   >
                     <Layers size={15} />
