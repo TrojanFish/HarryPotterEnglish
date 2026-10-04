@@ -185,33 +185,33 @@ export function AudioPlayer({
         </div>
 
         {/* Center: Transport Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Rewind 5s combined with Prev Sentence */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Rewind / Prev Sentence */}
           <button
             onClick={onPrevSentence}
             disabled={activeCueIndex <= 0}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
             title="上一句 (←)"
           >
             <SkipBack size={16} />
           </button>
 
-          {/* Main Play / Pause (44px — Apple HIG compliant) */}
+          {/* Main Play / Pause (48px / 44px — Apple HIG compliant) */}
           <button
             onClick={onPlayPause}
-            className="w-11 h-11 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border border-amber-600 active:scale-95 transition-all cursor-pointer"
+            className="w-12 h-12 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border border-amber-600 active:scale-95 transition-all cursor-pointer"
             title="播放/暂停 (Space)"
           >
             {isPlaying
-              ? <Pause size={19} className="fill-current" />
-              : <Play size={19} className="fill-current translate-x-0.5" />}
+              ? <Pause size={20} className="fill-current" />
+              : <Play size={20} className="fill-current translate-x-0.5" />}
           </button>
 
           {/* Next Sentence */}
           <button
             onClick={onNextSentence}
             disabled={activeCueIndex >= totalCues - 1}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
             title="下一句 (→)"
           >
             <SkipForward size={16} />
@@ -220,7 +220,7 @@ export function AudioPlayer({
           {/* Loop Toggle */}
           <button
             onClick={onToggleLoopSentence}
-            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
               isLoopSentence
                 ? 'bg-amber-500 text-white border-amber-600'
                 : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 hover:border-amber-300'
@@ -239,7 +239,7 @@ export function AudioPlayer({
           {/* Speed cycle button — always visible, all screen sizes */}
           <button
             onClick={handleSpeedCycle}
-            className={`px-2 sm:px-2.5 py-1.5 rounded-xl border text-xs font-mono font-bold transition-colors cursor-pointer ${
+            className={`min-h-[40px] sm:min-h-[44px] px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-colors cursor-pointer ${
               playbackRate !== 1.0
                 ? 'bg-amber-500 text-white border-amber-500'
                 : 'border-[#e8ddd0] bg-white text-stone-700 hover:border-amber-300'
@@ -252,14 +252,14 @@ export function AudioPlayer({
           {/* Mic / Shadowing — always visible */}
           <button
             onClick={onToggleRecorder}
-            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center text-xs transition-colors cursor-pointer ${
+            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl border flex items-center justify-center text-xs transition-colors cursor-pointer ${
               isRecordingActive
                 ? 'bg-red-600 text-white border-red-600'
                 : 'border-[#e8ddd0] bg-white text-stone-600 hover:border-amber-400 hover:text-amber-950'
             }`}
             title="跟读施咒（AI发音评分）"
           >
-            <Mic size={15} className={isRecordingActive ? 'text-white' : 'text-amber-700'} />
+            <Mic size={16} className={isRecordingActive ? 'text-white' : 'text-amber-700'} />
           </button>
 
           {/* Volume — icon button, popup on click (desktop only) */}
@@ -267,10 +267,10 @@ export function AudioPlayer({
             <button
               onClick={handleVolumeToggle}
               onContextMenu={(e) => { e.preventDefault(); setShowVolume(v => !v); }}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-500 hover:text-amber-950 hover:border-amber-300 transition-colors cursor-pointer"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-500 hover:text-amber-950 hover:border-amber-300 transition-colors cursor-pointer"
               title="点击静音，右键调音量"
             >
-              {(isMuted || volume === 0) ? <VolumeX size={15} /> : <Volume2 size={15} />}
+              {(isMuted || volume === 0) ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>
             {showVolume && (
               <div className="absolute bottom-full mb-2 right-0 bg-white border border-[#e8ddd0] rounded-2xl p-3 w-36 z-50">

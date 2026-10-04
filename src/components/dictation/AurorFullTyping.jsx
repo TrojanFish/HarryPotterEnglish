@@ -76,7 +76,7 @@ export function AurorFullTyping({
       <div className={`min-h-[110px] p-5 sm:p-6 rounded-2xl border-2 font-reading text-lg sm:text-xl leading-relaxed transition-all ${
         isAllCorrect
           ? 'bg-emerald-500/10 border-emerald-500'
-          : 'bg-[#fbf9f5] border-[#eee5d8] text-[#1e1610]'
+          : 'bg-[#fbf9f5] border-[#e8ddd0] text-[#1e1610]'
       }`}>
         <div className="flex items-center justify-between mb-3 pb-2 border-b border-inherit text-xs font-semibold text-amber-800">
           <span className="flex items-center gap-1.5">
@@ -157,6 +157,9 @@ export function AurorFullTyping({
           ref={inputRef}
           rows={3}
           value={userInput}
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           onChange={(e) => setUserInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Tab') {
@@ -171,7 +174,7 @@ export function AurorFullTyping({
           className={`w-full p-4 rounded-2xl text-base sm:text-lg font-reading border-2 focus:outline-none transition-all resize-none ${
             isAllCorrect
               ? 'border-emerald-500 bg-emerald-500/10 text-emerald-950'
-              : 'border-[#eee5d8] focus:border-amber-500 bg-white text-[#1e1610] focus:ring-2 focus:ring-amber-400/20'
+              : 'border-[#e8ddd0] focus:border-amber-500 bg-white text-[#1e1610] focus:ring-2 focus:ring-amber-400/20'
           }`}
         />
 

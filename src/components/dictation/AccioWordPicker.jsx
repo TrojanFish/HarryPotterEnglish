@@ -87,7 +87,7 @@ export function AccioWordPicker({
       <div className={`min-h-[110px] p-5 sm:p-6 rounded-3xl border-2 transition-all flex flex-col justify-between ${
         isSentenceFullyCorrect
           ? 'bg-emerald-500/10 border-emerald-500'
-          : 'bg-[#fbf9f5] border-[#eee5d8]'
+          : 'bg-[#fbf9f5] border-[#e8ddd0]'
       }`}>
         <div className="flex items-center justify-between mb-3 text-xs font-semibold text-amber-800">
           <span className="flex items-center gap-1.5">
@@ -110,7 +110,7 @@ export function AccioWordPicker({
               <button
                 key={tile.id}
                 onClick={() => handleRemoveTile(idx)}
-                className="px-3.5 py-1.5 min-h-[40px] rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm sm:text-base border-b-3 border-amber-700 active:translate-y-0.5 active:border-b-1 cursor-pointer transition-all flex items-center gap-1.5 group select-none"
+                className="px-3.5 py-1.5 min-h-[44px] rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm sm:text-base border-b-3 border-amber-700 active:translate-y-0.5 active:border-b-1 cursor-pointer transition-all flex items-center gap-1.5 group select-none"
                 title="点击撤回此词"
               >
                 <span>{tile.text}</span>

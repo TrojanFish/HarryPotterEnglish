@@ -21,10 +21,13 @@ export function MobileMiniPlayer({
   onTogglePlay,
   onNextSentence,
   onEnterPlayer,
+  onOpenPlayer,
   currentTime = 0,
   duration = 0
 }) {
   if (!currentChapter) return null;
+
+  const handleOpen = onEnterPlayer || onOpenPlayer;
 
   const formatTime = (seconds) => {
     if (isNaN(seconds) || seconds < 0) return '00:00';
@@ -43,7 +46,7 @@ export function MobileMiniPlayer({
       <div className="flex items-center justify-between p-2.5">
         {/* Clickable Info Area -> Enter Player */}
         <div 
-          onClick={onEnterPlayer}
+          onClick={handleOpen}
           className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer"
           title="点击进入全功能精听教室"
         >

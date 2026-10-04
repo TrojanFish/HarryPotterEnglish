@@ -365,10 +365,13 @@ export function ShadowingRecorder({
   const totalCount = evaluationResult ? evaluationResult.words.length : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-xl rounded-3xl border-2 border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] p-6 transition-all duration-300">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+      <div className="relative w-full max-w-xl rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-5 sm:p-6 max-h-[90vh] overflow-y-auto pb-safe transition-all duration-300">
+        {/* Mobile Pull Handle */}
+        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto mb-3 shrink-0" />
+
         {/* Header */}
-        <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#eee5d8]">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#e8ddd0]">
           <div className="flex items-center space-x-2">
             <div className="p-1.5 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80">
               <Mic size={18} />
@@ -379,7 +382,7 @@ export function ShadowingRecorder({
           </div>
           <button
             onClick={onClose}
-            className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer"
+            className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer"
             title="关闭跟读录音"
           >
             <X size={18} />
@@ -387,7 +390,7 @@ export function ShadowingRecorder({
         </div>
 
         {/* Target Sentence Box & Word-Level Badges */}
-        <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white mb-4 transition-all">
+        <div className="p-4 rounded-2xl border border-[#e8ddd0] bg-white mb-4 transition-all">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-magical uppercase tracking-wider font-bold text-amber-900">
               原著朗读目标句 · Target Sentence
@@ -505,7 +508,7 @@ export function ShadowingRecorder({
 
         {/* Overall Score Badge Card & Hogwarts O.W.L. Grade */}
         {evaluationResult && gradeInfo && !isEvaluating && (
-          <div className="p-4 rounded-2xl border border-[#eee5d8] bg-white mb-4 flex items-center justify-between">
+          <div className="p-4 rounded-2xl border border-[#e8ddd0] bg-white mb-4 flex items-center justify-between">
             <div className="flex items-center space-x-3.5">
               <div className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl border-2 font-magical font-black text-xl ${gradeInfo.parchmentBadge}`}>
                 <span>{evaluationResult.score}%</span>
@@ -549,7 +552,7 @@ export function ShadowingRecorder({
         {/* Dual Playback Control Bar */}
         <div className="space-y-3">
           {/* 1. Original Narrator Audio */}
-          <div className="flex items-center justify-between p-3.5 rounded-2xl border border-[#eee5d8] bg-white">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl border border-[#e8ddd0] bg-white">
             <div className="flex items-center space-x-2.5">
               <Volume2 className="w-5 h-5 text-amber-600 shrink-0" />
               <div>
@@ -569,7 +572,7 @@ export function ShadowingRecorder({
           </div>
 
           {/* 2. User Recording Box */}
-          <div className="flex items-center justify-between p-3.5 rounded-2xl border border-[#eee5d8] bg-white">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl border border-[#e8ddd0] bg-white">
             <div className="flex items-center space-x-2.5">
               <Headphones className="w-5 h-5 text-amber-600 shrink-0" />
               <div>

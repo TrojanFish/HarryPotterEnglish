@@ -94,7 +94,7 @@ export function TabletRail({
   ];
 
   return (
-    <aside className="hidden md:flex lg:hidden w-18 shrink-0 flex-col items-center justify-between border-r-2 border-[#eee5d8] bg-[#fbf9f5] py-4 px-2 select-none h-full">
+    <aside className="hidden md:flex lg:hidden w-18 shrink-0 flex-col items-center justify-between border-r-2 border-[#e8ddd0] bg-[#fbf9f5] py-4 px-2 select-none h-full">
       {/* Brand Icon */}
       <div className="flex flex-col items-center gap-4 w-full">
         <div 
@@ -116,7 +116,7 @@ export function TabletRail({
                 className={`relative w-11 h-11 rounded-2xl flex items-center justify-center transition-colors cursor-pointer ${
                   active
                     ? 'bg-amber-500 text-white border border-amber-600'
-                    : 'text-stone-500 hover:text-amber-950 hover:bg-white border border-transparent hover:border-[#eee5d8]'
+                    : 'text-stone-500 hover:text-amber-950 hover:bg-white border border-transparent hover:border-[#e8ddd0]'
                 }`}
                 title={item.title}
                 aria-label={item.title}

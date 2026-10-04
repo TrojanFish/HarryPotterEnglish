@@ -131,13 +131,13 @@ export function StorageManagerModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
       <div 
-        className="relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88vh] sm:max-h-[85vh] transition-all duration-300 pb-safe"
+        className="relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88vh] sm:max-h-[85vh] transition-all duration-300 pb-safe"
       >
         {/* Mobile Pull Handle Indicator */}
-        <div className="sm:hidden w-10 h-1 bg-stone-300 rounded-full mx-auto my-2 shrink-0" />
+        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
 
         {/* Header */}
-        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#eee5d8] bg-white flex items-center justify-between gap-2">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2.5 min-w-0 flex-1">
             <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-300/80 text-amber-700 shrink-0">
               <HardDrive size={18} className="sm:w-5 sm:h-5" />
@@ -154,7 +154,7 @@ export function StorageManagerModal({
 
           <button
             onClick={onClose}
-            className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
+            className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
             title="关闭魔法行囊"
           >
             <X size={18} />
@@ -162,7 +162,7 @@ export function StorageManagerModal({
         </div>
 
         {/* Storage Quota Bar */}
-        <div className="p-4 sm:p-5 border-b border-[#eee5d8] bg-white">
+        <div className="p-4 sm:p-5 border-b border-[#e8ddd0] bg-white">
           <div className="flex items-center justify-between text-xs mb-2">
             <span className="font-semibold text-stone-700 flex items-center gap-1.5">
               <Layers size={14} className="text-amber-600" />
@@ -172,7 +172,7 @@ export function StorageManagerModal({
               {usedStr} / {quotaStr} ({usedPercent}%)
             </span>
           </div>
-          <div className="w-full h-3 rounded-full overflow-hidden p-0.5 border border-[#eee5d8] bg-stone-100">
+          <div className="w-full h-3 rounded-full overflow-hidden p-0.5 border border-[#e8ddd0] bg-stone-100">
             <div 
               className="h-full rounded-full bg-gradient-to-r from-amber-500 via-amber-500 to-emerald-500 transition-all duration-500"
               style={{ width: `${Math.max(usedPercent, 2)}%` }}
@@ -239,7 +239,7 @@ export function StorageManagerModal({
           </div>
 
           {storageInfo.chapters.length === 0 ? (
-            <div className="p-8 text-center rounded-2xl border border-dashed border-[#eee5d8] bg-white flex flex-col items-center justify-center">
+            <div className="p-8 text-center rounded-2xl border border-dashed border-[#e8ddd0] bg-white flex flex-col items-center justify-center">
               <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600 mb-2">
                 <BookOpen size={24} className="text-amber-600" />
               </div>
@@ -256,13 +256,13 @@ export function StorageManagerModal({
               return (
                 <div
                   key={ch.chapterId}
-                  className="p-3.5 rounded-2xl border border-[#eee5d8] bg-white hover:border-amber-300 flex items-center justify-between gap-3 transition-all"
+                  className="p-3.5 rounded-2xl border border-[#e8ddd0] bg-white hover:border-amber-300 flex items-center justify-between gap-3 transition-all"
                 >
                   <div className="flex items-center space-x-3 min-w-0">
                     <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${
                       isPlayingThis
                         ? 'bg-amber-500 text-white font-bold border-amber-600'
-                        : 'bg-stone-100 text-stone-600 border-[#eee5d8]'
+                        : 'bg-stone-100 text-stone-600 border-[#e8ddd0]'
                     }`}>
                       <CheckCircle2 size={16} />
                     </div>
@@ -288,7 +288,7 @@ export function StorageManagerModal({
                     {onPlayChapter && !isPlayingThis && (
                       <button
                         onClick={() => onPlayChapter(ch.chapterId)}
-                        className="duo-btn-secondary min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                        className="duo-btn-secondary min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer"
                         title="立即从离线本地播放此章"
                       >
                         <Play size={13} fill="currentColor" />
@@ -312,7 +312,7 @@ export function StorageManagerModal({
         </div>
 
         {/* Footer */}
-        <div className="px-4 sm:px-6 py-3 border-t border-[#eee5d8] bg-white flex items-center justify-between text-xs pb-safe gap-2">
+        <div className="px-4 sm:px-6 py-3 border-t border-[#e8ddd0] bg-white flex items-center justify-between text-xs pb-safe gap-2">
           <span className="text-[11px] text-stone-500 truncate">
             原声与双语文字已安全封入行囊，无网即点即听
           </span>

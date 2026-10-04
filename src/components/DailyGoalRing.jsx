@@ -49,7 +49,7 @@ export function DailyGoalRing({
             cy={size / 2}
             r={radius}
             fill="transparent"
-            stroke={isCompleted ? '#fcd34d' : '#eee5d8'}
+            stroke={isCompleted ? '#fcd34d' : '#e8ddd0'}
             strokeWidth={strokeWidth}
           />
           {/* Animated Progress Stroke */}

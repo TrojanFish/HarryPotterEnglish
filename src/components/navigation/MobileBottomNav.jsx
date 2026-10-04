@@ -56,7 +56,7 @@ export function MobileBottomNav({
   return (
     <nav 
       aria-label="移动端底部导航"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-[#eee5d8] backdrop-blur-md flex items-center justify-around px-2 pt-1 pb-safe select-none"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-[#e8ddd0] backdrop-blur-md flex items-center justify-around px-2 pt-1 pb-safe select-none"
     >
       {tabs.map((tab) => {
         const active = tab.isActive;
@@ -64,7 +64,7 @@ export function MobileBottomNav({
           <button
             key={tab.id}
             onClick={tab.onClick}
-            className={`flex flex-col items-center justify-center flex-1 py-1 relative transition-colors cursor-pointer ${
+            className={`flex flex-col items-center justify-center flex-1 min-h-[48px] py-1 relative transition-colors cursor-pointer active:scale-95 ${
               active ? 'text-amber-600' : 'text-stone-400 hover:text-stone-600'
             }`}
           >

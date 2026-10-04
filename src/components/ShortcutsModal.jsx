@@ -56,12 +56,12 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#eee5d8] bg-white text-[#1e1610] p-5 sm:p-6 pb-safe transition-all duration-300 flex flex-col"
+        className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-white text-[#1e1610] p-5 sm:p-6 pb-safe transition-all duration-300 flex flex-col"
       >
         {/* Mobile Pull Handle Indicator */}
-        <div className="sm:hidden w-10 h-1 bg-stone-300 rounded-full mx-auto mb-3 shrink-0" />
+        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto mb-3 shrink-0" />
 
-        <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#eee5d8] gap-2">
+        <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#e8ddd0] gap-2">
           <div className="flex items-center space-x-2 min-w-0 flex-1">
             <div className="p-1.5 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shrink-0">
               <Smartphone size={18} className="sm:hidden" />
@@ -77,7 +77,7 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
 
           <div className="flex items-center gap-1.5 shrink-0">
             {/* Tab switch for desktop/mobile */}
-            <div className="hidden sm:flex rounded-xl p-0.5 border border-[#eee5d8] bg-stone-100 text-xs">
+            <div className="hidden sm:flex rounded-xl p-0.5 border border-[#e8ddd0] bg-stone-100 text-xs">
               <button
                 onClick={() => setActiveTab('touch')}
                 className={`px-2 py-1 rounded-lg font-bold transition-all ${
@@ -98,7 +98,7 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
 
             <button 
               onClick={onClose} 
-              className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
+              className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
               title="关闭指南 (ESC)"
             >
               <X size={18} />
@@ -111,9 +111,9 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
           {touchGestures.map((item, i) => (
             <div 
               key={i} 
-              className="flex items-start gap-3 p-3 rounded-2xl border border-[#eee5d8] bg-[#fbf9f5]"
+              className="flex items-start gap-3 p-3 rounded-2xl border border-[#e8ddd0] bg-[#fbf9f5]"
             >
-              <div className="p-2 rounded-xl bg-white border border-[#eee5d8] shrink-0 mt-0.5">
+              <div className="p-2 rounded-xl bg-white border border-[#e8ddd0] shrink-0 mt-0.5">
                 {item.icon}
               </div>
               <div className="min-w-0 flex-1">
@@ -136,7 +136,7 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
           {keyboardShortcuts.map((sc, i) => (
             <div 
               key={i} 
-              className="flex items-center justify-between p-2.5 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] text-xs sm:text-sm"
+              className="flex items-center justify-between p-2.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] text-xs sm:text-sm"
             >
               <span className="text-[#1e1610] font-medium">
                 {sc.desc}

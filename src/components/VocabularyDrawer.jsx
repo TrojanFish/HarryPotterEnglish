@@ -128,9 +128,9 @@ export function VocabularyDrawer({
       <div className="absolute inset-y-0 right-0 max-w-full flex w-full sm:w-auto">
         <div 
           onClick={(e) => e.stopPropagation()}
-          className="w-full sm:w-screen sm:max-w-md flex flex-col border-l border-[#eee5d8] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe">
+          className="w-full sm:w-screen sm:max-w-md flex flex-col border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe">
           {/* Drawer Header */}
-          <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#eee5d8] bg-white flex items-center justify-between gap-2">
+          <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2">
             <div className="flex items-center space-x-2 min-w-0 flex-1">
               <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
               <div className="min-w-0 flex-1">
@@ -149,7 +149,7 @@ export function VocabularyDrawer({
                     onClose();
                     onOpenSrs();
                   }}
-                  className="duo-btn-primary min-h-[38px] px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="duo-btn-primary min-h-[44px] px-3 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
                   title="启动艾宾浩斯智能翻转闪卡 (SRS 遗忘曲线算法)"
                 >
                   <BrainCircuit size={14} className="shrink-0" />
@@ -161,7 +161,7 @@ export function VocabularyDrawer({
               <button
                 disabled={vocabList.length === 0}
                 onClick={() => setIsFlashcardMode(!isFlashcardMode)}
-                className={`duo-btn-secondary min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed ${
+                className={`duo-btn-secondary min-h-[44px] px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed ${
                   isFlashcardMode ? 'ring-2 ring-amber-500' : ''
                 }`}
                 title="切换卡片翻转记忆模式与列表笔记"
@@ -173,7 +173,7 @@ export function VocabularyDrawer({
 
               <button
                 onClick={onClose}
-                className="duo-touch-target rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
+                className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
                 title="关闭生词本"
               >
                 <X size={18} />
@@ -221,7 +221,7 @@ export function VocabularyDrawer({
                     className={`w-full min-h-[300px] my-6 rounded-2xl p-6 border-2 cursor-pointer flex flex-col items-center justify-center text-center transition-all duration-300 transform select-none ${
                       isCardFlipped 
                         ? 'border-amber-400 bg-white text-amber-950' 
-                        : 'border-[#eee5d8] bg-white text-[#1e1610] hover:border-amber-400'
+                        : 'border-[#e8ddd0] bg-white text-[#1e1610] hover:border-amber-400'
                     }`}
                   >
                     {!isCardFlipped ? (
@@ -256,7 +256,7 @@ export function VocabularyDrawer({
                           </div>
                         )}
                         {currentFlashcard.context && (
-                          <p className="text-xs italic font-reading mt-2 border-t border-[#eee5d8] pt-2 text-stone-600">
+                          <p className="text-xs italic font-reading mt-2 border-t border-[#e8ddd0] pt-2 text-stone-600">
                             "{currentFlashcard.context}"
                           </p>
                         )}
@@ -304,7 +304,7 @@ export function VocabularyDrawer({
             <>
               {/* Search input - only show when vocabList has items */}
               {vocabList.length > 0 && (
-                <div className="p-3 border-b border-[#eee5d8] bg-white">
+                <div className="p-3 border-b border-[#e8ddd0] bg-white">
                   <div className="relative">
                     <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
                     <input
@@ -316,7 +316,7 @@ export function VocabularyDrawer({
                       placeholder="搜索生词或中文释义..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-base sm:text-xs rounded-xl border border-[#eee5d8] bg-stone-50 text-[#1e1610] focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition-all"
+                      className="w-full pl-9 pr-3 py-2 text-base sm:text-xs rounded-xl border border-[#e8ddd0] bg-stone-50 text-[#1e1610] focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition-all"
                     />
                   </div>
                 </div>
@@ -425,7 +425,7 @@ export function VocabularyDrawer({
                       </p>
 
                       {item.context && (
-                        <p className="text-[11px] font-reading italic mt-2 border-t border-[#eee5d8] pt-1.5 line-clamp-2 text-stone-600">
+                        <p className="text-[11px] font-reading italic mt-2 border-t border-[#e8ddd0] pt-1.5 line-clamp-2 text-stone-600">
                           "{item.context}"
                         </p>
                       )}
@@ -436,7 +436,7 @@ export function VocabularyDrawer({
               </div>
 
               {/* Bottom Actions */}
-                <div className="p-4 border-t border-[#eee5d8] bg-white flex flex-wrap items-center justify-between gap-2 text-xs pb-safe">
+                <div className="p-4 border-t border-[#e8ddd0] bg-white flex flex-wrap items-center justify-between gap-2 text-xs pb-safe">
                   <div className="flex items-center gap-2">
                     <button
                       disabled={vocabList.length === 0}

@@ -112,7 +112,7 @@ export function LumosClozeInput({
       <div className={`p-6 rounded-2xl border-2 transition-all leading-loose text-base sm:text-lg font-reading ${
         isAllBlanksCorrect
           ? 'bg-emerald-500/10 border-emerald-500'
-          : 'bg-[#fbf9f5] border-[#eee5d8] text-[#1e1610]'
+          : 'bg-[#fbf9f5] border-[#e8ddd0] text-[#1e1610]'
       }`}>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-inherit text-xs font-semibold text-amber-800">
           <span className="flex items-center gap-1.5">

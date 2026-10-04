@@ -111,7 +111,7 @@ export function DesktopSidebar({
   ];
 
   return (
-    <aside className="hidden lg:flex w-64 shrink-0 flex-col justify-between border-r-2 border-[#eee5d8] bg-[#fbf9f5] p-4 select-none h-full overflow-y-auto">
+    <aside className="hidden lg:flex w-64 shrink-0 flex-col justify-between border-r-2 border-[#e8ddd0] bg-[#fbf9f5] p-4 select-none h-full overflow-y-auto">
       {/* ── Top Brand & Navigation ─────────────────────────────────── */}
       <div className="space-y-5">
         {/* Brand Area */}
@@ -150,7 +150,7 @@ export function DesktopSidebar({
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-colors text-left cursor-pointer group ${
                   active
                     ? 'bg-amber-500 text-white border border-amber-600'
-                    : 'text-stone-600 hover:text-amber-950 hover:bg-white border border-transparent hover:border-[#eee5d8]'
+                    : 'text-stone-600 hover:text-amber-950 hover:bg-white border border-transparent hover:border-[#e8ddd0]'
                 }`}
                 title={item.desc}
               >
@@ -176,7 +176,7 @@ export function DesktopSidebar({
       </div>
 
       {/* ── Bottom Widgets: Streak & 5-Min Habit Progress ──────────── */}
-      <div className="space-y-3 pt-4 border-t border-[#eee5d8]">
+      <div className="space-y-3 pt-4 border-t border-[#e8ddd0]">
         {/* Habit Card */}
         <div 
           onClick={onOpenAnalytics}

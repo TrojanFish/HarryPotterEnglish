@@ -57,13 +57,13 @@ export function MobileTopBar({
   const cleanChapterTitle = formatEnglishText(rawChapterTitle);
 
   return (
-    <header className="md:hidden sticky top-0 z-30 pt-safe bg-white/95 border-b border-[#eee5d8] backdrop-blur-md px-3 flex items-center justify-between select-none min-h-[3.25rem]">
+    <header className="md:hidden sticky top-0 z-30 pt-safe bg-white/95 border-b border-[#e8ddd0] backdrop-blur-md px-3 flex items-center justify-between select-none min-h-[3.25rem]">
       {/* ── Left: Context Action ──────────────────────────────────── */}
       <div className="flex items-center gap-2 min-w-0">
         {currentView === 'player' ? (
           <button
             onClick={() => onSwitchView && onSwitchView('bookshelf')}
-            className="duo-touch-target p-1.5 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] hover:bg-stone-100 text-stone-700 active:scale-95 transition-colors"
+            className="duo-touch-target p-1.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-stone-100 text-stone-700 active:scale-95 transition-colors"
             title="返回魔法书架"
           >
             <ArrowLeft size={16} />
@@ -100,7 +100,7 @@ export function MobileTopBar({
 
       {/* ── Center: Study Mode Pill (in Player View) ──────────────── */}
       {currentView === 'player' && (
-        <div className="flex rounded-xl p-0.5 border border-[#eee5d8] bg-stone-100/70 gap-0.5">
+        <div className="flex rounded-xl p-0.5 border border-[#e8ddd0] bg-stone-100/70 gap-0.5">
           <button
             onClick={() => setStudyMode('normal')}
             className={`p-1 rounded-lg transition-all ${
@@ -136,7 +136,7 @@ export function MobileTopBar({
         {/* Streak Pill */}
         <button
           onClick={onOpenAnalytics}
-          className="flex items-center gap-1 px-2 py-1 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] text-xs font-mono font-bold text-orange-600 active:scale-95 transition-colors"
+          className="flex items-center gap-1 px-2 py-1 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] text-xs font-mono font-bold text-orange-600 active:scale-95 transition-colors"
           title={`连续打卡 ${streakDays} 天`}
         >
           <Flame size={13} className="fill-orange-500 text-orange-500" />
@@ -147,7 +147,7 @@ export function MobileTopBar({
         <div className="relative">
           <button
             onClick={() => setShowTools(!showTools)}
-            className="duo-touch-target p-1.5 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] text-stone-600 hover:text-amber-950 active:scale-95 transition-colors"
+            className="duo-touch-target p-1.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] text-stone-600 hover:text-amber-950 active:scale-95 transition-colors"
             title="更多工具"
           >
             <SlidersHorizontal size={15} />
@@ -155,7 +155,7 @@ export function MobileTopBar({
 
           {/* Tools Popover */}
           {showTools && (
-            <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl border border-[#eee5d8] bg-white p-2 z-50 animate-fadeIn space-y-1">
+            <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl border border-[#e8ddd0] bg-white p-2 z-50 animate-fadeIn space-y-1">
               <button
                 onClick={() => {
                   setShowTools(false);

@@ -145,7 +145,7 @@ export function BookShowcase({
                     className={`p-2 rounded-xl text-left text-xs border transition-all truncate flex flex-col justify-between cursor-pointer active:scale-95 ${
                       isCurrent
                         ? 'border-amber-500 bg-amber-500/20 text-amber-950 font-bold'
-                        : 'border-[#eee5d8] bg-white hover:border-amber-400 text-amber-950 hover:bg-amber-50/70'
+                        : 'border-[#e8ddd0] bg-white hover:border-amber-400 text-amber-950 hover:bg-amber-50/70'
                     }`}
                   >
                     <div className="truncate font-reading">

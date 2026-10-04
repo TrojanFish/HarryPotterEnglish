@@ -288,7 +288,7 @@ export function DictationStudio({
     <div className="flex-1 max-w-4xl mx-auto px-4 py-6 w-full flex flex-col justify-between pb-8 select-none">
       
       {/* ── 1. Gamified Quest Top Status Bar ──────────────────────── */}
-      <div className="p-4 rounded-3xl border-2 border-[#eee5d8] bg-white text-[#1e1610] mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div className="p-4 rounded-3xl border-2 border-[#e8ddd0] bg-white text-[#1e1610] mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center space-x-3">
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white border border-amber-500">
             <Trophy size={22} />
@@ -323,7 +323,7 @@ export function DictationStudio({
           {/* Sound Toggle Button */}
           <button
             onClick={handleToggleSound}
-            className={`p-2 rounded-xl border transition-all active:scale-90 cursor-pointer ${
+            className={`min-h-[44px] min-w-[44px] p-2 rounded-xl border flex items-center justify-center transition-all active:scale-90 cursor-pointer ${
               soundEnabled
                 ? 'border-amber-300 bg-amber-50 text-amber-800'
                 : 'border-slate-300 bg-slate-100 text-slate-400'
@@ -336,7 +336,7 @@ export function DictationStudio({
       </div>
 
       {/* ── 2. Difficulty Tier Selector Tabs ───────────────────────── */}
-      <div className="flex items-center justify-between gap-1.5 p-1.5 bg-stone-200/50 rounded-2xl mb-5 border border-[#eee5d8] overflow-x-auto">
+      <div className="flex items-center justify-between gap-1.5 p-1.5 bg-stone-200/50 rounded-2xl mb-5 border border-[#e8ddd0] overflow-x-auto">
         {[
           { key: 'accio',   label: '见习巫师 · 飞来字块', desc: '字块拼句', icon: <Sparkles size={13} /> },
           { key: 'lumos',   label: '高阶学徒 · 荧光挖空', desc: '核心挖空', icon: <Lightbulb size={13} /> },
@@ -373,7 +373,7 @@ export function DictationStudio({
       )}
 
       {/* ── 4. Main Dictation Paper Card ───────────────────────────── */}
-      <div className="p-6 sm:p-8 rounded-3xl border-2 border-[#eee5d8] bg-white text-[#1e1610] transition-all">
+      <div className="p-6 sm:p-8 rounded-3xl border-2 border-[#e8ddd0] bg-white text-[#1e1610] transition-all">
         
         {/* Audio Playback & Replay bar */}
         <div className="flex items-center justify-between pb-4 mb-4 border-b border-inherit">

@@ -35,7 +35,7 @@ export function ReaderTopBar({
   const chapterTitle = formatEnglishText(rawChapterTitle);
 
   return (
-    <div className="h-13 shrink-0 border-b border-[#eee5d8] bg-white/95 px-4 sm:px-6 flex items-center justify-between select-none">
+    <div className="h-13 shrink-0 border-b border-[#e8ddd0] bg-white/95 px-4 sm:px-6 flex items-center justify-between select-none">
       {/* ── Left: Current Book & Chapter Selector ─────────────────── */}
       <div className="flex items-center gap-3 min-w-0">
         {/* Mobile back to bookshelf */}
@@ -50,7 +50,7 @@ export function ReaderTopBar({
         )}
         <button
           onClick={onOpenShelf}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-amber-950 font-bold text-xs transition-colors cursor-pointer group max-w-[280px] sm:max-w-md"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-amber-950 font-bold text-xs transition-colors cursor-pointer group max-w-[280px] sm:max-w-md"
           title="点击切换全书 17 个章节或其他原著"
         >
           <BookOpen size={14} className="text-amber-600 shrink-0 group-hover:scale-105 transition-transform" />
@@ -66,7 +66,7 @@ export function ReaderTopBar({
       </div>
 
       {/* ── Center: 3 Study Modes (Flat, Clean Pills) ──────────────── */}
-      <div className="hidden sm:flex items-center p-1 rounded-2xl bg-stone-100 border border-[#eee5d8] gap-1">
+      <div className="hidden sm:flex items-center p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1">
         {modes.map(({ key, label, icon }) => {
           const isActive = studyMode === key;
           return (
@@ -95,7 +95,7 @@ export function ReaderTopBar({
             className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-colors cursor-pointer ${
               showTranslation
                 ? 'bg-amber-50 text-amber-900 border-amber-300'
-                : 'bg-white text-stone-500 border-[#eee5d8] hover:border-amber-300'
+                : 'bg-white text-stone-500 border-[#e8ddd0] hover:border-amber-300'
             }`}
             title="开启/关闭中文双语译文"
           >
@@ -111,7 +111,7 @@ export function ReaderTopBar({
             className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-colors cursor-pointer ${
               isFollowActive
                 ? 'bg-amber-50 text-amber-900 border-amber-300'
-                : 'bg-white text-stone-500 border-[#eee5d8] hover:border-amber-300'
+                : 'bg-white text-stone-500 border-[#e8ddd0] hover:border-amber-300'
             }`}
             title="跟随播放进度自动滚动"
           >
@@ -124,7 +124,7 @@ export function ReaderTopBar({
         {onOpenShortcuts && (
           <button
             onClick={onOpenShortcuts}
-            className="p-1.5 rounded-xl border border-[#eee5d8] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 transition-colors cursor-pointer"
             title="键盘快捷键指南"
           >
             <HelpCircle size={14} />

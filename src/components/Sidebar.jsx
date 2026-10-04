@@ -40,13 +40,13 @@ export function Sidebar({
 
   return (
     <aside
-      className="hidden lg:flex flex-col w-[280px] shrink-0 border-r border-[#eee5d8] bg-[#fbf9f5] overflow-hidden transition-colors duration-300 select-none"
+      className="hidden lg:flex flex-col w-[280px] shrink-0 border-r border-[#e8ddd0] bg-[#fbf9f5] overflow-hidden transition-colors duration-300 select-none"
     >
       {/* ── Book Card & Reading Level ──────────────────────────────── */}
       <div className="p-4 shrink-0">
         <div
           onClick={onOpenShelf}
-          className="relative group rounded-3xl p-3 border-2 border-[#eee5d8] bg-white hover:border-amber-400 transition-all cursor-pointer"
+          className="relative group rounded-3xl p-3 border-2 border-[#e8ddd0] bg-white hover:border-amber-400 transition-all cursor-pointer"
           title="点击切换其他魔法小说"
         >
           <div className="flex gap-3 items-center">
@@ -107,7 +107,7 @@ export function Sidebar({
       </div>
 
       {/* ── Chapter List Header ────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-4 py-2 shrink-0 border-t border-b border-[#eee5d8] bg-white">
+      <div className="flex items-center justify-between px-4 py-2 shrink-0 border-t border-b border-[#e8ddd0] bg-white">
         <div className="flex items-center gap-1.5 text-xs font-bold font-mono text-amber-900">
           <BookOpen size={14} />
           <span>全书目录 ({chapters.length} 章节)</span>
@@ -117,14 +117,14 @@ export function Sidebar({
           <button
             onClick={onRefreshCatalog}
             disabled={isRefreshing}
-            className="p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 cursor-pointer disabled:opacity-50"
+            className="p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 cursor-pointer disabled:opacity-50"
             title="重新扫描目录"
           >
             <RotateCw size={12} className={isRefreshing ? 'animate-spin text-amber-500' : ''} />
           </button>
           <button
             onClick={() => setIsChaptersExpanded(!isChaptersExpanded)}
-            className="p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 cursor-pointer"
+            className="p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 cursor-pointer"
             title={isChaptersExpanded ? '收起目录' : '展开目录'}
           >
             {isChaptersExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -192,7 +192,7 @@ export function Sidebar({
       )}
 
       {/* ── Bottom Library Switcher ────────────────────────────────── */}
-      <div className="p-3 border-t border-[#eee5d8] bg-white shrink-0">
+      <div className="p-3 border-t border-[#e8ddd0] bg-white shrink-0">
         <button
           onClick={onOpenShelf}
           className="duo-btn-secondary min-h-[40px] w-full text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
