@@ -510,9 +510,9 @@ export function ShadowingRecorder({
         {evaluationResult && gradeInfo && !isEvaluating && (
           <div className="p-4 rounded-2xl border border-[#e8ddd0] bg-white mb-4 flex items-center justify-between">
             <div className="flex items-center space-x-3.5">
-              <div className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl border-2 font-magical font-black text-xl ${gradeInfo.parchmentBadge}`}>
-                <span>{evaluationResult.score}%</span>
-                <span className="text-[9px] uppercase tracking-wider -mt-1 font-sans">
+              <div className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl border-2 ${gradeInfo.parchmentBadge}`}>
+                <span className="font-mono font-extrabold text-lg leading-tight">{evaluationResult.score}%</span>
+                <span className="text-[9px] uppercase tracking-wider font-sans font-bold">
                   等阶 {gradeInfo.letter}
                 </span>
               </div>

@@ -203,7 +203,7 @@ export function StorageManagerModal({
                 ) : downloadProgress?.chapterId === currentChapter.id ? (
                   <div className="flex items-center gap-2 text-xs text-[#d3a625] font-semibold">
                     <RefreshCw size={14} className="animate-spin text-[#d3a625]" />
-                    <span>下载中 {downloadProgress.progress}%</span>
+                    <span>下载中 <span className="font-mono">{downloadProgress.progress}%</span></span>
                   </div>
                 ) : (
                   <button

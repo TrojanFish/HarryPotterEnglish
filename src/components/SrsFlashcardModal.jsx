@@ -174,7 +174,7 @@ export function SrsFlashcardModal({
               太棒了！今日闪卡复习圆满达成
             </h4>
             <p className="text-xs text-stone-600 font-reading leading-relaxed">
-              本次巩固了 {dueWords.length} 个魔法单词，艾宾浩斯算法已为你重新调整下次复习周期。
+              本次巩固了 <span className="font-mono font-bold">{dueWords.length}</span> 个魔法单词，艾宾浩斯算法已为你重新调整下次复习周期。
             </p>
 
             <div className="grid grid-cols-2 gap-3 w-full max-w-xs my-2">

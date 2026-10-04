@@ -299,14 +299,14 @@ export function DictationStudio({
                 魔法拼写大闯关 (Spell Quest)
               </span>
               <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-800 font-bold border border-emerald-500/30">
-                第 {activeCueIndex + 1} / {cues.length} 句
+                第 <span className="font-mono">{activeCueIndex + 1}</span> / <span className="font-mono">{cues.length}</span> 句
               </span>
             </div>
             <p className="text-xs text-slate-500 font-mono mt-0.5 flex items-center gap-1.5">
               <Star size={13} className="text-amber-500 fill-amber-500 inline" />
-              <span>已斩获 {totalStars} 颗魔法星</span>
+              <span>已斩获 <span className="font-bold text-amber-600">{totalStars}</span> 颗魔法星</span>
               <span>·</span>
-              <span>连对 {streakCount} 句</span>
+              <span>连对 <span className="font-bold text-orange-600">{streakCount}</span> 句</span>
             </p>
           </div>
         </div>
@@ -316,7 +316,7 @@ export function DictationStudio({
           {streakCount >= 2 && (
             <span className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full font-bold text-xs border border-red-500 animate-bounce">
               <Flame size={13} />
-              <span>连对 x{streakCount}!</span>
+              <span>连对 x<span className="font-mono">{streakCount}</span>!</span>
             </span>
           )}
 

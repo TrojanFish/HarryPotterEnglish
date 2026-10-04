@@ -419,7 +419,7 @@ export function SubtitleViewer({
       {!isFollowActive && cues.length > 0 && activeCueIndex >= 0 && (
         <button
           onClick={scrollToActiveCue}
-          className="fixed bottom-24 right-5 sm:right-8 z-30 flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-amber-300 bg-white text-amber-950 font-bold text-xs active:scale-95 cursor-pointer shadow-none"
+          className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:bottom-24 right-5 sm:right-8 z-30 flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-amber-300 bg-white text-amber-950 font-bold text-xs active:scale-95 cursor-pointer shadow-none"
           title="定位到正在朗读的句子"
         >
           <LocateFixed size={13} className="text-amber-600" />
