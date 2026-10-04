@@ -164,8 +164,8 @@ export function AudioPlayer({
       {/* ── Main Controls Row ─────────────────────────────────────── */}
       <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2">
 
-        {/* Left: Chapter info */}
-        <div className="flex items-center gap-2 min-w-0 flex-1 max-w-[200px] sm:max-w-xs">
+        {/* Left: Playback info (chapter title shown only on desktop to eliminate duplicate top bar header) */}
+        <div className="flex items-center gap-2 min-w-0 shrink-0 sm:flex-1 sm:max-w-xs">
           {isPlaying && (
             <span className="flex items-center gap-0.5 text-amber-500 shrink-0">
               <span className="w-[3px] h-3 bg-amber-500 rounded-full animate-wave-1" />
@@ -174,12 +174,12 @@ export function AudioPlayer({
             </span>
           )}
           <div className="min-w-0">
-            <p className="font-bold text-xs text-amber-950 truncate leading-tight">
+            <p className="hidden sm:block font-bold text-xs text-amber-950 truncate leading-tight">
               {chapterTitle || '选择章节'}
             </p>
-            <p className="text-[11px] font-mono text-stone-400 leading-tight">
+            <p className="text-[11px] font-mono text-stone-500 font-medium leading-tight whitespace-nowrap">
               {formatTime(currentTime)}
-              {totalCues > 0 && <span className="ml-1 text-stone-300">· {activeCueIndex + 1}/{totalCues}句</span>}
+              {totalCues > 0 && <span className="ml-1 text-stone-400 font-normal">· {activeCueIndex + 1}/{totalCues}句</span>}
             </p>
           </div>
         </div>
