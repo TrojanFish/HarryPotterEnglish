@@ -34,8 +34,8 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
     },
     { 
       icon: <MoveHorizontal size={16} className="text-amber-600" />, 
-      action: '上一句 / 下一句按钮', 
-      desc: '精准按句定位，不漏听任何难点短语' 
+      action: '左右滑动字幕', 
+      desc: '向左滑动切换下一句，向右滑动返回上一句，单手沉浸精听' 
     },
     { 
       icon: <Repeat size={16} className="text-amber-600" />, 
@@ -77,7 +77,7 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
 
           <div className="flex items-center gap-1.5 shrink-0">
             {/* Tab switch for desktop/mobile */}
-            <div className="hidden sm:flex rounded-xl p-0.5 border border-[#e8ddd0] bg-stone-100 text-xs">
+            <div className="flex rounded-xl p-0.5 border border-[#e8ddd0] bg-stone-100 text-xs">
               <button
                 onClick={() => setActiveTab('touch')}
                 className={`px-2 py-1 rounded-lg font-bold transition-all ${
@@ -106,47 +106,51 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
           </div>
         </div>
 
-        {/* Mobile View: Touch Gestures (Always on mobile, or when activeTab === 'touch') */}
-        <div className={`space-y-2.5 my-2 ${activeTab === 'keyboard' ? 'hidden sm:hidden' : 'block'}`}>
-          {touchGestures.map((item, i) => (
-            <div 
-              key={i} 
-              className="flex items-start gap-3 p-3 rounded-2xl border border-[#e8ddd0] bg-[#fbf9f5]"
-            >
-              <div className="p-2 rounded-xl bg-white border border-[#e8ddd0] shrink-0 mt-0.5">
-                {item.icon}
+        {/* Touch Gestures View */}
+        {activeTab === 'touch' && (
+          <div className="space-y-2.5 my-2">
+            {touchGestures.map((item, i) => (
+              <div 
+                key={i} 
+                className="flex items-start gap-3 p-3 rounded-2xl border border-[#e8ddd0] bg-[#fbf9f5]"
+              >
+                <div className="p-2 rounded-xl bg-white border border-[#e8ddd0] shrink-0 mt-0.5">
+                  {item.icon}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-xs sm:text-sm font-bold text-amber-950">
+                    {item.action}
+                  </h4>
+                  <p className="text-[11px] sm:text-xs text-stone-600 mt-0.5 leading-relaxed font-reading">
+                    {item.desc}
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <h4 className="text-xs sm:text-sm font-bold text-amber-950">
-                  {item.action}
-                </h4>
-                <p className="text-[11px] sm:text-xs text-stone-600 mt-0.5 leading-relaxed font-reading">
-                  {item.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Desktop View: Keyboard Shortcuts */}
-        <div className={`space-y-2 my-2 ${activeTab === 'keyboard' ? 'block' : 'hidden sm:block'}`}>
-          <div className="text-xs font-bold text-stone-400 mb-1.5 hidden sm:block">
-            键盘操作快捷键（电脑 / 外接键盘）：
+            ))}
           </div>
-          {keyboardShortcuts.map((sc, i) => (
-            <div 
-              key={i} 
-              className="flex items-center justify-between p-2.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] text-xs sm:text-sm"
-            >
-              <span className="text-[#1e1610] font-medium">
-                {sc.desc}
-              </span>
-              <kbd className="px-2 py-1 rounded bg-amber-500/15 border border-amber-300/80 text-amber-900 font-mono font-bold text-xs">
-                {sc.key}
-              </kbd>
+        )}
+
+        {/* Keyboard Shortcuts View */}
+        {activeTab === 'keyboard' && (
+          <div className="space-y-2 my-2">
+            <div className="text-xs font-bold text-stone-400 mb-1.5">
+              键盘操作快捷键（电脑 / 外接键盘）：
             </div>
-          ))}
-        </div>
+            {keyboardShortcuts.map((sc, i) => (
+              <div 
+                key={i} 
+                className="flex items-center justify-between p-2.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] text-xs sm:text-sm"
+              >
+                <span className="text-[#1e1610] font-medium">
+                  {sc.desc}
+                </span>
+                <kbd className="px-2 py-1 rounded bg-amber-500/15 border border-amber-300/80 text-amber-900 font-mono font-bold text-xs">
+                  {sc.key}
+                </kbd>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Student Study Tips */}
         <div className="p-3.5 rounded-2xl border border-amber-300/80 bg-amber-500/10 text-stone-700 text-xs space-y-1.5 mt-3">

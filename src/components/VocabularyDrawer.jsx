@@ -85,7 +85,6 @@ export function VocabularyDrawer({
     showToast('已成功导出 CSV 单词表格！');
   };
 
-  const currentFlashcard = filteredList[flashcardIndex];
   const todayStr = new Date().toISOString().split('T')[0];
 
   const renderSrsBadge = (item) => {

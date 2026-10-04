@@ -15,7 +15,8 @@ import {
   VolumeX,
   Shield,
   Zap,
-  Award
+  Award,
+  ArrowLeft
 } from 'lucide-react';
 import { tokenizeSentence } from '../utils/vttParser';
 import { recordDictationSession } from '../utils/analyticsStore';
@@ -58,13 +59,19 @@ export function DictationStudio({
   isParchment = true,
   onNextCue,
   onPrevCue,
+  onNextSentence,
+  onPrevSentence,
+  onCloseStudio,
   chapterId = '',
   chapterTitle = '',
   onRecordResult,
   playbackRate = 1.0,
-  onChangePlaybackRate
+  onChangePlaybackRate,
+  onSaveErrorWordsToVocab
 }) {
   const currentCue = cues[activeCueIndex];
+  const advanceNext = onNextSentence || onNextCue;
+  const advancePrev = onPrevSentence || onPrevCue;
 
   // 1. Difficulty Mode Selector ('accio' | 'lumos' | 'auror' | 'dueling')
   const [difficultyMode, setDifficultyMode] = useState(() => {
@@ -253,13 +260,17 @@ export function DictationStudio({
       return;
     }
 
-    if (onNextCue) {
-      onNextCue();
+    if (advanceNext) {
+      advanceNext();
     }
   };
 
   // Save error words into user vocabulary list
   const handleSaveErrorsToVocab = (wordsToSave) => {
+    if (onSaveErrorWordsToVocab) {
+      onSaveErrorWordsToVocab(wordsToSave);
+      return;
+    }
     try {
       const saved = localStorage.getItem('hp_vocab_list');
       const currentList = saved ? JSON.parse(saved) : [];
@@ -311,7 +322,7 @@ export function DictationStudio({
           </div>
         </div>
 
-        {/* Combo & Sound Controls */}
+        {/* Combo, Sound Controls & Exit */}
         <div className="flex items-center space-x-2">
           {streakCount >= 2 && (
             <span className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full font-bold text-xs border border-red-500 animate-bounce">
@@ -332,6 +343,18 @@ export function DictationStudio({
           >
             {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
           </button>
+
+          {/* Return to bilingual study mode */}
+          {onCloseStudio && (
+            <button
+              onClick={onCloseStudio}
+              className="duo-btn-secondary min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+              title="退出闯关，返回双语精听"
+            >
+              <ArrowLeft size={14} />
+              <span className="hidden sm:inline">返回精听</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -475,7 +498,7 @@ export function DictationStudio({
           {/* Right Navigation */}
           <div className="flex items-center space-x-2">
             <button
-              onClick={onPrevCue}
+              onClick={advancePrev}
               disabled={activeCueIndex <= 0}
               className="duo-btn-secondary min-h-[44px] px-4 py-2 rounded-xl text-xs disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 font-bold cursor-pointer"
             >

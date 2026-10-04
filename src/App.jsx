@@ -456,10 +456,15 @@ export function App() {
                       cues={cues}
                       activeCueIndex={activeCueIndex}
                       onSeekToCue={seekToCue}
+                      onPlayPause={togglePlayPause}
+                      isPlaying={isPlaying}
+                      playbackRate={playbackRate}
+                      onChangePlaybackRate={setPlaybackRate}
                       onPrevSentence={handlePrevSentence}
                       onNextSentence={handleNextSentence}
                       onReplayCurrentSentence={handleReplayCurrentSentence}
-                      chapterTitle={currentChapterObj?.title || ''}
+                      chapterId={selectedChapter}
+                      chapterTitle={currentChapterObj?.cnTitle || currentChapterObj?.title || ''}
                       onCloseStudio={() => setStudyMode('normal')}
                       isParchment={isParchment}
                       onSaveErrorWordsToVocab={(errorWords) => {
@@ -556,7 +561,19 @@ export function App() {
         onClose={() => setIsShelfOpen(false)}
         books={books}
         selectedBookId={selectedBook}
+        selectedChapterId={selectedChapter}
         onSelectBook={selectBook}
+        onSelectChapter={(chapterId, shouldPlay = true) => {
+          selectChapter(chapterId);
+          setCurrentView('player');
+          if (shouldPlay) {
+            setTimeout(() => {
+              if (audioRef.current) {
+                audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+              }
+            }, 150);
+          }
+        }}
         onRefreshCatalog={() => fetchCatalog(true)}
         isRefreshing={isRefreshing}
         isParchment={isParchment}

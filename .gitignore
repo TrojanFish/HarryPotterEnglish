@@ -15,7 +15,7 @@ build/
 .env.production.local
 
 # Agent internal files & transcripts
-.agents/
+.agents/*
 !.agents/skills/
 
 # Logs

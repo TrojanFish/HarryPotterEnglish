@@ -1,25 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Sparkles,
-  ArrowLeft,
   Flame,
   SlidersHorizontal,
   HardDrive,
   HelpCircle,
   Download,
-  ChevronDown,
-  Library,
-  Volume2,
-  EyeOff,
-  Zap
+  Library
 } from 'lucide-react';
-import { formatEnglishText } from '../../utils/vttParser';
 
 /**
  * MobileTopBar — Minimalist Top App Bar for Mobile Phones (< 768px)
- * Replaces the cluttered 7-button desktop header on narrow screens:
- * - Left: Back to bookshelf / Chapter quick drawer trigger
- * - Center: Compact mode selector pill
+ * Designed for Bookshelf View:
+ * - Left: Hogwarts Magic English Brand Icon & Subtitle
  * - Right: Streak flame badge + Quick tools dropdown
  * - Strictly 100% Lucide SVG, zero Unicode emojis
  */
@@ -53,41 +46,14 @@ export function MobileTopBar({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showTools]);
 
-  const rawChapterTitle = currentChapter ? (currentChapter.cnTitle || currentChapter.title) : '选择章节';
-  const cleanChapterTitle = formatEnglishText(rawChapterTitle);
-
   return (
     <header className="md:hidden sticky top-0 z-30 pt-safe bg-white/95 border-b border-[#e8ddd0] backdrop-blur-md select-none">
       <div className="h-14 px-3 flex items-center justify-between">
-        {/* ── Left: Context Action ──────────────────────────────────── */}
-        <div className="flex items-center gap-2 min-w-0">
-        {currentView === 'player' ? (
-          <button
-            onClick={() => onSwitchView && onSwitchView('bookshelf')}
-            className="duo-touch-target p-1.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-stone-100 text-stone-700 active:scale-95 transition-colors"
-            title="返回魔法书架"
-          >
-            <ArrowLeft size={16} />
-          </button>
-        ) : (
+        {/* ── Left: Brand Identity ──────────────────────────────────── */}
+        <div className="flex items-center gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center text-white shrink-0">
             <Sparkles size={16} className="text-white stroke-[2.5]" />
           </div>
-        )}
-
-        {/* Title or Chapter Trigger */}
-        {currentView === 'player' ? (
-          <button
-            onClick={onOpenShelf}
-            className="flex items-center gap-1 text-xs font-bold text-amber-950 truncate max-w-[160px] active:scale-95 transition-all text-left"
-            title="点击切换书籍与章节"
-          >
-            <span className="truncate">
-              {cleanChapterTitle}
-            </span>
-            <ChevronDown size={13} className="shrink-0 text-amber-700" />
-          </button>
-        ) : (
           <div className="flex flex-col min-w-0">
             <h1 className="font-magical font-bold text-sm text-amber-950 truncate">
               霍格沃茨魔法英语
@@ -96,41 +62,7 @@ export function MobileTopBar({
               原版有声书精听
             </span>
           </div>
-        )}
-      </div>
-
-      {/* ── Center: Study Mode Pill (in Player View) ──────────────── */}
-      {currentView === 'player' && (
-        <div className="flex rounded-xl p-0.5 border border-[#e8ddd0] bg-stone-100/70 gap-0.5">
-          <button
-            onClick={() => setStudyMode('normal')}
-            className={`p-1 rounded-lg transition-all ${
-              studyMode === 'normal' ? 'bg-amber-500 text-white' : 'text-stone-500'
-            }`}
-            title="双语精听"
-          >
-            <Volume2 size={13} />
-          </button>
-          <button
-            onClick={() => setStudyMode('blind')}
-            className={`p-1 rounded-lg transition-all ${
-              studyMode === 'blind' ? 'bg-amber-500 text-white' : 'text-stone-500'
-            }`}
-            title="魔法磨耳朵"
-          >
-            <EyeOff size={13} />
-          </button>
-          <button
-            onClick={() => setStudyMode('dictation')}
-            className={`p-1 rounded-lg transition-all ${
-              studyMode === 'dictation' ? 'bg-amber-500 text-white' : 'text-stone-500'
-            }`}
-            title="拼写大闯关"
-          >
-            <Zap size={13} />
-          </button>
         </div>
-      )}
 
       {/* ── Right: Streak & Quick Tools ───────────────────────────── */}
       <div className="flex items-center gap-1.5 shrink-0" ref={toolsRef}>
