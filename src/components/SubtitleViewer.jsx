@@ -80,20 +80,20 @@ const SentenceCard = React.memo(function SentenceCard({
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           <button
             onClick={() => onSeekToCue(cue)}
-            className="p-1 sm:p-1.5 rounded-lg border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-500 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
+            className="w-8 h-8 sm:w-7 sm:h-7 rounded-lg border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-500 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
             title="从此句播放"
           >
-            <Play size={11} className="fill-current" />
+            <Play size={12} className="fill-current translate-x-0.5" />
           </button>
 
           {isActive && (
             <>
               <button
                 onClick={() => onSpeakSentence(cue)}
-                className={`hidden sm:inline-flex p-1.5 rounded-lg border transition-colors active:scale-95 cursor-pointer ${
+                className={`hidden sm:inline-flex w-7 h-7 items-center justify-center rounded-lg border transition-colors active:scale-95 cursor-pointer ${
                   speakingCueId === cue.id
                     ? 'text-amber-900 bg-amber-100 border-amber-300'
                     : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950'
@@ -105,7 +105,7 @@ const SentenceCard = React.memo(function SentenceCard({
 
               <button
                 onClick={() => onCopySentence(cue)}
-                className="hidden sm:inline-flex p-1.5 rounded-lg border border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
+                className="hidden sm:inline-flex w-7 h-7 items-center justify-center rounded-lg border border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
                 title={copiedCueId === cue.id ? '已复制' : '复制本句'}
               >
                 {copiedCueId === cue.id
@@ -117,7 +117,7 @@ const SentenceCard = React.memo(function SentenceCard({
 
           <button
             onClick={() => onRecordCue(cue)}
-            className="px-2 py-1 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center gap-1 font-bold text-[11px]"
+            className="min-h-[32px] sm:min-h-0 px-2 sm:px-2.5 py-1 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center gap-1 font-bold text-[11px]"
             title="跟读施咒（AI评分）"
           >
             <Mic size={12} className="text-amber-700" />
@@ -127,7 +127,7 @@ const SentenceCard = React.memo(function SentenceCard({
           {studyMode === 'blind' && (
             <button
               onClick={() => onToggleReveal(cue.id)}
-              className="p-1 sm:p-1.5 rounded-lg border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 transition-colors active:scale-95 cursor-pointer"
+              className="w-8 h-8 sm:w-7 sm:h-7 rounded-lg border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
               title={isRevealed ? '重新遮罩' : '揭示本句'}
             >
               {isRevealed ? <EyeOff size={12} /> : <Eye size={12} />}

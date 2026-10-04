@@ -47,7 +47,16 @@ export function SrsFlashcardModal({
       setIsFlipped(false);
       setIsFinished(false);
       setSessionStats({ remembered: 0, forgotten: 0 });
+    } else {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
     }
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
   }, [isOpen, vocabList]);
 
   if (!isOpen) return null;

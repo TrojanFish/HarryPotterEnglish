@@ -33,6 +33,15 @@ export function WordModal({
   // Reset tab when word changes
   useEffect(() => { setActiveTab('meaning'); }, [wordData?.word]);
 
+  // Clean up any ongoing TTS speech on modal unmount
+  useEffect(() => {
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
   if (!wordData) return null;
 
   const phonicsInfo = getPhonicsTip(wordData.word, wordData.phonetic);

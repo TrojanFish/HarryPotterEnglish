@@ -210,19 +210,33 @@ export function App() {
   };
 
   // Play Original Audio Snippet for Shadowing Recorder
+  const snippetTimeoutRef = useRef(null);
   const handlePlayOriginalSnippet = useCallback((startTime, endTime) => {
     if (audioRef.current) {
+      if (snippetTimeoutRef.current) {
+        clearTimeout(snippetTimeoutRef.current);
+        snippetTimeoutRef.current = null;
+      }
       audioRef.current.currentTime = startTime;
       audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-      const durationMs = (endTime - startTime) * 1000;
-      setTimeout(() => {
-        if (audioRef.current && isPlaying) {
+      const durationMs = Math.max(300, (endTime - startTime) * 1000);
+      snippetTimeoutRef.current = setTimeout(() => {
+        if (audioRef.current) {
           audioRef.current.pause();
           setIsPlaying(false);
         }
+        snippetTimeoutRef.current = null;
       }, durationMs);
     }
-  }, [audioRef, isPlaying, setIsPlaying]);
+  }, [audioRef, setIsPlaying]);
+
+  useEffect(() => {
+    return () => {
+      if (snippetTimeoutRef.current) {
+        clearTimeout(snippetTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Word Click -> Open Dictionary Modal
   const handleWordClick = useCallback(async (rawWord, sentenceCue) => {
@@ -275,8 +289,24 @@ export function App() {
       // Ignore if user is typing in an input or textarea
       if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
+      const isAnyModalOpen = isShelfOpen || isVocabOpen || isShortcutsOpen || isRecorderOpen || isAnalyticsOpen || isStorageOpen || isSrsOpen || Boolean(selectedWordData);
+
       if (e.key === 'Escape') {
-        closeAllModals();
+        if (isAnyModalOpen) {
+          closeAllModals();
+        }
+        return;
+      }
+
+      // If a modal or drawer is active, suppress global media/view shortcuts to prevent background hijacking
+      if (isAnyModalOpen) return;
+
+      // In Bookshelf view, only handle sidebar toggling; do not hijack player controls
+      if (currentView === 'bookshelf') {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
+          e.preventDefault();
+          toggleSidebarCollapsed();
+        }
         return;
       }
 
@@ -313,12 +343,22 @@ export function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [
+    isShelfOpen,
+    isVocabOpen,
+    isShortcutsOpen,
+    isRecorderOpen,
+    isAnalyticsOpen,
+    isStorageOpen,
+    isSrsOpen,
+    selectedWordData,
+    currentView,
     closeAllModals,
     togglePlayPause,
     handlePrevSentence,
     handleNextSentence,
     handleReplayCurrentSentence,
     setIsLoopSentence,
+    setStudyMode,
     toggleSidebarCollapsed,
     volume,
     setVolume

@@ -447,6 +447,8 @@ app.get('/api/raw/*', async (req, res) => {
     }
     res.status(404).json({ error: err.message });
   }
+});
+
 // 5. Local-First Incremental Sync API (LWW Timestamp Protocol)
 app.post('/api/sync', (req, res) => {
   try {
