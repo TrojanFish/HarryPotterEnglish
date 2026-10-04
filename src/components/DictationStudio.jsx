@@ -16,9 +16,9 @@ import {
   Shield,
   Zap,
   Award,
-  ArrowLeft
+  Languages
 } from 'lucide-react';
-import { tokenizeSentence } from '../utils/vttParser';
+import { tokenizeSentence, formatTime } from '../utils/vttParser';
 import { recordDictationSession } from '../utils/analyticsStore';
 import { cleanWord } from '../utils/dictationEngine';
 import { 
@@ -38,17 +38,12 @@ import { DictationSummaryModal } from './dictation/DictationSummaryModal';
 
 /**
  * DictationStudio — Hogwarts Gamified Spell Quest (魔法拼写大闯关)
- * 4 Progressive Difficulty Levels:
- * 1. 见习巫师 · 飞来字块 (Accio) — Word puzzle builder with distractors
- * 2. 高阶学徒 · 荧光挖空 (Lumos) — Core content word cloze with first-letter micro-glow
- * 3. 傲罗特训 · 全句盲听 (Auror) — Classic full sentence typing with fog of war
- * 4. 决斗俱乐部 · 限时生存 (Dueling) — 3 Protego shields + 25s timer per sentence
- * 
- * Features:
- * - Pure Web Audio synthetic chimes & fanfares
- * - Potion Crucible (错词魔药重炼)
- * - House cup points settlement report card
- * - Zero emojis, pure parchment daylight palette
+ * Deeply harmonized into the Hogwarts study classroom:
+ * - Clean sticky sub-header aligned with SubtitleViewer toolbar
+ * - 4 progressive difficulty tiers with unified segmented control
+ * - Focused single-card exercise surface with hero audio prompt
+ * - Dedicated integrated bottom action & Duolingo feedback bar (zero player duplication)
+ * - Zero emojis, 100% warm parchment design tokens, Apple HIG touch targets
  */
 export function DictationStudio({
   cues = [],
@@ -67,7 +62,8 @@ export function DictationStudio({
   onRecordResult,
   playbackRate = 1.0,
   onChangePlaybackRate,
-  onSaveErrorWordsToVocab
+  onSaveErrorWordsToVocab,
+  onReplayCurrentSentence
 }) {
   const currentCue = cues[activeCueIndex];
   const advanceNext = onNextSentence || onNextCue;
@@ -106,6 +102,7 @@ export function DictationStudio({
   const [errorWords, setErrorWords] = useState([]);
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [feedbackState, setFeedbackState] = useState(null);
+  const [showTranslationClue, setShowTranslationClue] = useState(false);
 
   // Dueling Mode survival state
   const [shields, setShields] = useState(3);
@@ -124,6 +121,7 @@ export function DictationStudio({
     setHintCount(0);
     setTimeRemaining(25);
     setFeedbackState(null);
+    setShowTranslationClue(false);
   }, [activeCueIndex]);
 
   // Handle advancing from feedback sheet
@@ -132,7 +130,7 @@ export function DictationStudio({
     handleNext();
   };
 
-  // Keyboard shortcut: Press Enter on bottom sheet to advance immediately
+  // Keyboard shortcut: Press Enter on bottom feedback to advance immediately
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (feedbackState && e.key === 'Enter') {
@@ -152,10 +150,9 @@ export function DictationStudio({
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 1) {
-          // Timeout! Deduct 1 shield
           playMistakeThud();
           setShields(s => Math.max(0, s - 1));
-          return 25; // Reset timer for next try
+          return 25;
         }
         return prev - 1;
       });
@@ -166,7 +163,7 @@ export function DictationStudio({
 
   if (!currentCue) {
     return (
-      <div className="flex-1 flex items-center justify-center py-20 text-slate-400">
+      <div className="flex-1 flex items-center justify-center py-20 text-stone-400">
         <p>暂无精听字幕数据，请先选择章节</p>
       </div>
     );
@@ -185,7 +182,9 @@ export function DictationStudio({
     } else if (!slow && onChangePlaybackRate && playbackRate !== 1.0) {
       onChangePlaybackRate(1.0);
     }
-    if (onSeekToCue) {
+    if (onReplayCurrentSentence && currentCue) {
+      onReplayCurrentSentence(currentCue);
+    } else if (onSeekToCue && currentCue) {
       onSeekToCue(currentCue);
     }
   };
@@ -200,7 +199,6 @@ export function DictationStudio({
     if (nextPending) {
       setUserInput(prev => (prev.trim() ? `${prev.trim()} ${nextPending} ` : `${nextPending} `));
       setHintCount(prev => prev + 1);
-      // Track hint words into error/review pool
       if (!errorWords.includes(nextPending)) {
         setErrorWords(prev => [...prev, nextPending]);
       }
@@ -216,7 +214,6 @@ export function DictationStudio({
 
     if (newStreak >= 3) {
       playComboArpeggio();
-      // Dueling bonus: restore shield on 3+ combo
       if (difficultyMode === 'dueling' && shields < 3) {
         setShields(s => Math.min(3, s + 1));
       }
@@ -242,7 +239,7 @@ export function DictationStudio({
       onRecordResult(sessionData);
     }
 
-    // Trigger Duolingo Bottom Feedback Sheet
+    // Trigger Celebratory Feedback Sheet
     setFeedbackState({
       isCorrect: true,
       accuracy: 100,
@@ -253,7 +250,6 @@ export function DictationStudio({
 
   // Handle advancing to next cue
   const handleNext = () => {
-    // If on last cue of chapter, open summary report card
     if (activeCueIndex >= cues.length - 1) {
       playVictoryFanfare();
       setIsSummaryOpen(true);
@@ -296,281 +292,293 @@ export function DictationStudio({
   const maxStarsPossible = cues.length * 3;
 
   return (
-    <div className="flex-1 max-w-4xl mx-auto px-4 py-6 w-full flex flex-col justify-between pb-8 select-none">
+    <div className="flex-1 flex flex-col h-full bg-[#fbf9f4] text-[#1e1610] select-none overflow-hidden">
       
-      {/* ── 1. Gamified Quest Top Status Bar ──────────────────────── */}
-      <div className="p-4 rounded-3xl border-2 border-[#e8ddd0] bg-white text-[#1e1610] mb-5 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center space-x-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white border border-amber-500">
-            <Trophy size={22} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-magical font-bold text-base sm:text-lg text-amber-900">
-                魔法拼写大闯关 (Spell Quest)
-              </span>
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-800 font-bold border border-emerald-500/30">
-                第 <span className="font-mono">{activeCueIndex + 1}</span> / <span className="font-mono">{cues.length}</span> 句
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 font-mono mt-0.5 flex items-center gap-1.5">
-              <Star size={13} className="text-amber-500 fill-amber-500 inline" />
-              <span>已斩获 <span className="font-bold text-amber-600">{totalStars}</span> 颗魔法星</span>
-              <span>·</span>
-              <span>连对 <span className="font-bold text-orange-600">{streakCount}</span> 句</span>
-            </p>
-          </div>
-        </div>
-
-        {/* Combo, Sound Controls & Exit */}
-        <div className="flex items-center space-x-2">
-          {streakCount >= 2 && (
-            <span className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full font-bold text-xs border border-red-500 animate-bounce">
-              <Flame size={13} />
-              <span>连对 x<span className="font-mono">{streakCount}</span>!</span>
+      {/* ── 1. Sticky Mode Sub-Header (Integrated with Study TopBar) ── */}
+      <div className="sticky top-0 z-20 bg-[#fbf9f4]/95 border-b border-[#e8ddd0] backdrop-blur-md px-4 sm:px-6 py-2.5 shrink-0">
+        {/* Row 1: Quest Status, Stars & Audio Toggles */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-950 font-magical shrink-0">
+              <Zap size={15} className="text-amber-600" />
+              <span>拼写大闯关</span>
             </span>
-          )}
+            <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 font-mono font-bold border border-amber-300/60 shrink-0">
+              第 {activeCueIndex + 1} / {cues.length} 句
+            </span>
+            {streakCount >= 2 && (
+              <span className="hidden sm:inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold border border-orange-200 shrink-0">
+                <Flame size={11} className="text-orange-500" />
+                <span>连对 x{streakCount}</span>
+              </span>
+            )}
+          </div>
 
-          {/* Sound Toggle Button */}
-          <button
-            onClick={handleToggleSound}
-            className={`min-h-[44px] min-w-[44px] p-2 rounded-xl border flex items-center justify-center transition-all active:scale-90 cursor-pointer ${
-              soundEnabled
-                ? 'border-amber-300 bg-amber-50 text-amber-800'
-                : 'border-slate-300 bg-slate-100 text-slate-400'
-            }`}
-            title={soundEnabled ? '魔咒合成音效: 已开启 (点击静音)' : '魔咒合成音效: 已静音 (点击开启)'}
-          >
-            {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
-          </button>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Stars counter */}
+            <div className="flex items-center gap-1 text-xs text-amber-900 font-bold bg-amber-50 px-2 sm:px-2.5 py-1 rounded-xl border border-amber-200/80">
+              <Star size={13} className="text-amber-500 fill-amber-500" />
+              <span>{totalStars} 星</span>
+            </div>
 
-          {/* Return to bilingual study mode */}
-          {onCloseStudio && (
+            {/* Sound Toggle */}
             <button
-              onClick={onCloseStudio}
-              className="duo-btn-secondary min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer"
-              title="退出闯关，返回双语精听"
-            >
-              <ArrowLeft size={14} />
-              <span className="hidden sm:inline">返回精听</span>
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* ── 2. Difficulty Tier Selector Tabs ───────────────────────── */}
-      <div className="flex items-center justify-between gap-1.5 p-1.5 bg-stone-200/50 rounded-2xl mb-5 border border-[#e8ddd0] overflow-x-auto">
-        {[
-          { key: 'accio',   label: '见习巫师 · 飞来字块', desc: '字块拼句', icon: <Sparkles size={13} /> },
-          { key: 'lumos',   label: '高阶学徒 · 荧光挖空', desc: '核心挖空', icon: <Lightbulb size={13} /> },
-          { key: 'auror',   label: '傲罗特训 · 全句盲听', desc: '全句默写', icon: <Award size={13} /> },
-          { key: 'dueling', label: '决斗俱乐部 · 限时生存', desc: '护盾血量', icon: <Shield size={13} /> },
-        ].map((tier) => {
-          const isActive = difficultyMode === tier.key;
-          return (
-            <button
-              key={tier.key}
-              onClick={() => handleDifficultyChange(tier.key)}
-              className={`flex-1 min-w-[120px] py-2 px-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                isActive
-                  ? 'bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 text-white border border-amber-600'
-                  : 'text-amber-950/80 hover:text-amber-950 hover:bg-white/60'
+              onClick={handleToggleSound}
+              className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${
+                soundEnabled
+                  ? 'border-amber-300 bg-amber-50 text-amber-800'
+                  : 'border-[#e8ddd0] bg-white text-stone-400 hover:border-amber-300'
               }`}
+              title={soundEnabled ? '魔咒合成音效：开 (点击静音)' : '魔咒合成音效：关 (点击开启)'}
             >
-              {tier.icon}
-              <span className="truncate">{tier.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* ── 3. Mode 4 Special: Dueling Club Survival Bar ───────────── */}
-      {difficultyMode === 'dueling' && (
-        <DuelingSurvivalBar
-          shields={shields}
-          maxShields={3}
-          timeRemaining={timeRemaining}
-          maxTime={25}
-          streakCount={streakCount}
-        />
-      )}
-
-      {/* ── 4. Main Dictation Paper Card ───────────────────────────── */}
-      <div className="p-6 sm:p-8 rounded-3xl border-2 border-[#e8ddd0] bg-white text-[#1e1610] transition-all">
-        
-        {/* Audio Playback & Replay bar */}
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-inherit">
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => handleReplayCurrent(false)}
-              className="flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs border border-amber-600 active:scale-95 transition-all cursor-pointer"
-              title="重新听本句原速朗读"
-            >
-              <RotateCcw size={14} />
-              <span>原速重播 (1.0x)</span>
+              {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
             </button>
 
-            {onChangePlaybackRate && (
-              <button
-                onClick={() => handleReplayCurrent(true)}
-                className="flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-xl border border-amber-300/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 text-xs font-bold transition-all active:scale-95 cursor-pointer"
-                title="以 0.8x 慢速重播本句，辨析生词发音细节"
-              >
-                <Sparkles size={13} className="text-amber-600" />
-                <span>慢速精听 (0.8x)</span>
-              </button>
-            )}
-
+            {/* Trophy report trigger */}
             <button
-              onClick={() => onPlayPause && onPlayPause()}
-              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-amber-200/80 bg-white/90 hover:bg-amber-50 text-amber-950 hover:border-amber-400 transition-all active:scale-95 cursor-pointer"
-              title="播放 / 暂停"
+              onClick={() => setIsSummaryOpen(true)}
+              className="w-8 h-8 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 flex items-center justify-center transition-colors cursor-pointer"
+              title="查看全卷成绩单"
             >
-              {isPlaying ? <Pause size={15} /> : <Play size={15} />}
-            </button>
-          </div>
-
-          <span className="text-xs font-mono font-bold text-slate-400">
-            {difficultyMode === 'accio' && '飞来字块拼装'}
-            {difficultyMode === 'lumos' && '核心词汇挖空'}
-            {difficultyMode === 'auror' && '全句盲听默写'}
-            {difficultyMode === 'dueling' && '限时生存试炼'}
-          </span>
-        </div>
-
-        {/* ── Sub-Mode Interactive Components ─────────────────────── */}
-        {difficultyMode === 'accio' && (
-          <AccioWordPicker
-            sentenceText={currentCue.text}
-            isParchment={isParchment}
-            onComplete={handleSubModeComplete}
-            onReset={() => setHintCount(0)}
-          />
-        )}
-
-        {difficultyMode === 'lumos' && (
-          <LumosClozeInput
-            sentenceText={currentCue.text}
-            isParchment={isParchment}
-            onComplete={handleSubModeComplete}
-            onQuillHintTrigger={handleQuillHint}
-          />
-        )}
-
-        {(difficultyMode === 'auror' || difficultyMode === 'dueling') && (
-          <AurorFullTyping
-            currentCue={currentCue}
-            userInput={userInput}
-            setUserInput={setUserInput}
-            showAnswer={showAnswer}
-            setShowAnswer={setShowAnswer}
-            isParchment={isParchment}
-            onEnterNext={handleNext}
-            onQuillHint={handleQuillHint}
-          />
-        )}
-
-        {/* Action Controls & Navigation */}
-        <div className="mt-6 pt-4 border-t border-inherit flex flex-wrap items-center justify-between gap-3">
-          {/* Left aids (Quill hint for Auror/Dueling mode) */}
-          <div className="flex items-center space-x-2">
-            {(difficultyMode === 'auror' || difficultyMode === 'dueling') && (
-              <button
-                onClick={handleQuillHint}
-                className="flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-xl border border-amber-400 bg-amber-50/80 hover:bg-amber-100/90 text-amber-950 hover:border-amber-500 text-xs font-bold transition-all active:scale-95 cursor-pointer"
-                title="羽毛笔魔法提示：自动补齐下一个单词 (快捷键: Tab)"
-              >
-                <Sparkles size={14} className="text-amber-600" />
-                <span>羽毛笔提示 (Tab)</span>
-              </button>
-            )}
-
-            {(difficultyMode === 'auror' || difficultyMode === 'dueling') && (
-              <button
-                onClick={() => setUserInput('')}
-                className="px-3.5 py-2 min-h-[44px] rounded-xl border border-amber-200/80 bg-white/80 hover:bg-rose-50 text-xs text-slate-500 hover:text-rose-600 hover:border-rose-300 transition-all active:scale-95 cursor-pointer"
-              >
-                清空重来
-              </button>
-            )}
-          </div>
-
-          {/* Right Navigation */}
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={advancePrev}
-              disabled={activeCueIndex <= 0}
-              className="duo-btn-secondary min-h-[44px] px-4 py-2 rounded-xl text-xs disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 font-bold cursor-pointer"
-            >
-              <SkipBack size={14} />
-              <span>上一句</span>
-            </button>
-
-            <button
-              onClick={handleNext}
-              className="duo-btn-primary min-h-[44px] flex items-center gap-1.5 px-6 py-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer"
-            >
-              <span>{activeCueIndex >= cues.length - 1 ? '完成试炼并结算' : '下一句 (Enter)'}</span>
-              <SkipForward size={14} />
+              <Trophy size={14} className="text-amber-600" />
             </button>
           </div>
         </div>
 
+        {/* Row 2: 4-Tier Difficulty Segmented Control */}
+        <div className="mt-2 h-8 sm:h-9 flex items-center p-0.5 sm:p-1 rounded-xl bg-stone-100/90 border border-[#e8ddd0] gap-0.5 sm:gap-1">
+          {[
+            { key: 'accio',   label: '见习 · 飞来字块', short: '字块拼装', icon: <Sparkles size={12} /> },
+            { key: 'lumos',   label: '学徒 · 荧光挖空', short: '核心挖空', icon: <Lightbulb size={12} /> },
+            { key: 'auror',   label: '傲罗 · 全句盲听', short: '全句默写', icon: <Award size={12} /> },
+            { key: 'dueling', label: '决斗 · 限时生存', short: '限时试炼', icon: <Shield size={12} /> },
+          ].map((tier) => {
+            const isActive = difficultyMode === tier.key;
+            return (
+              <button
+                key={tier.key}
+                onClick={() => handleDifficultyChange(tier.key)}
+                className={`flex-1 h-7 sm:h-7.5 px-1 sm:px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-amber-500 text-white shadow-sm'
+                    : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
+                }`}
+              >
+                {tier.icon}
+                <span className="hidden sm:inline">{tier.label}</span>
+                <span className="sm:hidden">{tier.short}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* ── Duolingo Bottom Feedback Sheet ────────────────────────── */}
-      {feedbackState && (
-        <div 
-          className={`fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-5 border-t-2 pb-safe transition-all transform animate-fadeIn ${
-            feedbackState.isCorrect 
-              ? 'bg-[#d7f0db] border-emerald-500 text-emerald-950' 
-              : 'bg-[#fed7d7] border-rose-400 text-rose-950'
-          }`}
-        >
-          {/* Mobile Bottom Sheet Pull Handle */}
-          <div className="sm:hidden w-10 h-1.5 rounded-full bg-black/15 mx-auto mb-3" />
+      {/* ── 2. Scrollable Central Exercise Area ───────────────────────── */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 sm:py-6 ios-scroll">
+        <div className="max-w-3xl mx-auto w-full space-y-4">
 
-          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5 text-left w-full sm:w-auto">
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border border-black/10 ${
-                feedbackState.isCorrect ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
-              }`}>
-                {feedbackState.isCorrect ? (
-                  <CheckCircle2 size={28} className="stroke-[2.5]" />
-                ) : (
-                  <RotateCcw size={26} />
+          {/* Dueling Club Survival Bar (if dueling mode) */}
+          {difficultyMode === 'dueling' && (
+            <DuelingSurvivalBar
+              shields={shields}
+              maxShields={3}
+              timeRemaining={timeRemaining}
+              maxTime={25}
+              streakCount={streakCount}
+            />
+          )}
+
+          {/* Main Dictation Challenge Card */}
+          <div className="p-5 sm:p-7 rounded-2xl border border-[#e8ddd0] bg-white text-[#1e1610] transition-all">
+
+            {/* Audio Hero Listening Station */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-[#eee5d8]">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleReplayCurrent(false)}
+                  className="h-10 sm:h-11 px-3.5 sm:px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs sm:text-sm flex items-center gap-2 active:scale-95 transition-all cursor-pointer border border-amber-600"
+                  title="重新听本句原速朗读 (Space)"
+                >
+                  {isPlaying ? (
+                    <span className="flex items-center gap-0.5 text-white shrink-0">
+                      <span className="w-[3px] h-3 bg-white rounded-full animate-wave-1" />
+                      <span className="w-[3px] h-4 bg-white rounded-full animate-wave-2" />
+                      <span className="w-[3px] h-2 bg-white rounded-full animate-wave-3" />
+                    </span>
+                  ) : (
+                    <RotateCcw size={14} className="shrink-0" />
+                  )}
+                  <span>{isPlaying ? '正在朗读...' : '重播本句 (1.0x)'}</span>
+                </button>
+
+                {onChangePlaybackRate && (
+                  <button
+                    onClick={() => handleReplayCurrent(true)}
+                    className={`h-10 sm:h-11 px-3 rounded-xl border text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer ${
+                      playbackRate === 0.8
+                        ? 'bg-amber-100 text-amber-900 border-amber-400'
+                        : 'border-[#e8ddd0] bg-white text-stone-700 hover:border-amber-300'
+                    }`}
+                    title="慢速重播，辨析连读弱读"
+                  >
+                    <Sparkles size={13} className="text-amber-600" />
+                    <span>慢速 0.8x</span>
+                  </button>
+                )}
+
+                {/* Translation hint toggle */}
+                {currentCue.translation && (
+                  <button
+                    onClick={() => setShowTranslationClue(prev => !prev)}
+                    className={`h-10 sm:h-11 px-2.5 sm:px-3 rounded-xl border text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer ${
+                      showTranslationClue
+                        ? 'bg-amber-50 text-amber-900 border-amber-300'
+                        : 'border-[#e8ddd0] bg-white text-stone-500 hover:border-amber-300'
+                    }`}
+                    title="遇到困难？点击查看中文释义线索"
+                  >
+                    <Languages size={13} className={showTranslationClue ? 'text-amber-600' : 'text-stone-400'} />
+                    <span className="hidden sm:inline">{showTranslationClue ? '隐藏译文' : '译文线索'}</span>
+                  </button>
                 )}
               </div>
-              <div>
-                <h4 className="font-magical font-bold text-lg sm:text-xl leading-tight">
-                  {feedbackState.isCorrect ? '太棒了！施法完全正确！' : '咒文存在微小偏差'}
+
+              <div className="flex items-center gap-1.5 text-xs text-stone-400 font-mono">
+                <span>{formatTime(currentCue.startTime)}</span>
+              </div>
+            </div>
+
+            {/* Revealed Chinese clue */}
+            {showTranslationClue && currentCue.translation && (
+              <div className="mb-5 p-3 rounded-xl bg-amber-50/60 border border-amber-200/80 text-xs sm:text-sm text-[#735839] font-reading leading-relaxed animate-fadeIn">
+                <span className="font-bold text-amber-900 mr-1.5">原著线索：</span>
+                {currentCue.translation}
+              </div>
+            )}
+
+            {/* Sub-Mode Interactive Components */}
+            {difficultyMode === 'accio' && (
+              <AccioWordPicker
+                sentenceText={currentCue.text}
+                isParchment={isParchment}
+                onComplete={handleSubModeComplete}
+                onReset={() => setHintCount(0)}
+              />
+            )}
+
+            {difficultyMode === 'lumos' && (
+              <LumosClozeInput
+                sentenceText={currentCue.text}
+                isParchment={isParchment}
+                onComplete={handleSubModeComplete}
+                onQuillHintTrigger={handleQuillHint}
+              />
+            )}
+
+            {(difficultyMode === 'auror' || difficultyMode === 'dueling') && (
+              <AurorFullTyping
+                currentCue={currentCue}
+                userInput={userInput}
+                setUserInput={setUserInput}
+                showAnswer={showAnswer}
+                setShowAnswer={setShowAnswer}
+                isParchment={isParchment}
+                onEnterNext={handleNext}
+                onQuillHint={handleQuillHint}
+              />
+            )}
+
+            {/* Typing aids (Auror / Dueling) */}
+            {(difficultyMode === 'auror' || difficultyMode === 'dueling') && (
+              <div className="mt-5 pt-3.5 border-t border-[#eee5d8] flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleQuillHint}
+                    className="h-9 px-3 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer"
+                    title="自动补齐下一个单词 (快捷键: Tab)"
+                  >
+                    <Sparkles size={13} className="text-amber-600" />
+                    <span>羽毛笔提示 (Tab)</span>
+                  </button>
+                  <button
+                    onClick={() => setUserInput('')}
+                    className="h-9 px-3 rounded-xl border border-[#e8ddd0] bg-white hover:bg-rose-50 text-stone-500 hover:text-rose-600 text-xs font-bold active:scale-95 transition-all cursor-pointer"
+                  >
+                    清空重来
+                  </button>
+                </div>
+              </div>
+            )}
+
+          </div>
+        </div>
+      </div>
+
+      {/* ── 3. Dedicated Integrated Bottom Action & Feedback Bar ──────── */}
+      <div className={`shrink-0 border-t pb-safe transition-all ${
+        feedbackState
+          ? feedbackState.isCorrect
+            ? 'bg-[#d7f0db] border-emerald-500 text-emerald-950'
+            : 'bg-[#fed7d7] border-rose-400 text-rose-950'
+          : 'bg-white border-[#e8ddd0] text-[#1e1610]'
+      }`}>
+        {feedbackState ? (
+          /* Duolingo Celebratory Feedback State */
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 animate-fadeIn">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white ${
+                feedbackState.isCorrect ? 'bg-emerald-600' : 'bg-rose-600'
+              }`}>
+                {feedbackState.isCorrect ? <CheckCircle2 size={22} /> : <RotateCcw size={20} />}
+              </div>
+              <div className="min-w-0">
+                <h4 className="font-magical font-bold text-sm sm:text-base leading-tight">
+                  {feedbackState.isCorrect ? '太棒了！拼写完全正确！' : '咒文存在微小偏差'}
                 </h4>
-                <p className="text-xs sm:text-sm font-reading mt-0.5 opacity-90">
-                  {feedbackState.isCorrect ? (
-                    feedbackState.streak >= 2 
-                      ? `连对第 ${feedbackState.streak} 句！魔法能量正在激增！` 
-                      : '精准拼写出整句咒语，获得满星魔力！'
-                  ) : (
-                    `标准咒语：${feedbackState.sentence || currentCue.text}`
-                  )}
+                <p className="text-xs font-reading opacity-90 truncate mt-0.5">
+                  {feedbackState.isCorrect
+                    ? (feedbackState.streak >= 2 ? `连对第 ${feedbackState.streak} 句！魔力充盈！` : '精准拼写出整句咒语，获得满星魔力！')
+                    : `标准咒文：${feedbackState.sentence || currentCue.text}`}
                 </p>
               </div>
             </div>
 
             <button
               onClick={handleFeedbackContinue}
-              className={`w-full sm:w-auto min-h-[48px] px-8 py-3 rounded-2xl text-sm sm:text-base font-bold cursor-pointer transition-all flex items-center justify-center gap-2 ${
-                feedbackState.isCorrect ? 'duo-btn-success' : 'duo-btn-danger'
+              className={`w-full sm:w-auto h-11 px-6 sm:px-8 rounded-xl font-bold text-xs sm:text-sm text-white cursor-pointer active:scale-95 transition-all flex items-center justify-center gap-2 ${
+                feedbackState.isCorrect ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-rose-600 hover:bg-rose-700'
               }`}
             >
               <span>{activeCueIndex >= cues.length - 1 ? '完成试炼并结算 (Enter)' : '继续下一句 (Enter)'}</span>
-              <SkipForward size={16} />
+              <SkipForward size={15} />
             </button>
           </div>
-        </div>
-      )}
+        ) : (
+          /* Active Exercise Navigation Bar */
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3">
+            <button
+              onClick={advancePrev}
+              disabled={activeCueIndex <= 0}
+              className="h-11 px-3 sm:px-4 rounded-xl border border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-colors cursor-pointer"
+              title="上一句 (←)"
+            >
+              <SkipBack size={15} />
+              <span className="hidden sm:inline">上一句</span>
+            </button>
 
-      {/* ── 5. Chapter Quest Summary Report Card Modal ─────────────── */}
+            <button
+              onClick={handleNext}
+              className="h-11 px-5 sm:px-6 rounded-xl duo-btn-primary text-xs sm:text-sm font-bold flex items-center gap-2 cursor-pointer active:scale-95 shadow-none"
+              title="下一句 (Enter)"
+            >
+              <span>{activeCueIndex >= cues.length - 1 ? '完成试炼并结算' : '跳过 / 下一句'}</span>
+              <SkipForward size={15} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* ── 4. Chapter Quest Summary Report Card Modal ─────────────── */}
       <DictationSummaryModal
         isOpen={isSummaryOpen}
         onClose={() => setIsSummaryOpen(false)}
@@ -583,13 +591,11 @@ export function DictationStudio({
         chapterTitle={chapterTitle}
         onRetryErrors={() => {
           setIsSummaryOpen(false);
-          // Restart first cue
           if (onSeekToCue && cues[0]) onSeekToCue(cues[0]);
         }}
         onSaveErrorWordsToVocab={handleSaveErrorsToVocab}
         isParchment={isParchment}
       />
-
     </div>
   );
 }

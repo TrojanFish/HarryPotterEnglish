@@ -517,29 +517,27 @@ export function App() {
                     <p className="text-sm font-reading font-medium">正在开启有声原著羊皮卷...</p>
                   </div>
                 ) : studyMode === 'dictation' ? (
-                  <div className="flex-1 overflow-y-auto px-4 py-4 sm:py-6 ios-scroll">
-                    <DictationStudio
-                      cues={cues}
-                      activeCueIndex={activeCueIndex}
-                      onSeekToCue={seekToCue}
-                      onPlayPause={togglePlayPause}
-                      isPlaying={isPlaying}
-                      playbackRate={playbackRate}
-                      onChangePlaybackRate={setPlaybackRate}
-                      onPrevSentence={handlePrevSentence}
-                      onNextSentence={handleNextSentence}
-                      onReplayCurrentSentence={handleReplayCurrentSentence}
-                      chapterId={selectedChapter}
-                      chapterTitle={currentChapterObj?.cnTitle || currentChapterObj?.title || ''}
-                      onCloseStudio={() => setStudyMode('normal')}
-                      isParchment={isParchment}
-                      onSaveErrorWordsToVocab={(errorWords) => {
-                        errorWords.forEach(w => {
-                          toggleSaveWord({ word: w, translation: '拼写错词重炼' }, activeCue, selectedBook, selectedChapter);
-                        });
-                      }}
-                    />
-                  </div>
+                  <DictationStudio
+                    cues={cues}
+                    activeCueIndex={activeCueIndex}
+                    onSeekToCue={seekToCue}
+                    onPlayPause={togglePlayPause}
+                    isPlaying={isPlaying}
+                    playbackRate={playbackRate}
+                    onChangePlaybackRate={setPlaybackRate}
+                    onPrevSentence={handlePrevSentence}
+                    onNextSentence={handleNextSentence}
+                    onReplayCurrentSentence={handleReplayCurrentSentence}
+                    chapterId={selectedChapter}
+                    chapterTitle={currentChapterObj?.cnTitle || currentChapterObj?.title || ''}
+                    onCloseStudio={() => setStudyMode('normal')}
+                    isParchment={isParchment}
+                    onSaveErrorWordsToVocab={(errorWords) => {
+                      errorWords.forEach(w => {
+                        toggleSaveWord({ word: w, translation: '拼写错词重炼' }, activeCue, selectedBook, selectedChapter);
+                      });
+                    }}
+                  />
                 ) : (
                   <SubtitleViewer
                     cues={cues}
@@ -560,34 +558,36 @@ export function App() {
                 )}
               </div>
 
-              {/* Bottom Audio Controller */}
-              <AudioPlayer
-                currentBook={currentBookObj}
-                currentChapter={currentChapterObj}
-                audioSrc={audioUrl}
-                currentTime={currentTime}
-                duration={duration}
-                isPlaying={isPlaying}
-                onPlayPause={togglePlayPause}
-                onSeek={seekTo}
-                onPrevSentence={handlePrevSentence}
-                onNextSentence={handleNextSentence}
-                onReplayCurrentSentence={handleReplayCurrentSentence}
-                isLoopSentence={isLoopSentence}
-                onToggleLoopSentence={() => setIsLoopSentence(prev => !prev)}
-                playbackRate={playbackRate}
-                onChangePlaybackRate={setPlaybackRate}
-                volume={volume}
-                onChangeVolume={setVolume}
-                activeCue={activeCue}
-                totalCues={cues.length}
-                activeCueIndex={activeCueIndex}
-                isParchment={isParchment}
-                onToggleRecorder={() => {
-                  if (activeCue) openRecorder(activeCue);
-                }}
-                isRecordingActive={isRecorderOpen}
-              />
+              {/* Bottom Audio Controller (Active in Bilingual Listening & Blind Audio Modes) */}
+              {studyMode !== 'dictation' && (
+                <AudioPlayer
+                  currentBook={currentBookObj}
+                  currentChapter={currentChapterObj}
+                  audioSrc={audioUrl}
+                  currentTime={currentTime}
+                  duration={duration}
+                  isPlaying={isPlaying}
+                  onPlayPause={togglePlayPause}
+                  onSeek={seekTo}
+                  onPrevSentence={handlePrevSentence}
+                  onNextSentence={handleNextSentence}
+                  onReplayCurrentSentence={handleReplayCurrentSentence}
+                  isLoopSentence={isLoopSentence}
+                  onToggleLoopSentence={() => setIsLoopSentence(prev => !prev)}
+                  playbackRate={playbackRate}
+                  onChangePlaybackRate={setPlaybackRate}
+                  volume={volume}
+                  onChangeVolume={setVolume}
+                  activeCue={activeCue}
+                  totalCues={cues.length}
+                  activeCueIndex={activeCueIndex}
+                  isParchment={isParchment}
+                  onToggleRecorder={() => {
+                    if (activeCue) openRecorder(activeCue);
+                  }}
+                  isRecordingActive={isRecorderOpen}
+                />
+              )}
             </div>
           )}
         </div>

@@ -82,35 +82,35 @@ export function AccioWordPicker({
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-5 animate-fadeIn">
       {/* ── Active Word Answer Tray ──────────────────────────────── */}
-      <div className={`min-h-[110px] p-5 sm:p-6 rounded-3xl border-2 transition-all flex flex-col justify-between ${
+      <div className={`min-h-[100px] p-4 sm:p-5 rounded-2xl border transition-all flex flex-col justify-between ${
         isSentenceFullyCorrect
           ? 'bg-emerald-500/10 border-emerald-500'
           : 'bg-[#fbf9f5] border-[#e8ddd0]'
       }`}>
-        <div className="flex items-center justify-between mb-3 text-xs font-semibold text-amber-800">
+        <div className="flex items-center justify-between mb-3 text-xs font-semibold text-amber-900">
           <span className="flex items-center gap-1.5">
             <Sparkles size={14} className="text-amber-600" />
             <span>飞来咒施法槽 (按语序点击下方字块拼接咒语)</span>
           </span>
-          <span className="font-mono">
-            已就位: <span className="font-bold">{selectedTiles.length}</span> / <span className="font-bold">{targetWords.length}</span> 词
+          <span className="font-mono text-stone-500">
+            已就位: <span className="font-bold text-amber-950">{selectedTiles.length}</span> / <span className="font-bold text-amber-950">{targetWords.length}</span> 词
           </span>
         </div>
 
         {/* Selected Word Chips in Tray */}
-        <div className="flex flex-wrap items-center gap-2.5 min-h-[44px]">
+        <div className="flex flex-wrap items-center gap-2 min-h-[44px]">
           {selectedTiles.length === 0 ? (
-            <span className="text-sm font-reading italic text-slate-400 select-none py-1">
-              仔细聆听原版朗读，点击下方散落的魔法字块...
+            <span className="text-xs sm:text-sm font-reading italic text-stone-400 select-none py-1">
+              仔细聆听原版原声，点击下方散落的魔法字块...
             </span>
           ) : (
             selectedTiles.map((tile, idx) => (
               <button
                 key={tile.id}
                 onClick={() => handleRemoveTile(idx)}
-                className="px-3.5 py-1.5 min-h-[44px] rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm sm:text-base border-b-4 border-amber-700 active:translate-y-0.5 active:border-b-2 cursor-pointer transition-all flex items-center gap-1.5 group select-none"
+                className="px-3.5 py-1.5 min-h-[40px] rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm sm:text-base border border-amber-600 active:scale-95 cursor-pointer transition-all flex items-center gap-1.5 group select-none shadow-none"
                 title="点击撤回此词"
               >
                 <span>{tile.text}</span>
@@ -134,22 +134,22 @@ export function AccioWordPicker({
 
       {/* ── Scrambled Word Tiles Pool ─────────────────────────────── */}
       <div>
-        <div className="flex items-center justify-between mb-3 px-1">
-          <span className="text-xs font-bold text-slate-500">
+        <div className="flex items-center justify-between mb-2.5 px-1">
+          <span className="text-xs font-bold text-stone-500">
             散落的魔法字块 (含混淆项):
           </span>
           {selectedTiles.length > 0 && !isSentenceFullyCorrect && (
             <button
               onClick={handleClear}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 min-h-[44px] rounded-xl text-xs font-bold text-slate-500 hover:text-amber-900 hover:bg-amber-50 active:scale-95 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold text-stone-500 hover:text-amber-900 hover:bg-amber-50 active:scale-95 transition-all cursor-pointer border border-transparent hover:border-[#e8ddd0]"
             >
-              <RotateCcw size={13} />
-              <span>重新拼装</span>
+              <RotateCcw size={12} />
+              <span>重置字块</span>
             </button>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
           {data.tiles.map((tile) => {
             const isUsed = selectedTiles.some(t => t.id === tile.id);
             const isShaking = shakingTileId === tile.id;
@@ -159,12 +159,12 @@ export function AccioWordPicker({
                 key={tile.id}
                 disabled={isUsed || isSentenceFullyCorrect}
                 onClick={() => handleSelectTile(tile)}
-                className={`px-4 py-2 min-h-[44px] rounded-xl text-sm sm:text-base font-bold transition-all select-none ${
+                className={`px-3.5 sm:px-4 py-2 min-h-[44px] rounded-xl text-sm sm:text-base font-bold transition-all select-none ${
                   isUsed
-                    ? 'opacity-20 scale-95 border-b-2 border-dashed border-amber-200 bg-amber-50/40 text-slate-400 cursor-not-allowed'
+                    ? 'opacity-25 scale-95 border border-dashed border-[#e8ddd0] bg-stone-100 text-stone-400 cursor-not-allowed'
                     : isShaking
-                    ? 'border-2 border-b-4 border-rose-500 bg-rose-50 text-rose-700 animate-bounce'
-                    : 'border-2 border-amber-300 border-b-4 border-b-amber-400/90 bg-white/95 text-amber-950 hover:bg-amber-50 hover:border-amber-400 hover:border-b-amber-500 active:translate-y-1 active:border-b-2 cursor-pointer'
+                    ? 'border border-rose-400 bg-rose-50 text-rose-700 animate-bounce'
+                    : 'border border-[#e8ddd0] bg-white text-amber-950 hover:bg-amber-50/60 hover:border-amber-400 active:scale-95 cursor-pointer shadow-none'
                 }`}
               >
                 {tile.text}

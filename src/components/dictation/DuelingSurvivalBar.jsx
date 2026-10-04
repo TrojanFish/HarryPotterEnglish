@@ -23,11 +23,11 @@ export function DuelingSurvivalBar({
   const isUrgent = timeRemaining <= 6;
 
   return (
-    <div className="p-3.5 sm:p-4 rounded-2xl border-2 border-amber-300 bg-gradient-to-r from-amber-50 via-white to-amber-50 flex flex-col gap-2.5 mb-5 select-none animate-fadeIn">
+    <div className="p-3 sm:p-3.5 rounded-xl border border-amber-300/80 bg-amber-50/50 flex flex-col gap-2.5 mb-4 select-none animate-fadeIn">
       <div className="flex items-center justify-between">
         {/* Shields (Protego) */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-amber-900 flex items-center gap-1">
+          <span className="text-xs font-bold text-amber-950 flex items-center gap-1 font-magical">
             <Shield size={14} className="text-amber-700" />
             <span>盔甲护盾:</span>
           </span>
@@ -39,8 +39,8 @@ export function DuelingSurvivalBar({
                   key={idx}
                   className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all ${
                     isIntact
-                      ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-white'
-                      : 'bg-slate-200 text-slate-400 border border-dashed border-slate-300'
+                      ? 'bg-amber-500 text-white border border-amber-600 shadow-none'
+                      : 'bg-stone-200 text-stone-400 border border-dashed border-stone-300'
                   }`}
                   title={isIntact ? '魔法护盾完好' : '护盾已破碎'}
                 >
@@ -54,16 +54,16 @@ export function DuelingSurvivalBar({
         {/* Combo & Golden Snitch status */}
         <div className="flex items-center gap-2">
           {streakCount >= 3 && (
-            <span className="flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-orange-500 to-amber-600 text-white text-xs font-bold rounded-full animate-pulse">
-              <Flame size={13} />
-              <span>炽热连击 x{streakCount}</span>
+            <span className="flex items-center gap-1 px-2.5 py-0.5 bg-orange-500 text-white text-xs font-bold rounded-full animate-pulse">
+              <Flame size={12} />
+              <span>连击 x{streakCount}</span>
             </span>
           )}
 
           <div className={`flex items-center gap-1 text-xs font-mono font-bold px-2.5 py-1 rounded-xl border ${
             isUrgent 
               ? 'border-red-400 bg-red-50 text-red-700 animate-bounce' 
-              : 'border-amber-300 bg-white text-amber-900'
+              : 'border-amber-300/80 bg-white text-amber-950'
           }`}>
             <Timer size={13} className={isUrgent ? 'text-red-600' : 'text-amber-600'} />
             <span>{timeRemaining}s</span>
@@ -72,12 +72,12 @@ export function DuelingSurvivalBar({
       </div>
 
       {/* Countdown Progress Line */}
-      <div className="w-full h-2 rounded-full bg-amber-200/60 overflow-hidden relative">
+      <div className="w-full h-1.5 rounded-full bg-amber-200/60 overflow-hidden relative">
         <div
           className={`h-full transition-all duration-1000 ease-linear rounded-full ${
             isUrgent
-              ? 'bg-gradient-to-r from-red-500 to-orange-500 animate-pulse'
-              : 'bg-gradient-to-r from-amber-500 to-amber-600'
+              ? 'bg-red-500 animate-pulse'
+              : 'bg-amber-500'
           }`}
           style={{ width: `${timePercent}%` }}
         />
