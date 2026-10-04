@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { 
   Play, 
-  Repeat, 
   Languages, 
   Mic, 
   Eye, 
@@ -19,12 +18,182 @@ import { tokenizeSentence, formatTime } from '../utils/vttParser';
 import { HP_LORE_DICTIONARY } from '../data/hpDictionary';
 
 /**
+ * SentenceCard (Memoized for high performance)
+ * Renders an individual sentence cue card with tokenized words, translation, and quick controls.
+ * React.memo ensures that only the active cue and previously active cue re-render during audio playback,
+ * preventing expensive re-tokenization of 1,000+ sentences on every tick.
+ */
+const SentenceCard = React.memo(function SentenceCard({
+  cue,
+  idx,
+  isActive,
+  isRevealed,
+  studyMode,
+  showTranslation,
+  fontSizeClass,
+  isParchment,
+  onSeekToCue,
+  onWordClick,
+  onRecordCue,
+  onSpeakSentence,
+  onCopySentence,
+  speakingCueId,
+  copiedCueId,
+  onToggleReveal,
+  cardRef
+}) {
+  // Pre-tokenize words for this sentence and memoize based on cue.text
+  const tokens = useMemo(() => tokenizeSentence(cue.text), [cue.text]);
+
+  return (
+    <div
+      ref={cardRef}
+      className={`group relative rounded-2xl p-3.5 sm:p-5 transition-colors duration-200 border subtitle-item-render ${
+        isActive
+          ? 'border-amber-400 bg-amber-500/5 border-l-4 border-l-amber-500'
+          : 'border-[#eee5d8] bg-white hover:border-amber-300'
+      }`}
+    >
+      {/* Cue Header with Controls */}
+      <div className="flex items-center justify-between mb-2 gap-2">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+          <span className={`text-[11px] sm:text-xs px-2 py-0.5 rounded-lg font-mono font-bold shrink-0 ${
+            isActive 
+              ? 'bg-amber-500 text-white' 
+              : 'bg-stone-100 text-stone-500'
+          }`}>
+            第 {idx + 1} 句
+          </span>
+          <span className="font-mono text-[11px] sm:text-xs text-stone-400 shrink-0">
+            {formatTime(cue.startTime)} - {formatTime(cue.endTime)}
+          </span>
+          {isActive && (
+            <span className="hidden sm:inline-flex items-center gap-1 text-xs text-amber-700 font-bold shrink-0">
+              <Sparkles size={12} />
+              <span>正在朗读</span>
+            </span>
+          )}
+        </div>
+
+        {/* Sentence Action Buttons: Clean on active, hover-only on inactive */}
+        <div className={`flex items-center space-x-1 sm:space-x-1.5 shrink-0 transition-opacity ${
+          isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+        }`}>
+          {/* Replay this sentence */}
+          <button
+            onClick={() => onSeekToCue(cue)}
+            className="p-1 sm:p-1.5 rounded-lg border border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
+            title="从原声音频播放本句"
+          >
+            <Play size={13} className="fill-current" />
+          </button>
+
+          {/* Clean British TTS Speak (Desktop/Tablet only) */}
+          {isActive && (
+            <button
+              onClick={() => onSpeakSentence(cue)}
+              className={`hidden sm:inline-flex p-1.5 rounded-lg border transition-colors active:scale-95 cursor-pointer ${
+                speakingCueId === cue.id 
+                  ? 'text-amber-900 bg-amber-100 border-amber-300 font-bold' 
+                  : 'border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950'
+              }`}
+              title="朗读示范 (英音)"
+            >
+              <Volume2 size={13} className={speakingCueId === cue.id ? 'animate-bounce' : ''} />
+            </button>
+          )}
+
+          {/* Copy sentence text */}
+          {isActive && (
+            <button
+              onClick={() => onCopySentence(cue)}
+              className="hidden sm:inline-flex p-1.5 rounded-lg border border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
+              title={copiedCueId === cue.id ? "已复制本句英文" : "复制本句英文"}
+            >
+              {copiedCueId === cue.id ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+            </button>
+          )}
+
+          {/* Shadowing Voice Recording */}
+          <button
+            onClick={() => onRecordCue(cue)}
+            className="px-2 sm:px-2.5 py-1 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center gap-1 font-bold text-xs"
+            title="跟读施咒（AI发音评分）"
+          >
+            <Mic size={13} className="text-amber-700" />
+            <span>跟读</span>
+          </button>
+
+          {/* Blind mode reveal toggle */}
+          {studyMode === 'blind' && (
+            <button
+              onClick={() => onToggleReveal(cue.id)}
+              className="p-1 sm:p-1.5 rounded-lg border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 transition-colors active:scale-95 cursor-pointer"
+              title={isRevealed ? "开启迷雾遮罩" : "驱散迷雾显形"}
+            >
+              {isRevealed ? <EyeOff size={13} /> : <Eye size={13} />}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* English Text with Clickable Words */}
+      <div 
+        className={`font-reading ${fontSizeClass} select-text transition-all duration-300 leading-[1.75] ${
+          studyMode === 'blind' && !isRevealed && !isActive
+            ? 'blur-[6px] hover:blur-none select-none opacity-40'
+            : ''
+        }`}
+      >
+        {tokens.map((token, tokenIdx) => {
+          if (!token.isWord) {
+            return <span key={tokenIdx}>{token.text}</span>;
+          }
+
+          const cleanWord = token.text.toLowerCase().replace(/[^a-z]/g, '');
+          const isHpTerm = Boolean(HP_LORE_DICTIONARY[cleanWord]?.lore);
+
+          return (
+            <span
+              key={tokenIdx}
+              onClick={() => onWordClick(token.text, cue)}
+              className={`cursor-pointer transition-colors inline group/word relative ${
+                isHpTerm 
+                  ? 'border-b border-amber-400 text-amber-900 font-medium hover:bg-amber-100/50 px-0.5 rounded-xs' 
+                  : isActive 
+                    ? 'text-amber-950 font-normal hover:bg-amber-400/20 hover:text-amber-900 rounded-xs' 
+                    : 'text-[#1e1610] hover:bg-amber-400/15 hover:text-amber-900 rounded-xs'
+              }`}
+              title={isHpTerm ? `魔法专有名词: ${token.text} (点击查看百科背景与发音)` : '点击查看中文释义与发音'}
+            >
+              {token.text}
+            </span>
+          );
+        })}
+      </div>
+
+      {/* Chinese Translation */}
+      {showTranslation && cue.translation && (
+        <div className={`mt-3 pt-2.5 border-t border-dashed text-sm sm:text-base font-reading leading-relaxed ${
+          isParchment 
+            ? 'border-amber-200/80 text-[#735839]' 
+            : 'border-slate-800 text-slate-400'
+        }`}>
+          {cue.translation}
+        </div>
+      )}
+    </div>
+  );
+});
+
+/**
  * SubtitleViewer — Kid-friendly bilingual listening & reading area.
  * - Large legible font with generous line-height for students
  * - Interactive word clicking with instant IPA phonetic & Chinese popover
  * - Lumos focus highlighting the active sentence with warm golden halo
  * - Quick sentence playback, loop, shadowing recording, and copy buttons
  * - Intelligent auto-follow scroll with manual pause and quick re-center
+ * - Memoized SentenceCard components for 60FPS fluid scrolling
  */
 export function SubtitleViewer({
   cues,
@@ -49,13 +218,13 @@ export function SubtitleViewer({
     } catch {
       return 'large';
     }
-  }); // 'normal' | 'large' | 'huge'
+  });
   const [isFollowActive, setIsFollowActive] = useState(true);
   const [copiedCueId, setCopiedCueId] = useState(null);
   const [speakingCueId, setSpeakingCueId] = useState(null);
 
   // Smoothly scroll active cue into center if auto-follow is active
-  const scrollToActiveCue = () => {
+  const scrollToActiveCue = useCallback(() => {
     if (activeCueRef.current) {
       activeCueRef.current.scrollIntoView({
         behavior: 'smooth',
@@ -63,7 +232,7 @@ export function SubtitleViewer({
       });
       setIsFollowActive(true);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (isFollowActive && activeCueRef.current) {
@@ -75,17 +244,17 @@ export function SubtitleViewer({
   }, [activeCueIndex, isFollowActive]);
 
   // Copy full sentence text
-  const handleCopySentence = (cue) => {
+  const handleCopySentence = useCallback((cue) => {
     if (navigator && navigator.clipboard) {
       navigator.clipboard.writeText(cue.text).then(() => {
         setCopiedCueId(cue.id);
         setTimeout(() => setCopiedCueId(null), 1800);
       }).catch(e => console.warn(e));
     }
-  };
+  }, []);
 
   // Speak sentence with clean British English synthesis
-  const handleSpeakSentence = (cue) => {
+  const handleSpeakSentence = useCallback((cue) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(cue.text);
@@ -96,21 +265,21 @@ export function SubtitleViewer({
       utterance.onerror = () => setSpeakingCueId(null);
       window.speechSynthesis.speak(utterance);
     }
-  };
+  }, []);
 
   // Toggle single sentence reveal in blind mode
-  const toggleSentenceReveal = (cueId) => {
+  const toggleSentenceReveal = useCallback((cueId) => {
     setRevealedSentences(prev => ({
       ...prev,
       [cueId]: !prev[cueId]
     }));
-  };
+  }, []);
 
-  const getFontSizeClass = () => {
+  const fontSizeClass = useMemo(() => {
     if (fontSize === 'huge') return 'text-xl sm:text-2xl leading-relaxed';
     if (fontSize === 'large') return 'text-lg sm:text-xl leading-relaxed';
     return 'text-base sm:text-lg leading-relaxed';
-  };
+  }, [fontSize]);
 
   return (
     <div className="relative flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 max-w-4xl mx-auto w-full pb-16" ref={containerRef}>
@@ -145,7 +314,7 @@ export function SubtitleViewer({
                 ? 'bg-amber-500/20 border-amber-400 text-amber-950 font-bold'
                 : 'border-[#eee5d8] bg-white/80 text-stone-500 hover:bg-amber-50'
             }`}
-            title="开启/关闭滚动跟随朗读进度"
+            title={isFollowActive ? "点击暂停自动滚动" : "点击开启自动居中跟随"}
           >
             <LocateFixed size={12} className="text-amber-700" />
             <span className="hidden sm:inline">跟随朗读: {isFollowActive ? '开' : '关'}</span>
@@ -206,8 +375,7 @@ export function SubtitleViewer({
       <div className="space-y-3.5">
         {cues.map((cue, idx) => {
           const isActive = idx === activeCueIndex;
-          const tokens = tokenizeSentence(cue.text);
-          const isRevealed = revealedSentences[cue.id];
+          const isRevealed = Boolean(revealedSentences[cue.id]);
           const prevCue = idx > 0 ? cues[idx - 1] : null;
           const currentChunk = Math.floor((cue.startTime || 0) / 300);
           const prevChunk = prevCue ? Math.floor((prevCue.startTime || 0) / 300) : 0;
@@ -227,150 +395,31 @@ export function SubtitleViewer({
                 </div>
               )}
 
-              <div
-                ref={isActive ? activeCueRef : null}
-                className={`group relative rounded-2xl p-3.5 sm:p-5 transition-colors duration-200 border subtitle-item-render ${
-                  isActive
-                    ? 'border-amber-400 bg-amber-500/5 border-l-4 border-l-amber-500'
-                    : 'border-[#eee5d8] bg-white hover:border-amber-300'
-                }`}
-              >
-              {/* Cue Header with Controls */}
-              <div className="flex items-center justify-between mb-2 gap-2">
-                <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
-                  <span className={`text-[11px] sm:text-xs px-2 py-0.5 rounded-lg font-mono font-bold shrink-0 ${
-                    isActive 
-                      ? 'bg-amber-500 text-white' 
-                      : 'bg-stone-100 text-stone-500'
-                  }`}>
-                    第 {idx + 1} 句
-                  </span>
-                  <span className="font-mono text-[11px] sm:text-xs text-stone-400 shrink-0">
-                    {formatTime(cue.startTime)} - {formatTime(cue.endTime)}
-                  </span>
-                  {isActive && (
-                    <span className="hidden sm:inline-flex items-center gap-1 text-xs text-amber-700 font-bold shrink-0">
-                      <Sparkles size={12} />
-                      <span>正在朗读</span>
-                    </span>
-                  )}
-                </div>
-
-                {/* Sentence Action Buttons: Clean on active, hover-only on inactive */}
-                <div className={`flex items-center space-x-1 sm:space-x-1.5 shrink-0 transition-opacity ${
-                  isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                }`}>
-                  {/* Replay this sentence */}
-                  <button
-                    onClick={() => onSeekToCue(cue)}
-                    className="p-1 sm:p-1.5 rounded-lg border border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
-                    title="从原声音频播放本句"
-                  >
-                    <Play size={13} className="fill-current" />
-                  </button>
-
-                  {/* Clean British TTS Speak (Desktop/Tablet only to avoid mobile crowding) */}
-                  {isActive && (
-                    <button
-                      onClick={() => handleSpeakSentence(cue)}
-                      className={`hidden sm:inline-flex p-1.5 rounded-lg border transition-colors active:scale-95 cursor-pointer ${
-                        speakingCueId === cue.id 
-                          ? 'text-amber-900 bg-amber-100 border-amber-300 font-bold' 
-                          : 'border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950'
-                      }`}
-                      title="朗读示范 (英音)"
-                    >
-                      <Volume2 size={13} className={speakingCueId === cue.id ? 'animate-bounce' : ''} />
-                    </button>
-                  )}
-
-                  {/* Copy sentence text (Desktop/Tablet only) */}
-                  {isActive && (
-                    <button
-                      onClick={() => handleCopySentence(cue)}
-                      className="hidden sm:inline-flex p-1.5 rounded-lg border border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
-                      title={copiedCueId === cue.id ? "已复制本句英文" : "复制本句英文"}
-                    >
-                      {copiedCueId === cue.id ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
-                    </button>
-                  )}
-
-                  {/* Shadowing Voice Recording */}
-                  <button
-                    onClick={() => onRecordCue(cue)}
-                    className="px-2 sm:px-2.5 py-1 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center gap-1 font-bold text-xs"
-                    title="跟读施咒（AI发音评分）"
-                  >
-                    <Mic size={13} className="text-amber-700" />
-                    <span>跟读</span>
-                  </button>
-
-                  {/* Blind mode reveal toggle */}
-                  {studyMode === 'blind' && (
-                    <button
-                      onClick={() => toggleSentenceReveal(cue.id)}
-                      className="p-1 sm:p-1.5 rounded-lg border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 transition-colors active:scale-95 cursor-pointer"
-                      title={isRevealed ? "开启迷雾遮罩" : "驱散迷雾显形"}
-                    >
-                      {isRevealed ? <EyeOff size={13} /> : <Eye size={13} />}
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* English Text with Clickable Words (Clean Typography without Intrusive Sparkles) */}
-              <div 
-                className={`font-reading ${getFontSizeClass()} select-text transition-all duration-300 leading-[1.75] ${
-                  studyMode === 'blind' && !isRevealed && !isActive
-                    ? 'blur-[6px] hover:blur-none select-none opacity-40'
-                    : ''
-                }`}
-              >
-                {tokens.map((token, tokenIdx) => {
-                  if (!token.isWord) {
-                    return <span key={tokenIdx}>{token.text}</span>;
-                  }
-
-                  const cleanWord = token.text.toLowerCase().replace(/[^a-z]/g, '');
-                  // Only treat words that have HP lore notes as magical lore terms
-                  const isHpTerm = Boolean(HP_LORE_DICTIONARY[cleanWord]?.lore);
-
-                  return (
-                    <span
-                      key={tokenIdx}
-                      onClick={() => onWordClick(token.text, cue)}
-                      className={`cursor-pointer transition-colors inline group/word relative ${
-                        isHpTerm 
-                          ? 'border-b border-amber-400 text-amber-900 font-medium hover:bg-amber-100/50 px-0.5 rounded-xs' 
-                          : isActive 
-                            ? 'text-amber-950 font-normal hover:bg-amber-400/20 hover:text-amber-900 rounded-xs' 
-                            : 'text-[#1e1610] hover:bg-amber-400/15 hover:text-amber-900 rounded-xs'
-                      }`}
-                      title={isHpTerm ? `魔法专有名词: ${token.text} (点击查看百科背景与发音)` : '点击查看中文释义与发音'}
-                    >
-                      {token.text}
-                    </span>
-                  );
-                })}
-              </div>
-
-              {/* Chinese Translation */}
-              {showTranslation && cue.translation && (
-                <div className={`mt-3 pt-2.5 border-t border-dashed text-sm sm:text-base font-reading leading-relaxed ${
-                  isParchment 
-                    ? 'border-amber-200/80 text-[#735839]' 
-                    : 'border-slate-800 text-slate-400'
-                }`}>
-                  {cue.translation}
-                </div>
-              )}
-            </div>
-          </React.Fragment>
-        );
-      })}
+              <SentenceCard
+                cardRef={isActive ? activeCueRef : null}
+                cue={cue}
+                idx={idx}
+                isActive={isActive}
+                isRevealed={isRevealed}
+                studyMode={studyMode}
+                showTranslation={showTranslation}
+                fontSizeClass={fontSizeClass}
+                isParchment={isParchment}
+                onSeekToCue={onSeekToCue}
+                onWordClick={onWordClick}
+                onRecordCue={onRecordCue}
+                onSpeakSentence={handleSpeakSentence}
+                onCopySentence={handleCopySentence}
+                speakingCueId={speakingCueId}
+                copiedCueId={copiedCueId}
+                onToggleReveal={toggleSentenceReveal}
+              />
+            </React.Fragment>
+          );
+        })}
       </div>
 
-      {/* Floating Locate Active Cue Button (Only shown if manual scroll disabled auto-follow) */}
+      {/* Floating Locate Active Cue Button */}
       {!isFollowActive && cues.length > 0 && activeCueIndex >= 0 && (
         <button
           onClick={scrollToActiveCue}
@@ -384,3 +433,5 @@ export function SubtitleViewer({
     </div>
   );
 }
+
+export default SubtitleViewer;

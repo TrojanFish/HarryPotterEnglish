@@ -202,7 +202,7 @@ export function generateAnkiTSV(vocabList = [], options = {}) {
  */
 export function downloadAnkiFile(content, filename = 'hogwarts_anki_deck.tsv') {
   if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-    const blob = new Blob(['\uFEFF' + content], { type: 'text/tab-separated-values;charset=utf-8' });
+    const blob = new Blob([content], { type: 'text/tab-separated-values;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

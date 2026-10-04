@@ -330,7 +330,7 @@ export function VocabularyDrawer({
                       <Bookmark size={28} className="text-amber-600" />
                     </div>
                     <h3 className="font-magical font-bold text-base text-amber-950 mb-1">
-                      魔杖尚未收录新词
+                      暂无生词 · 魔杖尚未收录新词
                     </h3>
                     <p className="text-xs text-stone-500 max-w-xs leading-relaxed mb-6">
                       在精听研读原著时，轻点任意英文单词即可实时查看权威释义，并一键收录至专属魔法生词本！
@@ -427,11 +427,11 @@ export function VocabularyDrawer({
               )}
               </div>
 
-              {/* Bottom Actions - only show when vocabList has items */}
-              {vocabList.length > 0 && (
+              {/* Bottom Actions */}
                 <div className="p-4 border-t border-[#eee5d8] bg-white flex flex-wrap items-center justify-between gap-2 text-xs pb-safe">
                   <div className="flex items-center gap-2">
                     <button
+                      disabled={vocabList.length === 0}
                       onClick={handleExportAnki}
                       className="duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs cursor-pointer"
                       title="导出为标准 Anki 卡片牌组 (.tsv)"
@@ -441,6 +441,7 @@ export function VocabularyDrawer({
                     </button>
 
                     <button
+                      disabled={vocabList.length === 0}
                       onClick={handleExportCSV}
                       className="duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs cursor-pointer"
                       title="导出为通用表格 CSV 格式"
@@ -451,6 +452,7 @@ export function VocabularyDrawer({
                   </div>
 
                   <button
+                    disabled={vocabList.length === 0}
                     onClick={onClearAll}
                     className="min-h-[44px] px-2.5 py-1.5 rounded-xl text-xs font-bold text-stone-400 hover:text-rose-600 hover:bg-rose-50/80 transition-all active:scale-95 cursor-pointer"
                     title="清空生词本内所有单词"
@@ -458,7 +460,6 @@ export function VocabularyDrawer({
                     清空生词本
                   </button>
                 </div>
-              )}
             </>
           )}
 

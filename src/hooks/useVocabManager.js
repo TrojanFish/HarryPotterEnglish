@@ -1,0 +1,88 @@
+import { useState, useEffect, useCallback } from 'react';
+import { ensureSrsMetadata, getDueWords } from '../utils/srsEngine';
+
+/**
+ * useVocabManager Hook
+ * Manages vocabulary list state, localStorage persistence with SRS metadata,
+ * item addition/removal, toggle behavior, and due review counting.
+ */
+export function useVocabManager() {
+  const [vocabList, setVocabList] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hp_vocab_list');
+      const list = saved ? JSON.parse(saved) : [];
+      return Array.isArray(list) ? list.map(ensureSrsMetadata) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Persist to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('hp_vocab_list', JSON.stringify(vocabList));
+    } catch (e) {
+      console.warn('[Vocab] Failed to persist vocabList:', e);
+    }
+  }, [vocabList]);
+
+  // Duolingo SRS: count words due for review today
+  const dueWordsCount = getDueWords(vocabList).length;
+
+  const isWordSaved = useCallback((word) => {
+    if (!word) return false;
+    const target = String(word).toLowerCase().trim();
+    return vocabList.some(v => (v.word || v.front || '').toLowerCase().trim() === target);
+  }, [vocabList]);
+
+  // Toggle word in vocabulary
+  const toggleSaveWord = useCallback((wordData, sentenceCue = null, bookId = '', chapterId = '') => {
+    if (!wordData || !wordData.word) return;
+
+    const targetWord = wordData.word.toLowerCase().trim();
+    const exists = vocabList.some(v => (v.word || v.front || '').toLowerCase().trim() === targetWord);
+
+    if (exists) {
+      setVocabList(prev => prev.filter(v => (v.word || v.front || '').toLowerCase().trim() !== targetWord));
+    } else {
+      const newEntry = ensureSrsMetadata({
+        id: Date.now().toString(),
+        word: wordData.word,
+        front: wordData.word,
+        translation: wordData.translation || wordData.meaning || '',
+        definition: wordData.definition || wordData.meaning || '',
+        phonetic: wordData.phonetic || wordData.ipa || '',
+        context: sentenceCue ? (sentenceCue.text || '') : (wordData.context || ''),
+        contextQuote: sentenceCue ? (sentenceCue.text || '') : (wordData.contextQuote || ''),
+        startTime: sentenceCue ? sentenceCue.startTime : null,
+        endTime: sentenceCue ? sentenceCue.endTime : null,
+        chapterId: chapterId || '',
+        bookId: bookId || '',
+        tags: ['Hogwarts', 'Reading'],
+        addedAt: new Date().toISOString()
+      });
+
+      setVocabList(prev => [newEntry, ...prev]);
+    }
+  }, [vocabList]);
+
+  const removeWord = useCallback((word) => {
+    if (!word) return;
+    const target = String(word).toLowerCase().trim();
+    setVocabList(prev => prev.filter(v => (v.word || v.front || '').toLowerCase().trim() !== target));
+  }, []);
+
+  const clearAllVocab = useCallback(() => {
+    setVocabList([]);
+  }, []);
+
+  return {
+    vocabList,
+    setVocabList,
+    dueWordsCount,
+    isWordSaved,
+    toggleSaveWord,
+    removeWord,
+    clearAllVocab
+  };
+}
