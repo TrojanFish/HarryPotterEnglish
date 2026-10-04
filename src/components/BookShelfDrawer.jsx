@@ -75,7 +75,7 @@ export function BookShelfDrawer({
               <p className="text-[11px] sm:text-xs text-stone-500 truncate">
                 {activeTab === 'chapters'
                   ? `全卷共 ${chapters.length} 个精听章节 · 点击即播`
-                  : '原版有声原著 · 自由切换书卷'}
+                  : '原版有声书库 · 自由切换阅读'}
               </p>
             </div>
           </div>
@@ -104,8 +104,8 @@ export function BookShelfDrawer({
         </div>
 
         {/* Tab Switcher */}
-        <div className="px-4 sm:px-6 pt-3 pb-2 bg-white border-b border-[#e8ddd0] flex items-center justify-between gap-2 shrink-0">
-          <div className="flex rounded-xl p-1 bg-stone-100 border border-[#e8ddd0] gap-1 flex-1 max-w-xs">
+        <div className="px-4 sm:px-6 py-2.5 bg-white border-b border-[#e8ddd0] flex items-center justify-center shrink-0">
+          <div className="flex rounded-xl p-1 bg-stone-100 border border-[#e8ddd0] gap-1 w-full max-w-sm">
             <button
               onClick={() => setActiveTab('chapters')}
               className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
@@ -126,19 +126,9 @@ export function BookShelfDrawer({
               }`}
             >
               <BookOpen size={13} />
-              <span>切换书卷 ({validBooks.length})</span>
+              <span>全部原著 ({validBooks.length})</span>
             </button>
           </div>
-
-          {activeTab === 'chapters' && (
-            <button
-              onClick={() => setActiveTab('books')}
-              className="text-xs text-amber-800 hover:text-amber-950 font-bold flex items-center gap-0.5 cursor-pointer py-1 px-2 rounded-lg hover:bg-amber-50 transition-colors"
-            >
-              <span>换一本书</span>
-              <ChevronRight size={13} />
-            </button>
-          )}
         </div>
 
         {/* Tab 1: Chapters List */}
@@ -319,7 +309,7 @@ export function BookShelfDrawer({
 
         {/* Footer */}
         <div className="p-3 sm:p-4 border-t border-[#e8ddd0] bg-white text-center text-xs text-stone-500 shrink-0">
-          提示：可在目录中直接点播任意章节，也可在“切换书卷”中阅读其他哈利·波特原著
+          提示：可在目录中直接点播任意章节，也可在“全部原著”中阅读其他魔法故事
         </div>
       </div>
     </div>
