@@ -1,32 +1,30 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  SkipBack, 
-  SkipForward, 
-  Repeat, 
-  Volume2, 
-  VolumeX, 
-  Gauge,
-  Sparkles,
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import {
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  Repeat,
+  Volume2,
+  VolumeX,
   Mic,
-  Award
+  ChevronDown,
+  Sparkles
 } from 'lucide-react';
-import { formatTime, formatEnglishText } from '../utils/vttParser';
+import { formatTime } from '../utils/vttParser';
 import { playCorrectChime } from '../utils/spellAudioSynthesizer';
 
 /**
- * AudioPlayer — Elder Wand Bottom Audio Player designed for Students.
- * - Big comfortable Play/Pause button (easy to tap on tablets & phones)
- * - 5s rewind for repeating hard syllables
- * - Beginner speed controls: 0.75x (慢速磨耳朵), 1.0x (原速), 1.15x (进阶速)
- * - Clear sentence counter and glowing Elder Wand scrubber
+ * AudioPlayer — Refactored v2.0 Player Bar
+ * Two-row layout: thin scrubber line + compact controls
+ * - All controls visible on mobile (no hidden sm:flex)
+ * - Speed: one-tap 3-step cycle (0.8x → 1.0x → 1.25x)
+ * - Volume moved to overflow sheet on mobile
+ * - Milestone toast positioned at top-center of screen
  */
 export function AudioPlayer({
   currentBook,
   currentChapter,
-  audioSrc,
   currentTime,
   duration,
   isPlaying,
@@ -34,7 +32,6 @@ export function AudioPlayer({
   onSeek,
   onPrevSentence,
   onNextSentence,
-  onReplayCurrentSentence,
   isLoopSentence,
   onToggleLoopSentence,
   playbackRate,
@@ -48,31 +45,21 @@ export function AudioPlayer({
   onToggleRecorder,
   isRecordingActive
 }) {
-  const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [showVolume, setShowVolume] = useState(false);
   const prevVolumeRef = useRef(volume);
-  const speedMenuContainerRef = useRef(null);
+  const volumeRef = useRef(null);
+  const isDragging = useRef(false);
 
-  useEffect(() => {
-    if (!showSpeedMenu) return;
-    const handleClickOutside = (e) => {
-      if (speedMenuContainerRef.current && !speedMenuContainerRef.current.contains(e.target)) {
-        setShowSpeedMenu(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showSpeedMenu]);
+  // Speed cycle: 0.8 → 1.0 → 1.25 → repeat
+  const SPEED_STEPS = [0.8, 1.0, 1.25];
+  const handleSpeedCycle = useCallback(() => {
+    const idx = SPEED_STEPS.indexOf(playbackRate);
+    const next = SPEED_STEPS[(idx + 1) % SPEED_STEPS.length];
+    onChangePlaybackRate(next);
+  }, [playbackRate, onChangePlaybackRate]);
 
-  const speedOptions = [
-    { rate: 0.75, label: '0.75x (慢速磨耳朵)' },
-    { rate: 0.85, label: '0.85x (稍慢)' },
-    { rate: 1.0,  label: '1.0x (原速标准)' },
-    { rate: 1.15, label: '1.15x (进阶提速)' },
-    { rate: 1.25, label: '1.25x (挑战速)' },
-  ];
-
-  const handleVolumeToggle = () => {
+  const handleVolumeToggle = useCallback(() => {
     if (isMuted) {
       setIsMuted(false);
       onChangeVolume(prevVolumeRef.current || 0.85);
@@ -81,234 +68,164 @@ export function AudioPlayer({
       setIsMuted(true);
       onChangeVolume(0);
     }
-  };
+  }, [isMuted, volume, onChangeVolume]);
 
-  // Rewind 5 seconds
-  const handleRewind5s = () => {
-    onSeek(Math.max(0, currentTime - 5));
-  };
+  // Close volume popup on outside click
+  useEffect(() => {
+    if (!showVolume) return;
+    const handle = (e) => {
+      if (volumeRef.current && !volumeRef.current.contains(e.target)) {
+        setShowVolume(false);
+      }
+    };
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [showVolume]);
 
-  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
-  const coverUrl = currentBook ? `/api/raw/podcasts/${currentBook.id}/cover.jpg` : null;
-
-  // ── Duolingo Micro-Waypoints (5-minute chunk milestones) ─────────
-  const celebratedWaypointsRef = useRef(new Set());
-  const [activeMilestoneToast, setActiveMilestoneToast] = useState(null);
+  // Milestone celebration
+  const celebratedRef = useRef(new Set());
+  const [milestoneToast, setMilestoneToast] = useState(null);
 
   const waypoints = React.useMemo(() => {
     if (!duration || duration <= 0) return [];
     const list = [];
-    const interval = 300; // 5 minutes in seconds
     if (duration > 360) {
-      for (let t = interval; t < duration - 45; t += interval) {
-        const idx = list.length + 1;
-        list.push({
-          id: `wp_${t}`,
-          time: t,
-          percent: (t / duration) * 100,
-          label: `第 ${idx} 哨所 (${Math.round(t / 60)} 分钟)`,
-          passed: currentTime >= t
-        });
+      for (let t = 300; t < duration - 45; t += 300) {
+        list.push({ id: `wp_${t}`, time: t, label: `已精听 ${Math.round(t / 60)} 分钟` });
       }
-    } else if (duration > 120) {
-      [0.33, 0.66].forEach((ratio, idx) => {
-        const t = Math.round(duration * ratio);
-        list.push({
-          id: `wp_${t}`,
-          time: t,
-          percent: ratio * 100,
-          label: `微关卡 ${idx + 1}`,
-          passed: currentTime >= t
-        });
-      });
     }
     return list;
-  }, [duration, currentTime]);
+  }, [duration]);
 
-  // Reset celebrated waypoints when chapter changes
   useEffect(() => {
-    celebratedWaypointsRef.current.clear();
-    setActiveMilestoneToast(null);
+    celebratedRef.current.clear();
+    setMilestoneToast(null);
   }, [currentChapter?.id]);
 
-  // Trigger celebration when user passes a new micro-waypoint during playback
   useEffect(() => {
-    if (!isPlaying || !duration || duration <= 0) return;
+    if (!isPlaying || !duration) return;
     waypoints.forEach((wp) => {
-      if (wp.passed && !celebratedWaypointsRef.current.has(wp.id)) {
-        celebratedWaypointsRef.current.add(wp.id);
-        setActiveMilestoneToast(`抵达 ${wp.label}！连续精听已达成，魔力充盈！`);
+      if (currentTime >= wp.time && !celebratedRef.current.has(wp.id)) {
+        celebratedRef.current.add(wp.id);
+        setMilestoneToast(`${wp.label}，魔力充盈！`);
         playCorrectChime();
-        const timer = setTimeout(() => {
-          setActiveMilestoneToast(null);
-        }, 4000);
-        return () => clearTimeout(timer);
+        const t = setTimeout(() => setMilestoneToast(null), 4000);
+        return () => clearTimeout(t);
       }
     });
   }, [currentTime, isPlaying, duration, waypoints]);
 
-  const rawChapterTitle = currentChapter ? (currentChapter.cnTitle || currentChapter.title) : 'Chapter';
-  const cleanChapterTitle = formatEnglishText(rawChapterTitle);
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  // Draggable scrubber
+  const handleScrubClick = useCallback((e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    onSeek(ratio * duration);
+  }, [duration, onSeek]);
+
+  const speedLabel = playbackRate === 1.0 ? '1x' : `${playbackRate}x`;
+  const chapterTitle = currentChapter
+    ? (currentChapter.cnTitle || currentChapter.title || '')
+    : '';
 
   return (
-    <div className={`shrink-0 border-t-2 transition-colors duration-300 backdrop-blur-xl select-none relative pb-safe ${
-      isParchment 
-        ? 'bg-[#ffffff]/98 border-[#eee5d8] text-[#1e1610]' 
-        : 'bg-[#0f172a]/95 border-slate-800 text-slate-100'
+    <div className={`shrink-0 relative pb-safe select-none ${
+      isParchment
+        ? 'bg-white border-t border-[#e8ddd0] text-[#1e1610]'
+        : 'bg-[#0f172a]/95 border-t border-slate-800 text-slate-100'
     }`}>
-      {/* ── Micro-Waypoint Celebration Floating Toast ─────────────── */}
-      {activeMilestoneToast && (
-        <div className="absolute -top-12 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-amber-900 text-white font-bold text-xs border border-amber-400/80 flex items-center gap-2 animate-bounce z-50 pointer-events-none">
-          <Sparkles size={14} className="text-amber-300" />
-          <span>{activeMilestoneToast}</span>
+      {/* ── Milestone Toast (screen top-center) ─────────────────── */}
+      {milestoneToast && (
+        <div className="fixed top-4 left-1/2 z-50 pointer-events-none animate-slide-down"
+          style={{ transform: 'translateX(-50%)' }}>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-900 text-white text-xs font-bold border border-amber-400/60">
+            <Sparkles size={13} className="text-amber-300 shrink-0" />
+            <span>{milestoneToast}</span>
+          </div>
         </div>
       )}
 
-      {/* ── Elder Wand Scrubber Bar with Lumos Sparkle Tip & Discrete Waypoints ── */}
-      <div 
-        className="w-full h-3 bg-amber-100/80 cursor-pointer relative group"
-        onClick={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          const clickX = e.clientX - rect.left;
-          const ratio = Math.max(0, Math.min(1, clickX / rect.width));
-          onSeek(ratio * duration);
-        }}
-        title="点击或拖动魔杖调整音频进度"
+      {/* ── Thin Scrubber Bar ─────────────────────────────────────── */}
+      <div
+        className="w-full scrubber-track bg-amber-100/80 cursor-pointer group relative"
+        onClick={handleScrubClick}
+        title="点击调整播放进度"
       >
-        {/* Glow Active Fill */}
-        <div 
-          className="h-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-400 relative transition-all duration-100 ease-linear"
+        <div
+          className="h-full bg-gradient-to-r from-amber-500 to-amber-400 transition-all duration-100 ease-linear relative"
           style={{ width: `${progressPercent}%` }}
         >
-          {/* Elder wand lumos tip */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white wand-pulse border-2 border-amber-500 transform scale-90 group-hover:scale-125 transition-transform" />
+          {/* Scrub thumb */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
-
-        {/* Discrete Micro-Waypoint Milestone Jewel Pins */}
-        {waypoints.map((wp) => (
-          <div
-            key={wp.id}
-            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 transition-all duration-300 pointer-events-auto cursor-pointer ${
-              wp.passed
-                ? 'w-3.5 h-3.5 rotate-45 bg-amber-400 border-2 border-amber-600 scale-110'
-                : 'w-2.5 h-2.5 rotate-45 bg-amber-100/95 border border-amber-400/80 hover:scale-125 hover:bg-amber-200'
-            }`}
-            style={{ left: `${wp.percent}%` }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSeek(wp.time);
-            }}
-            title={`${wp.label} · ${wp.passed ? '已点亮' : '点击前往'}`}
-          />
-        ))}
       </div>
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 flex items-center justify-between gap-3 sm:gap-4">
-        
-        {/* ── Left: Thumbnail + Chapter Title + Progress (No text wrapping) ── */}
-        <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1 sm:max-w-xs md:max-w-sm">
-          {coverUrl && (
-            <div className="w-9 h-12 aspect-[3/4] rounded-lg border border-[#eee5d8] overflow-hidden shrink-0 hidden sm:block bg-stone-100">
-              <img
-                src={coverUrl}
-                alt="Book cover"
-                onError={(e) => { e.target.style.display = 'none'; }}
-                className="w-full h-full object-cover"
-              />
-            </div>
+      {/* ── Main Controls Row ─────────────────────────────────────── */}
+      <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2">
+
+        {/* Left: Chapter info */}
+        <div className="flex items-center gap-2 min-w-0 flex-1 max-w-[200px] sm:max-w-xs">
+          {isPlaying && (
+            <span className="flex items-center gap-0.5 text-amber-500 shrink-0">
+              <span className="w-[3px] h-3 bg-amber-500 rounded-full animate-wave-1" />
+              <span className="w-[3px] h-4 bg-amber-600 rounded-full animate-wave-2" />
+              <span className="w-[3px] h-2 bg-amber-400 rounded-full animate-wave-3" />
+            </span>
           )}
-
-          <div className="flex flex-col min-w-0 flex-1">
-            <div className="flex items-center space-x-1.5 truncate">
-              {isPlaying && (
-                <span className="flex items-center gap-0.5 text-amber-500 shrink-0">
-                  <span className="w-1 h-3 bg-amber-500 rounded-full animate-wave-1" />
-                  <span className="w-1 h-4 bg-amber-600 rounded-full animate-wave-2" />
-                  <span className="w-1 h-2 bg-amber-500 rounded-full animate-wave-3" />
-                </span>
-              )}
-              <span 
-                className="font-bold text-xs sm:text-sm text-amber-950 truncate" 
-                title={cleanChapterTitle}
-              >
-                {cleanChapterTitle}
-              </span>
-            </div>
-
-            <div className="flex items-center space-x-1.5 sm:space-x-2 text-[11px] sm:text-xs font-mono mt-0.5 text-stone-500 truncate">
-              <span className="text-amber-700 font-bold">
-                {formatTime(currentTime)}
-              </span>
-              <span>/</span>
-              <span>{formatTime(duration)}</span>
-              {totalCues > 0 && (
-                <span className="text-stone-400">
-                  <span className="hidden sm:inline">· 第 </span>
-                  <span className="sm:hidden">· </span>
-                  {activeCueIndex + 1}/{totalCues}
-                  <span className="hidden sm:inline"> 句</span>
-                </span>
-              )}
-            </div>
+          <div className="min-w-0">
+            <p className="font-bold text-xs text-amber-950 truncate leading-tight">
+              {chapterTitle || '选择章节'}
+            </p>
+            <p className="text-[11px] font-mono text-stone-400 leading-tight">
+              {formatTime(currentTime)}
+              {totalCues > 0 && <span className="ml-1 text-stone-300">· {activeCueIndex + 1}/{totalCues}句</span>}
+            </p>
           </div>
         </div>
 
-        {/* ── Center: Clean Transport Controls (Flat, Crisp, Shadow-free) ── */}
-        <div className="flex items-center space-x-2">
-          {/* Rewind 5s */}
-          <button
-            onClick={handleRewind5s}
-            className="w-8 h-8 rounded-xl border border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 flex items-center justify-center cursor-pointer relative"
-            title="后退 5 秒"
-          >
-            <RotateCcw size={14} />
-            <span className="absolute -bottom-1 -right-1 text-[8px] font-mono font-bold text-amber-900 bg-amber-100 rounded px-0.5 border border-amber-200">
-              5s
-            </span>
-          </button>
-
-          {/* Previous Sentence */}
+        {/* Center: Transport Controls */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Rewind 5s combined with Prev Sentence */}
           <button
             onClick={onPrevSentence}
             disabled={activeCueIndex <= 0}
-            className="w-8 h-8 rounded-xl border border-[#eee5d8] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 flex items-center justify-center cursor-pointer"
-            title="上一句 (快捷键: ←)"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+            title="上一句 (←)"
           >
-            <SkipBack size={15} />
+            <SkipBack size={16} />
           </button>
 
-          {/* Main Play / Pause Button (Clean Flat 44px) */}
+          {/* Main Play / Pause (44px — Apple HIG compliant) */}
           <button
             onClick={onPlayPause}
             className="w-11 h-11 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border border-amber-600 active:scale-95 transition-all cursor-pointer"
-            title="播放 / 暂停 (快捷键: Space)"
+            title="播放/暂停 (Space)"
           >
-            {isPlaying ? (
-              <Pause size={18} className="fill-current" />
-            ) : (
-              <Play size={18} className="fill-current translate-x-0.5" />
-            )}
+            {isPlaying
+              ? <Pause size={19} className="fill-current" />
+              : <Play size={19} className="fill-current translate-x-0.5" />}
           </button>
 
           {/* Next Sentence */}
           <button
             onClick={onNextSentence}
             disabled={activeCueIndex >= totalCues - 1}
-            className="w-8 h-8 rounded-xl border border-[#eee5d8] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 flex items-center justify-center cursor-pointer"
-            title="下一句 (快捷键: →)"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+            title="下一句 (→)"
           >
-            <SkipForward size={15} />
+            <SkipForward size={16} />
           </button>
 
-          {/* Single Sentence Loop Toggle */}
+          {/* Loop Toggle */}
           <button
             onClick={onToggleLoopSentence}
-            className={`w-8 h-8 rounded-xl border transition-colors active:scale-95 flex items-center justify-center cursor-pointer ${
-              isLoopSentence 
-                ? 'bg-amber-500 text-white border-amber-500 font-bold' 
-                : 'border-[#eee5d8] bg-white text-stone-500 hover:text-amber-950 hover:border-amber-300'
+            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+              isLoopSentence
+                ? 'bg-amber-500 text-white border-amber-600'
+                : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 hover:border-amber-300'
             }`}
-            title={isLoopSentence ? "单句循环：开启 (按 L 关闭)" : "单句循环：关闭 (按 L 开启)"}
+            title={isLoopSentence ? '单句循环：开 (L)' : '单句循环：关 (L)'}
           >
             <div className="relative">
               <Repeat size={14} />
@@ -317,100 +234,64 @@ export function AudioPlayer({
           </button>
         </div>
 
-        {/* ── Right: Speed, Voice Recording & Volume (Clean Layout) ── */}
-        <div className="hidden sm:flex items-center space-x-2.5 flex-1 justify-end min-w-0">
-          {/* Quick 0.8x Slow Listening Toggle */}
+        {/* Right: Speed + Record + Volume */}
+        <div className="flex items-center gap-1.5 sm:gap-2 justify-end flex-1">
+          {/* Speed cycle button — always visible, all screen sizes */}
           <button
-            onClick={() => {
-              if (playbackRate === 0.8) {
-                onChangePlaybackRate(1.0);
-              } else {
-                onChangePlaybackRate(0.8);
-              }
-            }}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-colors cursor-pointer ${
-              playbackRate === 0.8
+            onClick={handleSpeedCycle}
+            className={`px-2 sm:px-2.5 py-1.5 rounded-xl border text-xs font-mono font-bold transition-colors cursor-pointer ${
+              playbackRate !== 1.0
                 ? 'bg-amber-500 text-white border-amber-500'
-                : 'border-[#eee5d8] bg-white text-stone-700 hover:border-amber-300'
+                : 'border-[#e8ddd0] bg-white text-stone-700 hover:border-amber-300'
             }`}
-            title="0.8x 慢速精听模式"
+            title="点击切换速度: 0.8x → 1.0x → 1.25x"
           >
-            <Sparkles size={12} className={playbackRate === 0.8 ? 'text-white' : 'text-amber-600'} />
-            <span>0.8x 慢速</span>
+            {speedLabel}
           </button>
 
-          {/* Speed Selector */}
-          <div className="relative" ref={speedMenuContainerRef}>
-            <button
-              onClick={() => setShowSpeedMenu(!showSpeedMenu)}
-              className="px-2.5 py-1.5 rounded-xl border border-[#eee5d8] bg-white text-stone-800 font-mono font-bold hover:border-amber-300 text-xs transition-colors cursor-pointer flex items-center space-x-1"
-              title="调整朗读语速"
-            >
-              <Gauge size={13} className="text-amber-700" />
-              <span>{playbackRate}x</span>
-            </button>
-
-            {showSpeedMenu && (
-              <div className="absolute bottom-full mb-2 right-0 rounded-2xl border border-[#eee5d8] bg-white p-1.5 z-50 flex flex-col min-w-[150px]">
-                {speedOptions.map(({ rate, label }) => (
-                  <button
-                    key={rate}
-                    onClick={() => {
-                      onChangePlaybackRate(rate);
-                      setShowSpeedMenu(false);
-                    }}
-                    className={`px-3 py-1.5 text-xs text-left rounded-xl transition-colors cursor-pointer ${
-                      playbackRate === rate 
-                        ? 'bg-amber-500 text-white font-bold' 
-                        : 'hover:bg-amber-50 text-stone-700 font-medium'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Shadowing Voice Recording Button */}
+          {/* Mic / Shadowing — always visible */}
           <button
             onClick={onToggleRecorder}
-            className={`px-3 py-1.5 rounded-xl border text-xs flex items-center gap-1.5 transition-colors font-bold cursor-pointer ${
-              isRecordingActive 
-                ? 'bg-red-600 text-white border-red-600' 
-                : 'border-[#eee5d8] bg-white text-stone-700 hover:border-amber-400 hover:text-amber-950'
+            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center text-xs transition-colors cursor-pointer ${
+              isRecordingActive
+                ? 'bg-red-600 text-white border-red-600'
+                : 'border-[#e8ddd0] bg-white text-stone-600 hover:border-amber-400 hover:text-amber-950'
             }`}
-            title="开启单句跟读录音评测"
+            title="跟读施咒（AI发音评分）"
           >
-            <Mic size={13} className={isRecordingActive ? 'text-white' : 'text-amber-700'} />
-            <span className="hidden md:inline">跟读施咒</span>
+            <Mic size={15} className={isRecordingActive ? 'text-white' : 'text-amber-700'} />
           </button>
 
-          {/* Volume Slider */}
-          <div className="hidden lg:flex items-center space-x-1.5 pl-2 border-l border-[#eee5d8]">
-            <button 
+          {/* Volume — icon button, popup on click (desktop only) */}
+          <div className="relative hidden sm:block" ref={volumeRef}>
+            <button
               onClick={handleVolumeToggle}
-              className="p-1 rounded-lg text-stone-400 hover:text-amber-900 transition-colors cursor-pointer"
-              title="静音 / 恢复音量"
+              onContextMenu={(e) => { e.preventDefault(); setShowVolume(v => !v); }}
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-500 hover:text-amber-950 hover:border-amber-300 transition-colors cursor-pointer"
+              title="点击静音，右键调音量"
             >
-              {isMuted || volume === 0 ? <VolumeX size={15} /> : <Volume2 size={15} />}
+              {(isMuted || volume === 0) ? <VolumeX size={15} /> : <Volume2 size={15} />}
             </button>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.05"
-              value={isMuted ? 0 : volume}
-              onChange={(e) => {
-                const val = parseFloat(e.target.value);
-                onChangeVolume(val);
-                if (isMuted && val > 0) setIsMuted(false);
-              }}
-              className="w-16 h-1.5 accent-amber-500 bg-stone-200 rounded-lg cursor-pointer"
-            />
+            {showVolume && (
+              <div className="absolute bottom-full mb-2 right-0 bg-white border border-[#e8ddd0] rounded-2xl p-3 w-36 z-50">
+                <input
+                  type="range" min="0" max="1" step="0.05"
+                  value={isMuted ? 0 : volume}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    onChangeVolume(val);
+                    if (isMuted && val > 0) setIsMuted(false);
+                  }}
+                  className="w-full accent-amber-500 cursor-pointer"
+                />
+                <p className="text-center text-xs font-mono text-stone-500 mt-1">{Math.round((isMuted ? 0 : volume) * 100)}%</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+export default AudioPlayer;

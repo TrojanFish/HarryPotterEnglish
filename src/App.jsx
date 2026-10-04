@@ -481,6 +481,8 @@ export function App() {
                     onRecordCue={openRecorder}
                     isParchment={isParchment}
                     onSaveToVocab={(wordData, sentence) => toggleSaveWord(wordData, sentence, selectedBook, selectedChapter)}
+                    onPrevSentence={handlePrevSentence}
+                    onNextSentence={handleNextSentence}
                   />
                 )}
               </div>

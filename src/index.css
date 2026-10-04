@@ -2,6 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Hogwarts Design Tokens (Single Source of Truth) ──────────── */
+:root {
+  /* Surface Colors */
+  --c-bg:            #fbf9f4;
+  --c-surface:       #ffffff;
+  --c-surface-alt:   #f7f3ed;
+  /* Border */
+  --c-border:        #e8ddd0;
+  --c-border-strong: #d4c4a8;
+  /* Accent */
+  --c-accent:        #f59e0b;
+  --c-accent-dark:   #d97706;
+  --c-accent-darker: #b45309;
+  /* Semantic */
+  --c-success:       #10b981;
+  --c-danger:        #ef4444;
+  /* Text */
+  --c-text-primary:   #1e1610;
+  --c-text-secondary: #5c4d3c;
+  --c-text-muted:     #8b7b6b;
+  /* Spacing rhythm: 4-8-12-16-24-32 */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  /* Border radius */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-2xl: 24px;
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
@@ -200,39 +235,6 @@ body:not(.theme-parchment) .lumos-active {
    iBooks-style Classical Bookshelf & 3D Book Aesthetics
 ─────────────────────────────────────────────────────────── */
 
-/* Clean Shelf Plank */
-.ibooks-shelf-plank {
-  position: relative;
-  height: 14px;
-  background: #ede2d1;
-  border-radius: 4px;
-  border: 1px solid #ddd0bc;
-  box-shadow: none !important;
-}
-
-.ibooks-shelf-plank::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 4px 4px 0 0;
-}
-
-body:not(.theme-parchment) .ibooks-shelf-plank {
-  background: linear-gradient(180deg, #334155 0%, #1e293b 50%, #0f172a 100%);
-  box-shadow: 
-    inset 0 1px 1px rgba(255, 255, 255, 0.15),
-    0 6px 12px rgba(0, 0, 0, 0.5),
-    0 12px 24px rgba(0, 0, 0, 0.4);
-}
-
-body:not(.theme-parchment) .ibooks-shelf-plank::before {
-  background: rgba(255, 255, 255, 0.1);
-}
-
 /* 3D Book Standing on Shelf */
 .ibooks-book {
   position: relative;
@@ -247,10 +249,7 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
 
 /* Physical Spine Edge & Depth Shadow */
 .ibooks-book-spine {
-  box-shadow: 
-    inset 4px 0 8px -2px rgba(0, 0, 0, 0.45),
-    inset -2px 0 4px rgba(255, 255, 255, 0.2),
-    4px 10px 20px rgba(0, 0, 0, 0.28);
+  box-shadow: none !important;
 }
 
 /* ───────────────────────────────────────────────────────────
@@ -289,7 +288,7 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
 
 .duo-card {
   background-color: #ffffff;
-  border: 1.5px solid #eee5d8;
+  border: 1.5px solid var(--c-border);
   border-radius: 1.25rem;
   box-shadow: none !important;
   transition: border-color 0.2s ease;
@@ -311,7 +310,7 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
   gap: 0.375rem;
   padding: 0.375rem 0.875rem;
   border-radius: 9999px;
-  border: 1.5px solid #eee5d8;
+  border: 1.5px solid var(--c-border);
   background-color: #ffffff;
   color: #1e1610;
   font-weight: 700;
@@ -399,7 +398,7 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
 
 .duo-btn-secondary {
   background-color: #ffffff;
-  border: 1.5px solid #eee5d8;
+  border: 1.5px solid var(--c-border);
   color: #1e1610;
   font-weight: 700;
   border-radius: 0.875rem;
@@ -454,3 +453,30 @@ body:not(.theme-parchment) .ibooks-shelf-plank::before {
   overscroll-behavior-y: contain;
 }
 
+/* ── Word Click Highlight Animation ──────────────────────────── */
+@keyframes wordHighlight {
+  0% { background-color: rgba(245, 158, 11, 0.0); }
+  20% { background-color: rgba(245, 158, 11, 0.35); }
+  100% { background-color: rgba(245, 158, 11, 0.0); }
+}
+.word-click-flash {
+  animation: wordHighlight 500ms ease-out forwards;
+}
+
+/* ── Toast slide-down animation ──────────────────────────────── */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px) translateX(-50%); }
+  to   { opacity: 1; transform: translateY(0)   translateX(-50%); }
+}
+.animate-slide-down {
+  animation: slideDown 0.2s ease-out forwards;
+}
+
+/* ── Progress bar scrubber (Spotify-style thin) ──────────────── */
+.scrubber-track {
+  height: 4px;
+  transition: height 0.15s ease;
+}
+.scrubber-track:hover {
+  height: 6px;
+}

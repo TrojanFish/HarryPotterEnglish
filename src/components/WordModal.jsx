@@ -1,26 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  X, 
-  Volume2, 
-  Bookmark, 
-  Sparkles, 
-  Check, 
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  X,
+  Volume2,
+  Bookmark,
+  Sparkles,
+  Check,
   ExternalLink,
   BookOpen,
   Lightbulb,
-  GraduationCap
+  GraduationCap,
+  ChevronRight
 } from 'lucide-react';
 import { formatSyllables, getPhonicsTip } from '../utils/phonicsHelper';
 
-/**
- * WordModal — Chinese Student Vocabulary Card
- * - Designed for Chinese elementary & middle school students:
- * - Pure Chinese definitions (中文释义)
- * - British pronunciation speech audio button
- * - Syllable breakdown and natural phonics rules
- * - Zero emoji symbols (uses clean Lucide icons)
- * - Links to Cambridge Chinese & Youdao dictionaries
- */
 export function WordModal({
   wordData,
   currentSentence,
@@ -30,216 +22,231 @@ export function WordModal({
   isParchment
 }) {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [activeTab, setActiveTab] = useState('meaning'); // 'meaning' | 'phonics' | 'lore'
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
   }, [onClose]);
+
+  // Reset tab when word changes
+  useEffect(() => { setActiveTab('meaning'); }, [wordData?.word]);
 
   if (!wordData) return null;
 
   const phonicsInfo = getPhonicsTip(wordData.word, wordData.phonetic);
+  const hasLore = Boolean(wordData.lore);
+  const hasPhonics = Boolean(phonicsInfo?.tip);
 
   const playPronunciation = () => {
     if (wordData.audioUrl) {
       const audio = new Audio(wordData.audioUrl);
       setIsPlayingAudio(true);
-      audio.play().catch(e => console.warn(e));
+      audio.play().catch(() => {});
       audio.onended = () => setIsPlayingAudio(false);
     } else if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(wordData.word);
-      utterance.lang = 'en-GB'; // British English for Harry Potter
-      utterance.rate = 0.85; // Clear pace for students
+      const utt = new SpeechSynthesisUtterance(wordData.word);
+      utt.lang = 'en-GB';
+      utt.rate = 0.85;
       setIsPlayingAudio(true);
-      utterance.onend = () => setIsPlayingAudio(false);
-      window.speechSynthesis.speak(utterance);
+      utt.onend = () => setIsPlayingAudio(false);
+      window.speechSynthesis.speak(utt);
     }
   };
 
+  const tabs = [
+    { id: 'meaning', label: '释义' },
+    ...(hasPhonics ? [{ id: 'phonics', label: '语音' }] : []),
+    ...(hasLore   ? [{ id: 'lore',    label: '魔法' }] : []),
+  ];
+
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-fadeIn"
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm animate-fadeIn"
       onClick={onClose}
     >
-      <div 
-        onClick={(e) => e.stopPropagation()}
-        className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#eee5d8] bg-white text-[#1e1610] p-5 sm:p-7 max-h-[88vh] overflow-y-auto transition-all duration-300 animate-slideUp sm:animate-none pb-safe"
+      <div
+        onClick={e => e.stopPropagation()}
+        className="relative w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-white text-[#1e1610] max-h-[88vh] overflow-y-auto pb-safe flex flex-col"
       >
-        {/* Mobile Bottom Sheet Pull Handle */}
-        <div className="sm:hidden w-10 h-1.5 rounded-full bg-stone-300 mx-auto mb-3" />
+        {/* Mobile drag handle */}
+        <div className="sm:hidden w-10 h-1.5 rounded-full bg-stone-300 mx-auto mt-2.5 shrink-0" />
 
-        {/* Close Button with 44px touch target */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 sm:top-5 right-4 sm:right-5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-stone-400 hover:text-amber-950 hover:bg-amber-100/70 border border-transparent hover:border-amber-300/80 transition-all active:scale-90 cursor-pointer"
-        >
-          <X size={18} />
-        </button>
-
-        {/* Word Header */}
-        <div className="flex items-start justify-between pr-8 mb-4">
-          <div>
-            <div className="flex items-center space-x-2">
-              <h2 className="text-2xl sm:text-3xl font-bold font-magical tracking-wide text-amber-950">
-                {wordData.word}
-              </h2>
-              {wordData.isHpLore ? (
-                <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-red-800 text-amber-200 border border-amber-400/40 font-semibold">
-                  <Sparkles size={11} />
-                  <span>原著魔法专属</span>
-                </span>
-              ) : wordData.tag === '中考核心' ? (
-                <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-semibold">
-                  <BookOpen size={11} />
-                  <span>中考核心词汇</span>
-                </span>
-              ) : (
-                <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-300 font-semibold">
-                  <GraduationCap size={11} />
-                  <span>进阶拓展词汇</span>
-                </span>
-              )}
-            </div>
-
-            {/* Syllable Breakdown & Natural Phonics Tag for Students */}
-            <div className="flex items-center flex-wrap gap-2 mt-1.5">
-              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-amber-200/70 text-amber-950 border border-amber-300/90" title="音节拆分助记">
-                音节: {formatSyllables(wordData.word)}
-              </span>
-              {phonicsInfo && (
-                <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-100/90 text-emerald-900 border border-emerald-300 flex items-center gap-1">
-                  <Sparkles size={11} className="text-emerald-700" />
-                  <span>{phonicsInfo.rule}</span>
-                </span>
-              )}
-            </div>
-
-            {/* Phonetic & Pronunciation */}
-            <div className="flex items-center space-x-3 mt-2.5">
+        {/* Header: word + phonetic + play + close */}
+        <div className="px-5 sm:px-6 pt-4 sm:pt-5 pb-3 border-b border-[#e8ddd0] shrink-0">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h2 className="font-bold text-3xl text-amber-950 leading-tight">
+                  {wordData.word}
+                </h2>
+                <button
+                  onClick={playPronunciation}
+                  className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer active:scale-95 ${
+                    isPlayingAudio
+                      ? 'bg-amber-500 text-white border-amber-600'
+                      : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-900 hover:border-amber-300'
+                  }`}
+                  title="朗读发音 (英音)"
+                >
+                  <Volume2 size={16} className={isPlayingAudio ? 'animate-pulse' : ''} />
+                </button>
+              </div>
               {wordData.phonetic && (
-                <span className="font-mono text-sm px-2.5 py-0.5 rounded-lg bg-amber-100 text-amber-950 font-bold border border-amber-200/80">
-                  {wordData.phonetic}
-                </span>
+                <p className="text-stone-500 font-mono text-base mt-0.5">/{wordData.phonetic}/</p>
               )}
-              {wordData.pos && (
-                <span className="text-xs px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 font-mono border border-amber-200/60">
-                  {wordData.pos}
-                </span>
-              )}
-              <button
-                onClick={playPronunciation}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 min-h-[44px] rounded-full border text-xs font-bold transition-all active:scale-95 cursor-pointer ${
-                  isPlayingAudio 
-                    ? 'bg-amber-500 text-white border-amber-500 scale-105' 
-                    : 'border-amber-400/80 bg-amber-50/80 hover:bg-amber-100 text-amber-950 hover:border-amber-500'
-                }`}
-                title="点击试听纯正英音朗读"
-              >
-                <Volume2 size={14} className={isPlayingAudio ? 'animate-bounce text-white' : 'text-amber-700'} />
-                <span>{isPlayingAudio ? '朗读中...' : '纯正英音朗读'}</span>
-              </button>
             </div>
+
+            {/* Close button */}
+            <button
+              onClick={onClose}
+              className="duo-touch-target p-2 rounded-xl border border-transparent hover:border-[#e8ddd0] hover:bg-stone-50 text-stone-400 hover:text-amber-950 transition-all active:scale-90 cursor-pointer shrink-0"
+            >
+              <X size={18} />
+            </button>
           </div>
+
+          {/* Part of speech badge */}
+          {wordData.pos && (
+            <span className="inline-block mt-2 text-[11px] px-2 py-0.5 rounded bg-stone-100 text-stone-600 font-bold">
+              {wordData.pos}
+            </span>
+          )}
         </div>
 
-        {/* Natural Phonics Guidance Box */}
-        {phonicsInfo && (
-          <div className="mb-3.5 p-3 rounded-2xl border border-emerald-300/80 bg-emerald-50/60 text-xs text-emerald-950 flex items-start gap-2">
-            <Lightbulb size={15} className="text-emerald-700 shrink-0 mt-0.5" />
-            <div>
-              <span className="font-bold text-emerald-900">自然拼读点拨：</span>
-              <span className="font-reading">{phonicsInfo.tip}</span>
-            </div>
+        {/* Tab Bar */}
+        {tabs.length > 1 && (
+          <div className="flex border-b border-[#e8ddd0] shrink-0 px-5 sm:px-6">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-3 py-2.5 text-xs font-bold transition-all cursor-pointer relative ${
+                  activeTab === tab.id
+                    ? 'text-amber-900'
+                    : 'text-stone-400 hover:text-stone-700'
+                }`}
+              >
+                {tab.label}
+                {activeTab === tab.id && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-500 rounded-t" />
+                )}
+              </button>
+            ))}
           </div>
         )}
 
-        {/* Translation & Definitions (Pure Chinese for Chinese Students) */}
-        <div className="space-y-3.5 my-4">
-          <div className="p-4 rounded-2xl border border-[#eee5d8] bg-stone-50/70">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-800 mb-1 flex items-center gap-1.5">
-              <BookOpen size={13} className="text-amber-700" />
-              <span>中文释义</span>
-            </h4>
-            <p className="text-lg sm:text-xl font-reading font-bold text-amber-950 leading-snug">
-              {wordData.translation}
-            </p>
-          </div>
-
-          {/* Special Harry Potter Lore Box */}
-          {wordData.lore && (
-            <div className="p-4 rounded-2xl border border-amber-300/80 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent text-xs sm:text-sm">
-              <div className="flex items-center gap-1.5 text-amber-900 font-bold font-magical mb-1.5">
-                <Sparkles size={14} className="text-amber-600" />
-                <span>霍格沃茨原著背景与魔法百科：</span>
+        {/* Tab Content */}
+        <div className="flex-1 overflow-y-auto px-5 sm:px-6 py-4">
+          {/* Meaning tab */}
+          {activeTab === 'meaning' && (
+            <div className="space-y-4">
+              {/* Translation */}
+              <div>
+                <p className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">中文释义</p>
+                <p className="text-lg font-bold text-amber-950 leading-snug">{wordData.translation}</p>
+                {wordData.definition && (
+                  <p className="text-sm text-stone-600 mt-1 leading-relaxed">{wordData.definition}</p>
+                )}
               </div>
-              <p className="leading-relaxed text-amber-950 font-reading">
-                {wordData.lore}
-              </p>
+
+              {/* Context sentence */}
+              {currentSentence && (
+                <div className="bg-[#f7f3ed] rounded-2xl p-3.5 border border-[#e8ddd0]">
+                  <p className="text-[11px] font-bold text-stone-400 mb-1.5">原著例句</p>
+                  <p className="text-sm font-reading text-stone-700 leading-relaxed">
+                    {currentSentence.text?.split(new RegExp(`(${wordData.word})`, 'gi')).map((part, i) =>
+                      part.toLowerCase() === wordData.word.toLowerCase()
+                        ? <mark key={i} className="bg-amber-200 text-amber-950 font-bold rounded px-0.5">{part}</mark>
+                        : part
+                    )}
+                  </p>
+                  {currentSentence.translation && (
+                    <p className="text-xs text-stone-500 mt-1.5 font-reading">{currentSentence.translation}</p>
+                  )}
+                </div>
+              )}
+
+              {/* External links */}
+              <div className="flex gap-2">
+                <a
+                  href={`https://dictionary.cambridge.org/zhs/%E8%AF%8D%E5%85%B8/%E8%8B%B1%E8%AF%AD-%E6%B1%89%E8%AF%AD-%u7B80%u4F53/${encodeURIComponent(wordData.word)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-[11px] px-2.5 py-1.5 rounded-lg border border-[#e8ddd0] text-stone-600 hover:text-amber-900 hover:border-amber-300 transition-colors font-bold"
+                >
+                  <ExternalLink size={11} />
+                  剑桥词典
+                </a>
+                <a
+                  href={`https://www.youdao.com/result?word=${encodeURIComponent(wordData.word)}&lang=en`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-[11px] px-2.5 py-1.5 rounded-lg border border-[#e8ddd0] text-stone-600 hover:text-amber-900 hover:border-amber-300 transition-colors font-bold"
+                >
+                  <ExternalLink size={11} />
+                  有道词典
+                </a>
+              </div>
             </div>
           )}
 
-          {/* Context Sentence */}
-          {currentSentence && (
-            <div className="p-3.5 rounded-xl bg-white border border-[#eee5d8] text-xs">
-              <span className="text-stone-400 block mb-1">原书句子出处：</span>
-              <p className="italic font-reading text-stone-700 leading-relaxed">
-                "{currentSentence.text}"
-              </p>
+          {/* Phonics tab */}
+          {activeTab === 'phonics' && phonicsInfo && (
+            <div className="space-y-3">
+              <div className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <Lightbulb size={15} className="text-amber-600" />
+                  <p className="text-xs font-bold text-amber-800">自然拼读口诀</p>
+                </div>
+                <p className="text-sm font-reading text-amber-950 leading-relaxed">{phonicsInfo.tip}</p>
+              </div>
+              {phonicsInfo.syllables && (
+                <div>
+                  <p className="text-xs font-bold text-stone-400 mb-1">音节拆解</p>
+                  <p className="text-xl font-mono text-amber-900 tracking-widest">{phonicsInfo.syllables}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Lore tab */}
+          {activeTab === 'lore' && wordData.lore && (
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles size={14} className="text-amber-600" />
+                <p className="text-xs font-bold text-amber-800">霍格沃茨魔法档案</p>
+              </div>
+              <p className="text-sm font-reading text-stone-700 leading-relaxed">{wordData.lore}</p>
+              {wordData.example && (
+                <div className="mt-3 bg-[#f7f3ed] rounded-xl p-3 border border-[#e8ddd0]">
+                  <p className="text-[11px] font-bold text-stone-400 mb-1">经典台词</p>
+                  <p className="text-sm italic font-reading text-stone-700">{wordData.example}</p>
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Action Footer */}
-        <div className="mt-5 pt-3 border-t border-[#eee5d8] flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-xs">
-            <a
-              href={`https://dict.youdao.com/result?word=${encodeURIComponent(wordData.word.toLowerCase())}&lang=en`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 px-2.5 py-1.5 min-h-[44px] rounded-xl border border-[#eee5d8] bg-stone-50 hover:bg-stone-100 text-stone-700 hover:text-amber-950 hover:border-amber-300 transition-all"
-            >
-              <span>有道词典</span>
-              <ExternalLink size={11} className="text-amber-700" />
-            </a>
-            <a
-              href={`https://dictionary.cambridge.org/zhs/词典/英语-汉语-简体/${encodeURIComponent(wordData.word.toLowerCase())}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 px-2.5 py-1.5 min-h-[44px] rounded-xl border border-[#eee5d8] bg-stone-50 hover:bg-stone-100 text-stone-700 hover:text-amber-950 hover:border-amber-300 transition-all"
-            >
-              <span>剑桥双解</span>
-              <ExternalLink size={11} className="text-amber-700" />
-            </a>
-          </div>
-
+        {/* Footer: Save button */}
+        <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-3 border-t border-[#e8ddd0] shrink-0">
           <button
-            onClick={() => onSaveToVocab(wordData, currentSentence)}
-            className={`min-h-[44px] flex items-center gap-2 px-6 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer transition-all ${
+            onClick={() => onSaveToVocab && onSaveToVocab(wordData, currentSentence)}
+            className={`w-full min-h-[48px] rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer border ${
               isSaved
-                ? 'duo-btn-success'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
                 : 'duo-btn-primary'
             }`}
           >
-            {isSaved ? (
-              <>
-                <Check size={16} />
-                <span>已在生词本</span>
-              </>
-            ) : (
-              <>
-                <Bookmark size={16} />
-                <span>收入魔法生词本</span>
-              </>
-            )}
+            {isSaved
+              ? (<><Check size={16} className="text-emerald-600" /><span>已收录到生词本</span></>)
+              : (<><Bookmark size={15} /><span>收录到生词本</span></>)
+            }
           </button>
         </div>
       </div>
     </div>
   );
 }
+
+export default WordModal;

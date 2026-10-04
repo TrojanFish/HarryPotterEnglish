@@ -149,12 +149,12 @@ export function VocabularyDrawer({
                     onClose();
                     onOpenSrs();
                   }}
-                  className="duo-btn-primary min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="duo-btn-primary min-h-[38px] px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
                   title="启动艾宾浩斯智能翻转闪卡 (SRS 遗忘曲线算法)"
                 >
                   <BrainCircuit size={14} className="shrink-0" />
-                  <span className="hidden sm:inline">智能复习</span>
-                  <span className="sm:hidden">复习</span>
+                  <span className="hidden sm:inline">SRS复习</span>
+                  <span className="sm:hidden">SRS</span>
                 </button>
               )}
 
@@ -389,6 +389,14 @@ export function VocabularyDrawer({
                               <span className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-300 font-bold">
                                 进阶拓展
                               </span>
+                            )}
+                            {/* SRS status dot */}
+                            {item.srsBox !== undefined && (
+                              <span className={`inline-block w-2 h-2 rounded-full ml-1.5 align-middle ${
+                                item.srsBox >= 5 ? 'bg-emerald-500' :
+                                item.srsBox >= 4 ? 'bg-amber-400' :
+                                item.srsBox >= 2 ? 'bg-orange-400' : 'bg-red-400'
+                              }`} title={`SRS盒子 ${item.srsBox || 1}: ${item.srsBox >= 5 ? '已掌握' : '复习中'}`} />
                             )}
                           </div>
                           {renderSrsBadge(item)}

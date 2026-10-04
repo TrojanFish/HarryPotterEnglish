@@ -42,8 +42,8 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
-  // 0. Bypass SW completely for localhost/development and Vite HMR
-  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.pathname.includes('@vite') || url.pathname.includes('@react-refresh')) {
+  // 0. Bypass SW for Vite internal HMR endpoints
+  if (url.pathname.includes('@vite') || url.pathname.includes('@react-refresh') || url.pathname.includes('/node_modules/')) {
     return;
   }
 
@@ -83,14 +83,22 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse;
       }
 
-      return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+      return fetch(event.request)
+        .then((networkResponse) => {
+          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+            return networkResponse;
+          }
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
           return networkResponse;
-        }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
-        return networkResponse;
-      });
+        })
+        .catch(() => {
+          // Robust offline navigation: if network fails during page refresh/navigation, return cached app shell
+          if (event.request.mode === 'navigate') {
+            return caches.match('/index.html').then((htmlRes) => htmlRes || caches.match('/'));
+          }
+          return null;
+        });
     })
   );
 });

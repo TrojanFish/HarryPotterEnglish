@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { 
-  Play, 
-  Languages, 
-  Mic, 
-  Eye, 
-  EyeOff, 
-  Sparkles, 
-  Type, 
+import {
+  Play,
+  Languages,
+  Mic,
+  Eye,
+  EyeOff,
+  Sparkles,
+  Type,
   Volume2,
   Headphones,
   Copy,
@@ -18,10 +18,12 @@ import { tokenizeSentence, formatTime } from '../utils/vttParser';
 import { HP_LORE_DICTIONARY } from '../data/hpDictionary';
 
 /**
- * SentenceCard (Memoized for high performance)
- * Renders an individual sentence cue card with tokenized words, translation, and quick controls.
- * React.memo ensures that only the active cue and previously active cue re-render during audio playback,
- * preventing expensive re-tokenization of 1,000+ sentences on every tick.
+ * SentenceCard v2 (Memoized)
+ * - No "第 X 句" number badge (removed noise)
+ * - Timestamps only on hover
+ * - Active: border-l-4 amber + bg-amber-50/60
+ * - Inactive: bg-white, no border (spacing separates)
+ * - Blind mode: opacity/letter-spacing (no GPU blur)
  */
 const SentenceCard = React.memo(function SentenceCard({
   cue,
@@ -42,142 +44,139 @@ const SentenceCard = React.memo(function SentenceCard({
   onToggleReveal,
   cardRef
 }) {
-  // Pre-tokenize words for this sentence and memoize based on cue.text
   const tokens = useMemo(() => tokenizeSentence(cue.text), [cue.text]);
+  const [clickedWord, setClickedWord] = useState(null);
+
+  const handleWordClick = useCallback((word, cueObj) => {
+    setClickedWord(word);
+    setTimeout(() => setClickedWord(null), 500);
+    onWordClick(word, cueObj);
+  }, [onWordClick]);
+
+  const isBlindHidden = studyMode === 'blind' && !isRevealed && !isActive;
 
   return (
     <div
       ref={cardRef}
-      className={`group relative rounded-2xl p-3.5 sm:p-5 transition-colors duration-200 border subtitle-item-render ${
+      className={`group relative rounded-2xl transition-colors duration-200 subtitle-item-render ${
         isActive
-          ? 'border-amber-400 bg-amber-500/5 border-l-4 border-l-amber-500'
-          : 'border-[#eee5d8] bg-white hover:border-amber-300'
+          ? 'border-l-4 border-l-amber-500 bg-amber-50/60 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4'
+          : 'border-l-4 border-l-transparent bg-white hover:bg-stone-50/80 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4'
       }`}
     >
-      {/* Cue Header with Controls */}
-      <div className="flex items-center justify-between mb-2 gap-2">
-        <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
-          <span className={`text-[11px] sm:text-xs px-2 py-0.5 rounded-lg font-mono font-bold shrink-0 ${
-            isActive 
-              ? 'bg-amber-500 text-white' 
-              : 'bg-stone-100 text-stone-500'
-          }`}>
-            第 {idx + 1} 句
-          </span>
-          <span className="font-mono text-[11px] sm:text-xs text-stone-400 shrink-0">
-            {formatTime(cue.startTime)} - {formatTime(cue.endTime)}
+      {/* Header: timestamps (hover-only on inactive) + action buttons */}
+      <div className={`flex items-center justify-between mb-2 gap-2 ${
+        isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 transition-opacity duration-150'
+      }`}>
+        <div className="flex items-center gap-1.5">
+          <span className="font-mono text-[10px] text-stone-400">
+            {formatTime(cue.startTime)}
           </span>
           {isActive && (
-            <span className="hidden sm:inline-flex items-center gap-1 text-xs text-amber-700 font-bold shrink-0">
-              <Sparkles size={12} />
-              <span>正在朗读</span>
+            <span className="inline-flex items-center gap-1 text-[10px] text-amber-700 font-bold">
+              <Sparkles size={10} />
+              正在朗读
             </span>
           )}
         </div>
 
-        {/* Sentence Action Buttons: Clean on active, hover-only on inactive */}
-        <div className={`flex items-center space-x-1 sm:space-x-1.5 shrink-0 transition-opacity ${
-          isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-        }`}>
-          {/* Replay this sentence */}
+        {/* Action buttons */}
+        <div className="flex items-center gap-1">
           <button
             onClick={() => onSeekToCue(cue)}
-            className="p-1 sm:p-1.5 rounded-lg border border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
-            title="从原声音频播放本句"
+            className="p-1 sm:p-1.5 rounded-lg border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-500 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
+            title="从此句播放"
           >
-            <Play size={13} className="fill-current" />
+            <Play size={11} className="fill-current" />
           </button>
 
-          {/* Clean British TTS Speak (Desktop/Tablet only) */}
           {isActive && (
-            <button
-              onClick={() => onSpeakSentence(cue)}
-              className={`hidden sm:inline-flex p-1.5 rounded-lg border transition-colors active:scale-95 cursor-pointer ${
-                speakingCueId === cue.id 
-                  ? 'text-amber-900 bg-amber-100 border-amber-300 font-bold' 
-                  : 'border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950'
-              }`}
-              title="朗读示范 (英音)"
-            >
-              <Volume2 size={13} className={speakingCueId === cue.id ? 'animate-bounce' : ''} />
-            </button>
+            <>
+              <button
+                onClick={() => onSpeakSentence(cue)}
+                className={`hidden sm:inline-flex p-1.5 rounded-lg border transition-colors active:scale-95 cursor-pointer ${
+                  speakingCueId === cue.id
+                    ? 'text-amber-900 bg-amber-100 border-amber-300'
+                    : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950'
+                }`}
+                title="朗读示范 (英音)"
+              >
+                <Volume2 size={12} className={speakingCueId === cue.id ? 'animate-bounce' : ''} />
+              </button>
+
+              <button
+                onClick={() => onCopySentence(cue)}
+                className="hidden sm:inline-flex p-1.5 rounded-lg border border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
+                title={copiedCueId === cue.id ? '已复制' : '复制本句'}
+              >
+                {copiedCueId === cue.id
+                  ? <Check size={12} className="text-emerald-600" />
+                  : <Copy size={12} />}
+              </button>
+            </>
           )}
 
-          {/* Copy sentence text */}
-          {isActive && (
-            <button
-              onClick={() => onCopySentence(cue)}
-              className="hidden sm:inline-flex p-1.5 rounded-lg border border-[#eee5d8] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
-              title={copiedCueId === cue.id ? "已复制本句英文" : "复制本句英文"}
-            >
-              {copiedCueId === cue.id ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
-            </button>
-          )}
-
-          {/* Shadowing Voice Recording */}
           <button
             onClick={() => onRecordCue(cue)}
-            className="px-2 sm:px-2.5 py-1 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center gap-1 font-bold text-xs"
-            title="跟读施咒（AI发音评分）"
+            className="px-2 py-1 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center gap-1 font-bold text-[11px]"
+            title="跟读施咒（AI评分）"
           >
-            <Mic size={13} className="text-amber-700" />
-            <span>跟读</span>
+            <Mic size={12} className="text-amber-700" />
+            <span className="hidden sm:inline">跟读</span>
           </button>
 
-          {/* Blind mode reveal toggle */}
           {studyMode === 'blind' && (
             <button
               onClick={() => onToggleReveal(cue.id)}
               className="p-1 sm:p-1.5 rounded-lg border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 transition-colors active:scale-95 cursor-pointer"
-              title={isRevealed ? "开启迷雾遮罩" : "驱散迷雾显形"}
+              title={isRevealed ? '重新遮罩' : '揭示本句'}
             >
-              {isRevealed ? <EyeOff size={13} /> : <Eye size={13} />}
+              {isRevealed ? <EyeOff size={12} /> : <Eye size={12} />}
             </button>
           )}
         </div>
       </div>
 
-      {/* English Text with Clickable Words */}
-      <div 
-        className={`font-reading ${fontSizeClass} select-text transition-all duration-300 leading-[1.75] ${
-          studyMode === 'blind' && !isRevealed && !isActive
-            ? 'blur-[6px] hover:blur-none select-none opacity-40'
-            : ''
+      {/* English Text */}
+      <div
+        className={`font-reading ${fontSizeClass} select-text leading-[1.8] transition-all duration-300 ${
+          isBlindHidden ? 'opacity-0 select-none pointer-events-none' : ''
         }`}
       >
-        {tokens.map((token, tokenIdx) => {
-          if (!token.isWord) {
-            return <span key={tokenIdx}>{token.text}</span>;
-          }
-
-          const cleanWord = token.text.toLowerCase().replace(/[^a-z]/g, '');
-          const isHpTerm = Boolean(HP_LORE_DICTIONARY[cleanWord]?.lore);
-
-          return (
-            <span
-              key={tokenIdx}
-              onClick={() => onWordClick(token.text, cue)}
-              className={`cursor-pointer transition-colors inline group/word relative ${
-                isHpTerm 
-                  ? 'border-b border-amber-400 text-amber-900 font-medium hover:bg-amber-100/50 px-0.5 rounded-xs' 
-                  : isActive 
-                    ? 'text-amber-950 font-normal hover:bg-amber-400/20 hover:text-amber-900 rounded-xs' 
-                    : 'text-[#1e1610] hover:bg-amber-400/15 hover:text-amber-900 rounded-xs'
-              }`}
-              title={isHpTerm ? `魔法专有名词: ${token.text} (点击查看百科背景与发音)` : '点击查看中文释义与发音'}
-            >
-              {token.text}
-            </span>
-          );
-        })}
+        {isBlindHidden ? (
+          <span className="italic text-stone-300 text-sm">— 迷雾遮罩：聆听原声辨认内容 —</span>
+        ) : (
+          tokens.map((token, tokenIdx) => {
+            if (!token.isWord) return <span key={tokenIdx}>{token.text}</span>;
+            const cleanWord = token.text.toLowerCase().replace(/[^a-z]/g, '');
+            const isHpTerm = Boolean(HP_LORE_DICTIONARY[cleanWord]?.lore);
+            const isClicked = clickedWord === token.text;
+            return (
+              <span
+                key={tokenIdx}
+                onClick={() => handleWordClick(token.text, cue)}
+                className={`cursor-pointer inline rounded-sm transition-colors ${
+                  isClicked ? 'word-click-flash' : ''
+                } ${
+                  isHpTerm
+                    ? 'border-b border-amber-400 text-amber-900 font-medium hover:bg-amber-100/60 px-0.5'
+                    : isActive
+                      ? 'text-amber-950 hover:bg-amber-400/25 hover:text-amber-900 px-0.5'
+                      : 'text-[#1e1610] hover:bg-amber-400/15 hover:text-amber-900 px-0.5'
+                }`}
+                title={isHpTerm ? `魔法词汇: ${token.text}` : '点击查看释义'}
+              >
+                {token.text}
+              </span>
+            );
+          })
+        )}
       </div>
 
       {/* Chinese Translation */}
-      {showTranslation && cue.translation && (
-        <div className={`mt-3 pt-2.5 border-t border-dashed text-sm sm:text-base font-reading leading-relaxed ${
-          isParchment 
-            ? 'border-amber-200/80 text-[#735839]' 
-            : 'border-slate-800 text-slate-400'
+      {showTranslation && cue.translation && !isBlindHidden && (
+        <div className={`mt-2.5 pt-2 border-t border-dashed text-sm font-reading leading-relaxed ${
+          isParchment ? 'border-amber-200/60 text-[#735839]' : 'border-slate-700 text-slate-400'
         }`}>
           {cue.translation}
         </div>
@@ -187,13 +186,10 @@ const SentenceCard = React.memo(function SentenceCard({
 });
 
 /**
- * SubtitleViewer — Kid-friendly bilingual listening & reading area.
- * - Large legible font with generous line-height for students
- * - Interactive word clicking with instant IPA phonetic & Chinese popover
- * - Lumos focus highlighting the active sentence with warm golden halo
- * - Quick sentence playback, loop, shadowing recording, and copy buttons
- * - Intelligent auto-follow scroll with manual pause and quick re-center
- * - Memoized SentenceCard components for 60FPS fluid scrolling
+ * SubtitleViewer v2 — Refactored for clarity and mobile UX
+ * - Two-row compact toolbar
+ * - Touch swipe gesture (left/right) for sentence navigation
+ * - Floating locate button at bottom-right
  */
 export function SubtitleViewer({
   cues,
@@ -207,172 +203,172 @@ export function SubtitleViewer({
   onToggleLoopSentence,
   onRecordCue,
   isParchment,
-  onSaveToVocab
+  onSaveToVocab,
+  onPrevSentence,
+  onNextSentence
 }) {
   const activeCueRef = useRef(null);
   const containerRef = useRef(null);
   const [revealedSentences, setRevealedSentences] = useState({});
   const [fontSize, setFontSize] = useState(() => {
-    try {
-      return localStorage.getItem('hp_subtitle_font_size') || 'large';
-    } catch {
-      return 'large';
-    }
+    try { return localStorage.getItem('hp_subtitle_font_size') || 'large'; } catch { return 'large'; }
   });
   const [isFollowActive, setIsFollowActive] = useState(true);
   const [copiedCueId, setCopiedCueId] = useState(null);
   const [speakingCueId, setSpeakingCueId] = useState(null);
 
-  // Smoothly scroll active cue into center if auto-follow is active
+  // Touch gesture state
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
+
   const scrollToActiveCue = useCallback(() => {
-    if (activeCueRef.current) {
-      activeCueRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
-      setIsFollowActive(true);
-    }
+    activeCueRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setIsFollowActive(true);
   }, []);
 
   useEffect(() => {
     if (isFollowActive && activeCueRef.current) {
-      activeCueRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
+      activeCueRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [activeCueIndex, isFollowActive]);
 
-  // Copy full sentence text
   const handleCopySentence = useCallback((cue) => {
-    if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(cue.text).then(() => {
-        setCopiedCueId(cue.id);
-        setTimeout(() => setCopiedCueId(null), 1800);
-      }).catch(e => console.warn(e));
-    }
+    navigator?.clipboard?.writeText(cue.text).then(() => {
+      setCopiedCueId(cue.id);
+      setTimeout(() => setCopiedCueId(null), 1800);
+    }).catch(() => {});
   }, []);
 
-  // Speak sentence with clean British English synthesis
   const handleSpeakSentence = useCallback((cue) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(cue.text);
-      utterance.lang = 'en-GB';
-      utterance.rate = 0.85;
+      const utt = new SpeechSynthesisUtterance(cue.text);
+      utt.lang = 'en-GB';
+      utt.rate = 0.85;
       setSpeakingCueId(cue.id);
-      utterance.onend = () => setSpeakingCueId(null);
-      utterance.onerror = () => setSpeakingCueId(null);
-      window.speechSynthesis.speak(utterance);
+      utt.onend = () => setSpeakingCueId(null);
+      utt.onerror = () => setSpeakingCueId(null);
+      window.speechSynthesis.speak(utt);
     }
   }, []);
 
-  // Toggle single sentence reveal in blind mode
   const toggleSentenceReveal = useCallback((cueId) => {
-    setRevealedSentences(prev => ({
-      ...prev,
-      [cueId]: !prev[cueId]
-    }));
+    setRevealedSentences(prev => ({ ...prev, [cueId]: !prev[cueId] }));
   }, []);
 
   const fontSizeClass = useMemo(() => {
-    if (fontSize === 'huge') return 'text-xl sm:text-2xl leading-relaxed';
-    if (fontSize === 'large') return 'text-lg sm:text-xl leading-relaxed';
-    return 'text-base sm:text-lg leading-relaxed';
+    if (fontSize === 'huge') return 'text-xl sm:text-2xl';
+    if (fontSize === 'large') return 'text-lg sm:text-xl';
+    return 'text-base sm:text-lg';
   }, [fontSize]);
 
+  // Touch swipe handlers
+  const handleTouchStart = useCallback((e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback((e) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
+    if (Math.abs(dx) > 60 && dy < 80) {
+      if (dx < 0 && onNextSentence) onNextSentence();
+      else if (dx > 0 && onPrevSentence) onPrevSentence();
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  }, [onNextSentence, onPrevSentence]);
+
   return (
-    <div className="relative flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4 max-w-4xl mx-auto w-full pb-16" ref={containerRef}>
-      {/* ── Subtitle Toolbar for Students (Sleek Single-Row Responsive Layout) ── */}
-      <div className={`flex items-center justify-between gap-1.5 sm:gap-2 mb-3 sm:mb-4 px-2.5 sm:px-3.5 py-2 rounded-2xl border transition-colors ${
+    <div
+      className="relative flex-1 overflow-y-auto max-w-4xl mx-auto w-full pb-4 ios-scroll"
+      ref={containerRef}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* ── Compact Two-Row Toolbar ─────────────────────────────── */}
+      <div className={`sticky top-0 z-10 px-3 sm:px-4 pt-2.5 pb-2 border-b transition-colors ${
         isParchment
-          ? 'bg-white/95 border-[#eee5d8] text-[#2b1f14]'
-          : 'bg-slate-900/80 border-slate-800 text-slate-300'
-      }`}>
-        {/* Left: Cue counts & status + Quick Toggles */}
-        <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
-          <span className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/15 text-amber-800 font-bold font-mono text-[11px] sm:text-xs shrink-0">
-            <Headphones size={12} className="text-amber-700" />
-            <span className="hidden sm:inline">全章 </span>{cues.length}<span className="hidden sm:inline"> 个精听</span>句
+          ? 'bg-[#fbf9f4]/95 border-[#e8ddd0] backdrop-blur-sm'
+          : 'bg-[#0b0f19]/95 border-slate-800'
+      }`}
+      >
+        {/* Row 1: Info + Follow toggle */}
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <span className="flex items-center gap-1 text-[11px] font-bold text-amber-800">
+            <Headphones size={12} className="text-amber-600" />
+            <span>{cues.length} 句精听</span>
+            {studyMode === 'blind' && (
+              <span className="ml-1 px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 text-[10px] font-bold">
+                迷雾模式
+              </span>
+            )}
           </span>
 
-          {studyMode === 'blind' && (
-            <span className="text-amber-800 bg-amber-500/10 px-2 py-1 rounded-lg border border-amber-400/30 flex items-center gap-1 font-semibold text-[11px] sm:text-xs shrink-0">
-              <EyeOff size={12} /> <span className="hidden sm:inline">磨耳朵模式</span><span className="sm:hidden">迷雾</span>
-            </span>
-          )}
-
-          {/* Follow audio toggle */}
           <button
             onClick={() => {
               const next = !isFollowActive;
               setIsFollowActive(next);
               if (next) scrollToActiveCue();
             }}
-            className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg border text-[11px] sm:text-xs font-bold transition-all active:scale-95 cursor-pointer shrink-0 ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-[11px] font-bold transition-all active:scale-95 cursor-pointer ${
               isFollowActive
-                ? 'bg-amber-500/20 border-amber-400 text-amber-950 font-bold'
-                : 'border-[#eee5d8] bg-white/80 text-stone-500 hover:bg-amber-50'
+                ? 'bg-amber-500/15 border-amber-400 text-amber-900'
+                : 'border-[#e8ddd0] bg-white/80 text-stone-500 hover:bg-amber-50'
             }`}
-            title={isFollowActive ? "点击暂停自动滚动" : "点击开启自动居中跟随"}
+            title={isFollowActive ? '暂停自动跟随' : '开启自动跟随'}
           >
-            <LocateFixed size={12} className="text-amber-700" />
-            <span className="hidden sm:inline">跟随朗读: {isFollowActive ? '开' : '关'}</span>
-            <span className="sm:hidden">{isFollowActive ? '跟随' : '静止'}</span>
-          </button>
-
-          {/* Translation Toggle */}
-          <button
-            onClick={() => setShowTranslation(!showTranslation)}
-            className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg border text-[11px] sm:text-xs font-bold transition-all active:scale-95 cursor-pointer shrink-0 ${
-              showTranslation
-                ? 'bg-amber-500/20 border-amber-400 text-amber-950 font-bold'
-                : 'border-[#eee5d8] bg-white/80 text-stone-500 hover:bg-amber-50'
-            }`}
-            title="开启/关闭中文双语译文"
-          >
-            <Languages size={12} className="text-amber-700" />
-            <span className="hidden sm:inline">双语译文: {showTranslation ? '开' : '关'}</span>
-            <span className="sm:hidden">{showTranslation ? '译文' : '隐译'}</span>
+            <LocateFixed size={11} className="text-amber-600" />
+            <span className="hidden sm:inline">{isFollowActive ? '跟随:开' : '跟随:关'}</span>
           </button>
         </div>
 
-        {/* Right: 3-Level Font Size Segmented Selector */}
-        <div className="flex items-center rounded-lg border border-[#eee5d8] bg-stone-50/80 p-0.5 text-[11px] sm:text-xs font-bold shrink-0">
-          <span className="hidden md:flex px-1.5 text-stone-500 items-center gap-1">
-            <Type size={12} className="text-amber-700" />
-            <span>字号:</span>
-          </span>
-          {[
-            { id: 'normal', label: '标准', short: '中', title: '标准字号' },
-            { id: 'large',  label: '大号', short: '大', title: '大号字号 (推荐)' },
-            { id: 'huge',   label: '超大', short: '特', title: '超大字号' }
-          ].map((sizeOpt) => {
-            const isSelected = fontSize === sizeOpt.id;
-            return (
+        {/* Row 2: Translation + Font Size */}
+        <div className="flex items-center justify-between gap-2">
+          <button
+            onClick={() => setShowTranslation(!showTranslation)}
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-[11px] font-bold transition-all active:scale-95 cursor-pointer ${
+              showTranslation
+                ? 'bg-amber-500/15 border-amber-400 text-amber-900'
+                : 'border-[#e8ddd0] bg-white/80 text-stone-500 hover:bg-amber-50'
+            }`}
+            title="开/关中文双语译文"
+          >
+            <Languages size={11} className="text-amber-600" />
+            <span>{showTranslation ? '双语:开' : '双语:关'}</span>
+          </button>
+
+          {/* Font size 3-step */}
+          <div className="flex items-center rounded-lg border border-[#e8ddd0] bg-stone-50/80 p-0.5">
+            <span className="px-1.5 hidden sm:flex items-center gap-1 text-[11px] text-stone-400">
+              <Type size={10} />
+            </span>
+            {[
+              { id: 'normal', label: '标准', short: 'A' },
+              { id: 'large',  label: '大号', short: 'A+' },
+              { id: 'huge',   label: '超大', short: 'A++' }
+            ].map((s) => (
               <button
-                key={sizeOpt.id}
+                key={s.id}
                 onClick={() => {
-                  setFontSize(sizeOpt.id);
-                  try { localStorage.setItem('hp_subtitle_font_size', sizeOpt.id); } catch {}
+                  setFontSize(s.id);
+                  try { localStorage.setItem('hp_subtitle_font_size', s.id); } catch {}
                 }}
-                className={`px-1.5 sm:px-2 py-0.5 rounded-md transition-all active:scale-95 cursor-pointer ${
-                  isSelected
-                    ? 'bg-amber-500 text-white font-bold'
-                    : 'text-stone-600 hover:text-amber-950'
+                className={`px-1.5 py-0.5 rounded-md text-[11px] font-bold transition-all active:scale-95 cursor-pointer ${
+                  fontSize === s.id ? 'bg-amber-500 text-white' : 'text-stone-500 hover:text-amber-900'
                 }`}
-                title={sizeOpt.title}
               >
-                <span className="hidden sm:inline">{sizeOpt.label}</span>
-                <span className="sm:hidden">{sizeOpt.short}</span>
+                <span className="hidden sm:inline">{s.label}</span>
+                <span className="sm:hidden">{s.short}</span>
               </button>
-            );
-          })}
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ── Cues List (Sentence Cards) ────────────────────────────── */}
-      <div className="space-y-3.5">
+      {/* ── Sentence Cards ────────────────────────────────────────── */}
+      <div className="px-3 sm:px-4 py-3 space-y-2">
         {cues.map((cue, idx) => {
           const isActive = idx === activeCueIndex;
           const isRevealed = Boolean(revealedSentences[cue.id]);
@@ -383,15 +379,15 @@ export function SubtitleViewer({
 
           return (
             <React.Fragment key={cue.id}>
-              {/* Duolingo Micro-Waypoint 5-minute chunk milestone divider */}
+              {/* 5-min milestone divider */}
               {isNewWaypoint && (
-                <div className="flex items-center gap-3 my-5 py-1 select-none">
-                  <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent via-amber-300 to-amber-400/80" />
-                  <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-100/90 border border-amber-300 text-xs font-bold text-amber-950">
-                    <Award size={14} className="text-amber-600" />
-                    <span>第 {currentChunk} 哨所里程碑 · 已精听 {currentChunk * 5} 分钟</span>
+                <div className="flex items-center gap-3 my-4 select-none">
+                  <div className="h-px flex-1 bg-amber-200" />
+                  <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-200 text-[11px] font-bold text-amber-800">
+                    <Award size={12} className="text-amber-600" />
+                    <span>已精听 {currentChunk * 5} 分钟</span>
                   </div>
-                  <div className="h-0.5 flex-1 bg-gradient-to-r from-amber-400/80 via-amber-300 to-transparent" />
+                  <div className="h-px flex-1 bg-amber-200" />
                 </div>
               )}
 
@@ -419,15 +415,15 @@ export function SubtitleViewer({
         })}
       </div>
 
-      {/* Floating Locate Active Cue Button */}
+      {/* Floating locate button */}
       {!isFollowActive && cues.length > 0 && activeCueIndex >= 0 && (
         <button
           onClick={scrollToActiveCue}
-          className="fixed bottom-24 right-5 sm:right-8 z-30 flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-amber-300 bg-white text-amber-950 font-bold text-xs transition-colors active:scale-95 cursor-pointer"
-          title="快速定位到正在朗读的句子"
+          className="fixed bottom-24 right-5 sm:right-8 z-30 flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-amber-300 bg-white text-amber-950 font-bold text-xs active:scale-95 cursor-pointer"
+          title="定位到正在朗读的句子"
         >
           <LocateFixed size={13} className="text-amber-600" />
-          <span>定位朗读 (第 {activeCueIndex + 1} 句)</span>
+          <span>定位 (第 {activeCueIndex + 1} 句)</span>
         </button>
       )}
     </div>

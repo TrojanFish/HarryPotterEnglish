@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  BookOpen,
-  ChevronDown,
-  Volume2,
-  EyeOff,
-  Zap,
-  Languages,
-  LocateFixed,
-  HelpCircle
-} from 'lucide-react';
+import { ArrowLeft, BookOpen, ChevronDown, Volume2, EyeOff, Zap, Languages, LocateFixed, HelpCircle } from 'lucide-react';
 import { formatEnglishText } from '../../utils/vttParser';
 
 /**
@@ -29,7 +20,9 @@ export function ReaderTopBar({
   setShowTranslation,
   isFollowActive = true,
   setIsFollowActive,
-  onOpenShortcuts
+  onOpenShortcuts,
+  onBackToShelf,
+  isOfflinePlaying = false
 }) {
   const modes = [
     { key: 'normal', label: '双语精听', icon: <Volume2 size={14} /> },
@@ -45,6 +38,16 @@ export function ReaderTopBar({
     <div className="h-13 shrink-0 border-b border-[#eee5d8] bg-white/95 px-4 sm:px-6 flex items-center justify-between select-none">
       {/* ── Left: Current Book & Chapter Selector ─────────────────── */}
       <div className="flex items-center gap-3 min-w-0">
+        {/* Mobile back to bookshelf */}
+        {onBackToShelf && (
+          <button
+            onClick={onBackToShelf}
+            className="sm:hidden duo-touch-target p-1.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] text-stone-600 hover:text-amber-950 active:scale-95 transition-colors mr-1"
+            title="返回书架"
+          >
+            <ArrowLeft size={16} />
+          </button>
+        )}
         <button
           onClick={onOpenShelf}
           className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#eee5d8] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-amber-950 font-bold text-xs transition-colors cursor-pointer group max-w-[280px] sm:max-w-md"
@@ -56,6 +59,9 @@ export function ReaderTopBar({
             <span>{chapterTitle}</span>
           </span>
           <ChevronDown size={13} className="text-stone-400 shrink-0 ml-0.5 group-hover:text-amber-700" />
+          {isOfflinePlaying && (
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="离线模式" />
+          )}
         </button>
       </div>
 
