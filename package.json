@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "server": "node server/index.js",
-    "test": "node --test tests/e2e.test.js",
+    "test": "node --test tests/e2e.test.js tests/sync.test.js",
     "check-emojis": "node scripts/scan_emojis.js"
   },
   "dependencies": {

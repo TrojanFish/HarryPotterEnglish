@@ -13,9 +13,13 @@ import {
   Zap,
   Info,
   Copy,
-  Check
+  Check,
+  Cloud,
+  RefreshCw,
+  Smartphone
 } from 'lucide-react';
 import { getAnalyticsSummary } from '../utils/analyticsStore';
+import { syncEngine } from '../utils/syncEngine';
 
 export function AnalyticsDashboard({
   isOpen,
@@ -28,6 +32,60 @@ export function AnalyticsDashboard({
   const [hoveredPointIndex, setHoveredPointIndex] = useState(null);
   const [showHonorScroll, setShowHonorScroll] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+
+  // Local-First Sync State
+  const [syncState, setSyncState] = useState(() => ({
+    status: syncEngine.status,
+    meta: syncEngine.getMeta()
+  }));
+  const [pairCodeInput, setPairCodeInput] = useState('');
+  const [pairMessage, setPairMessage] = useState(null);
+  const [isPairing, setIsPairing] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [copiedSyncCode, setCopiedSyncCode] = useState(false);
+
+  // Subscribe to syncEngine status updates
+  useEffect(() => {
+    const unsub = syncEngine.subscribe((data) => {
+      setSyncState({ status: data.status, meta: data.meta });
+    });
+    return unsub;
+  }, []);
+
+  const handleCopySyncCode = () => {
+    const code = syncState.meta?.syncCode || 'HP-DEMO';
+    navigator?.clipboard?.writeText(code).then(() => {
+      setCopiedSyncCode(true);
+      setTimeout(() => setCopiedSyncCode(false), 2000);
+    }).catch(() => {});
+  };
+
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    try {
+      await syncEngine.triggerSync();
+      setSummary(getAnalyticsSummary());
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handlePairDevice = async (e) => {
+    e.preventDefault();
+    if (!pairCodeInput.trim()) return;
+    setIsPairing(true);
+    setPairMessage(null);
+    try {
+      const res = await syncEngine.pairDevice(pairCodeInput.trim());
+      setPairMessage({ type: 'success', text: res.message || '配对成功，已同步云端档案！' });
+      setPairCodeInput('');
+      setSummary(getAnalyticsSummary());
+    } catch (err) {
+      setPairMessage({ type: 'error', text: err.message });
+    } finally {
+      setIsPairing(false);
+    }
+  };
 
   // Reload statistics whenever modal opens
   useEffect(() => {
@@ -681,10 +739,115 @@ export function AnalyticsDashboard({
                 <span>听写准确率: <strong>{trendPoints[hoveredPointIndex].accuracy}%</strong></span>
               </div>
             )}
+            {/* Section: Local-First Cloud Sync & Device Pairing */}
+            <div className="p-4 sm:p-5 rounded-3xl border border-[#e8ddd0] bg-white space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-700 flex items-center justify-center shrink-0">
+                    <Cloud size={16} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-xs sm:text-sm text-amber-950">
+                      魔法云漫游 · 多设备增量同步
+                    </h3>
+                    <p className="text-[11px] text-stone-500 font-reading">
+                      本地优先 (0ms 离线可用) · 跨手机/平板/电脑实时漫游
+                    </p>
+                  </div>
+                </div>
+
+                {/* Sync status badge + Sync button */}
+                <div className="flex items-center gap-2">
+                  <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full border ${
+                    syncState.status === 'synced'
+                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                      : syncState.status === 'syncing' || isSyncing
+                      ? 'bg-amber-50 text-amber-800 border-amber-200'
+                      : syncState.status === 'offline'
+                      ? 'bg-stone-100 text-stone-600 border-stone-200'
+                      : 'bg-amber-50 text-amber-800 border-amber-200'
+                  }`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${
+                      syncState.status === 'synced' ? 'bg-emerald-500' : 'bg-amber-500'
+                    }`} />
+                    <span>{syncState.status === 'synced' ? '已同步' : (syncState.status === 'syncing' || isSyncing) ? '同步中' : '离线可用'}</span>
+                  </span>
+
+                  <button
+                    onClick={handleManualSync}
+                    disabled={isSyncing}
+                    className="duo-btn-secondary min-h-[32px] px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95"
+                    title="立即与云端同步最新数据"
+                  >
+                    <RefreshCw size={12} className={isSyncing ? 'animate-spin text-amber-600' : 'text-stone-500'} />
+                    <span>同步</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-[#f0e8dc]">
+                {/* Passcode card */}
+                <div className="p-3.5 rounded-2xl bg-[#fbf9f5] border border-[#e8ddd0]">
+                  <p className="text-[11px] font-bold text-stone-500 mb-1">本机魔法通行码 (Passcode)</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono font-bold text-lg text-amber-950 tracking-wider">
+                      {syncState.meta?.syncCode || 'HP-DEMO'}
+                    </span>
+                    <button
+                      onClick={handleCopySyncCode}
+                      className="duo-btn-secondary min-h-[32px] px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95"
+                    >
+                      {copiedSyncCode ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
+                      <span>{copiedSyncCode ? '已复制' : '复制口令'}</span>
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-stone-500 mt-1.5 font-reading">
+                    在另一台设备（如 iPhone 或新电脑）输入此口令，两端生词本与打卡进度将自动合并。
+                  </p>
+                </div>
+
+                {/* Pairing Form */}
+                <form onSubmit={handlePairDevice} className="p-3.5 rounded-2xl bg-[#fbf9f5] border border-[#e8ddd0] flex flex-col justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold text-stone-500 mb-1">连接其他设备通行码</p>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={pairCodeInput}
+                        onChange={(e) => setPairCodeInput(e.target.value.toUpperCase())}
+                        placeholder="例如 HP-8F29"
+                        maxLength={10}
+                        autoCapitalize="characters"
+                        autoCorrect="off"
+                        spellCheck="false"
+                        className="flex-1 px-3 py-1.5 rounded-xl border border-amber-200 bg-white font-mono text-base sm:text-xs font-bold focus:border-amber-500 focus:outline-none uppercase"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isPairing || !pairCodeInput.trim()}
+                        className="duo-btn-primary min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                      >
+                        {isPairing ? <RefreshCw size={12} className="animate-spin" /> : <Smartphone size={12} />}
+                        <span>配对合并</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {pairMessage && (
+                    <p className={`text-[11px] font-bold mt-2 ${
+                      pairMessage.type === 'success' ? 'text-emerald-700' : 'text-rose-600'
+                    }`}>
+                      {pairMessage.text}
+                    </p>
+                  )}
+                </form>
+              </div>
+            </div>
+
             {/* Bottom subtle note */}
             <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-400 pt-3 pb-safe select-none">
               <Info size={12} className="text-amber-600/70 shrink-0" />
-              <span>学情数据已安全保存在本地，离线也能持续研学</span>
+              <span>学情与生词数据本地毫秒读取，已连接 Cloudflare D1 边缘增量同步</span>
             </div>
           </div>
         </div>

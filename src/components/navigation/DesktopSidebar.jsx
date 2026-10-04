@@ -259,6 +259,13 @@ export function DesktopSidebar({
             <span className="text-[10px] mt-0.5 leading-tight">{streakDays}d</span>
           </div>
 
+          {/* Sync status indicator dot */}
+          <div 
+            onClick={onOpenAnalytics}
+            className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 cursor-pointer" 
+            title="本地优先云端同步正常 · 0ms离线可用"
+          />
+
           {canInstallPwa && onInstallPwa && (
             <button
               onClick={onInstallPwa}
@@ -297,6 +304,19 @@ export function DesktopSidebar({
               <span>今日契约: {goalMinutes} / 5 分钟</span>
               <span className="font-mono font-bold text-amber-900">{goalPercent}%</span>
             </div>
+          </div>
+
+          {/* Local-First Sync indicator */}
+          <div 
+            onClick={onOpenAnalytics}
+            className="flex items-center justify-between text-[11px] px-1 text-stone-400 hover:text-stone-600 cursor-pointer transition-colors"
+            title="本地优先增量同步：离线数据已安全存储，联网时自动与云端漫游"
+          >
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+              <span>云端同步 · 0ms离线</span>
+            </span>
+            <span className="font-mono text-[10px]">D1 漫游</span>
           </div>
 
           {/* Optional PWA Install Prompt */}

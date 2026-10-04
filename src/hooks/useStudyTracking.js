@@ -4,6 +4,7 @@ import {
   getAnalyticsSummary, 
   checkAndApplyTimeTurnerProtection 
 } from '../utils/analyticsStore';
+import { syncEngine } from '../utils/syncEngine';
 
 /**
  * useStudyTracking Hook
@@ -24,12 +25,22 @@ export function useStudyTracking(isPlaying) {
   const hasShownEyeCarePromptRef = useRef(false);
   const listeningSecondsAccumulator = useRef(0);
 
-  // Initialize streak protection & refresh analytics on mount
+  // Initialize streak protection & refresh analytics on mount, and listen for cloud sync
   useEffect(() => {
     try {
       checkAndApplyTimeTurnerProtection();
       setAnalyticsSummary(getAnalyticsSummary());
     } catch {}
+
+    const handleSynced = (e) => {
+      if (e.detail) {
+        setAnalyticsSummary(e.detail);
+      } else {
+        setAnalyticsSummary(getAnalyticsSummary());
+      }
+    };
+    window.addEventListener('hp_analytics_synced', handleSynced);
+    return () => window.removeEventListener('hp_analytics_synced', handleSynced);
   }, []);
 
   // Flush active listening seconds
@@ -37,7 +48,9 @@ export function useStudyTracking(isPlaying) {
     if (listeningSecondsAccumulator.current > 0) {
       recordListeningSeconds(listeningSecondsAccumulator.current);
       listeningSecondsAccumulator.current = 0;
-      setAnalyticsSummary(getAnalyticsSummary());
+      const updated = getAnalyticsSummary();
+      setAnalyticsSummary(updated);
+      syncEngine.markAnalyticsDirty(new Date().toISOString().split('T')[0]);
     }
   }, []);
 

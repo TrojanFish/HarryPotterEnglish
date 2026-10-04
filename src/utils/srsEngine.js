@@ -59,7 +59,8 @@ export function ensureSrsMetadata(item) {
     lastReviewed: item.lastReviewed || null,
     consecutiveCorrect: item.consecutiveCorrect || 0,
     reviewCount: count,
-    srsReviewCount: count
+    srsReviewCount: count,
+    updatedAt: item.updatedAt || Date.now()
   };
 }
 
@@ -122,7 +123,8 @@ export function processReviewResult(wordIdOrWord, isSuccess, vocabList = []) {
       nextReviewDate: nextDate,
       srsNextReviewDate: nextDate,
       reviewCount: (item.reviewCount || 0) + 1,
-      srsReviewCount: (item.reviewCount || 0) + 1
+      srsReviewCount: (item.reviewCount || 0) + 1,
+      updatedAt: Date.now()
     };
   });
 }

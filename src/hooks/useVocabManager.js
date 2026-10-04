@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ensureSrsMetadata, getDueWords } from '../utils/srsEngine';
+import { syncEngine } from '../utils/syncEngine';
 
 /**
  * useVocabManager Hook
@@ -16,6 +17,17 @@ export function useVocabManager() {
       return [];
     }
   });
+
+  // Listen for background cloud sync updates
+  useEffect(() => {
+    const handleSynced = (e) => {
+      if (Array.isArray(e.detail)) {
+        setVocabList(e.detail.map(ensureSrsMetadata));
+      }
+    };
+    window.addEventListener('hp_vocab_synced', handleSynced);
+    return () => window.removeEventListener('hp_vocab_synced', handleSynced);
+  }, []);
 
   // Persist to localStorage
   useEffect(() => {
@@ -44,6 +56,7 @@ export function useVocabManager() {
 
     if (exists) {
       setVocabList(prev => prev.filter(v => (v.word || v.front || '').toLowerCase().trim() !== targetWord));
+      syncEngine.markVocabDirty(targetWord);
     } else {
       const newEntry = ensureSrsMetadata({
         id: Date.now().toString(),
@@ -59,10 +72,12 @@ export function useVocabManager() {
         chapterId: chapterId || '',
         bookId: bookId || '',
         tags: ['Hogwarts', 'Reading'],
-        addedAt: new Date().toISOString()
+        addedAt: new Date().toISOString(),
+        updatedAt: Date.now()
       });
 
       setVocabList(prev => [newEntry, ...prev]);
+      syncEngine.markVocabDirty(wordData.word);
     }
   }, [vocabList]);
 
@@ -70,11 +85,15 @@ export function useVocabManager() {
     if (!word) return;
     const target = String(word).toLowerCase().trim();
     setVocabList(prev => prev.filter(v => (v.word || v.front || '').toLowerCase().trim() !== target));
+    syncEngine.markVocabDirty(target);
   }, []);
 
   const clearAllVocab = useCallback(() => {
+    vocabList.forEach(v => {
+      if (v.word) syncEngine.markVocabDirty(v.word);
+    });
     setVocabList([]);
-  }, []);
+  }, [vocabList]);
 
   return {
     vocabList,

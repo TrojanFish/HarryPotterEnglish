@@ -10,6 +10,7 @@ import {
   GetObjectCommand, 
   ListObjectsV2Command 
 } from '@aws-sdk/client-s3';
+import { processSync, processPairing } from './syncStore.js';
 
 dotenv.config();
 
@@ -446,9 +447,34 @@ app.get('/api/raw/*', async (req, res) => {
     }
     res.status(404).json({ error: err.message });
   }
+// 5. Local-First Incremental Sync API (LWW Timestamp Protocol)
+app.post('/api/sync', (req, res) => {
+  try {
+    const payload = req.body || {};
+    const result = processSync(payload);
+    res.json(result);
+  } catch (err) {
+    console.error('[Sync API] Error processing sync:', err);
+    res.status(500).json({ status: 'error', message: err.message });
+  }
 });
 
-// 5. Serve production static assets from dist/ if built (Docker / Production mode)
+// 6. Device Pairing API (Cross-Device Cloud Profile Linking)
+app.post('/api/sync/pair', (req, res) => {
+  try {
+    const payload = req.body || {};
+    const result = processPairing(payload);
+    if (result.status === 'error') {
+      return res.status(400).json(result);
+    }
+    res.json(result);
+  } catch (err) {
+    console.error('[Sync Pair API] Error:', err);
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+// 7. Serve production static assets from dist/ if built (Docker / Production mode)
 const distPath = path.resolve(__dirname, '../dist');
 if (fs.existsSync(distPath)) {
   console.log(`[Static Assets] Serving production build from ${distPath}`);

@@ -35,9 +35,220 @@ export async function onRequest(context) {
 
   // 1. Config status
   if (action === 'config') {
-    return new Response(JSON.stringify({ status: 'ok', r2Bound: Boolean(bucket) }), {
+    return new Response(JSON.stringify({ 
+      status: 'ok', 
+      r2Bound: Boolean(bucket),
+      d1Bound: Boolean(env.DB)
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
+  }
+
+  // 1.5. Local-First Sync Endpoint (Cloudflare D1 SQLite)
+  if (action === 'sync') {
+    const db = env.DB;
+    const isPairRequest = pathParts[1] === 'pair';
+
+    if (request.method !== 'POST') {
+      return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+        status: 405,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    try {
+      const payload = await request.json();
+
+      // Pair request
+      if (isPairRequest) {
+        if (!db) {
+          return new Response(JSON.stringify({
+            status: 'ok',
+            targetUserId: payload.currentUserId,
+            message: '离线模式：模拟配对成功',
+            isOfflineFallback: true
+          }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+
+        const cleanCode = (payload.targetSyncCode || '').trim().toUpperCase();
+        const targetRow = await db.prepare(
+          'SELECT user_id FROM user_devices WHERE sync_code = ? LIMIT 1'
+        ).bind(cleanCode).first();
+
+        if (!targetRow) {
+          return new Response(JSON.stringify({
+            status: 'error',
+            message: '未找到该通行码对应的学习档案'
+          }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+
+        const targetUserId = targetRow.user_id;
+        if (payload.currentUserId && payload.currentUserId !== targetUserId) {
+          await db.prepare(`
+            INSERT INTO user_vocab (user_id, word, phonetic, pos, translation, definition, context_sentence, context_audio_key, srs_box, next_review_at, review_count, correct_count, is_deleted, updated_at, created_at)
+            SELECT ?, word, phonetic, pos, translation, definition, context_sentence, context_audio_key, srs_box, next_review_at, review_count, correct_count, is_deleted, updated_at, created_at
+            FROM user_vocab WHERE user_id = ?
+            ON CONFLICT(user_id, word) DO UPDATE SET
+              srs_box = CASE WHEN excluded.updated_at > user_vocab.updated_at THEN excluded.srs_box ELSE user_vocab.srs_box END,
+              updated_at = MAX(excluded.updated_at, user_vocab.updated_at)
+          `).bind(targetUserId, payload.currentUserId).run();
+        }
+
+        return new Response(JSON.stringify({
+          status: 'ok',
+          targetUserId,
+          syncCode: cleanCode,
+          message: `配对成功！已连接至档案 [${cleanCode}]`
+        }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      // Normal Sync Request
+      const serverTime = Date.now();
+      const safeUserId = payload.userId || 'usr_guest';
+      const safeDeviceId = payload.deviceId || 'dev_unknown';
+      const lastSyncedAt = payload.lastSyncedAt || 0;
+
+      // Fallback if D1 is not bound yet in Pages dashboard
+      if (!db) {
+        return new Response(JSON.stringify({
+          status: 'ok',
+          serverTime,
+          userId: safeUserId,
+          syncCode: 'HP-DEMO',
+          syncedCount: { vocabPushed: 0, vocabPulled: 0, analyticsPushed: 0, analyticsPulled: 0 },
+          serverChanges: { vocab: [], analytics: [] },
+          isOfflineFallback: true
+        }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      // 1. Device registration / lookup
+      const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+      let hash = 0;
+      for (let i = 0; i < safeUserId.length; i++) hash = (hash * 31 + safeUserId.charCodeAt(i)) >>> 0;
+      let genCode = 'HP-';
+      for (let i = 0; i < 4; i++) genCode += chars[(hash + i * 7) % chars.length];
+
+      await db.prepare(`
+        INSERT INTO user_devices (device_id, user_id, sync_code, last_synced_at, created_at)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(device_id) DO UPDATE SET
+          last_synced_at = excluded.last_synced_at
+      `).bind(safeDeviceId, safeUserId, genCode, serverTime, serverTime).run();
+
+      // 2. Upsert vocab changes (LWW)
+      let vocabPushed = 0;
+      if (Array.isArray(payload.changes?.vocab)) {
+        for (const v of payload.changes.vocab) {
+          if (!v || !v.word) continue;
+          await db.prepare(`
+            INSERT INTO user_vocab (
+              user_id, word, phonetic, pos, translation, definition,
+              context_sentence, context_audio_key, srs_box, next_review_at,
+              review_count, correct_count, is_deleted, updated_at, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(user_id, word) DO UPDATE SET
+              srs_box = excluded.srs_box,
+              next_review_at = excluded.next_review_at,
+              review_count = excluded.review_count,
+              correct_count = excluded.correct_count,
+              is_deleted = excluded.is_deleted,
+              updated_at = excluded.updated_at
+            WHERE excluded.updated_at > user_vocab.updated_at
+          `).bind(
+            safeUserId, v.word.trim().toLowerCase(), v.phonetic || '', v.pos || '',
+            v.translation || '', v.definition || '', v.contextSentence || '',
+            v.contextAudioKey || '', v.srsBox !== undefined ? v.srsBox : 1,
+            v.nextReviewAt || 0, v.reviewCount || 0, v.correctCount || 0,
+            v.isDeleted ? 1 : 0, v.updatedAt || serverTime, v.createdAt || serverTime
+          ).run();
+          vocabPushed++;
+        }
+      }
+
+      // 3. Upsert analytics changes (LWW)
+      let analyticsPushed = 0;
+      if (Array.isArray(payload.changes?.analytics)) {
+        for (const a of payload.changes.analytics) {
+          if (!a || !a.dateStr) continue;
+          await db.prepare(`
+            INSERT INTO user_analytics (
+              user_id, date_str, listening_seconds, completed_goal,
+              streak_days, time_turners, day_summary_json, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(user_id, date_str) DO UPDATE SET
+              listening_seconds = excluded.listening_seconds,
+              completed_goal = excluded.completed_goal,
+              streak_days = excluded.streak_days,
+              time_turners = excluded.time_turners,
+              day_summary_json = excluded.day_summary_json,
+              updated_at = excluded.updated_at
+            WHERE excluded.updated_at > user_analytics.updated_at
+          `).bind(
+            safeUserId, a.dateStr, a.listeningSeconds || 0,
+            a.completedGoal ? 1 : 0, a.streakDays || 0,
+            a.timeTurners !== undefined ? a.timeTurners : 1,
+            a.daySummaryJson || '', a.updatedAt || serverTime
+          ).run();
+          analyticsPushed++;
+        }
+      }
+
+      // 4. Query newer changes from server for client
+      const { results: serverVocab } = await db.prepare(
+        'SELECT * FROM user_vocab WHERE user_id = ? AND updated_at > ?'
+      ).bind(safeUserId, lastSyncedAt).all();
+
+      const { results: serverAnalytics } = await db.prepare(
+        'SELECT * FROM user_analytics WHERE user_id = ? AND updated_at > ?'
+      ).bind(safeUserId, lastSyncedAt).all();
+
+      return new Response(JSON.stringify({
+        status: 'ok',
+        serverTime,
+        userId: safeUserId,
+        syncCode: genCode,
+        syncedCount: {
+          vocabPushed,
+          vocabPulled: serverVocab ? serverVocab.length : 0,
+          analyticsPushed,
+          analyticsPulled: serverAnalytics ? serverAnalytics.length : 0
+        },
+        serverChanges: {
+          vocab: (serverVocab || []).map(r => ({
+            word: r.word,
+            phonetic: r.phonetic,
+            pos: r.pos,
+            translation: r.translation,
+            definition: r.definition,
+            contextSentence: r.context_sentence,
+            contextAudioKey: r.context_audio_key,
+            srsBox: r.srs_box,
+            nextReviewAt: r.next_review_at,
+            reviewCount: r.review_count,
+            correctCount: r.correct_count,
+            isDeleted: r.is_deleted === 1,
+            updatedAt: r.updated_at,
+            createdAt: r.created_at
+          })),
+          analytics: (serverAnalytics || []).map(r => ({
+            dateStr: r.date_str,
+            listeningSeconds: r.listening_seconds,
+            completedGoal: r.completed_goal === 1,
+            streakDays: r.streak_days,
+            timeTurners: r.time_turners,
+            daySummaryJson: r.day_summary_json,
+            updatedAt: r.updated_at
+          }))
+        }
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    } catch (err) {
+      return new Response(JSON.stringify({ status: 'error', message: err.message }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
   }
 
   // 2. Catalog endpoint
