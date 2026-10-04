@@ -122,7 +122,7 @@ export function DesktopSidebar({
       <div className={`space-y-4 w-full ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
         {/* Brand Area + Collapse Toggle */}
         {isCollapsed ? (
-          <div className="flex flex-col items-center gap-2 w-full pb-1">
+          <div className="flex flex-col items-center gap-2.5 w-full">
             <div 
               onClick={() => onSwitchView && onSwitchView('bookshelf')}
               className="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer shrink-0"
@@ -171,11 +171,11 @@ export function DesktopSidebar({
             {onToggleCollapse && (
               <button
                 onClick={onToggleCollapse}
-                className="w-8 h-8 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-400 hover:bg-amber-50 text-stone-500 hover:text-amber-950 flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0"
+                className="w-9 h-9 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-400 hover:bg-amber-50 text-stone-500 hover:text-amber-950 flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0"
                 title="收起侧边栏 (Ctrl+B)"
                 aria-label="收起侧边栏"
               >
-                <PanelLeftClose size={15} />
+                <PanelLeftClose size={16} />
               </button>
             )}
           </div>

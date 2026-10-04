@@ -37,7 +37,7 @@ export function ReaderTopBar({
 
   return (
     <header className="sticky top-0 z-30 pt-safe bg-white/95 border-b border-[#e8ddd0] backdrop-blur-md select-none shrink-0">
-      <div className="h-13 sm:h-14 px-3 sm:px-6 flex items-center justify-between gap-2">
+      <div className="h-14 px-3 sm:px-6 flex items-center justify-between gap-2">
         {/* ── Left: Current Book & Chapter Selector ─────────────────── */}
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
           {/* Mobile back to bookshelf - unified height & border styling with chapter pill */}
