@@ -1,5 +1,5 @@
 // Hogwarts Audio English - PWA Service Worker
-const CACHE_NAME = 'hogwarts-audio-v1.2';
+const CACHE_NAME = 'hogwarts-audio-v1.3';
 
 // Static Shell Assets to pre-cache
 const PRECACHE_ASSETS = [
@@ -70,11 +70,30 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3. Static Assets (JS, CSS, HTML, Fonts, Images): Cache First with background revalidation
+  // 3. Navigation & HTML: Network First, fallback to cached App Shell
+  // Ensures user always gets the latest index.html referencing up-to-date JS/CSS hashes
+  if (event.request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('/index.html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const resClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match('/index.html').then((htmlRes) => htmlRes || caches.match('/'));
+        })
+    );
+    return;
+  }
+
+  // 4. Static Assets (JS, CSS, Fonts, Images): Cache First with background revalidation
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Fetch in background to update cache
+        // Fetch in background to update cache for non-hashed or re-validated resources
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
@@ -92,13 +111,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
           return networkResponse;
         })
-        .catch(() => {
-          // Robust offline navigation: if network fails during page refresh/navigation, return cached app shell
-          if (event.request.mode === 'navigate') {
-            return caches.match('/index.html').then((htmlRes) => htmlRes || caches.match('/'));
-          }
-          return null;
-        });
+        .catch(() => null);
     })
   );
 });
