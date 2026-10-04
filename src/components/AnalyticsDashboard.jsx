@@ -217,7 +217,8 @@ export function AnalyticsDashboard({
                 </span>
               </h2>
               <p className="text-[10px] sm:text-xs text-stone-500 truncate">
-                学习习惯追踪 · 听力专注时长 · 听写准确度
+                <span className="sm:hidden">学情习惯与专注追踪</span>
+                <span className="hidden sm:inline">学习习惯追踪 · 听力专注时长 · 听写准确度</span>
               </p>
             </div>
           </div>
@@ -809,8 +810,8 @@ export function AnalyticsDashboard({
                 {/* Pairing Form */}
                 <form onSubmit={handlePairDevice} className="p-3.5 rounded-2xl bg-[#fbf9f5] border border-[#e8ddd0] flex flex-col justify-between">
                   <div>
-                    <p className="text-[11px] font-bold text-stone-500 mb-1">连接其他设备通行码</p>
-                    <div className="flex gap-2">
+                    <p className="text-[11px] font-bold text-stone-500 mb-1.5">连接其他设备通行码</p>
+                    <div className="flex items-center gap-2">
                       <input
                         type="text"
                         value={pairCodeInput}
@@ -820,15 +821,15 @@ export function AnalyticsDashboard({
                         autoCapitalize="characters"
                         autoCorrect="off"
                         spellCheck="false"
-                        className="flex-1 px-3 py-1.5 rounded-xl border border-amber-200 bg-white font-mono text-base sm:text-xs font-bold focus:border-amber-500 focus:outline-none uppercase"
+                        className="min-w-0 flex-1 h-11 px-3.5 rounded-xl border border-amber-200 bg-white font-mono text-sm font-bold focus:border-amber-500 focus:outline-none uppercase"
                       />
                       <button
                         type="submit"
                         disabled={isPairing || !pairCodeInput.trim()}
-                        className="duo-btn-primary min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                        className="duo-btn-primary h-11 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer disabled:opacity-50"
                       >
-                        {isPairing ? <RefreshCw size={12} className="animate-spin" /> : <Smartphone size={12} />}
-                        <span>配对合并</span>
+                        {isPairing ? <RefreshCw size={13} className="animate-spin shrink-0" /> : <Smartphone size={13} className="shrink-0" />}
+                        <span className="whitespace-nowrap">配对合并</span>
                       </button>
                     </div>
                   </div>

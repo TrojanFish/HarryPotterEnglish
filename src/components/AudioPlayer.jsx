@@ -185,12 +185,12 @@ export function AudioPlayer({
         </div>
 
         {/* Center: Transport Controls */}
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Rewind / Prev Sentence */}
           <button
             onClick={onPrevSentence}
             disabled={activeCueIndex <= 0}
-            className="w-11 h-11 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+            className="w-11 h-11 shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
             title="上一句 (←)"
           >
             <SkipBack size={16} />
@@ -199,7 +199,7 @@ export function AudioPlayer({
           {/* Main Play / Pause (48px / 44px — Apple HIG compliant) */}
           <button
             onClick={onPlayPause}
-            className="w-12 h-12 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border border-amber-600 active:scale-95 transition-all cursor-pointer"
+            className="w-12 h-12 shrink-0 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border border-amber-600 active:scale-95 transition-all cursor-pointer"
             title="播放/暂停 (Space)"
           >
             {isPlaying
@@ -211,7 +211,7 @@ export function AudioPlayer({
           <button
             onClick={onNextSentence}
             disabled={activeCueIndex >= totalCues - 1}
-            className="w-11 h-11 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+            className="w-11 h-11 shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
             title="下一句 (→)"
           >
             <SkipForward size={16} />
@@ -220,7 +220,7 @@ export function AudioPlayer({
           {/* Loop Toggle */}
           <button
             onClick={onToggleLoopSentence}
-            className={`w-11 h-11 rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+            className={`w-11 h-11 shrink-0 rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
               isLoopSentence
                 ? 'bg-amber-500 text-white border-amber-600'
                 : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 hover:border-amber-300'
@@ -235,24 +235,24 @@ export function AudioPlayer({
         </div>
 
         {/* Right: Speed + Record + Volume */}
-        <div className="flex items-center gap-1.5 sm:gap-2 justify-end flex-1">
-          {/* Speed cycle button — always visible, all screen sizes */}
+        <div className="flex items-center gap-1.5 sm:gap-2 justify-end flex-1 shrink-0">
+          {/* Speed cycle button — always visible, all screen sizes, 44px square target */}
           <button
             onClick={handleSpeedCycle}
-            className={`min-h-[44px] px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-colors cursor-pointer ${
+            className={`w-11 h-11 shrink-0 rounded-xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors cursor-pointer select-none ${
               playbackRate !== 1.0
                 ? 'bg-amber-500 text-white border-amber-500'
                 : 'border-[#e8ddd0] bg-white text-stone-700 hover:border-amber-300'
             }`}
             title="点击切换速度: 0.8x → 1.0x → 1.25x"
           >
-            {speedLabel}
+            <span className="whitespace-nowrap">{speedLabel}</span>
           </button>
 
           {/* Mic / Shadowing — always visible */}
           <button
             onClick={onToggleRecorder}
-            className={`w-11 h-11 rounded-xl border flex items-center justify-center text-xs transition-colors cursor-pointer ${
+            className={`w-11 h-11 shrink-0 rounded-xl border flex items-center justify-center text-xs transition-colors cursor-pointer ${
               isRecordingActive
                 ? 'bg-red-600 text-white border-red-600'
                 : 'border-[#e8ddd0] bg-white text-stone-600 hover:border-amber-400 hover:text-amber-950'

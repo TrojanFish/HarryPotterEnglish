@@ -572,12 +572,12 @@ export function ShadowingRecorder({
           </div>
 
           {/* 2. User Recording Box */}
-          <div className="flex items-center justify-between p-3.5 rounded-2xl border border-[#e8ddd0] bg-white">
-            <div className="flex items-center space-x-2.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-2xl border border-[#e8ddd0] bg-white gap-3">
+            <div className="flex items-center space-x-2.5 min-w-0">
               <Headphones className="w-5 h-5 text-amber-600 shrink-0" />
-              <div>
-                <span className="text-xs font-bold block text-amber-950">你的跟读录音</span>
-                <span className="text-[11px] text-stone-500">
+              <div className="min-w-0">
+                <span className="text-xs font-bold block text-amber-950 truncate">你的跟读录音</span>
+                <span className="text-[11px] text-stone-500 truncate block">
                   {isRecording 
                     ? `正在录音中... ${recordSeconds}s` 
                     : recordedAudioUrl 
@@ -587,25 +587,25 @@ export function ShadowingRecorder({
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2 shrink-0">
               {!isRecording ? (
                 <button
                   onClick={startRecording}
                   disabled={isEvaluating}
-                  className="duo-btn-danger min-h-[44px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs cursor-pointer disabled:opacity-50"
+                  className="duo-btn-danger min-h-[44px] flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50 whitespace-nowrap"
                   title="开始麦克风跟读录音与 AI 语音打分"
                 >
-                  <Mic size={14} />
-                  <span>{recordedAudioUrl ? '重新录音' : '开始录音'}</span>
+                  <Mic size={14} className="shrink-0" />
+                  <span className="whitespace-nowrap">{recordedAudioUrl ? '重新录音' : '开始录音'}</span>
                 </button>
               ) : (
                 <button
                   onClick={stopRecording}
-                  className="duo-btn-danger min-h-[44px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs animate-pulse cursor-pointer ring-2 ring-rose-300"
+                  className="duo-btn-danger min-h-[44px] flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold animate-pulse cursor-pointer ring-2 ring-rose-300 whitespace-nowrap"
                   title="停止录音并触发 AI 评分"
                 >
-                  <Square size={14} />
-                  <span>停止录音</span>
+                  <Square size={14} className="shrink-0" />
+                  <span className="whitespace-nowrap">停止录音</span>
                 </button>
               )}
 
@@ -613,11 +613,11 @@ export function ShadowingRecorder({
                 <button
                   onClick={togglePlayRecording}
                   disabled={isEvaluating}
-                  className="duo-btn-primary min-h-[44px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs cursor-pointer disabled:opacity-50"
+                  className="duo-btn-primary min-h-[44px] flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50 whitespace-nowrap"
                   title={isPlayingRecording ? '暂停回放' : '回放自己录制的音频'}
                 >
-                  {isPlayingRecording ? <Pause size={14} /> : <Play size={14} />}
-                  <span>回放录音</span>
+                  {isPlayingRecording ? <Pause size={14} className="shrink-0" /> : <Play size={14} className="shrink-0" />}
+                  <span className="whitespace-nowrap">回放录音</span>
                 </button>
               )}
             </div>

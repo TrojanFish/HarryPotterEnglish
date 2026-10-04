@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, BookOpen, ChevronDown, Volume2, EyeOff, Zap, Languages, LocateFixed, HelpCircle } from 'lucide-react';
+import { ArrowLeft, BookOpen, ChevronDown, Headphones, EyeOff, Zap, Languages, LocateFixed, HelpCircle } from 'lucide-react';
 import { formatEnglishText } from '../../utils/vttParser';
 
 /**
@@ -26,7 +26,7 @@ export function ReaderTopBar({
   isOfflinePlaying = false
 }) {
   const modes = [
-    { key: 'normal', label: '双语精听', icon: <Volume2 size={14} /> },
+    { key: 'normal', label: '双语精听', icon: <Headphones size={14} /> },
     { key: 'blind', label: '魔法磨耳朵', icon: <EyeOff size={14} /> },
     { key: 'dictation', label: '拼写大闯关', icon: <Zap size={14} /> }
   ];
@@ -39,7 +39,7 @@ export function ReaderTopBar({
     <header className="sticky top-0 z-30 pt-safe bg-white/95 border-b border-[#e8ddd0] backdrop-blur-md select-none shrink-0">
       <div className="h-14 px-3 sm:px-6 flex items-center justify-between gap-2">
         {/* ── Left: Current Book & Chapter Selector ─────────────────── */}
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
           {/* Mobile back to bookshelf - unified height & border styling with chapter pill */}
           {onBackToShelf && (
             <button
@@ -53,8 +53,8 @@ export function ReaderTopBar({
           )}
           <button
             onClick={onOpenShelf}
-            className="h-9 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-amber-950 font-bold text-xs transition-colors cursor-pointer group max-w-[180px] sm:max-w-md truncate"
-            title="点击切换全书 17 个章节或其他原著"
+            className="h-9 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-amber-950 font-bold text-xs transition-colors cursor-pointer group min-w-0 max-w-full sm:max-w-md truncate"
+            title="点击切换全书章节或其他原著"
           >
             <BookOpen size={14} className="text-amber-600 shrink-0 group-hover:scale-105 transition-transform" />
             <span className="truncate">
@@ -76,9 +76,9 @@ export function ReaderTopBar({
               <button
                 key={key}
                 onClick={() => setStudyMode(key)}
-                className={`h-7 flex items-center gap-1.5 px-2 sm:px-3 rounded-lg sm:rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                className={`h-7 flex items-center gap-1.5 px-2 sm:px-3 rounded-lg sm:rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-amber-500 text-white'
+                    ? 'bg-amber-500 text-white shadow-sm'
                     : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
                 }`}
                 title={label}
@@ -108,11 +108,11 @@ export function ReaderTopBar({
             </button>
           )}
 
-          {/* Shortcuts */}
+          {/* Shortcuts (desktop only) */}
           {onOpenShortcuts && (
             <button
               onClick={onOpenShortcuts}
-              className="w-9 h-9 flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 transition-colors cursor-pointer shrink-0"
+              className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 transition-colors cursor-pointer shrink-0"
               title="键盘快捷键与操作指南"
             >
               <HelpCircle size={14} />

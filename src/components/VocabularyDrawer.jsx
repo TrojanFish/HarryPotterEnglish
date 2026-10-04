@@ -138,15 +138,13 @@ export function VocabularyDrawer({
               </div>
             </div>
 
-            <div className="flex items-center space-x-2 shrink-0">
-              {onOpenSrs && (
+              {onOpenSrs && vocabList.length > 0 && (
                 <button
-                  disabled={vocabList.length === 0}
                   onClick={() => {
                     onClose();
                     onOpenSrs();
                   }}
-                  className="duo-btn-primary min-h-[44px] px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="duo-btn-primary min-h-[44px] px-3 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap"
                   title="启动艾宾浩斯智能翻转闪卡 (SRS 遗忘曲线算法)"
                 >
                   <BrainCircuit size={15} className="shrink-0" />
@@ -162,7 +160,6 @@ export function VocabularyDrawer({
                 <X size={18} />
               </button>
             </div>
-          </div>
 
           {/* Search input - only show when vocabList has items */}
           {vocabList.length > 0 && (
@@ -297,39 +294,39 @@ export function VocabularyDrawer({
               )}
               </div>
 
-              {/* Bottom Actions */}
-                <div className="p-4 border-t border-[#e8ddd0] bg-white flex flex-wrap items-center justify-between gap-2 text-xs">
+              {/* Bottom Actions - only rendered when vocabulary is not empty */}
+              {vocabList.length > 0 && (
+                <div className="p-3.5 sm:p-4 border-t border-[#e8ddd0] bg-white flex flex-wrap items-center justify-between gap-2 text-xs shrink-0">
                   <div className="flex items-center gap-2">
                     <button
-                      disabled={vocabList.length === 0}
                       onClick={handleExportAnki}
-                      className="duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs cursor-pointer"
+                      className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs cursor-pointer whitespace-nowrap"
                       title="导出为标准 Anki 卡片牌组 (.tsv)"
                     >
-                      <Sparkles size={14} className="text-amber-600" />
+                      <Sparkles size={14} className="text-amber-600 shrink-0" />
                       <span>导出至 Anki (TSV)</span>
                     </button>
 
                     <button
-                      disabled={vocabList.length === 0}
                       onClick={handleExportCSV}
-                      className="duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs cursor-pointer"
+                      className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs cursor-pointer whitespace-nowrap"
                       title="导出为通用表格 CSV 格式"
                     >
-                      <Download size={14} />
+                      <Download size={14} className="shrink-0" />
                       <span>导出 CSV</span>
                     </button>
                   </div>
 
                   <button
-                    disabled={vocabList.length === 0}
                     onClick={onClearAll}
-                    className="min-h-[44px] px-2.5 py-1.5 rounded-xl text-xs font-bold text-stone-400 hover:text-rose-600 hover:bg-rose-50/80 transition-all active:scale-95 cursor-pointer"
+                    className="min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-200 text-rose-700 bg-rose-50/60 hover:bg-rose-100 hover:border-rose-300 transition-all active:scale-95 cursor-pointer whitespace-nowrap flex items-center gap-1"
                     title="清空生词本内所有单词"
                   >
-                    清空生词本
+                    <Trash2 size={13} className="text-rose-600 shrink-0" />
+                    <span>清空生词本</span>
                   </button>
                 </div>
+              )}
 
           {/* Toast Feedback Notification */}
           {toastMessage && (
