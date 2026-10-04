@@ -79,12 +79,12 @@ export function WordModal({
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2.5 flex-wrap">
-                <h2 className="font-bold text-3xl text-amber-950 leading-tight">
+                <h2 className="font-bold text-2xl sm:text-3xl text-amber-950 leading-tight break-words">
                   {wordData.word}
                 </h2>
                 <button
                   onClick={playPronunciation}
-                  className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer active:scale-95 ${
+                  className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all cursor-pointer active:scale-95 ${
                     isPlayingAudio
                       ? 'bg-amber-500 text-white border-amber-600'
                       : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-900 hover:border-amber-300'

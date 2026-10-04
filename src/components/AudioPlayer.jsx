@@ -190,7 +190,7 @@ export function AudioPlayer({
           <button
             onClick={onPrevSentence}
             disabled={activeCueIndex <= 0}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+            className="w-11 h-11 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
             title="上一句 (←)"
           >
             <SkipBack size={16} />
@@ -211,7 +211,7 @@ export function AudioPlayer({
           <button
             onClick={onNextSentence}
             disabled={activeCueIndex >= totalCues - 1}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+            className="w-11 h-11 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
             title="下一句 (→)"
           >
             <SkipForward size={16} />
@@ -220,7 +220,7 @@ export function AudioPlayer({
           {/* Loop Toggle */}
           <button
             onClick={onToggleLoopSentence}
-            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+            className={`w-11 h-11 rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
               isLoopSentence
                 ? 'bg-amber-500 text-white border-amber-600'
                 : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 hover:border-amber-300'
@@ -239,7 +239,7 @@ export function AudioPlayer({
           {/* Speed cycle button — always visible, all screen sizes */}
           <button
             onClick={handleSpeedCycle}
-            className={`min-h-[40px] sm:min-h-[44px] px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-colors cursor-pointer ${
+            className={`min-h-[44px] px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-colors cursor-pointer ${
               playbackRate !== 1.0
                 ? 'bg-amber-500 text-white border-amber-500'
                 : 'border-[#e8ddd0] bg-white text-stone-700 hover:border-amber-300'
@@ -252,7 +252,7 @@ export function AudioPlayer({
           {/* Mic / Shadowing — always visible */}
           <button
             onClick={onToggleRecorder}
-            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl border flex items-center justify-center text-xs transition-colors cursor-pointer ${
+            className={`w-11 h-11 rounded-xl border flex items-center justify-center text-xs transition-colors cursor-pointer ${
               isRecordingActive
                 ? 'bg-red-600 text-white border-red-600'
                 : 'border-[#e8ddd0] bg-white text-stone-600 hover:border-amber-400 hover:text-amber-950'

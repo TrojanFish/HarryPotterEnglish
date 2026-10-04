@@ -563,7 +563,7 @@ export function ShadowingRecorder({
             <button
               onClick={() => onPlayOriginalSnippet(currentCue)}
               disabled={isRecording || isEvaluating}
-              className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+              className="duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
               title="播放当前句原著原声朗读"
             >
               <Volume2 size={14} />
@@ -592,7 +592,7 @@ export function ShadowingRecorder({
                 <button
                   onClick={startRecording}
                   disabled={isEvaluating}
-                  className="duo-btn-danger min-h-[40px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs cursor-pointer disabled:opacity-50"
+                  className="duo-btn-danger min-h-[44px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs cursor-pointer disabled:opacity-50"
                   title="开始麦克风跟读录音与 AI 语音打分"
                 >
                   <Mic size={14} />
@@ -601,7 +601,7 @@ export function ShadowingRecorder({
               ) : (
                 <button
                   onClick={stopRecording}
-                  className="duo-btn-danger min-h-[40px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs animate-pulse cursor-pointer ring-2 ring-rose-300"
+                  className="duo-btn-danger min-h-[44px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs animate-pulse cursor-pointer ring-2 ring-rose-300"
                   title="停止录音并触发 AI 评分"
                 >
                   <Square size={14} />
@@ -613,7 +613,7 @@ export function ShadowingRecorder({
                 <button
                   onClick={togglePlayRecording}
                   disabled={isEvaluating}
-                  className="duo-btn-primary min-h-[40px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs cursor-pointer disabled:opacity-50"
+                  className="duo-btn-primary min-h-[44px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs cursor-pointer disabled:opacity-50"
                   title={isPlayingRecording ? '暂停回放' : '回放自己录制的音频'}
                 >
                   {isPlayingRecording ? <Pause size={14} /> : <Play size={14} />}

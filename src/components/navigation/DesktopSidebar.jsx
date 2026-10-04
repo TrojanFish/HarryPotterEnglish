@@ -323,7 +323,7 @@ export function DesktopSidebar({
           {canInstallPwa && onInstallPwa && (
             <button
               onClick={onInstallPwa}
-              className="w-full duo-btn-secondary min-h-[38px] flex items-center justify-center gap-1.5 text-xs font-bold"
+              className="w-full duo-btn-secondary min-h-[44px] flex items-center justify-center gap-1.5 text-xs font-bold"
               title="将应用安装至电脑桌面，支持秒开与离线学习"
             >
               <Download size={13} className="text-amber-700" />

@@ -30,11 +30,9 @@ export default {
         reading: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Rounded"', '"SF Pro Text"', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
         sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
       },
-      boxShadow: {
-        'glow-gold': '0 0 15px rgba(203, 163, 88, 0.45)',
-        'glow-parchment': '0 4px 20px rgba(100, 65, 23, 0.15)',
-        'magic-card': '0 8px 30px rgba(0, 0, 0, 0.25)',
-      }
+      spacing: {
+        '18': '4.5rem',
+      },
     },
   },
   plugins: [],

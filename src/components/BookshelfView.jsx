@@ -319,7 +319,7 @@ export function BookshelfView({
                   </button>
                   <button
                     onClick={() => setInspectingBook(book)}
-                    className="duo-btn-secondary min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1"
+                    className="duo-btn-secondary min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1"
                   >
                     <Layers size={12} />
                     目录
@@ -452,7 +452,7 @@ export function BookshelfView({
                           </p>
                         )}
                       </div>
-                      <button className="duo-btn-secondary min-h-[36px] px-2.5 py-1.5 rounded-xl text-[11px] font-bold shrink-0 flex items-center gap-1">
+                      <button className="duo-btn-secondary min-h-[44px] px-3 py-1.5 rounded-xl text-[11px] font-bold shrink-0 flex items-center gap-1">
                         <Play size={11} className="fill-current" />
                         <span className="hidden sm:inline">精听</span>
                       </button>

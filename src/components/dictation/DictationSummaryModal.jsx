@@ -117,7 +117,7 @@ export function DictationSummaryModal({
               <div className="flex items-center justify-center gap-1 text-amber-600 mb-1">
                 <Star size={16} className="fill-amber-500 text-amber-500" />
               </div>
-              <div className="font-sans font-extrabold text-xl text-amber-950 font-mono">
+              <div className="font-mono font-bold text-xl text-amber-950">
                 {totalStars} <span className="text-xs text-slate-400 font-normal">/ {maxStars}</span>
               </div>
               <div className="text-[11px] text-slate-500 font-bold mt-0.5">魔法星斩获</div>
@@ -127,7 +127,7 @@ export function DictationSummaryModal({
               <div className="flex items-center justify-center gap-1 text-emerald-600 mb-1">
                 <CheckCircle2 size={16} />
               </div>
-              <div className="font-sans font-extrabold text-xl text-emerald-800 font-mono">
+              <div className="font-mono font-bold text-xl text-emerald-800">
                 {accuracy}%
               </div>
               <div className="text-[11px] text-slate-500 font-bold mt-0.5">全句准确率</div>
@@ -137,7 +137,7 @@ export function DictationSummaryModal({
               <div className="flex items-center justify-center gap-1 text-amber-600 mb-1">
                 <Award size={16} />
               </div>
-              <div className="font-sans font-extrabold text-xl text-amber-950 font-mono">
+              <div className="font-mono font-bold text-xl text-amber-950">
                 +{housePoints}
               </div>
               <div className="text-[11px] text-slate-500 font-bold mt-0.5">学院贡献分</div>

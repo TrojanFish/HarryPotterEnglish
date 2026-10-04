@@ -209,7 +209,7 @@ export function BookShelfDrawer({
                       )}
                     </div>
 
-                    <button className={`min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1 transition-all ${
+                    <button className={`min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1 transition-all ${
                       isCurrent
                         ? 'bg-amber-500 text-white'
                         : 'duo-btn-secondary'
@@ -292,7 +292,7 @@ export function BookShelfDrawer({
                       if (onSelectBook) onSelectBook(book.id);
                       setActiveTab('chapters');
                     }}
-                    className={`min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1 ${
+                    className={`min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1 ${
                       isSelected
                         ? 'duo-btn-primary'
                         : 'duo-btn-secondary'

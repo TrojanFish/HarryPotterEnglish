@@ -161,7 +161,7 @@ export function SrsFlashcardModal({
             </p>
             <button
               onClick={onClose}
-              className="duo-btn-primary min-h-[40px] mt-3 px-6 py-2 rounded-xl text-xs font-bold cursor-pointer"
+              className="duo-btn-primary min-h-[44px] mt-3 px-6 py-2 rounded-xl text-xs font-bold cursor-pointer"
             >
               完成返回
             </button>
@@ -182,11 +182,11 @@ export function SrsFlashcardModal({
             <div className="grid grid-cols-2 gap-3 w-full max-w-xs my-2">
               <div className="p-3 rounded-2xl border border-emerald-200 bg-emerald-50 text-center">
                 <span className="text-xs text-emerald-800 font-bold block">牢固掌握</span>
-                <span className="font-sans font-extrabold text-xl text-emerald-900"><span className="font-mono">{sessionStats.remembered}</span> 词</span>
+                <span className="font-mono font-bold text-xl text-emerald-900">{sessionStats.remembered} 词</span>
               </div>
               <div className="p-3 rounded-2xl border border-rose-200 bg-rose-50 text-center">
                 <span className="text-xs text-rose-800 font-bold block">需再重炼</span>
-                <span className="font-sans font-extrabold text-xl text-rose-900"><span className="font-mono">{sessionStats.forgotten}</span> 词</span>
+                <span className="font-mono font-bold text-xl text-rose-900">{sessionStats.forgotten} 词</span>
               </div>
             </div>
 
@@ -211,7 +211,7 @@ export function SrsFlashcardModal({
                   <span>记忆等级: Box {currentWord.srsLevel || 1} / 5</span>
                 </div>
 
-                <h2 className="text-3xl sm:text-4xl font-bold font-magical text-amber-950 tracking-wide">
+                <h2 className="text-2xl sm:text-3xl font-bold font-magical text-amber-950 tracking-wide break-words">
                   {currentWord.word}
                 </h2>
 

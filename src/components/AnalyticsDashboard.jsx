@@ -344,7 +344,7 @@ export function AnalyticsDashboard({
               </div>
               <div>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="text-3xl font-extrabold font-sans text-orange-500 tracking-tight">
+                  <span className="text-2xl sm:text-3xl font-bold font-mono text-orange-500 tracking-tight">
                     {currentSummary.streakDays}
                   </span>
                   <span className="text-xs text-stone-400">天</span>
@@ -368,7 +368,7 @@ export function AnalyticsDashboard({
               </div>
               <div>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="text-3xl font-extrabold font-sans text-amber-700 tracking-tight">
+                  <span className="text-2xl sm:text-3xl font-bold font-mono text-amber-700 tracking-tight">
                     {totalHours > 0 ? `${totalHours}h` : ''}{totalMinutes}
                   </span>
                   <span className="text-xs text-stone-400">
@@ -393,7 +393,7 @@ export function AnalyticsDashboard({
               </div>
               <div>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="text-3xl font-extrabold font-sans text-emerald-600 tracking-tight">
+                  <span className="text-2xl sm:text-3xl font-bold font-mono text-emerald-600 tracking-tight">
                     {currentSummary.completedChaptersCount}
                   </span>
                   <span className="text-xs text-stone-400">篇</span>
@@ -410,13 +410,13 @@ export function AnalyticsDashboard({
                 <span className="text-xs font-semibold text-stone-500">
                   生词库收录
                 </span>
-                <div className="p-1.5 rounded-xl bg-purple-500/15 text-purple-600 border border-purple-500/30">
+                <div className="p-1.5 rounded-xl bg-amber-500/15 text-amber-800 border border-amber-300/60">
                   <Bookmark size={16} />
                 </div>
               </div>
               <div>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="text-3xl font-extrabold font-sans text-purple-600 tracking-tight">
+                  <span className="text-2xl sm:text-3xl font-bold font-mono text-amber-900 tracking-tight">
                     {vocabCount}
                   </span>
                   <span className="text-xs text-stone-400">词</span>
@@ -776,7 +776,7 @@ export function AnalyticsDashboard({
                   <button
                     onClick={handleManualSync}
                     disabled={isSyncing}
-                    className="duo-btn-secondary min-h-[32px] px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95"
+                    className="duo-btn-secondary min-h-[44px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95"
                     title="立即与云端同步最新数据"
                   >
                     <RefreshCw size={12} className={isSyncing ? 'animate-spin text-amber-600' : 'text-stone-500'} />
@@ -795,7 +795,7 @@ export function AnalyticsDashboard({
                     </span>
                     <button
                       onClick={handleCopySyncCode}
-                      className="duo-btn-secondary min-h-[32px] px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95"
+                      className="duo-btn-secondary min-h-[44px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95"
                     >
                       {copiedSyncCode ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
                       <span>{copiedSyncCode ? '已复制' : '复制口令'}</span>
@@ -825,7 +825,7 @@ export function AnalyticsDashboard({
                       <button
                         type="submit"
                         disabled={isPairing || !pairCodeInput.trim()}
-                        className="duo-btn-primary min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                        className="duo-btn-primary min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50"
                       >
                         {isPairing ? <RefreshCw size={12} className="animate-spin" /> : <Smartphone size={12} />}
                         <span>配对合并</span>
