@@ -137,7 +137,7 @@ export function MobileTopBar({
         {/* Streak Pill */}
         <button
           onClick={onOpenAnalytics}
-          className="flex items-center gap-1 px-2 py-1 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] text-xs font-mono font-bold text-orange-600 active:scale-95 transition-colors"
+          className="flex items-center gap-1 px-2.5 py-1 min-h-[38px] rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] text-xs font-mono font-bold text-orange-600 active:scale-95 transition-colors cursor-pointer"
           title={`连续打卡 ${streakDays} 天`}
         >
           <Flame size={13} className="fill-orange-500 text-orange-500" />

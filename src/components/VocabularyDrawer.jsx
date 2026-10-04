@@ -122,15 +122,18 @@ export function VocabularyDrawer({
 
   return (
     <div 
-      className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm flex items-end sm:items-stretch sm:justify-end animate-fadeIn"
       onClick={onClose}
     >
-      <div className="absolute inset-y-0 right-0 max-w-full flex w-full sm:w-auto">
-        <div 
-          onClick={(e) => e.stopPropagation()}
-          className="w-full sm:w-screen sm:max-w-md flex flex-col border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe">
-          {/* Drawer Header */}
-          <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2">
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className="w-full sm:w-screen sm:max-w-md flex flex-col max-h-[92dvh] sm:max-h-full rounded-t-3xl sm:rounded-none border-t-2 sm:border-t-0 sm:border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe overflow-hidden"
+      >
+        {/* Mobile Pull Handle Indicator */}
+        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
+
+        {/* Drawer Header */}
+        <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0">
             <div className="flex items-center space-x-2 min-w-0 flex-1">
               <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
               <div className="min-w-0 flex-1">
@@ -436,7 +439,7 @@ export function VocabularyDrawer({
               </div>
 
               {/* Bottom Actions */}
-                <div className="p-4 border-t border-[#e8ddd0] bg-white flex flex-wrap items-center justify-between gap-2 text-xs pb-safe">
+                <div className="p-4 border-t border-[#e8ddd0] bg-white flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div className="flex items-center gap-2">
                     <button
                       disabled={vocabList.length === 0}
@@ -480,7 +483,6 @@ export function VocabularyDrawer({
               </div>
             </div>
           )}
-        </div>
       </div>
     </div>
   );

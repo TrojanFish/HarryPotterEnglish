@@ -69,7 +69,7 @@ export function WordModal({
     >
       <div
         onClick={e => e.stopPropagation()}
-        className="relative w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-white text-[#1e1610] max-h-[88vh] overflow-y-auto pb-safe flex flex-col"
+        className="relative w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-white text-[#1e1610] max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto pb-safe flex flex-col no-scrollbar"
       >
         {/* Mobile drag handle */}
         <div className="sm:hidden w-10 h-1.5 rounded-full bg-stone-300 mx-auto mt-2.5 shrink-0" />

@@ -56,7 +56,7 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-white text-[#1e1610] p-5 sm:p-6 pb-safe transition-all duration-300 flex flex-col"
+        className="relative w-full max-w-md max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-white text-[#1e1610] p-5 sm:p-6 pb-safe transition-all duration-300 flex flex-col no-scrollbar"
       >
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto mb-3 shrink-0" />

@@ -140,7 +140,7 @@ export function AnalyticsDashboard({
       <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
 
       {/* Main Modal Container (Native Bottom Sheet on Mobile, Centered on Desktop) */}
-      <div className="relative w-full max-w-4xl max-h-[88vh] sm:max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t-2 sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-all z-10 pb-safe flex flex-col no-scrollbar">
+      <div className="relative w-full max-w-4xl max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t-2 sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-all z-10 pb-safe flex flex-col no-scrollbar">
         
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />

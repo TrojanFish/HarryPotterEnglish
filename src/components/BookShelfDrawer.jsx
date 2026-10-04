@@ -15,11 +15,19 @@ export function BookShelfDrawer({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/70 backdrop-blur-md animate-fadeIn">
-      <div className="absolute inset-y-0 right-0 max-w-full flex w-full sm:w-auto">
-        <div className="w-full sm:w-screen sm:max-w-xl flex flex-col border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe">
-          {/* Header */}
-          <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2">
+    <div 
+      className="fixed inset-0 z-50 overflow-hidden bg-black/70 backdrop-blur-md flex items-end sm:items-stretch sm:justify-end animate-fadeIn"
+      onClick={onClose}
+    >
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className="w-full sm:w-screen sm:max-w-xl flex flex-col max-h-[92dvh] sm:max-h-full rounded-t-3xl sm:rounded-none border-t-2 sm:border-t-0 sm:border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe overflow-hidden"
+      >
+        {/* Mobile Pull Handle Indicator */}
+        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
+
+        {/* Header */}
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0">
             <div className="flex items-center space-x-2.5 min-w-0 flex-1">
               <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shrink-0">
                 <Library className="w-5 h-5" />
@@ -138,6 +146,5 @@ export function BookShelfDrawer({
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }

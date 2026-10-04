@@ -95,7 +95,7 @@ export function AccioWordPicker({
             <span>飞来咒施法槽 (按语序点击下方字块拼接咒语)</span>
           </span>
           <span className="font-mono">
-            已就位: {selectedTiles.length} / {targetWords.length} 词
+            已就位: <span className="font-bold">{selectedTiles.length}</span> / <span className="font-bold">{targetWords.length}</span> 词
           </span>
         </div>
 
@@ -141,9 +141,9 @@ export function AccioWordPicker({
           {selectedTiles.length > 0 && !isSentenceFullyCorrect && (
             <button
               onClick={handleClear}
-              className="flex items-center gap-1 text-xs text-slate-500 hover:text-amber-900 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 min-h-[44px] rounded-xl text-xs font-bold text-slate-500 hover:text-amber-900 hover:bg-amber-50 active:scale-95 transition-all cursor-pointer"
             >
-              <RotateCcw size={12} />
+              <RotateCcw size={13} />
               <span>重新拼装</span>
             </button>
           )}

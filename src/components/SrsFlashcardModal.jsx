@@ -107,7 +107,7 @@ export function SrsFlashcardModal({
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-5 sm:p-7 flex flex-col justify-between max-h-[90vh] sm:min-h-[480px] overflow-y-auto pb-safe transition-all"
+        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-5 sm:p-7 flex flex-col justify-between max-h-[88dvh] sm:max-h-[85dvh] sm:min-h-[480px] overflow-y-auto pb-safe transition-all no-scrollbar"
       >
         {/* Mobile Pull Handle */}
         <div className="sm:hidden w-10 h-1.5 rounded-full bg-stone-300 mx-auto mb-3 shrink-0" />

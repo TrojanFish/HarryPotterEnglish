@@ -120,7 +120,7 @@ export function LumosClozeInput({
             <span>荧光闪烁 · 核心词挖空填补 (虚词已显现，填入关键实词)</span>
           </span>
           <span className="font-mono">
-            进度: {correctBlanksCount} / {totalBlanks} 空
+            进度: <span className="font-bold">{correctBlanksCount}</span> / <span className="font-bold">{totalBlanks}</span> 空
           </span>
         </div>
 

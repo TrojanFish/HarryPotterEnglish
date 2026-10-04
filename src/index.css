@@ -491,3 +491,13 @@ body:not(.theme-parchment) .lumos-active {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
+
+/* ── Touch Ergonomics: 0ms tap latency & tap highlight removal ── */
+.safe-touch-area,
+button,
+a,
+input,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}

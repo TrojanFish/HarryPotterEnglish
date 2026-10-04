@@ -298,7 +298,7 @@ export function SubtitleViewer({
         <div className="flex items-center justify-between gap-2 mb-1.5">
           <span className="flex items-center gap-1 text-[11px] font-bold text-amber-800">
             <Headphones size={12} className="text-amber-600" />
-            <span>{cues.length} 句精听</span>
+            <span><span className="font-mono">{cues.length}</span> 句精听</span>
             {studyMode === 'blind' && (
               <span className="ml-1 px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 text-[10px] font-bold">
                 迷雾模式
@@ -355,7 +355,7 @@ export function SubtitleViewer({
                   setFontSize(s.id);
                   try { localStorage.setItem('hp_subtitle_font_size', s.id); } catch {}
                 }}
-                className={`px-1.5 py-0.5 rounded-md text-[11px] font-bold transition-all active:scale-95 cursor-pointer ${
+                className={`px-1.5 py-0.5 min-h-[30px] min-w-[28px] inline-flex items-center justify-center rounded-md text-[11px] font-bold transition-all active:scale-95 cursor-pointer ${
                   fontSize === s.id ? 'bg-amber-500 text-white' : 'text-stone-500 hover:text-amber-900'
                 }`}
               >
@@ -385,7 +385,7 @@ export function SubtitleViewer({
                   <div className="h-px flex-1 bg-amber-200" />
                   <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-200 text-[11px] font-bold text-amber-800">
                     <Award size={12} className="text-amber-600" />
-                    <span>已精听 {currentChunk * 5} 分钟</span>
+                    <span>已精听 <span className="font-mono">{currentChunk * 5}</span> 分钟</span>
                   </div>
                   <div className="h-px flex-1 bg-amber-200" />
                 </div>
@@ -419,11 +419,11 @@ export function SubtitleViewer({
       {!isFollowActive && cues.length > 0 && activeCueIndex >= 0 && (
         <button
           onClick={scrollToActiveCue}
-          className="fixed bottom-24 right-5 sm:right-8 z-30 flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-amber-300 bg-white text-amber-950 font-bold text-xs active:scale-95 cursor-pointer"
+          className="fixed bottom-24 right-5 sm:right-8 z-30 flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-amber-300 bg-white text-amber-950 font-bold text-xs active:scale-95 cursor-pointer shadow-none"
           title="定位到正在朗读的句子"
         >
           <LocateFixed size={13} className="text-amber-600" />
-          <span>定位 (第 {activeCueIndex + 1} 句)</span>
+          <span>定位 (第 <span className="font-mono font-bold">{activeCueIndex + 1}</span> 句)</span>
         </button>
       )}
     </div>

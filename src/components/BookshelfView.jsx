@@ -364,7 +364,7 @@ export function BookshelfView({
         >
           <div
             onClick={e => e.stopPropagation()}
-            className="w-full max-w-2xl max-h-[88vh] sm:max-h-[85vh] flex flex-col rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-[#fbf9f5] overflow-hidden pb-safe"
+            className="w-full max-w-2xl max-h-[88dvh] sm:max-h-[85dvh] flex flex-col rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-[#fbf9f5] overflow-hidden pb-safe no-scrollbar"
           >
             {/* Drag handle (mobile) */}
             <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2 shrink-0" />
