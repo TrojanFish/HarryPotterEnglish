@@ -162,7 +162,7 @@ export function AudioPlayer({
       </div>
 
       {/* ── Main Controls Row ─────────────────────────────────────── */}
-      <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2">
+      <div className="flex items-center justify-between gap-2 px-3 sm:px-4 pt-2 pb-3">
 
         {/* Left: Playback info (chapter title shown only on desktop to eliminate duplicate top bar header) */}
         <div className="flex items-center gap-2 min-w-0 shrink-0 sm:flex-1 sm:max-w-xs">
