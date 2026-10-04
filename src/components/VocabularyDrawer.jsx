@@ -134,8 +134,8 @@ export function VocabularyDrawer({
             <div className="flex items-center space-x-2 min-w-0 flex-1">
               <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
               <div className="min-w-0 flex-1">
-                <h2 className="font-magical font-bold text-base sm:text-lg text-amber-950 truncate whitespace-nowrap">
-                  魔法生词本 ({vocabList.length})
+                <h2 className="font-bold text-base sm:text-lg text-amber-950 truncate whitespace-nowrap">
+                  <span className="font-magical">魔法生词本</span> <span className="font-sans font-bold text-amber-900">({vocabList.length})</span>
                 </h2>
                 <p className="text-[11px] sm:text-xs text-stone-500 truncate">精听原著词汇与例句笔记</p>
               </div>

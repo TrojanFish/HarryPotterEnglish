@@ -13,7 +13,8 @@ export function DailyGoalRing({
   size = 46,
   strokeWidth = 3.5,
   onClick,
-  isParchment = true
+  isParchment = true,
+  minimal = false
 }) {
   const percent = targetSeconds > 0 ? Math.min(100, Math.round((todaySeconds / targetSeconds) * 100)) : 0;
   const isCompleted = percent >= 100;
@@ -24,6 +25,54 @@ export function DailyGoalRing({
 
   const currentMinutes = (todaySeconds / 60).toFixed(1);
   const targetMinutes = Math.round(targetSeconds / 60);
+
+  const ringSvg = (
+    <div className="relative flex items-center justify-center shrink-0" style={{ width: size, height: size }}>
+      <svg 
+        width={size} 
+        height={size} 
+        className="rotate-[-90deg] transition-all"
+      >
+        {/* Background Track */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="transparent"
+          stroke={isCompleted ? '#fcd34d' : '#e8ddd0'}
+          strokeWidth={strokeWidth}
+        />
+        {/* Animated Progress Stroke */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="transparent"
+          stroke={isCompleted ? '#10b981' : '#f59e0b'}
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          className="transition-all duration-700 ease-out"
+        />
+      </svg>
+
+      {/* Center Icon */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        {isCompleted ? (
+          <Check size={size * 0.45} className="text-emerald-700 stroke-[3]" />
+        ) : (
+          <span className="font-sans font-extrabold text-[10px] text-amber-900">
+            {percent}%
+          </span>
+        )}
+      </div>
+    </div>
+  );
+
+  if (minimal) {
+    return ringSvg;
+  }
 
   return (
     <button
@@ -36,52 +85,11 @@ export function DailyGoalRing({
       title={`今日魔法契约: 已听 ${currentMinutes} / ${targetMinutes} 分钟 (${percent}%)`}
       aria-label={`今日魔法契约目标进度 ${percent}%`}
     >
-      {/* Circular SVG Progress Ring */}
-      <div className="relative flex items-center justify-center shrink-0" style={{ width: size, height: size }}>
-        <svg 
-          width={size} 
-          height={size} 
-          className="rotate-[-90deg] transition-all"
-        >
-          {/* Background Track */}
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="transparent"
-            stroke={isCompleted ? '#fcd34d' : '#e8ddd0'}
-            strokeWidth={strokeWidth}
-          />
-          {/* Animated Progress Stroke */}
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="transparent"
-            stroke={isCompleted ? '#10b981' : '#f59e0b'}
-            strokeWidth={strokeWidth}
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            strokeLinecap="round"
-            className="transition-all duration-700 ease-out"
-          />
-        </svg>
-
-        {/* Center Icon */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          {isCompleted ? (
-            <Check size={size * 0.42} className="text-amber-800 animate-pulse stroke-[3]" />
-          ) : (
-            <span className="font-magical font-bold text-[11px] text-amber-900 group-hover:scale-110 transition-transform">
-              {percent}%
-            </span>
-          )}
-        </div>
-      </div>
+      {ringSvg}
 
       {/* Progress Label */}
       <div className="flex flex-col text-left">
-        <div className="flex items-center gap-1 font-magical font-bold text-xs leading-tight text-amber-950">
+        <div className="flex items-center gap-1 font-bold text-xs leading-tight text-amber-950">
           {isCompleted ? (
             <>
               <Sparkles size={12} className="text-amber-600 animate-spin-slow" />
@@ -90,7 +98,7 @@ export function DailyGoalRing({
           ) : (
             <>
               <Timer size={12} className="text-amber-700" />
-              <span>今日契约 {percent}%</span>
+              <span>今日契约 <span className="font-mono font-bold">{percent}%</span></span>
             </>
           )}
         </div>

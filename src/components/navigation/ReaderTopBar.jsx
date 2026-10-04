@@ -35,56 +35,58 @@ export function ReaderTopBar({
   const chapterTitle = formatEnglishText(rawChapterTitle);
 
   return (
-    <div className="h-13 shrink-0 border-b border-[#e8ddd0] bg-white/95 px-4 sm:px-6 flex items-center justify-between select-none">
-      {/* ── Left: Current Book & Chapter Selector ─────────────────── */}
-      <div className="flex items-center gap-3 min-w-0">
-        {/* Mobile back to bookshelf */}
-        {onBackToShelf && (
-          <button
-            onClick={onBackToShelf}
-            className="sm:hidden duo-touch-target p-1.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] text-stone-600 hover:text-amber-950 active:scale-95 transition-colors mr-1"
-            title="返回书架"
-          >
-            <ArrowLeft size={16} />
-          </button>
-        )}
-        <button
-          onClick={onOpenShelf}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-amber-950 font-bold text-xs transition-colors cursor-pointer group max-w-[280px] sm:max-w-md"
-          title="点击切换全书 17 个章节或其他原著"
-        >
-          <BookOpen size={14} className="text-amber-600 shrink-0 group-hover:scale-105 transition-transform" />
-          <span className="truncate">
-            <span className="text-stone-500 font-normal">{bookTitle} · </span>
-            <span>{chapterTitle}</span>
-          </span>
-          <ChevronDown size={13} className="text-stone-400 shrink-0 ml-0.5 group-hover:text-amber-700" />
-          {isOfflinePlaying && (
-            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="离线模式" />
-          )}
-        </button>
-      </div>
-
-      {/* ── Center: 3 Study Modes (Flat, Clean Pills) ──────────────── */}
-      <div className="hidden sm:flex items-center p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1">
-        {modes.map(({ key, label, icon }) => {
-          const isActive = studyMode === key;
-          return (
+    <header className="sticky top-0 z-30 pt-safe bg-white/95 border-b border-[#e8ddd0] backdrop-blur-md select-none shrink-0">
+      <div className="h-13 sm:h-14 px-3 sm:px-6 flex items-center justify-between gap-2">
+        {/* ── Left: Current Book & Chapter Selector ─────────────────── */}
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          {/* Mobile back to bookshelf */}
+          {onBackToShelf && (
             <button
-              key={key}
-              onClick={() => setStudyMode(key)}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                isActive
-                  ? 'bg-amber-500 text-white'
-                  : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
-              }`}
+              onClick={onBackToShelf}
+              className="sm:hidden duo-touch-target p-1.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] text-stone-600 hover:text-amber-950 active:scale-95 transition-colors mr-0.5 shrink-0"
+              title="返回书架"
             >
-              {icon}
-              <span>{label}</span>
+              <ArrowLeft size={16} />
             </button>
-          );
-        })}
-      </div>
+          )}
+          <button
+            onClick={onOpenShelf}
+            className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-amber-950 font-bold text-xs transition-colors cursor-pointer group max-w-[180px] sm:max-w-md truncate"
+            title="点击切换全书 17 个章节或其他原著"
+          >
+            <BookOpen size={14} className="text-amber-600 shrink-0 group-hover:scale-105 transition-transform" />
+            <span className="truncate">
+              <span className="text-stone-500 font-normal hidden sm:inline">{bookTitle} · </span>
+              <span>{chapterTitle}</span>
+            </span>
+            <ChevronDown size={13} className="text-stone-400 shrink-0 ml-0.5 group-hover:text-amber-700" />
+            {isOfflinePlaying && (
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="离线模式" />
+            )}
+          </button>
+        </div>
+
+        {/* ── Center: 3 Study Modes (Icons on Mobile, Pills on Desktop) ──────────────── */}
+        <div className="flex items-center p-0.5 sm:p-1 rounded-xl sm:rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-0.5 sm:gap-1 shrink-0">
+          {modes.map(({ key, label, icon }) => {
+            const isActive = studyMode === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setStudyMode(key)}
+                className={`flex items-center gap-1.5 p-1.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                  isActive
+                    ? 'bg-amber-500 text-white'
+                    : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
+                }`}
+                title={label}
+              >
+                {icon}
+                <span className="hidden sm:inline">{label}</span>
+              </button>
+            );
+          })}
+        </div>
 
       {/* ── Right: Reading Controls ─────────────────────────────────── */}
       <div className="flex items-center gap-2 shrink-0">
@@ -132,7 +134,8 @@ export function ReaderTopBar({
         )}
       </div>
     </div>
-  );
+  </header>
+);
 }
 
 export default ReaderTopBar;

@@ -180,11 +180,11 @@ export function SrsFlashcardModal({
             <div className="grid grid-cols-2 gap-3 w-full max-w-xs my-2">
               <div className="p-3 rounded-2xl border border-emerald-200 bg-emerald-50 text-center">
                 <span className="text-xs text-emerald-800 font-bold block">牢固掌握</span>
-                <span className="font-magical font-bold text-xl text-emerald-900">{sessionStats.remembered} 词</span>
+                <span className="font-sans font-extrabold text-xl text-emerald-900"><span className="font-mono">{sessionStats.remembered}</span> 词</span>
               </div>
               <div className="p-3 rounded-2xl border border-rose-200 bg-rose-50 text-center">
                 <span className="text-xs text-rose-800 font-bold block">需再重炼</span>
-                <span className="font-magical font-bold text-xl text-rose-900">{sessionStats.forgotten} 词</span>
+                <span className="font-sans font-extrabold text-xl text-rose-900"><span className="font-mono">{sessionStats.forgotten}</span> 词</span>
               </div>
             </div>
 

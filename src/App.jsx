@@ -302,7 +302,7 @@ export function App() {
   ]);
 
   return (
-    <div className={`h-screen overflow-hidden flex flex-col md:flex-row transition-colors duration-300 ${
+    <div className={`h-screen h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col md:flex-row transition-colors duration-300 ${
       isParchment ? 'theme-parchment' : 'bg-[#0f172a] text-slate-100'
     }`}>
       {/* Hidden Audio Element */}
@@ -365,29 +365,31 @@ export function App() {
 
       {/* ── 3. Main Workspace Area ───────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
-        {/* Mobile Minimal Top Bar (< 768px) */}
-        <MobileTopBar
-          currentView={currentView}
-          onSwitchView={setCurrentView}
-          currentBook={currentBookObj}
-          currentChapter={currentChapterObj}
-          onOpenShelf={() => setIsShelfOpen(true)}
-          studyMode={studyMode}
-          setStudyMode={setStudyMode}
-          streakDays={analyticsSummary?.streakDays || 0}
-          onOpenAnalytics={() => {
-            refreshAnalytics();
-            setIsAnalyticsOpen(true);
-          }}
-          onOpenStorage={() => {
-            refreshOfflineCount();
-            setIsStorageOpen(true);
-          }}
-          onOpenShortcuts={() => setIsShortcutsOpen(true)}
-          cachedChaptersCount={cachedChaptersCount}
-          canInstallPwa={canInstallPwa}
-          onInstallPwa={handleInstallPwa}
-        />
+        {/* Mobile Minimal Top Bar (< 768px, Bookshelf view only) */}
+        {currentView === 'bookshelf' && (
+          <MobileTopBar
+            currentView={currentView}
+            onSwitchView={setCurrentView}
+            currentBook={currentBookObj}
+            currentChapter={currentChapterObj}
+            onOpenShelf={() => setIsShelfOpen(true)}
+            studyMode={studyMode}
+            setStudyMode={setStudyMode}
+            streakDays={analyticsSummary?.streakDays || 0}
+            onOpenAnalytics={() => {
+              refreshAnalytics();
+              setIsAnalyticsOpen(true);
+            }}
+            onOpenStorage={() => {
+              refreshOfflineCount();
+              setIsStorageOpen(true);
+            }}
+            onOpenShortcuts={() => setIsShortcutsOpen(true)}
+            cachedChaptersCount={cachedChaptersCount}
+            canInstallPwa={canInstallPwa}
+            onInstallPwa={handleInstallPwa}
+          />
+        )}
 
         {/* ── Content Viewport: Bookshelf vs Player Studio ── */}
         <div className="flex-1 overflow-hidden min-h-0 flex flex-col">

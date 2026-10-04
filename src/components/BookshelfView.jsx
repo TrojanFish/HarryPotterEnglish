@@ -90,7 +90,7 @@ export function BookshelfView({
   const goalPercent = Math.min(100, Math.round((todayListeningSeconds / 300) * 100));
 
   return (
-    <div className="flex-1 overflow-y-auto pb-32 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full select-none ios-scroll">
+    <div className="flex-1 overflow-y-auto pb-36 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full select-none ios-scroll">
 
       {/* ── 1. Header greeting ─────────────────────────────────────── */}
       <div className="mb-5">
@@ -108,7 +108,7 @@ export function BookshelfView({
       </div>
 
       {/* ── 2. Horizontal Task Strip ────────────────────────────────── */}
-      <div className="flex gap-3 overflow-x-auto pb-2 mb-6 snap-x snap-mandatory scrollbar-none" style={{scrollbarWidth:'none'}}>
+      <div className="flex gap-3 overflow-x-auto pb-2 mb-6 snap-x snap-mandatory no-scrollbar">
         {/* Card 1: Daily goal */}
         <div
           onClick={onOpenAnalytics}
@@ -119,12 +119,12 @@ export function BookshelfView({
               <Sparkles size={11} className="text-amber-600" />
               今日契约
             </span>
-            <DailyGoalRing todaySeconds={todayListeningSeconds} targetSeconds={300} isParchment={isParchment} size={36} />
+            <DailyGoalRing todaySeconds={todayListeningSeconds} targetSeconds={300} isParchment={isParchment} size={36} minimal={true} />
           </div>
-          <p className="font-magical font-bold text-sm text-amber-950 leading-tight">
-            {todayListeningSeconds >= 300 ? '今日达成！' : `还差 ${Math.max(1, Math.ceil((300 - todayListeningSeconds) / 60))} 分钟`}
+          <p className="font-bold text-sm text-amber-950 leading-tight">
+            {todayListeningSeconds >= 300 ? '今日达成！' : <>还差 <span className="font-mono font-bold">{Math.max(1, Math.ceil((300 - todayListeningSeconds) / 60))}</span> 分钟</>}
           </p>
-          <p className="text-[11px] text-stone-500 mt-0.5">
+          <p className="text-[11px] font-mono text-stone-500 mt-0.5">
             今日 {todayMinutes} 分钟 · {goalPercent}%
           </p>
         </div>
@@ -138,8 +138,8 @@ export function BookshelfView({
             <Flame size={13} className="text-orange-500" />
             连续打卡
           </div>
-          <p className="font-magical font-bold text-base text-amber-950">
-            {streakDays} 天连胜
+          <p className="font-bold text-base text-amber-950">
+            <span className="font-mono font-extrabold text-lg">{streakDays}</span> 天连胜
             {streakDays >= 3 && (
               <span className="ml-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold align-middle">
                 连击
@@ -161,11 +161,11 @@ export function BookshelfView({
             <BrainCircuit size={13} className="text-indigo-600" />
             艾宾浩斯复习
           </div>
-          <p className="font-magical font-bold text-sm text-amber-950">
-            {effectiveDueCount > 0 ? `${effectiveDueCount} 词待复习` : '记忆封印稳固'}
+          <p className="font-bold text-sm text-amber-950">
+            {effectiveDueCount > 0 ? <><span className="font-mono font-bold">{effectiveDueCount}</span> 词待复习</> : '记忆封印稳固'}
           </p>
           <p className="text-[11px] text-stone-500 mt-0.5">
-            共收录 {vocabCount} 词
+            共收录 <span className="font-mono font-bold">{vocabCount}</span> 词
           </p>
         </div>
 
@@ -452,7 +452,7 @@ export function BookshelfView({
                           : 'border-[#e8ddd0] bg-white hover:border-amber-400'
                       }`}
                     >
-                      <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-magical font-bold text-xs shrink-0 ${
+                      <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-mono font-bold text-xs shrink-0 ${
                         isCurrent ? 'bg-amber-500 text-white' : 'bg-amber-500/15 text-amber-800'
                       }`}>
                         {ch.number || idx + 1}

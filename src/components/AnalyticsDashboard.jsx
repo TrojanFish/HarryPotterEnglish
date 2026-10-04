@@ -140,7 +140,7 @@ export function AnalyticsDashboard({
       <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
 
       {/* Main Modal Container (Native Bottom Sheet on Mobile, Centered on Desktop) */}
-      <div className="relative w-full max-w-4xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-all z-10 pb-safe flex flex-col scrollbar-none">
+      <div className="relative w-full max-w-4xl max-h-[88vh] sm:max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t-2 sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-all z-10 pb-safe flex flex-col no-scrollbar">
         
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
@@ -212,7 +212,7 @@ export function AnalyticsDashboard({
                   <div className="text-amber-700 flex items-center justify-center mb-1">
                     <Flame size={20} className="text-orange-500" />
                   </div>
-                  <div className="font-magical font-bold text-2xl text-amber-950">
+                  <div className="font-sans font-bold text-2xl text-amber-950">
                     {currentSummary.streakDays} <span className="text-xs text-stone-400 font-normal">天</span>
                   </div>
                   <div className="text-xs text-stone-500 font-bold mt-0.5">连续坚持研读</div>
@@ -222,7 +222,7 @@ export function AnalyticsDashboard({
                   <div className="text-amber-700 flex items-center justify-center mb-1">
                     <Clock size={20} className="text-amber-600" />
                   </div>
-                  <div className="font-magical font-bold text-2xl text-amber-950">
+                  <div className="font-sans font-bold text-2xl text-amber-950">
                     {weeklyMinutesTotal} <span className="text-xs text-stone-400 font-normal">分</span>
                   </div>
                   <div className="text-xs text-stone-500 font-bold mt-0.5">本周专注精听</div>
@@ -232,7 +232,7 @@ export function AnalyticsDashboard({
                   <div className="text-amber-700 flex items-center justify-center mb-1">
                     <BookOpen size={20} className="text-emerald-600" />
                   </div>
-                  <div className="font-magical font-bold text-2xl text-amber-950">
+                  <div className="font-sans font-bold text-2xl text-amber-950">
                     {currentSummary.completedChaptersCount} <span className="text-xs text-stone-400 font-normal">章</span>
                   </div>
                   <div className="text-xs text-stone-500 font-bold mt-0.5">攻克原声章节</div>
@@ -242,7 +242,7 @@ export function AnalyticsDashboard({
                   <div className="text-amber-700 flex items-center justify-center mb-1">
                     <Bookmark size={20} className="text-blue-600" />
                   </div>
-                  <div className="font-magical font-bold text-2xl text-amber-950">
+                  <div className="font-sans font-bold text-2xl text-amber-950">
                     {vocabCount} <span className="text-xs text-stone-400 font-normal">词</span>
                   </div>
                   <div className="text-xs text-stone-500 font-bold mt-0.5">魔法生词收录</div>
@@ -286,7 +286,7 @@ export function AnalyticsDashboard({
               </div>
               <div>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="text-3xl font-black font-mono text-orange-500">
+                  <span className="text-3xl font-extrabold font-sans text-orange-500 tracking-tight">
                     {currentSummary.streakDays}
                   </span>
                   <span className="text-xs text-stone-400">天</span>
@@ -310,7 +310,7 @@ export function AnalyticsDashboard({
               </div>
               <div>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="text-3xl font-black font-mono text-amber-700">
+                  <span className="text-3xl font-extrabold font-sans text-amber-700 tracking-tight">
                     {totalHours > 0 ? `${totalHours}h` : ''}{totalMinutes}
                   </span>
                   <span className="text-xs text-stone-400">
@@ -335,7 +335,7 @@ export function AnalyticsDashboard({
               </div>
               <div>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="text-3xl font-black font-mono text-emerald-600">
+                  <span className="text-3xl font-extrabold font-sans text-emerald-600 tracking-tight">
                     {currentSummary.completedChaptersCount}
                   </span>
                   <span className="text-xs text-stone-400">篇</span>
@@ -358,7 +358,7 @@ export function AnalyticsDashboard({
               </div>
               <div>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="text-3xl font-black font-mono text-purple-600">
+                  <span className="text-3xl font-extrabold font-sans text-purple-600 tracking-tight">
                     {vocabCount}
                   </span>
                   <span className="text-xs text-stone-400">词</span>

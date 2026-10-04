@@ -131,7 +131,7 @@ export function StorageManagerModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
       <div 
-        className="relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88vh] sm:max-h-[85vh] transition-all duration-300 pb-safe"
+        className="relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88vh] sm:max-h-[85vh] transition-all duration-300 pb-safe no-scrollbar"
       >
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
@@ -318,7 +318,7 @@ export function StorageManagerModal({
           </span>
           <button
             onClick={onClose}
-            className="duo-btn-primary min-h-[36px] sm:min-h-[38px] px-5 sm:px-6 py-1.5 rounded-xl text-xs font-bold cursor-pointer shrink-0"
+            className="duo-btn-primary min-h-[44px] px-6 sm:px-7 py-2 rounded-xl text-xs font-bold cursor-pointer shrink-0"
           >
             完成
           </button>
