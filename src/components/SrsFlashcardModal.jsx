@@ -128,13 +128,15 @@ export function SrsFlashcardModal({
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer"
-            title="关闭复习"
-          >
-            <X size={18} />
-          </button>
+          {!(dueWords.length === 0 || isFinished) && (
+            <button
+              onClick={onClose}
+              className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer"
+              title="关闭复习"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
 
         {/* Progress Bar Line */}

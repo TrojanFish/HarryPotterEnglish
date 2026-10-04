@@ -106,28 +106,12 @@ export function ReaderTopBar({
           </button>
         )}
 
-        {/* Auto follow scroll toggle */}
-        {studyMode !== 'dictation' && setIsFollowActive && (
-          <button
-            onClick={() => setIsFollowActive(!isFollowActive)}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-colors cursor-pointer ${
-              isFollowActive
-                ? 'bg-amber-50 text-amber-900 border-amber-300'
-                : 'bg-white text-stone-500 border-[#e8ddd0] hover:border-amber-300'
-            }`}
-            title="跟随播放进度自动滚动"
-          >
-            <LocateFixed size={13} className={isFollowActive ? 'text-amber-600' : 'text-stone-400'} />
-            <span className="hidden md:inline">跟随</span>
-          </button>
-        )}
-
         {/* Shortcuts */}
         {onOpenShortcuts && (
           <button
             onClick={onOpenShortcuts}
             className="p-1.5 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 transition-colors cursor-pointer"
-            title="键盘快捷键指南"
+            title="键盘快捷键与操作指南"
           >
             <HelpCircle size={14} />
           </button>

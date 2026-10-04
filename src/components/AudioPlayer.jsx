@@ -262,18 +262,31 @@ export function AudioPlayer({
             <Mic size={16} className={isRecordingActive ? 'text-white' : 'text-amber-700'} />
           </button>
 
-          {/* Volume — icon button, popup on click (desktop only) */}
-          <div className="relative hidden sm:block" ref={volumeRef}>
+          {/* Volume — hover/click slider (desktop only) */}
+          <div 
+            className="relative hidden sm:block" 
+            ref={volumeRef}
+            onMouseEnter={() => setShowVolume(true)}
+            onMouseLeave={() => setShowVolume(false)}
+          >
             <button
               onClick={handleVolumeToggle}
-              onContextMenu={(e) => { e.preventDefault(); setShowVolume(v => !v); }}
               className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-500 hover:text-amber-950 hover:border-amber-300 transition-colors cursor-pointer"
-              title="点击静音，右键调音量"
+              title={isMuted ? '点击取消静音' : '点击静音，悬浮调节音量'}
             >
               {(isMuted || volume === 0) ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>
             {showVolume && (
-              <div className="absolute bottom-full mb-2 right-0 bg-white border border-[#e8ddd0] rounded-2xl p-3 w-36 z-50">
+              <div className="absolute bottom-full mb-2 right-0 bg-white border border-[#e8ddd0] rounded-2xl p-3 w-36 z-50 animate-fadeIn">
+                <div className="flex items-center justify-between text-xs text-stone-600 mb-2 font-medium">
+                  <span>音量调节</span>
+                  <button 
+                    onClick={handleVolumeToggle}
+                    className="text-[11px] font-bold text-amber-700 hover:underline cursor-pointer"
+                  >
+                    {isMuted ? '取消静音' : '静音'}
+                  </button>
+                </div>
                 <input
                   type="range" min="0" max="1" step="0.05"
                   value={isMuted ? 0 : volume}
@@ -284,7 +297,7 @@ export function AudioPlayer({
                   }}
                   className="w-full accent-amber-500 cursor-pointer"
                 />
-                <p className="text-center text-xs font-mono text-stone-500 mt-1">{Math.round((isMuted ? 0 : volume) * 100)}%</p>
+                <p className="text-center text-xs font-mono text-stone-500 mt-1.5">{Math.round((isMuted ? 0 : volume) * 100)}%</p>
               </div>
             )}
           </div>

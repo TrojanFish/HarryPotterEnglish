@@ -309,19 +309,11 @@ export function StorageManagerModal({
               );
             })
           )}
-        </div>
 
-        {/* Footer */}
-        <div className="px-4 sm:px-6 py-3 border-t border-[#e8ddd0] bg-white flex items-center justify-between text-xs pb-safe gap-2">
-          <span className="text-[11px] text-stone-500 truncate">
+          {/* Bottom subtle note */}
+          <div className="text-center text-[11px] text-stone-400 pt-3 pb-safe select-none">
             原声与双语文字已安全封入行囊，无网即点即听
-          </span>
-          <button
-            onClick={onClose}
-            className="duo-btn-primary min-h-[44px] px-6 sm:px-7 py-2 rounded-xl text-xs font-bold cursor-pointer shrink-0"
-          >
-            完成
-          </button>
+          </div>
         </div>
       </div>
     </div>

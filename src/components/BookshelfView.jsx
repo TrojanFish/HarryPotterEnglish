@@ -168,31 +168,6 @@ export function BookshelfView({
             共收录 <span className="font-mono font-bold">{vocabCount}</span> 词
           </p>
         </div>
-
-        {/* Card 4: Continue chapter */}
-        {currentBookObj && currentChapterObj && (
-          <div
-            onClick={onEnterPlayer}
-            className="snap-start shrink-0 w-48 sm:w-52 duo-card p-3.5 cursor-pointer hover:border-amber-400 transition-colors border-2 border-amber-300/80"
-          >
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-800 mb-1.5">
-              <Clock size={11} className="text-amber-600" />
-              上次进度
-            </div>
-            <p className="font-magical font-bold text-sm text-amber-950 truncate">
-              {currentChapterObj.cnTitle || currentChapterObj.title}
-            </p>
-            <div className="mt-2 w-full h-1.5 rounded-full bg-amber-100 overflow-hidden">
-              <div
-                className="h-full bg-amber-500 rounded-full transition-all"
-                style={{ width: `${Math.max(4, resumeProgressPercent)}%` }}
-              />
-            </div>
-            <p className="text-[11px] font-mono text-amber-700 font-bold mt-1">
-              {resumeProgressPercent > 0 ? `${resumeProgressPercent}%` : '即刻开启'}
-            </p>
-          </div>
-        )}
       </div>
 
       {/* ── 3. Hero Continue Card (full-width, if active) ─────────── */}

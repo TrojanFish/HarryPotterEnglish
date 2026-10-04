@@ -681,25 +681,13 @@ export function AnalyticsDashboard({
                 <span>听写准确率: <strong>{trendPoints[hoveredPointIndex].accuracy}%</strong></span>
               </div>
             )}
-          </div>
-
-        </div>
-        )}
-
-        {/* Footer info note */}
-        {!showHonorScroll && (
-          <div className="px-4 sm:px-6 py-3 sm:py-3.5 border-t border-[#e8ddd0] bg-white text-[11px] text-stone-500 flex flex-wrap items-center justify-between gap-2 shrink-0">
-            <div className="flex items-center gap-1.5">
-              <Info size={13} className="text-amber-600 shrink-0" />
-              <span>学情数据已安全保存在本地，离线也能持续研学。</span>
+            {/* Bottom subtle note */}
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-400 pt-3 pb-safe select-none">
+              <Info size={12} className="text-amber-600/70 shrink-0" />
+              <span>学情数据已安全保存在本地，离线也能持续研学</span>
             </div>
-            <button
-              onClick={onClose}
-              className="duo-btn-primary min-h-[38px] px-5 py-1.5 rounded-xl text-xs font-bold cursor-pointer"
-            >
-              完成查看
-            </button>
           </div>
+        </div>
         )}
 
       </div>

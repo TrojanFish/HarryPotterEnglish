@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import {
   Play,
-  Languages,
   Mic,
   Eye,
   EyeOff,
@@ -286,84 +285,48 @@ export function SubtitleViewer({
       ref={containerRef}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      onWheel={() => { if (isFollowActive) setIsFollowActive(false); }}
     >
-      {/* ── Compact Two-Row Toolbar ─────────────────────────────── */}
-      <div className={`sticky top-0 z-10 px-3 sm:px-4 pt-2.5 pb-2 border-b transition-colors ${
+      {/* ── Subtitle Cue Count & Font Sizing Ribbon ──────────────── */}
+      <div className={`sticky top-0 z-10 px-3 sm:px-4 py-2 border-b flex items-center justify-between gap-2 transition-colors ${
         isParchment
           ? 'bg-[#fbf9f4]/95 border-[#e8ddd0] backdrop-blur-sm'
           : 'bg-[#0b0f19]/95 border-slate-800'
-      }`}
-      >
-        {/* Row 1: Info + Follow toggle */}
-        <div className="flex items-center justify-between gap-2 mb-1.5">
-          <span className="flex items-center gap-1 text-[11px] font-bold text-amber-800">
-            <Headphones size={12} className="text-amber-600" />
-            <span><span className="font-mono">{cues.length}</span> 句精听</span>
-            {studyMode === 'blind' && (
-              <span className="ml-1 px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 text-[10px] font-bold">
-                迷雾模式
-              </span>
-            )}
-          </span>
-
-          <button
-            onClick={() => {
-              const next = !isFollowActive;
-              setIsFollowActive(next);
-              if (next) scrollToActiveCue();
-            }}
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-[11px] font-bold transition-all active:scale-95 cursor-pointer ${
-              isFollowActive
-                ? 'bg-amber-500/15 border-amber-400 text-amber-900'
-                : 'border-[#e8ddd0] bg-white/80 text-stone-500 hover:bg-amber-50'
-            }`}
-            title={isFollowActive ? '暂停自动跟随' : '开启自动跟随'}
-          >
-            <LocateFixed size={11} className="text-amber-600" />
-            <span className="hidden sm:inline">{isFollowActive ? '跟随:开' : '跟随:关'}</span>
-          </button>
-        </div>
-
-        {/* Row 2: Translation + Font Size */}
-        <div className="flex items-center justify-between gap-2">
-          <button
-            onClick={() => setShowTranslation(!showTranslation)}
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-[11px] font-bold transition-all active:scale-95 cursor-pointer ${
-              showTranslation
-                ? 'bg-amber-500/15 border-amber-400 text-amber-900'
-                : 'border-[#e8ddd0] bg-white/80 text-stone-500 hover:bg-amber-50'
-            }`}
-            title="开/关中文双语译文"
-          >
-            <Languages size={11} className="text-amber-600" />
-            <span>{showTranslation ? '双语:开' : '双语:关'}</span>
-          </button>
-
-          {/* Font size 3-step */}
-          <div className="flex items-center rounded-lg border border-[#e8ddd0] bg-stone-50/80 p-0.5">
-            <span className="px-1.5 hidden sm:flex items-center gap-1 text-[11px] text-stone-400">
-              <Type size={10} />
+      }`}>
+        <span className="flex items-center gap-1.5 text-xs font-bold text-amber-900 select-none">
+          <Headphones size={13} className="text-amber-600" />
+          <span>全章共 <span className="font-mono">{cues.length}</span> 句原声</span>
+          {studyMode === 'blind' && (
+            <span className="ml-1 px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 text-[10px] font-bold">
+              迷雾模式
             </span>
-            {[
-              { id: 'normal', label: '标准', short: 'A' },
-              { id: 'large',  label: '大号', short: 'A+' },
-              { id: 'huge',   label: '超大', short: 'A++' }
-            ].map((s) => (
-              <button
-                key={s.id}
-                onClick={() => {
-                  setFontSize(s.id);
-                  try { localStorage.setItem('hp_subtitle_font_size', s.id); } catch {}
-                }}
-                className={`px-1.5 py-0.5 min-h-[30px] min-w-[28px] inline-flex items-center justify-center rounded-md text-[11px] font-bold transition-all active:scale-95 cursor-pointer ${
-                  fontSize === s.id ? 'bg-amber-500 text-white' : 'text-stone-500 hover:text-amber-900'
-                }`}
-              >
-                <span className="hidden sm:inline">{s.label}</span>
-                <span className="sm:hidden">{s.short}</span>
-              </button>
-            ))}
-          </div>
+          )}
+        </span>
+
+        {/* Font size 3-step switch */}
+        <div className="flex items-center rounded-xl border border-[#e8ddd0] bg-stone-50/80 p-0.5 select-none">
+          <span className="px-1.5 hidden sm:flex items-center gap-1 text-[11px] text-stone-400">
+            <Type size={11} />
+          </span>
+          {[
+            { id: 'normal', label: '标准', short: 'A' },
+            { id: 'large',  label: '大号', short: 'A+' },
+            { id: 'huge',   label: '超大', short: 'A++' }
+          ].map((s) => (
+            <button
+              key={s.id}
+              onClick={() => {
+                setFontSize(s.id);
+                try { localStorage.setItem('hp_subtitle_font_size', s.id); } catch {}
+              }}
+              className={`px-2 py-0.5 min-h-[30px] min-w-[28px] inline-flex items-center justify-center rounded-lg text-xs font-bold transition-all active:scale-95 cursor-pointer ${
+                fontSize === s.id ? 'bg-amber-500 text-white' : 'text-stone-600 hover:text-amber-950'
+              }`}
+            >
+              <span className="hidden sm:inline">{s.label}</span>
+              <span className="sm:hidden">{s.short}</span>
+            </button>
+          ))}
         </div>
       </div>
 

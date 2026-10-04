@@ -6,8 +6,6 @@ import {
   Download, 
   Sparkles, 
   Search, 
-  Layers, 
-  RotateCw,
   CheckCircle,
   BookOpen,
   BrainCircuit,
@@ -26,9 +24,6 @@ export function VocabularyDrawer({
   onOpenSrs
 }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isFlashcardMode, setIsFlashcardMode] = useState(false);
-  const [flashcardIndex, setFlashcardIndex] = useState(0);
-  const [isCardFlipped, setIsCardFlipped] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
   const showToast = (msg) => {
@@ -144,7 +139,7 @@ export function VocabularyDrawer({
               </div>
             </div>
 
-            <div className="flex items-center space-x-1.5 shrink-0">
+            <div className="flex items-center space-x-2 shrink-0">
               {onOpenSrs && (
                 <button
                   disabled={vocabList.length === 0}
@@ -152,27 +147,13 @@ export function VocabularyDrawer({
                     onClose();
                     onOpenSrs();
                   }}
-                  className="duo-btn-primary min-h-[44px] px-3 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="duo-btn-primary min-h-[44px] px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
                   title="启动艾宾浩斯智能翻转闪卡 (SRS 遗忘曲线算法)"
                 >
-                  <BrainCircuit size={14} className="shrink-0" />
-                  <span className="hidden sm:inline">SRS复习</span>
-                  <span className="sm:hidden">SRS</span>
+                  <BrainCircuit size={15} className="shrink-0" />
+                  <span>艾宾浩斯背词</span>
                 </button>
               )}
-
-              <button
-                disabled={vocabList.length === 0}
-                onClick={() => setIsFlashcardMode(!isFlashcardMode)}
-                className={`duo-btn-secondary min-h-[44px] px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed ${
-                  isFlashcardMode ? 'ring-2 ring-amber-500' : ''
-                }`}
-                title="切换卡片翻转记忆模式与列表笔记"
-              >
-                <Layers size={14} className="shrink-0" />
-                <span className="hidden sm:inline">{isFlashcardMode ? '列表笔记' : '卡片背词'}</span>
-                <span className="sm:hidden">{isFlashcardMode ? '列表' : '背词'}</span>
-              </button>
 
               <button
                 onClick={onClose}
@@ -184,129 +165,8 @@ export function VocabularyDrawer({
             </div>
           </div>
 
-          {/* Flashcard Mode */}
-          {isFlashcardMode ? (
-            <div className="flex-1 p-6 flex flex-col justify-between items-center overflow-y-auto">
-              {filteredList.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center my-auto">
-                  <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border-2 border-amber-300/80 flex items-center justify-center text-amber-600 mb-4">
-                    <Bookmark size={28} className="text-amber-600" />
-                  </div>
-                  <h3 className="font-magical font-bold text-base text-amber-950 mb-1">
-                    生词卡片库暂无卡片
-                  </h3>
-                  <p className="text-xs text-stone-500 max-w-xs leading-relaxed mb-6">
-                    先去听力播放中收藏几个生词，即可开启智能翻转卡片记忆训练！
-                  </p>
-                  <button
-                    onClick={onClose}
-                    className="duo-btn-primary min-h-[44px] px-6 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer active:scale-95"
-                  >
-                    <Sparkles size={15} />
-                    <span>去精听挑词入库</span>
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <div className="w-full flex justify-between items-center text-xs text-[#8c9ba5]">
-                    <span>卡片进度: {flashcardIndex + 1} / {filteredList.length}</span>
-                    <button 
-                      onClick={() => setIsCardFlipped(!isCardFlipped)}
-                      className="text-amber-700 font-semibold hover:underline flex items-center gap-1"
-                    >
-                      <RotateCw size={12} /> 点击卡片翻转
-                    </button>
-                  </div>
-
-                  {/* Flashcard Body */}
-                  <div 
-                    onClick={() => setIsCardFlipped(!isCardFlipped)}
-                    className={`w-full min-h-[300px] my-6 rounded-2xl p-6 border-2 cursor-pointer flex flex-col items-center justify-center text-center transition-all duration-300 transform select-none ${
-                      isCardFlipped 
-                        ? 'border-amber-400 bg-white text-amber-950' 
-                        : 'border-[#e8ddd0] bg-white text-[#1e1610] hover:border-amber-400'
-                    }`}
-                  >
-                    {!isCardFlipped ? (
-                      <div>
-                        <span className="text-xs font-mono uppercase tracking-widest text-stone-400 block mb-2">
-                          正面 · QUESTION
-                        </span>
-                        <h3 className="text-3xl font-magical font-bold text-amber-800 mb-2">
-                          {currentFlashcard.word}
-                        </h3>
-                        {currentFlashcard.phonetic && (
-                          <span className="font-mono text-sm text-stone-500 block mb-4">
-                            {currentFlashcard.phonetic}
-                          </span>
-                        )}
-                        <p className="text-xs mt-4 text-stone-500">
-                          轻点卡片翻转查看中文释义与例句
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <span className="text-xs font-mono uppercase tracking-widest text-amber-700 block">
-                          背面释义 · ANSWER
-                        </span>
-                        <h4 className="text-xl font-bold text-amber-950 font-reading">
-                          {currentFlashcard.translation}
-                        </h4>
-                        {currentFlashcard.lore && (
-                          <div className="text-xs p-2.5 rounded-xl border border-amber-300/80 bg-amber-500/10 text-amber-950 flex items-start gap-1.5 text-left">
-                            <Sparkles size={13} className="text-amber-600 shrink-0 mt-0.5" />
-                            <span>{currentFlashcard.lore}</span>
-                          </div>
-                        )}
-                        {currentFlashcard.context && (
-                          <p className="text-xs italic font-reading mt-2 border-t border-[#e8ddd0] pt-2 text-stone-600">
-                            "{currentFlashcard.context}"
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Navigation controls */}
-                  <div className="flex items-center space-x-3 w-full justify-between">
-                    <button
-                      disabled={flashcardIndex <= 0}
-                      onClick={() => {
-                        setIsCardFlipped(false);
-                        setFlashcardIndex(prev => Math.max(0, prev - 1));
-                      }}
-                      className="px-4 py-2 min-h-[44px] rounded-xl border border-amber-300/90 bg-white/95 text-amber-950 hover:bg-amber-50 hover:border-amber-400 font-bold text-xs active:scale-95 disabled:opacity-30 disabled:pointer-events-none cursor-pointer transition-all"
-                      title="翻看上一张生词卡"
-                    >
-                      上一张
-                    </button>
-                    <button
-                      onClick={() => playPronunciation(currentFlashcard.word)}
-                      className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-amber-300/80 bg-white/90 text-amber-800 hover:bg-amber-50 hover:border-amber-400 active:scale-90 cursor-pointer transition-all"
-                      title="朗读当前单词发音"
-                    >
-                      <Volume2 size={16} />
-                    </button>
-                    <button
-                      disabled={flashcardIndex >= filteredList.length - 1}
-                      onClick={() => {
-                        setIsCardFlipped(false);
-                        setFlashcardIndex(prev => Math.min(filteredList.length - 1, prev + 1));
-                      }}
-                      className="px-5 py-2 min-h-[44px] rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs disabled:opacity-30 disabled:pointer-events-none active:scale-95 cursor-pointer transition-all border border-amber-600"
-                      title="翻看下一张生词卡"
-                    >
-                      下一张
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          ) : (
-            // List Mode
-            <>
-              {/* Search input - only show when vocabList has items */}
-              {vocabList.length > 0 && (
+          {/* Search input - only show when vocabList has items */}
+          {vocabList.length > 0 && (
                 <div className="p-3 border-b border-[#e8ddd0] bg-white">
                   <div className="relative">
                     <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
@@ -471,8 +331,6 @@ export function VocabularyDrawer({
                     清空生词本
                   </button>
                 </div>
-            </>
-          )}
 
           {/* Toast Feedback Notification */}
           {toastMessage && (
