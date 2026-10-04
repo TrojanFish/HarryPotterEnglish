@@ -291,6 +291,28 @@ export function useAudioPlayback({
     }
   }, [currentBookObj, currentChapterObj, duration, handlePrevSentence, handleNextSentence, seekTo]);
 
+  // Sync MediaSession playbackState (Lock screen play/pause icon)
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && 'mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+    }
+  }, [isPlaying]);
+
+  // Sync MediaSession positionState (Lock screen timeline scrubber)
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && 'mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
+      if (duration > 0 && Number.isFinite(duration) && Number.isFinite(currentTime)) {
+        try {
+          navigator.mediaSession.setPositionState({
+            duration: Math.max(duration, 0),
+            playbackRate: playbackRate || 1.0,
+            position: Math.min(Math.max(currentTime, 0), duration)
+          });
+        } catch (e) {}
+      }
+    }
+  }, [currentTime, duration, playbackRate]);
+
   return {
     audioRef,
     isPlaying,

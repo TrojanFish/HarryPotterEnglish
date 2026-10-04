@@ -29,6 +29,18 @@ export function AurorFullTyping({
     }
   }, [currentCue]);
 
+  // Handle mobile virtual keyboard appearance (Visual Viewport API)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.visualViewport) return;
+    const handleViewportChange = () => {
+      if (document.activeElement === inputRef.current) {
+        inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+    window.visualViewport.addEventListener('resize', handleViewportChange);
+    return () => window.visualViewport?.removeEventListener('resize', handleViewportChange);
+  }, []);
+
   if (!currentCue) return null;
 
   // Tokenize target sentence into words

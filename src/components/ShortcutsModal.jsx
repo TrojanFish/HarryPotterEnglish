@@ -167,6 +167,12 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
           </ol>
         </div>
 
+        {/* iOS Hardware Mute Switch & Audio Tip */}
+        <div className="p-3 rounded-2xl border border-stone-200 bg-stone-50 text-stone-600 text-[11px] leading-relaxed mt-2.5">
+          <span className="font-bold text-stone-800">iPhone / iPad 听音提示：</span>
+          若开启机身侧边物理“静音拨片”，单词朗读示范与音效可能会被 iOS 系统静音。建议关闭静音拨片以获得完整听力体验。
+        </div>
+
         <p className="text-[11px] sm:text-xs text-center mt-3 text-stone-500">
           支持手机触屏单手轻松操作，随时随地开启英语原声探险！
         </p>

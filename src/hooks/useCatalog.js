@@ -35,6 +35,7 @@ export function useCatalog() {
   const [isLoadingContent, setIsLoadingContent] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isOfflinePlaying, setIsOfflinePlaying] = useState(false);
+  const [isOfflineUncached, setIsOfflineUncached] = useState(false);
   const [cachedChaptersCount, setCachedChaptersCount] = useState(0);
 
   const previousBlobUrlRef = useRef(null);
@@ -128,6 +129,7 @@ export function useCatalog() {
           previousBlobUrlRef.current = blobUrl;
           setAudioUrl(blobUrl);
           setIsOfflinePlaying(true);
+          setIsOfflineUncached(false);
 
           if (cached.vttText) {
             setCues(parseVTT(cached.vttText));
@@ -139,6 +141,14 @@ export function useCatalog() {
         }
       } catch (cacheErr) {
         console.warn('[Offline] Cache lookup failed:', cacheErr);
+      }
+
+      // Check if completely offline and chapter not cached
+      const isDeviceOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+      if (isDeviceOffline) {
+        setIsOfflineUncached(true);
+      } else {
+        setIsOfflineUncached(false);
       }
 
       // Online streaming
@@ -226,6 +236,7 @@ export function useCatalog() {
     isLoadingContent,
     isRefreshing,
     isOfflinePlaying,
+    isOfflineUncached,
     cachedChaptersCount,
     selectBook,
     selectChapter,

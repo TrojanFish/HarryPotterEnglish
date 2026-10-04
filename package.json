@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "server": "node server/index.js",
     "test": "node --test tests/e2e.test.js tests/sync.test.js",
-    "check-emojis": "node scripts/scan_emojis.js"
+    "check-emojis": "node scripts/scan_emojis.js",
+    "verify-security": "node scripts/verify-security.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.670.0",

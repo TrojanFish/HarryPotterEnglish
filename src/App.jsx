@@ -59,6 +59,7 @@ export function App() {
     isLoadingContent,
     isRefreshing,
     isOfflinePlaying,
+    isOfflineUncached,
     cachedChaptersCount,
     selectBook,
     selectChapter,
@@ -727,9 +728,25 @@ export function App() {
 
       {/* Offline Network Status Notification (W3C Network API) */}
       {isOffline && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-stone-900/90 text-amber-200 border border-amber-400/40 backdrop-blur-sm flex items-center gap-2 text-xs font-bold animate-fadeIn">
-          <WifiOff size={14} className="text-amber-400 shrink-0" />
-          <span>离线魔法模式 · 正在畅享已下载本地章节</span>
+        <div className={`fixed bottom-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full border backdrop-blur-sm flex items-center gap-2 text-xs font-bold animate-fadeIn shadow-none ${
+          isOfflineUncached
+            ? 'bg-rose-950/95 text-rose-200 border-rose-400/60'
+            : 'bg-stone-900/90 text-amber-200 border-amber-400/40'
+        }`}>
+          <WifiOff size={14} className={isOfflineUncached ? 'text-rose-400 shrink-0' : 'text-amber-400 shrink-0'} />
+          <span>
+            {isOfflineUncached
+              ? '需要网络连接：本章节尚未下载至魔法行囊'
+              : '离线魔法模式 · 正在畅享已下载本地章节'}
+          </span>
+          {isOfflineUncached && (
+            <button
+              onClick={() => setIsStorageModalOpen(true)}
+              className="ml-1 underline text-amber-300 hover:text-white cursor-pointer"
+            >
+              打开行囊
+            </button>
+          )}
         </div>
       )}
     </div>

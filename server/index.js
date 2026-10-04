@@ -20,19 +20,88 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Trust reverse proxy (Cloudflare, Nginx, Vercel)
+app.set('trust proxy', 1);
+
 // Security headers
 app.use((req, res, next) => {
   res.set('X-Content-Type-Options', 'nosniff');
   res.set('X-Frame-Options', 'SAMEORIGIN');
   res.set('X-XSS-Protection', '1; mode=block');
   res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  if (process.env.NODE_ENV === 'production') {
+    res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  }
   next();
 });
 
 // Enable gzip/deflate compression for JSON, VTT, HTML
 app.use(compression());
-app.use(cors());
+
+// Configurable CORS: allow local dev or restrict to ALLOWED_ORIGINS in production
+const allowedOriginsEnv = process.env.ALLOWED_ORIGINS;
+const configuredOrigins = allowedOriginsEnv
+  ? allowedOriginsEnv.split(',').map(s => s.trim().toLowerCase())
+  : null;
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (!configuredOrigins || configuredOrigins.includes('*') || process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    const lowerOrigin = origin.toLowerCase();
+    if (configuredOrigins.includes(lowerOrigin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Blocked by CORS policy: ${origin}`));
+  },
+  credentials: true
+}));
+
 app.use(express.json());
+
+// Lightweight in-memory rate limiter (zero external dependencies)
+function createRateLimiter({ windowMs = 60 * 1000, max = 60, message = '请求过于频繁，请稍候再试' }) {
+  const requests = new Map();
+  setInterval(() => {
+    const now = Date.now();
+    for (const [ip, data] of requests.entries()) {
+      if (now - data.resetTime > windowMs) requests.delete(ip);
+    }
+  }, 2 * 60 * 1000);
+
+  return (req, res, next) => {
+    const ip = req.ip || req.connection?.remoteAddress || 'unknown';
+    const now = Date.now();
+    let record = requests.get(ip);
+    if (!record || now > record.resetTime) {
+      record = { count: 1, resetTime: now + windowMs };
+      requests.set(ip, record);
+    } else {
+      record.count++;
+    }
+
+    const remaining = Math.max(0, max - record.count);
+    res.set('X-RateLimit-Limit', String(max));
+    res.set('X-RateLimit-Remaining', String(remaining));
+    res.set('X-RateLimit-Reset', String(Math.ceil(record.resetTime / 1000)));
+
+    if (record.count > max) {
+      const retryAfterSec = Math.ceil((record.resetTime - now) / 1000);
+      res.set('Retry-After', String(retryAfterSec));
+      return res.status(429).json({
+        error: 'Too Many Requests',
+        message,
+        retryAfter: retryAfterSec
+      });
+    }
+    next();
+  };
+}
+
+const syncLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 60, message: '同步请求频次过高，请 1 分钟后重试' });
+const catalogLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 120, message: '书目请求频次过高，请稍后刷新' });
 
 // Initialize Cloudflare R2 Client (S3-compatible)
 const accountId = process.env.R2_ACCOUNT_ID;
@@ -285,8 +354,29 @@ setInterval(async () => {
 // API Endpoints
 // ==========================================
 
+// 0. Operations & Observability: Health Check Probe
+app.get('/api/health', (req, res) => {
+  const mem = process.memoryUsage();
+  res.json({
+    status: 'ok',
+    uptime: Math.floor(process.uptime()),
+    timestamp: Date.now(),
+    environment: process.env.NODE_ENV || 'development',
+    memory: {
+      rssMb: Math.round(mem.rss / 1024 / 1024),
+      heapUsedMb: Math.round(mem.heapUsed / 1024 / 1024),
+      heapTotalMb: Math.round(mem.heapTotal / 1024 / 1024),
+    },
+    r2Configured: isConfigured,
+    r2Connected: Boolean(s3Client),
+    cachedShowsCount: catalogCache ? catalogCache.length : 0,
+    subtitleCacheSize: subtitleCache.size,
+    version: '1.3.0'
+  });
+});
+
 // 1. Dynamic Catalog API with auto-discovery & ?refresh=1 support
-app.get('/api/catalog', async (req, res) => {
+app.get('/api/catalog', catalogLimiter, async (req, res) => {
   if (!s3Client) {
     return res.status(503).json({ error: 'R2 not configured' });
   }
@@ -450,7 +540,7 @@ app.get('/api/raw/*', async (req, res) => {
 });
 
 // 5. Local-First Incremental Sync API (LWW Timestamp Protocol)
-app.post('/api/sync', (req, res) => {
+app.post('/api/sync', syncLimiter, (req, res) => {
   try {
     const payload = req.body || {};
     const result = processSync(payload);
@@ -462,7 +552,7 @@ app.post('/api/sync', (req, res) => {
 });
 
 // 6. Device Pairing API (Cross-Device Cloud Profile Linking)
-app.post('/api/sync/pair', (req, res) => {
+app.post('/api/sync/pair', syncLimiter, (req, res) => {
   try {
     const payload = req.body || {};
     const result = processPairing(payload);
@@ -480,7 +570,15 @@ app.post('/api/sync/pair', (req, res) => {
 const distPath = path.resolve(__dirname, '../dist');
 if (fs.existsSync(distPath)) {
   console.log(`[Static Assets] Serving production build from ${distPath}`);
-  app.use(express.static(distPath));
+  // Immutable 1-year cache for Vite hashed assets
+  app.use('/assets', express.static(path.join(distPath, 'assets'), {
+    maxAge: '1y',
+    immutable: true
+  }));
+  // Standard cache for root assets
+  app.use(express.static(distPath, {
+    maxAge: '1h'
+  }));
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api')) return next();
     if (req.path.startsWith('/assets/') || path.extname(req.path)) {
