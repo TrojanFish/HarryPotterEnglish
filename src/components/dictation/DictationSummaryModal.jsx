@@ -80,14 +80,14 @@ export function DictationSummaryModal({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-xl max-h-[88dvh] sm:max-h-[85dvh] flex flex-col rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden transition-all pb-safe no-scrollbar"
+        className="w-full max-w-xl max-h-[88dvh] sm:max-h-[85dvh] flex flex-col rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden transition-all pb-safe no-scrollbar"
       >
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
 
         {/* Modal Header */}
         <div className="p-5 sm:p-6 border-b border-[#e8ddd0] bg-white text-center shrink-0">
-          <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white border-2 border-amber-500">
+          <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-amber-500 flex items-center justify-center text-white border border-amber-600">
             <Trophy size={28} />
           </div>
           <h2 className="font-magical font-bold text-2xl text-amber-950">
@@ -102,7 +102,7 @@ export function DictationSummaryModal({
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           
           {/* 1. Honorific Rank Banner */}
-          <div className="p-4 rounded-2xl border-2 border-[#e8ddd0] bg-white text-center">
+          <div className="p-4 rounded-2xl border border-[#e8ddd0] bg-white text-center">
             <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${rank.badgeColor}`}>
               {rank.title}
             </span>
@@ -113,7 +113,7 @@ export function DictationSummaryModal({
 
           {/* 2. Key Metrics Grid */}
           <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="p-3.5 rounded-2xl border-2 border-[#e8ddd0] bg-white">
+            <div className="p-3.5 rounded-2xl border border-[#e8ddd0] bg-white">
               <div className="flex items-center justify-center gap-1 text-amber-600 mb-1">
                 <Star size={16} className="fill-amber-500 text-amber-500" />
               </div>
@@ -123,7 +123,7 @@ export function DictationSummaryModal({
               <div className="text-[11px] text-slate-500 font-bold mt-0.5">魔法星斩获</div>
             </div>
 
-            <div className="p-3.5 rounded-2xl border-2 border-[#e8ddd0] bg-white">
+            <div className="p-3.5 rounded-2xl border border-[#e8ddd0] bg-white">
               <div className="flex items-center justify-center gap-1 text-emerald-600 mb-1">
                 <CheckCircle2 size={16} />
               </div>
@@ -133,7 +133,7 @@ export function DictationSummaryModal({
               <div className="text-[11px] text-slate-500 font-bold mt-0.5">全句准确率</div>
             </div>
 
-            <div className="p-3.5 rounded-2xl border-2 border-[#e8ddd0] bg-white">
+            <div className="p-3.5 rounded-2xl border border-[#e8ddd0] bg-white">
               <div className="flex items-center justify-center gap-1 text-amber-600 mb-1">
                 <Award size={16} />
               </div>
@@ -145,7 +145,7 @@ export function DictationSummaryModal({
           </div>
 
           {/* 3. House Affiliation Selector */}
-          <div className="p-4 rounded-2xl border-2 border-[#e8ddd0] bg-white">
+          <div className="p-4 rounded-2xl border border-[#e8ddd0] bg-white">
             <div className="text-xs font-bold text-amber-900 mb-2 flex items-center justify-between">
               <span>代表学院积分入账：</span>
               <span className="text-[11px] text-amber-700 font-semibold">{selectedHouse.name} (+{housePoints} 分)</span>
@@ -157,9 +157,9 @@ export function DictationSummaryModal({
                   <button
                     key={house.id}
                     onClick={() => handleHouseChange(house.id)}
-                    className={`py-2 px-1 rounded-xl text-xs font-bold transition-all text-center border-2 cursor-pointer ${
+                    className={`py-2 px-1 rounded-xl text-xs font-bold transition-all text-center border cursor-pointer ${
                       isSelected
-                        ? 'border-amber-500 bg-amber-500 text-white'
+                        ? 'border-amber-600 bg-amber-500 text-white'
                         : 'border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] hover:bg-stone-100'
                     }`}
                   >

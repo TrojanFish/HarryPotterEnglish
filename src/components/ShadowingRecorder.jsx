@@ -328,7 +328,7 @@ export function ShadowingRecorder({
         letter: 'O',
         title: '卓越 · Outstanding',
         quote: '“宛如赫敏·格兰杰般标准地道！纯正英伦腔调，格兰芬多为你加 10 分！”',
-        badgeClass: 'border-emerald-500 text-emerald-400 bg-emerald-950/50',
+        badgeClass: 'border-emerald-500 text-emerald-300 bg-emerald-950/50',
         parchmentBadge: 'border-emerald-700 text-emerald-900 bg-emerald-100'
       };
     } else if (score >= 75) {
@@ -366,7 +366,7 @@ export function ShadowingRecorder({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-xl rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-5 sm:p-6 max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto pb-safe transition-all duration-300 no-scrollbar">
+      <div className="relative w-full max-w-xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-5 sm:p-6 max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto pb-safe transition-all duration-300 no-scrollbar">
         {/* Mobile Pull Handle */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto mb-3 shrink-0" />
 
@@ -510,7 +510,7 @@ export function ShadowingRecorder({
         {evaluationResult && gradeInfo && !isEvaluating && (
           <div className="p-4 rounded-2xl border border-[#e8ddd0] bg-white mb-4 flex items-center justify-between">
             <div className="flex items-center space-x-3.5">
-              <div className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl border-2 ${gradeInfo.parchmentBadge}`}>
+              <div className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl border ${gradeInfo.parchmentBadge}`}>
                 <span className="font-mono font-extrabold text-lg leading-tight">{evaluationResult.score}%</span>
                 <span className="text-[9px] uppercase tracking-wider font-sans font-bold">
                   等阶 {gradeInfo.letter}

@@ -85,7 +85,7 @@ export function AurorFullTyping({
   return (
     <div className="space-y-5 animate-fadeIn">
       {/* ── Real-time Visual Word Matching Display ─────────────────── */}
-      <div className={`min-h-[110px] p-5 sm:p-6 rounded-2xl border-2 font-reading text-lg sm:text-xl leading-relaxed transition-all ${
+      <div className={`min-h-[110px] p-5 sm:p-6 rounded-2xl border font-reading text-lg sm:text-xl leading-relaxed transition-all ${
         isAllCorrect
           ? 'bg-emerald-500/10 border-emerald-500'
           : 'bg-[#fbf9f5] border-[#e8ddd0] text-[#1e1610]'
@@ -183,7 +183,7 @@ export function AurorFullTyping({
             }
           }}
           placeholder="仔细听原声，在此完整输入英文句子... (按 Tab 获取羽毛笔提示，按 Enter 提交进入下一句)"
-          className={`w-full p-4 rounded-2xl text-base sm:text-lg font-reading border-2 focus:outline-none transition-all resize-none ${
+          className={`w-full p-4 rounded-2xl text-base sm:text-lg font-reading border focus:outline-none transition-all resize-none ${
             isAllCorrect
               ? 'border-emerald-500 bg-emerald-500/10 text-emerald-950'
               : 'border-[#e8ddd0] focus:border-amber-500 bg-white text-[#1e1610] focus:ring-2 focus:ring-amber-400/20'

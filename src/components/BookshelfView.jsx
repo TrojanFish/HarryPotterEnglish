@@ -172,12 +172,12 @@ export function BookshelfView({
 
       {/* ── 3. Hero Continue Card (full-width, if active) ─────────── */}
       {currentBookObj && currentChapterObj && (
-        <div className="duo-card p-4 sm:p-5 mb-8 border-2 border-amber-300/80">
+        <div className="duo-card p-4 sm:p-5 mb-8 border border-amber-300/80">
           <div className="flex items-center gap-4">
             {/* Book cover: flat, no 3D */}
             <div
               onClick={onEnterPlayer}
-              className="w-14 h-20 sm:w-16 sm:h-24 rounded-xl overflow-hidden border-2 border-amber-400 shrink-0 cursor-pointer bg-stone-900 hover:scale-105 transition-transform"
+              className="w-14 h-20 sm:w-16 sm:h-24 rounded-xl overflow-hidden border border-amber-400 shrink-0 cursor-pointer bg-stone-900 hover:scale-105 transition-transform"
             >
               {!coverErrorMap[currentBookObj.id] ? (
                 <img
@@ -261,13 +261,13 @@ export function BookshelfView({
               <div
                 key={book.id}
                 className={`duo-card p-4 flex items-center gap-4 hover:border-amber-400 transition-colors ${
-                  isSelected ? 'border-2 border-amber-400' : ''
+                  isSelected ? 'border-amber-400 ring-1 ring-amber-400/50' : ''
                 }`}
               >
                 {/* Cover: flat, square-ish, no 3D */}
                 <div
                   onClick={() => setInspectingBook(book)}
-                  className="w-16 h-20 sm:w-20 sm:h-24 rounded-xl overflow-hidden border-2 border-amber-300/60 shrink-0 cursor-pointer bg-stone-900 hover:scale-105 transition-transform"
+                  className="w-16 h-20 sm:w-20 sm:h-24 rounded-xl overflow-hidden border border-amber-300/60 shrink-0 cursor-pointer bg-stone-900 hover:scale-105 transition-transform"
                 >
                   {!coverErrorMap[book.id] ? (
                     <img
@@ -339,7 +339,7 @@ export function BookshelfView({
         >
           <div
             onClick={e => e.stopPropagation()}
-            className="w-full max-w-2xl max-h-[88dvh] sm:max-h-[85dvh] flex flex-col rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-[#fbf9f5] overflow-hidden pb-safe no-scrollbar"
+            className="w-full max-w-2xl max-h-[88dvh] sm:max-h-[85dvh] flex flex-col rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] overflow-hidden pb-safe no-scrollbar"
           >
             {/* Drag handle (mobile) */}
             <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2 shrink-0" />

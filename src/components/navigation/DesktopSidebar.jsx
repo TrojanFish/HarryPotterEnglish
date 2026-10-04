@@ -115,7 +115,7 @@ export function DesktopSidebar({
   ];
 
   return (
-    <aside className={`hidden lg:flex shrink-0 flex-col justify-between border-r-2 border-[#e8ddd0] bg-[#fbf9f5] select-none h-full overflow-y-auto transition-all duration-200 ease-in-out ${
+    <aside className={`hidden lg:flex shrink-0 flex-col justify-between border-r border-[#e8ddd0] bg-[#fbf9f5] select-none h-full overflow-y-auto transition-all duration-200 ease-in-out ${
       isCollapsed ? 'w-18 py-4 px-2 items-center' : 'w-64 p-4'
     }`}>
       {/* ── Top Brand & Navigation ─────────────────────────────────── */}

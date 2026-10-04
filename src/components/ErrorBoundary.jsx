@@ -62,7 +62,7 @@ export class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-[#fbf9f4] text-[#1e1610] flex items-center justify-center p-4 font-sans select-none">
-          <div className="max-w-md w-full bg-white border-2 border-amber-300/80 rounded-3xl p-6 sm:p-8 text-center animate-fadeIn shadow-none">
+          <div className="max-w-md w-full bg-white border border-amber-300/80 rounded-3xl p-6 sm:p-8 text-center animate-fadeIn shadow-none">
             {/* Hogwarts Badge */}
             <div className="w-16 h-16 rounded-2xl bg-amber-500/15 text-amber-700 flex items-center justify-center mx-auto mb-4 border border-amber-300/50">
               <ShieldAlert size={32} />
@@ -100,7 +100,7 @@ export class ErrorBoundary extends React.Component {
               <button
                 onClick={this.handleSafeSelfHeal}
                 disabled={this.state.healed}
-                className="w-full min-h-[46px] rounded-xl border-2 border-emerald-600/40 bg-emerald-50 hover:bg-emerald-100/60 text-emerald-900 font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-98 disabled:opacity-50"
+                className="w-full min-h-[46px] rounded-xl border border-emerald-600/40 bg-emerald-50 hover:bg-emerald-100/60 text-emerald-900 font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-98 disabled:opacity-50"
               >
                 <HeartPulse size={16} className="text-emerald-700" />
                 <span>{this.state.healed ? '魔力自愈已完成，正在重启...' : '安全自愈（清理异常缓存，保留生词）'}</span>

@@ -131,7 +131,7 @@ export function StorageManagerModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
       <div 
-        className="relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88dvh] sm:max-h-[85dvh] transition-all duration-300 no-scrollbar"
+        className="relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88dvh] sm:max-h-[85dvh] transition-all duration-300 no-scrollbar"
       >
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
@@ -196,19 +196,19 @@ export function StorageManagerModal({
 
               <div className="w-full sm:w-auto flex justify-end shrink-0">
                 {isCurrentCached ? (
-                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">
-                    <CheckCircle2 size={14} />
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold">
+                    <CheckCircle2 size={14} className="text-emerald-700" />
                     <span>离线已就绪</span>
                   </span>
                 ) : downloadProgress?.chapterId === currentChapter.id ? (
-                  <div className="flex items-center gap-2 text-xs text-[#d3a625] font-semibold">
-                    <RefreshCw size={14} className="animate-spin text-[#d3a625]" />
+                  <div className="flex items-center gap-2 text-xs text-amber-800 font-semibold">
+                    <RefreshCw size={14} className="animate-spin text-amber-700" />
                     <span>下载中 <span className="font-mono">{downloadProgress.progress}%</span></span>
                   </div>
                 ) : (
                   <button
                     onClick={handleDownloadCurrent}
-                    className="flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs border border-amber-600 active:scale-95 cursor-pointer transition-all shrink-0"
+                    className="duo-btn-primary flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-bold active:scale-95 cursor-pointer shrink-0"
                     title="离线缓存当前章节音频与同步字幕"
                   >
                     <DownloadCloud size={14} />

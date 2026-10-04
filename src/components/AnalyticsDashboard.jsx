@@ -198,7 +198,7 @@ export function AnalyticsDashboard({
       <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
 
       {/* Main Modal Container (Native Bottom Sheet on Mobile, Centered on Desktop) */}
-      <div className="relative w-full max-w-4xl max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t-2 sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-all z-10 pb-safe flex flex-col no-scrollbar">
+      <div className="relative w-full max-w-4xl max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-all z-10 pb-safe flex flex-col no-scrollbar">
         
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
@@ -246,7 +246,7 @@ export function AnalyticsDashboard({
         {/* Content Body */}
         {showHonorScroll ? (
           <div className="p-6 sm:p-8 space-y-6 animate-fadeIn">
-            <div className="p-6 sm:p-8 rounded-3xl border-2 border-amber-400/80 bg-gradient-to-br from-white via-[#fbf9f5] to-amber-500/5 text-center relative overflow-hidden">
+            <div className="p-6 sm:p-8 rounded-3xl border border-amber-400/80 bg-gradient-to-br from-white via-[#fbf9f5] to-amber-500/5 text-center relative overflow-hidden">
               {/* Background Watermark Accent */}
               <div className="absolute right-3 -bottom-6 pointer-events-none opacity-5 text-amber-700">
                 <Award size={200} />

@@ -116,7 +116,7 @@ export function SrsFlashcardModal({
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border-t-2 sm:border-2 border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-5 sm:p-7 flex flex-col justify-between max-h-[88dvh] sm:max-h-[85dvh] sm:min-h-[480px] overflow-y-auto pb-safe transition-all no-scrollbar"
+        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-5 sm:p-7 flex flex-col justify-between max-h-[88dvh] sm:max-h-[85dvh] sm:min-h-[480px] overflow-y-auto pb-safe transition-all no-scrollbar"
       >
         {/* Mobile Pull Handle */}
         <div className="sm:hidden w-10 h-1.5 rounded-full bg-stone-300 mx-auto mb-3 shrink-0" />
@@ -178,7 +178,7 @@ export function SrsFlashcardModal({
         ) : isFinished ? (
           /* Settlement Screen */
           <div className="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-4 animate-fadeIn">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center border border-amber-500">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500 text-white flex items-center justify-center border border-amber-600">
               <Trophy size={32} />
             </div>
             <h4 className="font-magical font-bold text-2xl text-amber-950">
@@ -210,7 +210,7 @@ export function SrsFlashcardModal({
           /* Flashcard Container with Flip Animation */
           <div 
             onClick={() => setIsFlipped(!isFlipped)}
-            className="flex-1 flex flex-col justify-between p-6 sm:p-7 rounded-3xl border-2 border-[#e8ddd0] bg-white cursor-pointer hover:border-amber-400 transition-all relative group"
+            className="flex-1 flex flex-col justify-between p-6 sm:p-7 rounded-3xl border border-[#e8ddd0] bg-white cursor-pointer hover:border-amber-400 transition-all relative group"
             title="点击卡片翻转查看释义"
           >
             {/* Front of Card (English Word & Phonics) */}

@@ -121,7 +121,7 @@ export function VocabularyDrawer({
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="w-full sm:w-screen sm:max-w-md flex flex-col max-h-[92dvh] sm:max-h-full rounded-t-3xl sm:rounded-none border-t-2 sm:border-t-0 sm:border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe overflow-hidden"
+        className="w-full sm:w-screen sm:max-w-md flex flex-col max-h-[92dvh] sm:max-h-full rounded-t-3xl sm:rounded-none border-t sm:border-t-0 sm:border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe overflow-hidden"
       >
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
@@ -185,7 +185,7 @@ export function VocabularyDrawer({
               <div className="flex-1 overflow-y-auto p-4 space-y-3 ios-scroll">
                 {vocabList.length === 0 ? (
                   <div className="flex-1 flex flex-col items-center justify-center py-16 px-4 text-center my-auto">
-                    <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border-2 border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 animate-pulse">
+                    <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 animate-pulse">
                       <Bookmark size={28} className="text-amber-600" />
                     </div>
                     <h3 className="font-magical font-bold text-base text-amber-950 mb-1">

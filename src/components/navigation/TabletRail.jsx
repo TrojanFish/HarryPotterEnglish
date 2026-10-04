@@ -94,7 +94,7 @@ export function TabletRail({
   ];
 
   return (
-    <aside className="hidden md:flex lg:hidden w-18 shrink-0 flex-col items-center justify-between border-r-2 border-[#e8ddd0] bg-[#fbf9f5] py-4 px-2 select-none h-full">
+    <aside className="hidden md:flex lg:hidden w-18 shrink-0 flex-col items-center justify-between border-r border-[#e8ddd0] bg-[#fbf9f5] py-4 px-2 select-none h-full">
       {/* Brand Icon */}
       <div className="flex flex-col items-center gap-4 w-full">
         <div 

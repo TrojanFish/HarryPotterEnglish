@@ -55,7 +55,7 @@ export function BookShelfDrawer({
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="w-full sm:w-screen sm:max-w-xl flex flex-col max-h-[92dvh] sm:max-h-full rounded-t-3xl sm:rounded-none border-t-2 sm:border-t-0 sm:border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe overflow-hidden"
+        className="w-full sm:w-screen sm:max-w-xl flex flex-col max-h-[92dvh] sm:max-h-full rounded-t-3xl sm:rounded-none border-t sm:border-t-0 sm:border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe overflow-hidden"
       >
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
@@ -242,9 +242,9 @@ export function BookShelfDrawer({
                     }
                     setActiveTab('chapters');
                   }}
-                  className={`group relative rounded-2xl border-2 p-3.5 cursor-pointer transition-all flex items-center gap-4 ${
+                  className={`group relative rounded-2xl border p-3.5 cursor-pointer transition-all flex items-center gap-4 ${
                     isSelected
-                      ? 'border-amber-500 bg-amber-50/60'
+                      ? 'border-amber-500 bg-amber-50/60 ring-1 ring-amber-400/50'
                       : 'border-[#e8ddd0] bg-white hover:border-amber-400'
                   }`}
                 >
