@@ -250,6 +250,25 @@ export function App() {
     setCurrentView('player');
   }, [books, selectedBook, selectBook, selectChapter, setIsStorageOpen]);
 
+  // Desktop Sidebar Collapse state (persisted)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('hp_desktop_sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleSidebarCollapsed = useCallback(() => {
+    setIsSidebarCollapsed(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('hp_desktop_sidebar_collapsed', String(next));
+      } catch {}
+      return next;
+    });
+  }, []);
+
   // 3. Global Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -279,6 +298,9 @@ export function App() {
       } else if (e.key === 'm' || e.key === 'M') {
         e.preventDefault();
         setStudyMode(prev => prev === 'normal' ? 'blind' : prev === 'blind' ? 'dictation' : 'normal');
+      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
+        e.preventDefault();
+        toggleSidebarCollapsed();
       } else if (e.code === 'ArrowUp') {
         e.preventDefault();
         setVolume(Math.min(1, volume + 0.1));
@@ -297,6 +319,7 @@ export function App() {
     handleNextSentence,
     handleReplayCurrentSentence,
     setIsLoopSentence,
+    toggleSidebarCollapsed,
     volume,
     setVolume
   ]);
@@ -341,6 +364,8 @@ export function App() {
         }}
         canInstallPwa={canInstallPwa}
         onInstallPwa={handleInstallPwa}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={toggleSidebarCollapsed}
       />
 
       {/* ── 2. Tablet Compact Icon Rail (768px - 1023px) ────────────── */}

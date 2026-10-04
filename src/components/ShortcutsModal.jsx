@@ -23,6 +23,7 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
     { key: 'R', desc: '从头重播当前句子' },
     { key: 'L', desc: '切换 单句精听循环' },
     { key: 'M', desc: '切换 磨耳朵 / 听写模式' },
+    { key: 'Ctrl + B', desc: '展开 / 收起侧边栏' },
     { key: '↑ / ↓', desc: '调节音量大小' },
   ];
 
