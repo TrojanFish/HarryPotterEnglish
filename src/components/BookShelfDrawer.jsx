@@ -249,7 +249,7 @@ export function BookShelfDrawer({
                   }`}
                 >
                   {/* Cover */}
-                  <div className="w-16 h-22 rounded-xl overflow-hidden border border-amber-300/80 bg-stone-900 shrink-0">
+                  <div className="w-16 h-20 sm:h-24 rounded-xl overflow-hidden border border-amber-300/80 bg-stone-900 shrink-0">
                     {!coverErrorMap[book.id] ? (
                       <img
                         src={coverUrl}
@@ -271,7 +271,7 @@ export function BookShelfDrawer({
                         {book.cnTitle || book.title}
                       </h4>
                       {isSelected && (
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 font-bold shrink-0">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold shrink-0">
                           当前
                         </span>
                       )}

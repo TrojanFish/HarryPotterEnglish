@@ -131,7 +131,7 @@ export function WordModal({
               >
                 {tab.label}
                 {activeTab === tab.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-500 rounded-t" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-500 rounded-full" />
                 )}
               </button>
             ))}

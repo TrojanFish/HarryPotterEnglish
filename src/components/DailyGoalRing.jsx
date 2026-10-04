@@ -62,7 +62,7 @@ export function DailyGoalRing({
         {isCompleted ? (
           <Check size={size * 0.45} className="text-emerald-700 stroke-[3]" />
         ) : (
-          <span className="font-sans font-extrabold text-[10px] text-amber-900">
+          <span className="font-mono font-bold text-[10px] text-amber-900">
             {percent}%
           </span>
         )}

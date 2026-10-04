@@ -202,7 +202,7 @@ export function DesktopSidebar({
                     {item.icon}
                   </span>
                   {item.badge && (
-                    <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-amber-600 text-white font-mono font-bold text-[9px] flex items-center justify-center border border-white">
+                    <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-amber-600 text-white font-mono font-bold text-[9px] flex items-center justify-center border border-white">
                       {item.badge > 99 ? '99+' : item.badge}
                     </span>
                   )}

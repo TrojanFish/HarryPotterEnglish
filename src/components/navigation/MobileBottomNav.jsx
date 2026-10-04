@@ -79,9 +79,7 @@ export function MobileBottomNav({
             <span className={`text-[10px] font-bold mt-0.5 ${active ? 'text-amber-900 font-extrabold' : ''}`}>
               {tab.label}
             </span>
-            {active && (
-              <span className="w-1 h-1 rounded-full bg-amber-600 mt-0.5" />
-            )}
+            <span className={`w-1 h-1 rounded-full mt-0.5 transition-colors ${active ? 'bg-amber-600' : 'bg-transparent'}`} />
           </button>
         );
       })}

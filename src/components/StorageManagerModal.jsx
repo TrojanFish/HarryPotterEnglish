@@ -276,7 +276,7 @@ export function StorageManagerModal({
                         <span>•</span>
                         <span>{new Date(ch.downloadedAt).toLocaleDateString()}</span>
                         {isPlayingThis && (
-                          <span className="px-1.5 py-0.2 bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 rounded text-[9px] font-bold">
+                          <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 rounded text-[9px] font-bold">
                             正在播放
                           </span>
                         )}

@@ -76,7 +76,7 @@ export function ReaderTopBar({
               <button
                 key={key}
                 onClick={() => setStudyMode(key)}
-                className={`h-7 sm:h-7.5 flex items-center gap-1.5 px-2 sm:px-3 rounded-lg sm:rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                className={`h-7 flex items-center gap-1.5 px-2 sm:px-3 rounded-lg sm:rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                   isActive
                     ? 'bg-amber-500 text-white'
                     : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'

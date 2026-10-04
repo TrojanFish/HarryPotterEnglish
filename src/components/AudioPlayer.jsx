@@ -271,7 +271,7 @@ export function AudioPlayer({
           >
             <button
               onClick={handleVolumeToggle}
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-500 hover:text-amber-950 hover:border-amber-300 transition-colors cursor-pointer"
+              className="w-11 h-11 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-500 hover:text-amber-950 hover:border-amber-300 transition-colors cursor-pointer"
               title={isMuted ? '点击取消静音' : '点击静音，悬浮调节音量'}
             >
               {(isMuted || volume === 0) ? <VolumeX size={16} /> : <Volume2 size={16} />}

@@ -845,7 +845,7 @@ export function AnalyticsDashboard({
             </div>
 
             {/* Bottom subtle note */}
-            <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-400 pt-3 pb-safe select-none">
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-400 pt-3 select-none">
               <Info size={12} className="text-amber-600/70 shrink-0" />
               <span>学情与生词数据本地毫秒读取，已连接 Cloudflare D1 边缘增量同步</span>
             </div>
