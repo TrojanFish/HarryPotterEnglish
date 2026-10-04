@@ -7,6 +7,8 @@
 ![Vite](https://img.shields.io/badge/Vite-5-646cff.svg)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-38bdf8.svg)
 ![Cloudflare R2](https://img.shields.io/badge/Cloudflare-R2_Ready-f38020.svg)
+![Cloudflare D1](https://img.shields.io/badge/Cloudflare-D1_Sync-f38020.svg)
+![Local-First](https://img.shields.io/badge/Architecture-Local--First-10b981.svg)
 ![Docker](https://img.shields.io/badge/Docker-Supported-2496ed.svg)
 ![Vercel](https://img.shields.io/badge/Vercel-Deploy_Ready-black.svg)
 
@@ -85,6 +87,13 @@
 ### 9. PWA 桌面与手机 App 支持
 - 支持在 Chrome、Safari、Edge 浏览器中“一键安装到桌面”，宛如原生应用般快捷打开。
 
+### 10. 魔法云漫游 · 本地优先增量同步（Local-First Sync + Cloudflare D1）
+- **0ms 极致响应与完全离线**：生词收藏、艾宾浩斯复习状态与听力打卡日志依然首先走本地客户端存储（IndexedDB + LocalStorage），断网完全无感。
+- **后台智能增量同步**：在网络恢复或产生本地变更时，通过时间戳自动向云端 D1 数据库增量推送与拉取，仅传输修改过的数据，极度节省流量。
+- **LWW（Last-Write-Wins）冲突仲裁**：基于毫秒级时间戳取最新版本，结合软删除标记（Soft Delete），确保多设备数据合并不冲突、不丢失。
+- **天然支持多用户隔离**：云端数据库模型采用 `(user_id, word)` 独立主键隔离，不同用户/设备的数据完全物理隔离，互不串号。
+- **跨设备免密通行码配对（Passcode Pairing）**：每台设备自动生成 6 位魔法通行码（如 `HP-8F29`），在手机与电脑间输入通行码即可一秒绑定并合并数据，无需繁琐的账号密码注册。
+
 ---
 
 ## 多平台部署指南
@@ -116,15 +125,22 @@ docker compose up -d --build
 3. 在 **Environment Variables** 添加 R2 凭据（见下表）。
 4. 点击 **Deploy** 即可自动完成构建，获得全球加速域名。
 
-### 3. Cloudflare Pages 部署（推荐全球边缘网络）
-仓库内置 [`functions/api/[[path]].js`](functions/api/[[path]].js)，原生支持 Cloudflare Edge Functions：
+### 3. Cloudflare Pages 部署（推荐全球边缘网络 + D1 多端同步）
+仓库内置 [`functions/api/[[path]].js`](functions/api/[[path]].js)，原生支持 Cloudflare Edge Functions + D1 增量同步数据库：
 1. 登录 Cloudflare Dashboard，进入 **Workers & Pages** -> **Create application** -> **Pages**。
 2. 连接 GitHub 仓库，构建配置选择 `Vite`，构建命令 `npm run build`，输出目录 `dist`。
-3. 在 Pages 设置中绑定 R2 存储桶：
-   - **Settings** -> **Functions** -> **R2 bucket bindings**。
+3. **绑定 R2 存储桶**（存储原版小说音频与字幕）：
+   - 进入 Pages 项目 **Settings** -> **Functions** -> **R2 bucket bindings**。
    - Variable name 填入：`HP_AUDIO_BUCKET`。
-   - 选择你的 R2 存储桶：`fluentfox-podcast`。
-4. 点击保存部署，享受 R2 与 Pages 之间完全零出口流量费的极速流媒体。
+   - 选择你的 R2 存储桶：例如 `fluentfox-podcast`。
+4. **绑定 D1 无服务器数据库**（实现多设备生词与打卡增量同步，可选）：
+   - ① 在 Cloudflare 控制台左侧进入 **Storage & Databases** -> **D1 SQL Database** -> 点击 **Create database**（例如命名为 `hp-sync-db`）。
+   - ② 在该数据库的 **Console** 中，粘贴并执行本项目 [`d1/schema.sql`](d1/schema.sql) 的建表脚本（或使用 Wrangler CLI 执行：`npx wrangler d1 execute hp-sync-db --file=./d1/schema.sql`）。
+   - ③ 返回 Pages 项目 **Settings** -> **Functions** -> **D1 database bindings** -> 点击 **Add binding**。
+   - ④ Variable name 固定填入：`DB`。
+   - ⑤ D1 database 选择刚刚创建的 `hp-sync-db`。
+5. 点击保存并重新部署，享受 R2 与 Pages 之间完全零出口流量费的极速流媒体，以及 Cloudflare D1 带来的极速边缘数据增量同步！
+   > *注：若暂未配置 D1，系统将自动优雅降级为纯本地 0ms 离线模式，所有学习功能 100% 正常运行。*
 
 ### 4. GitHub Pages 部署（纯前端静态托管）
 项目已配置相对路径打包（`base: './'`），并内置 GitHub Actions 工作流 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)。
@@ -179,7 +195,7 @@ npm run dev
 # 3. 启动后端 R2 代理服务（http://localhost:3001）
 npm run server
 
-# 4. 运行全套 69 项自动化测试（覆盖端到端场景、Anki导出、离线缓存）
+# 4. 运行全套 65 项自动化测试（覆盖端到端场景、LWW增量同步、SRS算法、离线缓存）
 npm test
 ```
 
