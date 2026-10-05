@@ -102,12 +102,11 @@ const SentenceCard = React.memo(function SentenceCard({
 
           <button
             onClick={() => onRecordCue(cue)}
-            className="min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 font-bold text-xs"
+            className="min-h-[44px] min-w-[44px] rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
             title="跟读施咒（AI评分）"
             aria-label="跟读施咒AI评分"
           >
-            <Mic size={13} className="text-amber-700" />
-            <span className="hidden sm:inline">跟读</span>
+            <Mic size={14} className="text-amber-700" />
           </button>
 
           {studyMode === 'blind' && (

@@ -447,7 +447,7 @@ export function AnalyticsDashboard({
                   <span className={`text-xs ${theme.unitText}`}>词</span>
                 </div>
                 <div className={`text-[11px] mt-1.5 ${theme.secondaryText}`}>
-                  支持一键导出至 Anki
+                  支持打印羊皮纸单词卡与 CSV
                 </div>
               </div>
             </div>

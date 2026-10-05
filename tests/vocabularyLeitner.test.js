@@ -84,7 +84,7 @@ test('VocabularyDrawer Leitner Spaced Repetition & Action Pyramid Test Suite', a
     assert.ok(html.includes('待复习') || html.includes('待重炼'), 'Must display due review notification');
   });
 
-  await t.test('6.3: Refactoring UI 3-Tier Action Pyramid compliance', () => {
+  await t.test('6.3: Refactoring UI 3-Tier Action Pyramid & GitHub-style Icon Controls', () => {
     const html = renderToString(
       React.createElement(VocabularyDrawer, {
         isOpen: true,
@@ -97,8 +97,10 @@ test('VocabularyDrawer Leitner Spaced Repetition & Action Pyramid Test Suite', a
     // Primary CTA: PDF Print
     assert.ok(html.includes('打印羊皮纸单词卡 (PDF)') || html.includes('打印羊皮纸单词卡'),
       'Primary action must be printable parchment flashcard PDF');
-    // Secondary: Anki
-    assert.ok(html.includes('导出 Anki') || html.includes('Anki'), 'Secondary actions must include Anki export');
+    // Anki export eliminated completely
+    assert.ok(!html.includes('导出至 Anki') && !html.includes('Anki 挖空卡'), 'Must eliminate redundant Anki export');
+    // Secondary: CSV export
+    assert.ok(html.includes('导出为通用表格 CSV 格式'), 'Secondary action must include CSV export');
     // Tertiary: Clear
     assert.ok(html.includes('清空'), 'Tertiary action must include clear with protection');
   });

@@ -13,7 +13,6 @@ import {
   Printer
 } from 'lucide-react';
 
-import { generateAnkiTSV, downloadAnkiFile } from '../utils/ankiExport';
 import { printParchmentCards } from '../utils/parchmentPdfGenerator';
 
 export function VocabularyDrawer({
@@ -63,20 +62,6 @@ export function VocabularyDrawer({
       utterance.rate = 0.9;
       window.speechSynthesis.speak(utterance);
     }
-  };
-
-  const handleExportAnki = () => {
-    if (!vocabList || vocabList.length === 0) return;
-    const content = generateAnkiTSV(vocabList, { deckName: 'Hogwarts Magic English' });
-    downloadAnkiFile(content, `hogwarts_anki_${Date.now()}.tsv`);
-    showToast('已导出 Anki 牌组文件 (.tsv)，可在 Anki 中直接导入！');
-  };
-
-  const handleExportAnkiCloze = () => {
-    if (!vocabList || vocabList.length === 0) return;
-    const content = generateAnkiTSV(vocabList, { deckName: 'Hogwarts Magic English (Cloze)', cloze: true });
-    downloadAnkiFile(content, `hogwarts_anki_cloze_${Date.now()}.tsv`);
-    showToast('已导出 Anki Cloze 填空卡牌组 (.tsv)！');
   };
 
   const handleExportCSV = () => {
@@ -389,13 +374,14 @@ export function VocabularyDrawer({
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                    <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center justify-between gap-2 text-xs">
+                    <div className="flex items-center gap-2">
                       <button
                         disabled={vocabList.length === 0}
                         onClick={handlePrintParchmentPdf}
-                        className={`duo-btn-primary min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 font-bold ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                        className={`duo-btn-primary min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 font-bold ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                         title="生成标准 A4 羊皮纸剪裁闪卡，直接打印或保存为 PDF"
+                        aria-label="打印羊皮纸单词卡 (PDF)"
                       >
                         <Printer size={14} className="shrink-0" />
                         <span>打印羊皮纸单词卡 (PDF)</span>
@@ -403,43 +389,23 @@ export function VocabularyDrawer({
 
                       <button
                         disabled={vocabList.length === 0}
-                        onClick={handleExportAnki}
-                        className={`duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                        title="导出为标准 Anki 卡片牌组 (.tsv)"
-                      >
-                        <Sparkles size={14} className="text-amber-600 shrink-0" />
-                        <span>导出至 Anki (TSV)</span>
-                      </button>
-
-                      <button
-                        disabled={vocabList.length === 0}
-                        onClick={handleExportAnkiCloze}
-                        className={`duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                        title="导出为 Anki 挖空填空卡 (Cloze Deletion)"
-                      >
-                        <BrainCircuit size={14} className="text-amber-700 shrink-0" />
-                        <span>Anki 挖空卡</span>
-                      </button>
-
-                      <button
-                        disabled={vocabList.length === 0}
                         onClick={handleExportCSV}
-                        className={`duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                        className={`duo-btn-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-xs active:scale-95 ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                         title="导出为通用表格 CSV 格式"
+                        aria-label="导出为通用表格 CSV 格式"
                       >
-                        <Download size={14} className="shrink-0" />
-                        <span>导出 CSV</span>
+                        <Download size={15} className="shrink-0 text-stone-600" />
                       </button>
                     </div>
 
                     <button
                       disabled={vocabList.length === 0}
                       onClick={() => setShowClearConfirm(true)}
-                      className={`min-h-[44px] px-3 py-2 rounded-xl text-xs font-bold border border-rose-200 text-rose-700 bg-rose-50/60 transition-all whitespace-nowrap flex items-center gap-1.5 ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-rose-100 hover:border-rose-300 active:scale-95 cursor-pointer'}`}
+                      className={`min-h-[44px] min-w-[44px] rounded-xl border border-rose-200 text-rose-700 bg-rose-50/60 transition-all flex items-center justify-center ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-rose-100 hover:border-rose-300 active:scale-95 cursor-pointer'}`}
                       title="清空生词本内所有单词"
+                      aria-label="清空生词本"
                     >
-                      <Trash2 size={14} className="text-rose-600 shrink-0" />
-                      <span>清空生词本</span>
+                      <Trash2 size={15} className="text-rose-600 shrink-0" />
                     </button>
                   </div>
                 )}

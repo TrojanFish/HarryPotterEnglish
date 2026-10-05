@@ -137,6 +137,25 @@ test('SubtitleViewer Hero Unit Focus & SLA Ergonomics Test Suite', async (t) => 
     // Sentence row must not render redundant synthetic TTS speak button
     assert.ok(!html.includes('朗读示范'), 'Must eliminate redundant synthetic TTS speak button');
   });
+
+  await t.test('3.6: Action buttons follow GitHub-style icon-only design without text clutter', () => {
+    const html = renderToString(
+      React.createElement(SubtitleViewer, {
+        cues: mockCues,
+        activeCueIndex: 0,
+        studyMode: 'normal',
+        showTranslation: true,
+        isParchment: true,
+        onSeekToCue: () => {},
+        onWordClick: () => {},
+        onRecordCue: () => {},
+        onSaveToVocab: () => {}
+      })
+    );
+
+    // Sentence row buttons must be icon-only (e.g. no >跟读< text)
+    assert.ok(!html.includes('>跟读<'), 'Sentence action buttons must be pure SVG icons without redundant text');
+  });
 });
 
 

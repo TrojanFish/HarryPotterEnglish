@@ -253,14 +253,14 @@ test('Adversarial 1.1: Empty vocabulary state in VocabularyDrawer renders button
   // 2. Must render empty state guidance message
   assert.match(html, /暂无生词/, 'Must show empty placeholder');
 
-  // 3. Export to Anki (TSV) button MUST be disabled
-  assert.match(html, /<button[^>]*disabled=""[^>]*>[\s\S]*?导出至 Anki \(TSV\)/, 'Anki TSV export button must be disabled when vocab is empty');
+  // 3. Print PDF button MUST be disabled
+  assert.match(html, /<button[^>]*disabled=""[^>]*>[\s\S]*?打印羊皮纸单词卡/, 'Print PDF button must be disabled when vocab is empty');
 
   // 4. Export CSV button MUST be disabled
-  assert.match(html, /<button[^>]*disabled=""[^>]*>[\s\S]*?导出 CSV/, 'CSV export button must be disabled when vocab is empty');
+  assert.match(html, /<button[^>]*disabled=""[^>]*title="导出为通用表格 CSV 格式"/, 'CSV export button must be disabled when vocab is empty');
 
   // 5. Clear all button MUST be disabled
-  assert.match(html, /<button[^>]*disabled=""[^>]*>[\s\S]*?清空生词本/, 'Clear all button must be disabled when vocab is empty');
+  assert.match(html, /<button[^>]*disabled=""[^>]*title="清空生词本内所有单词"/, 'Clear all button must be disabled when vocab is empty');
 });
 
 test('Adversarial 1.2: Empty vocab list export execution safely early-returns without calling download or crashing', () => {

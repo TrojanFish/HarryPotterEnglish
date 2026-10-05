@@ -117,5 +117,22 @@ test('BookshelfView CEFR & Hero Continue Card Test Suite', async (t) => {
     assert.ok(!html.includes('min-h-[40px]'), 'Must eliminate non-compliant min-h-[40px] buttons');
     assert.ok(html.includes('min-h-[44px]'), 'Must enforce min-h-[44px] on action buttons');
   });
+
+  await t.test('4.5: Desktop book card action buttons follow GitHub-style icon-only design', () => {
+    const html = renderToString(
+      React.createElement(BookshelfView, {
+        books: mockBooks,
+        selectedBook: 'book1',
+        selectedChapter: 'b1_c01',
+        currentTime: 45,
+        duration: 300,
+        isParchment: true
+      })
+    );
+
+    // Desktop book action buttons should not render redundant text "精听" and "目录"
+    assert.ok(!html.includes('>精听<'), 'Book card buttons must be icon-only');
+    assert.ok(!html.includes('>目录<'), 'Book card buttons must be icon-only');
+  });
 });
 

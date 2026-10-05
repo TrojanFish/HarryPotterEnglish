@@ -99,16 +99,15 @@ export function ReaderTopBar({
           {studyMode !== 'dictation' && (
             <button
               onClick={() => (onToggleTranslation ? onToggleTranslation() : setShowTranslation && setShowTranslation(!showTranslation))}
-              className={`h-10 min-w-[40px] flex items-center justify-center gap-1 px-2.5 sm:px-3 rounded-xl border text-xs font-bold transition-colors cursor-pointer ${
+              className={`w-10 h-10 min-w-[40px] flex items-center justify-center rounded-xl border transition-colors cursor-pointer active:scale-95 ${
                 showTranslation
                   ? 'bg-amber-50 text-amber-900 border-amber-300'
                   : 'bg-white text-stone-500 border-[#e8ddd0] hover:border-amber-300'
               }`}
-              title="开启/关闭中文双语译文"
+              title={showTranslation ? '双语译文：开 (点击关闭)' : '双语译文：关 (点击开启)'}
               aria-label="中英双语切换"
             >
-              <Languages size={15} className={showTranslation ? 'text-amber-600' : 'text-stone-400'} />
-              <span className="hidden sm:inline">{showTranslation ? '双语：开' : '双语：关'}</span>
+              <Languages size={16} className={showTranslation ? 'text-amber-600' : 'text-stone-400'} />
             </button>
           )}
 

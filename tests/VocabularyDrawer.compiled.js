@@ -12,7 +12,6 @@ import {
   Bookmark,
   Printer
 } from "lucide-react";
-import { generateAnkiTSV, downloadAnkiFile } from "../src/utils/ankiExport.js";
 import { printParchmentCards } from "../src/utils/parchmentPdfGenerator.js";
 function VocabularyDrawer({
   isOpen,
@@ -55,18 +54,6 @@ function VocabularyDrawer({
       utterance.rate = 0.9;
       window.speechSynthesis.speak(utterance);
     }
-  };
-  const handleExportAnki = () => {
-    if (!vocabList || vocabList.length === 0) return;
-    const content = generateAnkiTSV(vocabList, { deckName: "Hogwarts Magic English" });
-    downloadAnkiFile(content, `hogwarts_anki_${Date.now()}.tsv`);
-    showToast("\u5DF2\u5BFC\u51FA Anki \u724C\u7EC4\u6587\u4EF6 (.tsv)\uFF0C\u53EF\u5728 Anki \u4E2D\u76F4\u63A5\u5BFC\u5165\uFF01");
-  };
-  const handleExportAnkiCloze = () => {
-    if (!vocabList || vocabList.length === 0) return;
-    const content = generateAnkiTSV(vocabList, { deckName: "Hogwarts Magic English (Cloze)", cloze: true });
-    downloadAnkiFile(content, `hogwarts_anki_cloze_${Date.now()}.tsv`);
-    showToast("\u5DF2\u5BFC\u51FA Anki Cloze \u586B\u7A7A\u5361\u724C\u7EC4 (.tsv)\uFF01");
   };
   const handleExportCSV = () => {
     if (vocabList.length === 0) return;
@@ -235,13 +222,14 @@ function VocabularyDrawer({
           className: "px-3.5 py-2 min-h-[44px] rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700 cursor-pointer active:scale-95"
         },
         "\u786E\u8BA4\u6E05\u7A7A"
-      ))) : /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap items-center justify-between gap-2 text-xs" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 flex-wrap" }, /* @__PURE__ */ React.createElement(
+      ))) : /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between gap-2 text-xs" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement(
         "button",
         {
           disabled: vocabList.length === 0,
           onClick: handlePrintParchmentPdf,
-          className: `duo-btn-primary min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 font-bold ${vocabList.length === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`,
-          title: "\u751F\u6210\u6807\u51C6 A4 \u7F8A\u76AE\u7EB8\u526A\u88C1\u95EA\u5361\uFF0C\u76F4\u63A5\u6253\u5370\u6216\u4FDD\u5B58\u4E3A PDF"
+          className: `duo-btn-primary min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 font-bold ${vocabList.length === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`,
+          title: "\u751F\u6210\u6807\u51C6 A4 \u7F8A\u76AE\u7EB8\u526A\u88C1\u95EA\u5361\uFF0C\u76F4\u63A5\u6253\u5370\u6216\u4FDD\u5B58\u4E3A PDF",
+          "aria-label": "\u6253\u5370\u7F8A\u76AE\u7EB8\u5355\u8BCD\u5361 (PDF)"
         },
         /* @__PURE__ */ React.createElement(Printer, { size: 14, className: "shrink-0" }),
         /* @__PURE__ */ React.createElement("span", null, "\u6253\u5370\u7F8A\u76AE\u7EB8\u5355\u8BCD\u5361 (PDF)")
@@ -249,42 +237,22 @@ function VocabularyDrawer({
         "button",
         {
           disabled: vocabList.length === 0,
-          onClick: handleExportAnki,
-          className: `duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 ${vocabList.length === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`,
-          title: "\u5BFC\u51FA\u4E3A\u6807\u51C6 Anki \u5361\u7247\u724C\u7EC4 (.tsv)"
-        },
-        /* @__PURE__ */ React.createElement(Sparkles, { size: 14, className: "text-amber-600 shrink-0" }),
-        /* @__PURE__ */ React.createElement("span", null, "\u5BFC\u51FA\u81F3 Anki (TSV)")
-      ), /* @__PURE__ */ React.createElement(
-        "button",
-        {
-          disabled: vocabList.length === 0,
-          onClick: handleExportAnkiCloze,
-          className: `duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 ${vocabList.length === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`,
-          title: "\u5BFC\u51FA\u4E3A Anki \u6316\u7A7A\u586B\u7A7A\u5361 (Cloze Deletion)"
-        },
-        /* @__PURE__ */ React.createElement(BrainCircuit, { size: 14, className: "text-amber-700 shrink-0" }),
-        /* @__PURE__ */ React.createElement("span", null, "Anki \u6316\u7A7A\u5361")
-      ), /* @__PURE__ */ React.createElement(
-        "button",
-        {
-          disabled: vocabList.length === 0,
           onClick: handleExportCSV,
-          className: `duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 ${vocabList.length === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`,
-          title: "\u5BFC\u51FA\u4E3A\u901A\u7528\u8868\u683C CSV \u683C\u5F0F"
+          className: `duo-btn-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-xs active:scale-95 ${vocabList.length === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`,
+          title: "\u5BFC\u51FA\u4E3A\u901A\u7528\u8868\u683C CSV \u683C\u5F0F",
+          "aria-label": "\u5BFC\u51FA\u4E3A\u901A\u7528\u8868\u683C CSV \u683C\u5F0F"
         },
-        /* @__PURE__ */ React.createElement(Download, { size: 14, className: "shrink-0" }),
-        /* @__PURE__ */ React.createElement("span", null, "\u5BFC\u51FA CSV")
+        /* @__PURE__ */ React.createElement(Download, { size: 15, className: "shrink-0 text-stone-600" })
       )), /* @__PURE__ */ React.createElement(
         "button",
         {
           disabled: vocabList.length === 0,
           onClick: () => setShowClearConfirm(true),
-          className: `min-h-[44px] px-3 py-2 rounded-xl text-xs font-bold border border-rose-200 text-rose-700 bg-rose-50/60 transition-all whitespace-nowrap flex items-center gap-1.5 ${vocabList.length === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-rose-100 hover:border-rose-300 active:scale-95 cursor-pointer"}`,
-          title: "\u6E05\u7A7A\u751F\u8BCD\u672C\u5185\u6240\u6709\u5355\u8BCD"
+          className: `min-h-[44px] min-w-[44px] rounded-xl border border-rose-200 text-rose-700 bg-rose-50/60 transition-all flex items-center justify-center ${vocabList.length === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-rose-100 hover:border-rose-300 active:scale-95 cursor-pointer"}`,
+          title: "\u6E05\u7A7A\u751F\u8BCD\u672C\u5185\u6240\u6709\u5355\u8BCD",
+          "aria-label": "\u6E05\u7A7A\u751F\u8BCD\u672C"
         },
-        /* @__PURE__ */ React.createElement(Trash2, { size: 14, className: "text-rose-600 shrink-0" }),
-        /* @__PURE__ */ React.createElement("span", null, "\u6E05\u7A7A\u751F\u8BCD\u672C")
+        /* @__PURE__ */ React.createElement(Trash2, { size: 15, className: "text-rose-600 shrink-0" })
       ))),
       toastMessage && /* @__PURE__ */ React.createElement("div", { className: "absolute bottom-20 left-4 right-4 z-50 animate-bounce" }, /* @__PURE__ */ React.createElement("div", { className: "p-3 rounded-2xl bg-emerald-700/95 border border-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2" }, /* @__PURE__ */ React.createElement(CheckCircle, { size: 15 }), /* @__PURE__ */ React.createElement("span", null, toastMessage)))
     )

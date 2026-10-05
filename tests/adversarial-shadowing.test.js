@@ -332,7 +332,8 @@ function findButtonByText(tree, text) {
         if (typeof n === 'string') texts.push(n);
       });
       const combined = texts.join(' ');
-      if (combined.includes(text)) {
+      const title = node.props && (node.props.title || node.props['aria-label'] || '');
+      if (combined.includes(text) || title.includes(text)) {
         found = node;
         return;
       }

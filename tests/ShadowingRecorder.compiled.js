@@ -347,11 +347,11 @@ function ShadowingRecorder({
     {
       onClick: () => onPlayOriginalSnippet(currentCue),
       disabled: isRecording || isEvaluating,
-      className: "duo-btn-secondary min-h-[44px] min-w-[44px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold disabled:opacity-40 disabled:pointer-events-none cursor-pointer",
-      title: "\u64AD\u653E\u5F53\u524D\u53E5\u539F\u8457\u539F\u58F0\u6717\u8BFB"
+      className: "duo-btn-secondary w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-xs font-semibold disabled:opacity-40 disabled:pointer-events-none cursor-pointer active:scale-95 transition-all",
+      title: "\u64AD\u653E\u539F\u97F3 (\u7EAF\u6B63\u82F1\u5F0F\u539F\u8457\u539F\u58F0)",
+      "aria-label": "\u64AD\u653E\u539F\u97F3"
     },
-    /* @__PURE__ */ React.createElement(Volume2, { size: 14 }),
-    /* @__PURE__ */ React.createElement("span", null, "\u64AD\u653E\u539F\u97F3")
+    /* @__PURE__ */ React.createElement(Volume2, { size: 16 })
   )), /* @__PURE__ */ React.createElement("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-2xl border border-[#e8ddd0] bg-white gap-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-2.5 min-w-0" }, /* @__PURE__ */ React.createElement("div", { className: "w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-300/80 flex items-center justify-center shrink-0" }, /* @__PURE__ */ React.createElement(Headphones, { className: "w-4 h-4 text-amber-700" })), /* @__PURE__ */ React.createElement("div", { className: "min-w-0" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1.5" }, /* @__PURE__ */ React.createElement("span", { className: "track-b-badge text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-300/80 bg-amber-50 text-amber-900" }, "Track B \u5F55\u97F3"), /* @__PURE__ */ React.createElement("span", { className: "text-xs font-bold text-amber-950 truncate" }, "\u4F60\u7684\u8DDF\u8BFB\u5F55\u97F3")), /* @__PURE__ */ React.createElement("span", { className: "text-[11px] text-stone-500 truncate block mt-0.5" }, isRecording ? `\u6B63\u5728\u5F55\u97F3\u4E2D... ${recordSeconds}s` : recordedAudioUrl ? "\u5F55\u97F3\u5B8C\u6210\uFF0C\u53EF\u5BF9\u6BD4\u64AD\u653E" : "\u5C1A\u672A\u5F55\u5236"))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 shrink-0" }, !isRecording ? /* @__PURE__ */ React.createElement(
     "button",
     {

@@ -226,10 +226,11 @@ export function BookshelfView({
             </button>
             <button
               onClick={() => setInspectingBook(currentBookObj)}
-              className="duo-btn-secondary min-h-[44px] px-4 py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-1"
+              className="duo-btn-secondary w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center cursor-pointer active:scale-95 transition-all"
+              title="查看章节目录"
+              aria-label="查看章节目录"
             >
-              <Layers size={14} />
-              目录
+              <Layers size={16} />
             </button>
           </div>
         </div>
@@ -306,8 +307,8 @@ export function BookshelfView({
                   </div>
                 </div>
 
-                {/* Actions: Mobile single 44px play button; Desktop dual buttons */}
-                <div className="sm:hidden shrink-0 flex items-center">
+                {/* Actions: GitHub-style icon buttons (Play & Chapters) */}
+                <div className="shrink-0 flex items-center gap-2">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -315,36 +316,22 @@ export function BookshelfView({
                       if (chapters.length > 0) onSelectChapter(chapters[0].id, true);
                       onEnterPlayer();
                     }}
-                    className="w-11 h-11 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none"
+                    className="w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none"
                     title="立即开始精听"
                     aria-label="立即精听"
                   >
                     <Play size={16} className="fill-current translate-x-0.5" />
-                  </button>
-                </div>
-
-                <div className="hidden sm:flex flex-col gap-2 shrink-0">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSelectBook(book.id);
-                      if (chapters.length > 0) onSelectChapter(chapters[0].id, true);
-                      onEnterPlayer();
-                    }}
-                    className="duo-btn-primary min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1"
-                  >
-                    <Play size={12} className="fill-current" />
-                    精听
                   </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setInspectingBook(book);
                     }}
-                    className="duo-btn-secondary min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1"
+                    className="w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 hover:border-amber-300 flex items-center justify-center active:scale-95 transition-all cursor-pointer shadow-none"
+                    title="查看章节目录"
+                    aria-label="查看章节目录"
                   >
-                    <Layers size={12} />
-                    目录
+                    <Layers size={16} />
                   </button>
                 </div>
               </div>

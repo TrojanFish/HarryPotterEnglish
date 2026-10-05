@@ -577,11 +577,11 @@ export function ShadowingRecorder({
             <button
               onClick={() => onPlayOriginalSnippet(currentCue)}
               disabled={isRecording || isEvaluating}
-              className="duo-btn-secondary min-h-[44px] min-w-[44px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
-              title="播放当前句原著原声朗读"
+              className="duo-btn-secondary w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-xs font-semibold disabled:opacity-40 disabled:pointer-events-none cursor-pointer active:scale-95 transition-all"
+              title="播放原音 (纯正英式原著原声)"
+              aria-label="播放原音"
             >
-              <Volume2 size={14} />
-              <span>播放原音</span>
+              <Volume2 size={16} />
             </button>
           </div>
 
