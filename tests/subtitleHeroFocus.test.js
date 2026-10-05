@@ -118,5 +118,25 @@ test('SubtitleViewer Hero Unit Focus & SLA Ergonomics Test Suite', async (t) => 
     assert.ok(html.includes('min-h-[44px]'), 'Must enforce Apple HIG 44px minimum height touch target');
     assert.ok(html.includes('min-w-[44px]'), 'Must enforce Apple HIG 44px minimum width touch target');
   });
+
+  await t.test('3.5: Clean action toolbar eliminates redundant robotic TTS speak button', () => {
+    const html = renderToString(
+      React.createElement(SubtitleViewer, {
+        cues: mockCues,
+        activeCueIndex: 0,
+        studyMode: 'normal',
+        showTranslation: true,
+        isParchment: true,
+        onSeekToCue: () => {},
+        onWordClick: () => {},
+        onRecordCue: () => {},
+        onSaveToVocab: () => {}
+      })
+    );
+
+    // Sentence row must not render redundant synthetic TTS speak button
+    assert.ok(!html.includes('朗读示范'), 'Must eliminate redundant synthetic TTS speak button');
+  });
 });
+
 

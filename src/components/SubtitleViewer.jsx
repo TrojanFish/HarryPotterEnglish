@@ -6,7 +6,6 @@ import {
   EyeOff,
   Sparkles,
   Type,
-  Volume2,
   Headphones,
   Copy,
   Check,
@@ -36,9 +35,7 @@ const SentenceCard = React.memo(function SentenceCard({
   onSeekToCue,
   onWordClick,
   onRecordCue,
-  onSpeakSentence,
   onCopySentence,
-  speakingCueId,
   copiedCueId,
   onToggleReveal,
   cardRef
@@ -91,31 +88,16 @@ const SentenceCard = React.memo(function SentenceCard({
           </button>
 
           {isActive && (
-            <>
-              <button
-                onClick={() => onSpeakSentence(cue)}
-                className={`hidden sm:inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-xl border transition-colors active:scale-95 cursor-pointer ${
-                  speakingCueId === cue.id
-                    ? 'text-amber-900 bg-amber-100 border-amber-300'
-                    : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950'
-                }`}
-                title="朗读示范 (英音)"
-                aria-label="朗读示范"
-              >
-                <Volume2 size={13} className={speakingCueId === cue.id ? 'animate-bounce' : ''} />
-              </button>
-
-              <button
-                onClick={() => onCopySentence(cue)}
-                className="hidden sm:inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-xl border border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
-                title={copiedCueId === cue.id ? '已复制' : '复制本句'}
-                aria-label="复制本句"
-              >
-                {copiedCueId === cue.id
-                  ? <Check size={13} className="text-emerald-600" />
-                  : <Copy size={13} />}
-              </button>
-            </>
+            <button
+              onClick={() => onCopySentence(cue)}
+              className="hidden sm:inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-xl border border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
+              title={copiedCueId === cue.id ? '已复制' : '复制本句'}
+              aria-label="复制本句"
+            >
+              {copiedCueId === cue.id
+                ? <Check size={13} className="text-emerald-600" />
+                : <Copy size={13} />}
+            </button>
           )}
 
           <button
@@ -219,7 +201,6 @@ export function SubtitleViewer({
   });
   const [isFollowActive, setIsFollowActive] = useState(true);
   const [copiedCueId, setCopiedCueId] = useState(null);
-  const [speakingCueId, setSpeakingCueId] = useState(null);
 
   // Touch gesture state
   const touchStartX = useRef(null);
@@ -241,19 +222,6 @@ export function SubtitleViewer({
       setCopiedCueId(cue.id);
       setTimeout(() => setCopiedCueId(null), 1800);
     }).catch(() => {});
-  }, []);
-
-  const handleSpeakSentence = useCallback((cue) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(cue.text);
-      utt.lang = 'en-GB';
-      utt.rate = 0.85;
-      setSpeakingCueId(cue.id);
-      utt.onend = () => setSpeakingCueId(null);
-      utt.onerror = () => setSpeakingCueId(null);
-      window.speechSynthesis.speak(utt);
-    }
   }, []);
 
   const toggleSentenceReveal = useCallback((cueId) => {
@@ -372,9 +340,7 @@ export function SubtitleViewer({
                 onSeekToCue={onSeekToCue}
                 onWordClick={onWordClick}
                 onRecordCue={onRecordCue}
-                onSpeakSentence={handleSpeakSentence}
                 onCopySentence={handleCopySentence}
-                speakingCueId={speakingCueId}
                 copiedCueId={copiedCueId}
                 onToggleReveal={toggleSentenceReveal}
               />
