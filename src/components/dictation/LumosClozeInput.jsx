@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Check, Lightbulb } from 'lucide-react';
+import { Sparkles, Check, X, Lightbulb } from 'lucide-react';
 import { generateClozeStructure, cleanWord } from '../../utils/dictationEngine';
 import { playCorrectChime, playMistakeThud } from '../../utils/spellAudioSynthesizer';
 
@@ -167,9 +167,14 @@ export function LumosClozeInput({
                       : 'border-amber-400/90 bg-white text-amber-950 focus:border-amber-600 focus:ring-2 focus:ring-amber-400/20'
                   }`}
                 />
-                {status === 'correct' && (
-                  <Check size={14} className="absolute right-2 text-emerald-600 pointer-events-none" />
-                )}
+                <span className="status-icon-container">
+                  {status === 'correct' && (
+                    <Check size={14} className="absolute right-2 text-emerald-600 pointer-events-none" />
+                  )}
+                  {status === 'wrong' && (
+                    <X size={14} className="absolute right-2 text-red-500 pointer-events-none" />
+                  )}
+                </span>
               </span>
             );
           })}

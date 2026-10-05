@@ -57,10 +57,10 @@ const SentenceCard = React.memo(function SentenceCard({
   return (
     <div
       ref={cardRef}
-      className={`group relative rounded-2xl transition-colors duration-200 subtitle-item-render ${
+      className={`group relative rounded-2xl transition-all duration-200 subtitle-item-render ${
         isActive
-          ? 'border-l-4 border-l-amber-500 bg-amber-50/60 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4'
-          : 'border-l-4 border-l-transparent bg-white hover:bg-stone-50/80 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4'
+          ? 'reading-hero-sentence border-l-4 border-l-amber-500 bg-amber-50/60 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4 shadow-sm'
+          : 'reading-inactive-sentence border-l-4 border-l-transparent bg-white hover:bg-stone-50/80 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4'
       }`}
     >
       {/* Header: timestamps (hover-only on inactive) + action buttons */}
@@ -79,58 +79,63 @@ const SentenceCard = React.memo(function SentenceCard({
           )}
         </div>
 
-        {/* Action buttons */}
-        <div className="flex items-center gap-1 sm:gap-1.5">
+        {/* Action buttons (Apple HIG >= 44x44pt ergonomic touch targets) */}
+        <div className="flex items-center gap-1.5">
           <button
             onClick={() => onSeekToCue(cue)}
-            className="w-8 h-8 sm:w-7 sm:h-7 rounded-lg border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-500 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
+            className="min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
             title="从此句播放"
+            aria-label="从此句播放"
           >
-            <Play size={12} className="fill-current translate-x-0.5" />
+            <Play size={13} className="fill-current translate-x-0.5" />
           </button>
 
           {isActive && (
             <>
               <button
                 onClick={() => onSpeakSentence(cue)}
-                className={`hidden sm:inline-flex w-7 h-7 items-center justify-center rounded-lg border transition-colors active:scale-95 cursor-pointer ${
+                className={`hidden sm:inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-xl border transition-colors active:scale-95 cursor-pointer ${
                   speakingCueId === cue.id
                     ? 'text-amber-900 bg-amber-100 border-amber-300'
                     : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950'
                 }`}
                 title="朗读示范 (英音)"
+                aria-label="朗读示范"
               >
-                <Volume2 size={12} className={speakingCueId === cue.id ? 'animate-bounce' : ''} />
+                <Volume2 size={13} className={speakingCueId === cue.id ? 'animate-bounce' : ''} />
               </button>
 
               <button
                 onClick={() => onCopySentence(cue)}
-                className="hidden sm:inline-flex w-7 h-7 items-center justify-center rounded-lg border border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
+                className="hidden sm:inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-xl border border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
                 title={copiedCueId === cue.id ? '已复制' : '复制本句'}
+                aria-label="复制本句"
               >
                 {copiedCueId === cue.id
-                  ? <Check size={12} className="text-emerald-600" />
-                  : <Copy size={12} />}
+                  ? <Check size={13} className="text-emerald-600" />
+                  : <Copy size={13} />}
               </button>
             </>
           )}
 
           <button
             onClick={() => onRecordCue(cue)}
-            className="min-h-[32px] sm:min-h-0 px-2 sm:px-2.5 py-1 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center gap-1 font-bold text-[11px]"
+            className="min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 font-bold text-xs"
             title="跟读施咒（AI评分）"
+            aria-label="跟读施咒AI评分"
           >
-            <Mic size={12} className="text-amber-700" />
+            <Mic size={13} className="text-amber-700" />
             <span className="hidden sm:inline">跟读</span>
           </button>
 
           {studyMode === 'blind' && (
             <button
               onClick={() => onToggleReveal(cue.id)}
-              className="w-8 h-8 sm:w-7 sm:h-7 rounded-lg border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
+              className="min-w-[44px] min-h-[44px] rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
               title={isRevealed ? '重新遮罩' : '揭示本句'}
+              aria-label={isRevealed ? '重新遮罩' : '揭示本句'}
             >
-              {isRevealed ? <EyeOff size={12} /> : <Eye size={12} />}
+              {isRevealed ? <EyeOff size={13} /> : <Eye size={13} />}
             </button>
           )}
         </div>
@@ -138,7 +143,7 @@ const SentenceCard = React.memo(function SentenceCard({
 
       {/* English Text */}
       <div
-        className={`font-reading ${fontSizeClass} select-text leading-[1.8] transition-all duration-300 ${
+        className={`font-reading ${fontSizeClass} select-text leading-[1.85] transition-all duration-300 ${
           isBlindHidden ? 'opacity-0 select-none pointer-events-none' : ''
         }`}
       >
@@ -382,10 +387,11 @@ export function SubtitleViewer({
       {!isFollowActive && cues.length > 0 && activeCueIndex >= 0 && (
         <button
           onClick={scrollToActiveCue}
-          className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:bottom-24 right-5 sm:right-8 z-30 flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-amber-300 bg-white text-amber-950 font-bold text-xs active:scale-95 cursor-pointer shadow-none"
+          className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:bottom-24 right-4 sm:right-8 z-30 flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-full border border-amber-300 bg-white/95 backdrop-blur-sm text-amber-950 font-bold text-xs active:scale-95 cursor-pointer shadow-none"
           title="定位到正在朗读的句子"
+          aria-label="定位到正在朗读的句子"
         >
-          <LocateFixed size={13} className="text-amber-600" />
+          <LocateFixed size={14} className="text-amber-600 shrink-0" />
           <span>定位 (第 <span className="font-mono font-bold">{activeCueIndex + 1}</span> 句)</span>
         </button>
       )}

@@ -21,7 +21,7 @@ class SyncEngine {
     this.status = 'idle'; // 'idle' | 'syncing' | 'synced' | 'offline' | 'error'
     this.lastSyncError = null;
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
       window.addEventListener('online', () => {
         this.setStatus('idle');
         this.scheduleSync(800);

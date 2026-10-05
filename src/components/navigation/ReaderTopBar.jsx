@@ -37,46 +37,49 @@ export function ReaderTopBar({
 
   return (
     <header className="sticky top-0 z-30 pt-safe bg-white/95 border-b border-[#e8ddd0] backdrop-blur-md select-none shrink-0">
+      {/* ── Primary Top Bar Navigation Row ────────────────────────── */}
       <div className="h-14 px-3 sm:px-6 flex items-center justify-between gap-2">
-        {/* ── Left: Current Book & Chapter Selector ─────────────────── */}
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
-          {/* Mobile back to bookshelf - unified height & border styling with chapter pill */}
+        {/* ── Left: Back Button & Chapter Selector ─────────────────── */}
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          {/* Mobile back to bookshelf - comfortable 40px touch zone */}
           {onBackToShelf && (
             <button
               onClick={onBackToShelf}
-              className="sm:hidden w-9 h-9 flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-stone-600 hover:text-amber-950 active:scale-95 transition-colors shrink-0 cursor-pointer"
+              className="sm:hidden w-10 h-10 flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-stone-600 hover:text-amber-950 active:scale-95 transition-colors shrink-0 cursor-pointer"
               title="返回书架"
               aria-label="返回书架"
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft size={18} />
             </button>
           )}
+          {/* Chapter Selector Pill */}
           <button
             onClick={onOpenShelf}
-            className="h-9 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-amber-950 font-bold text-xs transition-colors cursor-pointer group min-w-0 max-w-full sm:max-w-md truncate"
+            className="h-10 flex items-center gap-1.5 sm:gap-2 px-3 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-amber-950 font-bold text-xs sm:text-sm transition-colors cursor-pointer group min-w-0 max-w-full sm:max-w-md truncate"
             title="点击切换全书章节或其他原著"
+            aria-label="切换章节"
           >
-            <BookOpen size={14} className="text-amber-600 shrink-0 group-hover:scale-105 transition-transform" />
+            <BookOpen size={15} className="text-amber-600 shrink-0 group-hover:scale-105 transition-transform" />
             <span className="truncate">
               <span className="text-stone-500 font-normal hidden sm:inline">{bookTitle} · </span>
               <span>{chapterTitle}</span>
             </span>
-            <ChevronDown size={13} className="text-stone-400 shrink-0 ml-0.5 group-hover:text-amber-700" />
+            <ChevronDown size={14} className="text-stone-400 shrink-0 ml-0.5 group-hover:text-amber-700" />
             {isOfflinePlaying && (
               <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="离线模式" />
             )}
           </button>
         </div>
 
-        {/* ── Center: 3 Study Modes (Icons on Mobile, Pills on Desktop) ──────────────── */}
-        <div className="h-9 flex items-center p-0.5 sm:p-1 rounded-xl sm:rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-0.5 sm:gap-1 shrink-0">
+        {/* ── Center: 3 Study Modes (Desktop Only >= 640px) ─────────── */}
+        <div className="hidden sm:flex h-10 items-center p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1 shrink-0">
           {modes.map(({ key, label, icon }) => {
             const isActive = studyMode === key;
             return (
               <button
                 key={key}
                 onClick={() => setStudyMode(key)}
-                className={`h-7 flex items-center gap-1.5 px-2 sm:px-3 rounded-lg sm:rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`h-8 flex items-center gap-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   isActive
                     ? 'bg-amber-500 text-white shadow-sm'
                     : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
@@ -84,7 +87,7 @@ export function ReaderTopBar({
                 title={label}
               >
                 {icon}
-                <span className="hidden sm:inline">{label}</span>
+                <span>{label}</span>
               </button>
             );
           })}
@@ -96,15 +99,16 @@ export function ReaderTopBar({
           {studyMode !== 'dictation' && (
             <button
               onClick={() => (onToggleTranslation ? onToggleTranslation() : setShowTranslation && setShowTranslation(!showTranslation))}
-              className={`h-9 flex items-center gap-1 px-2.5 sm:px-3 rounded-xl border text-xs font-bold transition-colors cursor-pointer ${
+              className={`h-10 min-w-[40px] flex items-center justify-center gap-1 px-2.5 sm:px-3 rounded-xl border text-xs font-bold transition-colors cursor-pointer ${
                 showTranslation
                   ? 'bg-amber-50 text-amber-900 border-amber-300'
                   : 'bg-white text-stone-500 border-[#e8ddd0] hover:border-amber-300'
               }`}
               title="开启/关闭中文双语译文"
+              aria-label="中英双语切换"
             >
-              <Languages size={13} className={showTranslation ? 'text-amber-600' : 'text-stone-400'} />
-              <span className="hidden md:inline">{showTranslation ? '双语：开' : '双语：关'}</span>
+              <Languages size={15} className={showTranslation ? 'text-amber-600' : 'text-stone-400'} />
+              <span className="hidden sm:inline">{showTranslation ? '双语：开' : '双语：关'}</span>
             </button>
           )}
 
@@ -112,12 +116,37 @@ export function ReaderTopBar({
           {onOpenShortcuts && (
             <button
               onClick={onOpenShortcuts}
-              className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 transition-colors cursor-pointer shrink-0"
+              className="hidden sm:flex w-10 h-10 items-center justify-center rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 transition-colors cursor-pointer shrink-0"
               title="键盘快捷键与操作指南"
             >
-              <HelpCircle size={14} />
+              <HelpCircle size={15} />
             </button>
           )}
+        </div>
+      </div>
+
+      {/* ── Mobile Layer 2: iOS Segmented Control for Study Modes (< 640px) ── */}
+      <div className="sm:hidden px-3 pb-2 pt-0.5">
+        <div className="grid grid-cols-3 p-1 rounded-xl bg-stone-100 border border-[#e8ddd0] gap-1">
+          {modes.map(({ key, label, icon }) => {
+            const isActive = studyMode === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setStudyMode(key)}
+                className={`min-h-[38px] flex items-center justify-center gap-1 px-1 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
+                  isActive
+                    ? 'bg-amber-500 text-white shadow-sm'
+                    : 'text-stone-600 hover:text-amber-950 active:bg-stone-200'
+                }`}
+                title={label}
+                aria-pressed={isActive}
+              >
+                {icon}
+                <span className="truncate">{label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </header>

@@ -230,10 +230,11 @@ export function StorageManagerModal({
             </h3>
             <button
               onClick={refreshStorage}
-              className="text-xs flex items-center gap-1 px-2.5 py-1 min-h-[36px] rounded-xl border border-amber-300/70 bg-white/90 text-amber-900 hover:bg-amber-50 hover:border-amber-400 font-bold transition-all active:scale-95 cursor-pointer"
+              className="text-xs flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-xl border border-amber-300/70 bg-white/90 text-amber-900 hover:bg-amber-50 hover:border-amber-400 font-bold transition-all active:scale-95 cursor-pointer"
               title="刷新本地离线存储信息"
+              aria-label="刷新本地离线存储信息"
             >
-              <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} />
+              <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
               <span>刷新</span>
             </button>
           </div>
@@ -299,10 +300,11 @@ export function StorageManagerModal({
                     <button
                       onClick={() => handleDelete(ch.chapterId)}
                       disabled={isDeleting}
-                      className="duo-touch-target rounded-xl border border-rose-200 bg-rose-50/70 text-rose-600 hover:bg-rose-100 hover:border-rose-300 transition-all active:scale-90 cursor-pointer disabled:opacity-50"
+                      className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50/70 text-rose-600 hover:bg-rose-100 hover:border-rose-300 transition-all active:scale-90 cursor-pointer disabled:opacity-50 shrink-0"
                       title="删除此离线缓存以释放存储"
+                      aria-label="删除此离线缓存"
                     >
-                      <Trash2 size={14} className={isDeleting ? 'animate-spin' : ''} />
+                      <Trash2 size={16} className={isDeleting ? 'animate-spin' : ''} />
                     </button>
                   </div>
                 </div>

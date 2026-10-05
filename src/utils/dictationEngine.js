@@ -8,7 +8,7 @@
  * 3. Auror & Dueling Evaluation: Calculates accuracy, streak bonuses, and house point awards.
  */
 
-import { tokenizeSentence } from './vttParser';
+import { tokenizeSentence } from './vttParser.js';
 
 // Common English function words (prepositions, articles, pronouns, conjunctions, aux verbs)
 // In Cloze mode (Lumos), these are left visible so students focus on content vocabulary!

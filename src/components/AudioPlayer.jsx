@@ -146,26 +146,143 @@ export function AudioPlayer({
         </div>
       )}
 
-      {/* ── Thin Scrubber Bar ─────────────────────────────────────── */}
+      {/* ── Scrubber Bar with Ergonomic Touch Buffer ─────────────── */}
       <div
-        className="w-full scrubber-track bg-amber-100/80 cursor-pointer group relative"
+        className="w-full scrubber-touch-zone px-0 group relative select-none"
         onClick={handleScrubClick}
         title="点击调整播放进度"
+        role="slider"
+        aria-label="音频播放进度"
+        aria-valuemin={0}
+        aria-valuemax={duration || 100}
+        aria-valuenow={currentTime}
       >
+        <div className="w-full scrubber-track bg-amber-100/80 relative overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-amber-500 to-amber-400 transition-all duration-100 ease-linear relative"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+        {/* Scrub thumb */}
         <div
-          className="h-full bg-gradient-to-r from-amber-500 to-amber-400 transition-all duration-100 ease-linear relative"
-          style={{ width: `${progressPercent}%` }}
-        >
-          {/* Scrub thumb */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-white border-2 border-amber-500 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+          style={{ left: `${progressPercent}%` }}
+        />
+      </div>
+
+      {/* ── Mobile Layout (< 640px): Ergonomic Two-Layer System ─── */}
+      {/* Mobile Layer 1: Timeline Info & Mic Shortcut */}
+      <div className="flex sm:hidden items-center justify-between px-4 pt-2 pb-1 text-xs select-none">
+        {/* Left: Current Time & Wave */}
+        <div className="flex items-center gap-1.5 font-mono text-stone-600 font-medium">
+          {isPlaying && (
+            <span className="flex items-center gap-0.5 text-amber-500 shrink-0">
+              <span className="w-[2.5px] h-2.5 bg-amber-500 rounded-full animate-wave-1" />
+              <span className="w-[2.5px] h-3.5 bg-amber-600 rounded-full animate-wave-2" />
+              <span className="w-[2.5px] h-2 bg-amber-400 rounded-full animate-wave-3" />
+            </span>
+          )}
+          <span>{formatTime(currentTime)}</span>
+        </div>
+
+        {/* Center: Sentence Progress Pill */}
+        {totalCues > 0 && (
+          <div className="text-[11px] font-medium text-stone-500 bg-amber-50/80 px-2 py-0.5 rounded-md border border-amber-200/60">
+            第 <span className="font-bold text-amber-900">{activeCueIndex + 1}</span> / {totalCues} 句
+          </div>
+        )}
+
+        {/* Right: Duration & Quick Shadowing Mic */}
+        <div className="flex items-center gap-1.5">
+          <span className="font-mono text-[11px] text-stone-400">{formatTime(duration)}</span>
+          <button
+            onClick={onToggleRecorder}
+            className={`min-h-[44px] min-w-[44px] -my-2 flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+              isRecordingActive
+                ? 'text-red-600 bg-red-50'
+                : 'text-stone-500 hover:text-amber-800'
+            }`}
+            title="跟读施咒（AI发音评分）"
+            aria-label="跟读施咒"
+          >
+            <Mic size={16} className={isRecordingActive ? 'text-red-600 animate-pulse' : 'text-stone-600'} />
+          </button>
         </div>
       </div>
 
-      {/* ── Main Controls Row ─────────────────────────────────────── */}
-      <div className="flex items-center justify-between gap-2 px-3 sm:px-4 pt-2 pb-3">
+      {/* Mobile Layer 2: Thumb Zone Control Cluster (5-button array) */}
+      <div className="flex sm:hidden items-center justify-between px-4 pt-1 pb-3">
+        {/* 1. Loop */}
+        <button
+          onClick={onToggleLoopSentence}
+          className={`w-11 h-11 shrink-0 rounded-2xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+            isLoopSentence
+              ? 'bg-amber-500 text-white border-amber-600'
+              : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
+          }`}
+          title={isLoopSentence ? '单句循环：开 (L)' : '单句循环：关 (L)'}
+          aria-label="单句循环"
+        >
+          <div className="relative">
+            <Repeat size={16} />
+            <span className="absolute -bottom-1.5 -right-1.5 text-[8px] font-bold">1</span>
+          </div>
+        </button>
 
-        {/* Left: Playback info (chapter title shown only on desktop to eliminate duplicate top bar header) */}
-        <div className="flex items-center gap-2 min-w-0 shrink-0 sm:flex-1 sm:max-w-xs">
+        {/* 2. Prev Sentence */}
+        <button
+          onClick={onPrevSentence}
+          disabled={activeCueIndex <= 0}
+          className="w-11 h-11 shrink-0 rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+          title="上一句 (←)"
+          aria-label="上一句"
+        >
+          <SkipBack size={18} />
+        </button>
+
+        {/* 3. Main Play / Pause CTA (56×56px — Primary Focus CTA) */}
+        <button
+          onClick={onPlayPause}
+          className="w-14 h-14 shrink-0 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border-2 border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none"
+          title="播放/暂停 (Space)"
+          aria-label="播放或暂停"
+        >
+          {isPlaying
+            ? <Pause size={24} className="fill-current" />
+            : <Play size={24} className="fill-current translate-x-0.5" />}
+        </button>
+
+        {/* 4. Next Sentence */}
+        <button
+          onClick={onNextSentence}
+          disabled={activeCueIndex >= totalCues - 1}
+          className="w-11 h-11 shrink-0 rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+          title="下一句 (→)"
+          aria-label="下一句"
+        >
+          <SkipForward size={18} />
+        </button>
+
+        {/* 5. Speed Cycle */}
+        <button
+          onClick={handleSpeedCycle}
+          className={`w-11 h-11 shrink-0 rounded-2xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
+            playbackRate !== 1.0
+              ? 'bg-amber-500 text-white border-amber-600'
+              : 'border-[#e8ddd0] bg-white text-stone-700'
+          }`}
+          title="切换倍速: 0.8x → 1.0x → 1.25x"
+          aria-label="播放倍速"
+        >
+          <span>{speedLabel}</span>
+        </button>
+      </div>
+
+      {/* ── Desktop Controls Row (>= 640px) ───────────────────────── */}
+      <div className="hidden sm:flex items-center justify-between gap-2 px-4 pt-2 pb-3">
+
+        {/* Left: Playback info with chapter title */}
+        <div className="flex items-center gap-2 min-w-0 shrink-0 flex-1 max-w-xs">
           {isPlaying && (
             <span className="flex items-center gap-0.5 text-amber-500 shrink-0">
               <span className="w-[3px] h-3 bg-amber-500 rounded-full animate-wave-1" />
@@ -174,7 +291,7 @@ export function AudioPlayer({
             </span>
           )}
           <div className="min-w-0">
-            <p className="hidden sm:block font-bold text-xs text-amber-950 truncate leading-tight">
+            <p className="font-bold text-xs text-amber-950 truncate leading-tight">
               {chapterTitle || '选择章节'}
             </p>
             <p className="text-[11px] font-mono text-stone-500 font-medium leading-tight whitespace-nowrap">
@@ -185,7 +302,7 @@ export function AudioPlayer({
         </div>
 
         {/* Center: Transport Controls */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           {/* Rewind / Prev Sentence */}
           <button
             onClick={onPrevSentence}
@@ -196,7 +313,7 @@ export function AudioPlayer({
             <SkipBack size={16} />
           </button>
 
-          {/* Main Play / Pause (48px / 44px — Apple HIG compliant) */}
+          {/* Main Play / Pause (48px) */}
           <button
             onClick={onPlayPause}
             className="w-12 h-12 shrink-0 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border border-amber-600 active:scale-95 transition-all cursor-pointer"
@@ -235,8 +352,8 @@ export function AudioPlayer({
         </div>
 
         {/* Right: Speed + Record + Volume */}
-        <div className="flex items-center gap-1.5 sm:gap-2 justify-end flex-1 shrink-0">
-          {/* Speed cycle button — always visible, all screen sizes, 44px square target */}
+        <div className="flex items-center gap-2 justify-end flex-1 shrink-0">
+          {/* Speed cycle button */}
           <button
             onClick={handleSpeedCycle}
             className={`w-11 h-11 shrink-0 rounded-xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors cursor-pointer select-none ${
@@ -249,7 +366,7 @@ export function AudioPlayer({
             <span className="whitespace-nowrap">{speedLabel}</span>
           </button>
 
-          {/* Mic / Shadowing — always visible */}
+          {/* Mic / Shadowing */}
           <button
             onClick={onToggleRecorder}
             className={`w-11 h-11 shrink-0 rounded-xl border flex items-center justify-center text-xs transition-colors cursor-pointer ${
@@ -262,9 +379,9 @@ export function AudioPlayer({
             <Mic size={16} className={isRecordingActive ? 'text-white' : 'text-amber-700'} />
           </button>
 
-          {/* Volume — hover/click slider (desktop only) */}
+          {/* Volume — hover/click slider */}
           <div 
-            className="relative hidden sm:block" 
+            className="relative" 
             ref={volumeRef}
             onMouseEnter={() => setShowVolume(true)}
             onMouseLeave={() => setShowVolume(false)}

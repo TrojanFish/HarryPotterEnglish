@@ -465,6 +465,8 @@ export function App() {
               selectedBook={selectedBook}
               selectedChapter={selectedChapter}
               onSelectBook={selectBook}
+              onEnterPlayer={() => setCurrentView('player')}
+              isParchment={isParchment}
               onSelectChapter={(chapterId, shouldPlay = true) => {
                 selectChapter(chapterId);
                 setCurrentView('player');
@@ -741,7 +743,7 @@ export function App() {
           </span>
           {isOfflineUncached && (
             <button
-              onClick={() => setIsStorageModalOpen(true)}
+              onClick={() => setIsStorageOpen(true)}
               className="ml-1 underline text-amber-300 hover:text-white cursor-pointer"
             >
               打开行囊

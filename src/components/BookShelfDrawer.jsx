@@ -147,12 +147,14 @@ export function BookShelfDrawer({
                   placeholder="搜索章节名或关键词..."
                   value={chapterSearch}
                   onChange={(e) => setChapterSearch(e.target.value)}
-                  className="w-full pl-9 pr-8 py-2 rounded-xl text-sm border border-amber-200 bg-white focus:border-amber-500 focus:outline-none transition-all"
+                  className="w-full pl-9 pr-9 py-2.5 rounded-xl text-base sm:text-sm border border-amber-200 bg-white focus:border-amber-500 focus:outline-none transition-all"
                 />
                 {chapterSearch && (
                   <button
                     onClick={() => setChapterSearch('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-stone-400 hover:text-stone-700 cursor-pointer"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 p-2 duo-touch-target text-stone-400 hover:text-stone-700 cursor-pointer"
+                    title="清空搜索"
+                    aria-label="清空搜索"
                   >
                     <X size={14} />
                   </button>

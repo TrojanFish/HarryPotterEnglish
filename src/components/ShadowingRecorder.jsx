@@ -398,8 +398,9 @@ export function ShadowingRecorder({
         {/* Target Sentence Box & Word-Level Badges */}
         <div className="p-4 rounded-2xl border border-[#e8ddd0] bg-white mb-4 transition-all">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-magical uppercase tracking-wider font-bold text-amber-900">
-              原著朗读目标句 · Target Sentence
+            <span className="text-[11px] font-magical uppercase tracking-wider font-bold text-amber-900 flex items-center gap-1.5">
+              <Sparkles size={12} className="text-amber-600" />
+              <span>原著朗读目标句 Target Sentence</span>
             </span>
             {/* Legend */}
             {evaluationResult && (
@@ -555,21 +556,28 @@ export function ShadowingRecorder({
           </div>
         )}
 
-        {/* Dual Playback Control Bar */}
+        {/* Dual Playback Control Bar (A/B Track Comparison) */}
         <div className="space-y-3">
-          {/* 1. Original Narrator Audio */}
+          {/* 1. Track A: Original Narrator Audio */}
           <div className="flex items-center justify-between p-3.5 rounded-2xl border border-[#e8ddd0] bg-white">
             <div className="flex items-center space-x-2.5">
-              <Volume2 className="w-5 h-5 text-amber-600 shrink-0" />
+              <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-300/80 flex items-center justify-center shrink-0">
+                <Volume2 className="w-4 h-4 text-amber-700" />
+              </div>
               <div>
-                <span className="text-xs font-bold block text-amber-950">原版朗读原音</span>
-                <span className="text-[11px] text-stone-500">纯正英式原著朗读发音</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="track-a-badge text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-300/80 bg-amber-50 text-amber-900">
+                    Track A 原声
+                  </span>
+                  <span className="text-xs font-bold text-amber-950">原版朗读原音</span>
+                </div>
+                <span className="text-[11px] text-stone-500 block mt-0.5">纯正英式原著朗读发音</span>
               </div>
             </div>
             <button
               onClick={() => onPlayOriginalSnippet(currentCue)}
               disabled={isRecording || isEvaluating}
-              className="duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+              className="duo-btn-secondary min-h-[44px] min-w-[44px] flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
               title="播放当前句原著原声朗读"
             >
               <Volume2 size={14} />
@@ -577,13 +585,20 @@ export function ShadowingRecorder({
             </button>
           </div>
 
-          {/* 2. User Recording Box */}
+          {/* 2. Track B: Student Recording Box */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-2xl border border-[#e8ddd0] bg-white gap-3">
             <div className="flex items-center space-x-2.5 min-w-0">
-              <Headphones className="w-5 h-5 text-amber-600 shrink-0" />
+              <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-300/80 flex items-center justify-center shrink-0">
+                <Headphones className="w-4 h-4 text-amber-700" />
+              </div>
               <div className="min-w-0">
-                <span className="text-xs font-bold block text-amber-950 truncate">你的跟读录音</span>
-                <span className="text-[11px] text-stone-500 truncate block">
+                <div className="flex items-center gap-1.5">
+                  <span className="track-b-badge text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-300/80 bg-amber-50 text-amber-900">
+                    Track B 录音
+                  </span>
+                  <span className="text-xs font-bold text-amber-950 truncate">你的跟读录音</span>
+                </div>
+                <span className="text-[11px] text-stone-500 truncate block mt-0.5">
                   {isRecording 
                     ? `正在录音中... ${recordSeconds}s` 
                     : recordedAudioUrl 
@@ -598,7 +613,7 @@ export function ShadowingRecorder({
                 <button
                   onClick={startRecording}
                   disabled={isEvaluating}
-                  className="duo-btn-danger min-h-[44px] flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50 whitespace-nowrap"
+                  className="duo-btn-danger min-h-[44px] min-w-[44px] flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50 whitespace-nowrap"
                   title="开始麦克风跟读录音与 AI 语音打分"
                 >
                   <Mic size={14} className="shrink-0" />
@@ -607,7 +622,7 @@ export function ShadowingRecorder({
               ) : (
                 <button
                   onClick={stopRecording}
-                  className="duo-btn-danger min-h-[44px] flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold animate-pulse cursor-pointer ring-2 ring-rose-300 whitespace-nowrap"
+                  className="duo-btn-danger min-h-[44px] min-w-[44px] flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold animate-pulse cursor-pointer ring-2 ring-rose-300 whitespace-nowrap"
                   title="停止录音并触发 AI 评分"
                 >
                   <Square size={14} className="shrink-0" />
@@ -619,7 +634,7 @@ export function ShadowingRecorder({
                 <button
                   onClick={togglePlayRecording}
                   disabled={isEvaluating}
-                  className="duo-btn-primary min-h-[44px] flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50 whitespace-nowrap"
+                  className="duo-btn-primary min-h-[44px] min-w-[44px] flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50 whitespace-nowrap"
                   title={isPlayingRecording ? '暂停回放' : '回放自己录制的音频'}
                 >
                   {isPlayingRecording ? <Pause size={14} className="shrink-0" /> : <Play size={14} className="shrink-0" />}

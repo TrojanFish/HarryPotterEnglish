@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { formatTime, formatEnglishText } from '../utils/vttParser';
 import { DailyGoalRing } from './DailyGoalRing';
+import { getCefrInfo } from '../data/books';
 
 export function BookshelfView({
   books = [],
@@ -67,19 +68,18 @@ export function BookshelfView({
     : null;
 
   const getReadingLevel = (book) => {
-    const id = (book?.id || '').toLowerCase();
-    const title = (book?.title || '').toLowerCase();
-    if (id.includes('book-1') || title.includes('philosopher') || title.includes('sorcerer'))
-      return { level: '入门基础', color: 'bg-amber-100 text-amber-800' };
-    if (id.includes('book-2') || title.includes('chamber'))
-      return { level: '初级进阶', color: 'bg-emerald-100 text-emerald-800' };
-    if (id.includes('book-3') || title.includes('azkaban'))
-      return { level: '中阶挑战', color: 'bg-blue-100 text-blue-800' };
-    if (id.includes('prince') || title.includes('prince'))
-      return { level: '名著双语', color: 'bg-indigo-100 text-indigo-800' };
-    if (id.includes('tales') || id.includes('tiny'))
-      return { level: '童话启蒙', color: 'bg-rose-100 text-rose-800' };
-    return { level: '原版精选', color: 'bg-stone-100 text-stone-700' };
+    const cefr = getCefrInfo(book);
+    const pillClass = cefr.code === 'A2' ? 'cefr-pill-a2'
+      : cefr.code === 'B1' ? 'cefr-pill-b1'
+      : cefr.code === 'B2' ? 'cefr-pill-b2'
+      : 'cefr-pill-c1';
+    return {
+      level: `CEFR ${cefr.code} ${cefr.label}`,
+      pillClass: `cefr-pill ${pillClass}`,
+      code: cefr.code,
+      label: cefr.label,
+      description: cefr.description
+    };
   };
 
   const handleImageError = (bookId) =>
@@ -103,7 +103,7 @@ export function BookshelfView({
           </h2>
         </div>
         <p className="text-xs text-[#7a6448] font-reading ml-1">
-          选一本魔法故事，开启今日听力探险 · 每日 5 分钟，磨亮你的英语魔杖
+          选一本魔法故事开启今日听力探险 每日 5 分钟磨亮你的英语魔杖
         </p>
       </div>
 
@@ -121,12 +121,13 @@ export function BookshelfView({
             </span>
             <DailyGoalRing todaySeconds={todayListeningSeconds} targetSeconds={300} isParchment={isParchment} size={36} minimal={true} />
           </div>
-          <p className="font-bold text-sm text-amber-950 leading-tight">
-            {todayListeningSeconds >= 300 ? '今日达成！' : <>还差 <span className="font-mono font-bold">{Math.max(1, Math.ceil((300 - todayListeningSeconds) / 60))}</span> 分钟</>}
+          <p className="font-bold text-sm text-amber-950 leading-tight flex items-baseline gap-1">
+            {todayListeningSeconds >= 300 ? '今日达成！' : <><span>还差</span><span className="font-mono font-bold text-base">{Math.max(1, Math.ceil((300 - todayListeningSeconds) / 60))}</span><span>分钟</span></>}
           </p>
-          <p className="text-[11px] font-mono text-stone-500 mt-0.5">
-            今日 {todayMinutes} 分钟 · {goalPercent}%
-          </p>
+          <div className="flex items-center justify-between text-[11px] font-mono text-stone-500 mt-1">
+            <span>已听 {todayMinutes} 分钟</span>
+            <span className="font-semibold text-amber-800">{goalPercent}%</span>
+          </div>
         </div>
 
         {/* Card 2: Streak */}
@@ -138,10 +139,11 @@ export function BookshelfView({
             <Flame size={13} className="text-orange-500" />
             连续打卡
           </div>
-          <p className="font-bold text-base text-amber-950">
-            <span className="font-mono font-extrabold text-lg">{streakDays}</span> 天连胜
+          <p className="font-bold text-base text-amber-950 flex items-baseline gap-1">
+            <span className="font-mono font-extrabold text-lg">{streakDays}</span>
+            <span>天连胜</span>
             {streakDays >= 3 && (
-              <span className="ml-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold align-middle">
+              <span className="ml-1 text-[9px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold self-center">
                 连击
               </span>
             )}
@@ -161,8 +163,8 @@ export function BookshelfView({
             <BrainCircuit size={13} className="text-indigo-600" />
             艾宾浩斯复习
           </div>
-          <p className="font-bold text-sm text-amber-950">
-            {effectiveDueCount > 0 ? <><span className="font-mono font-bold">{effectiveDueCount}</span> 词待复习</> : '记忆封印稳固'}
+          <p className="font-bold text-sm text-amber-950 flex items-baseline gap-1">
+            {effectiveDueCount > 0 ? <><span className="font-mono font-bold text-base">{effectiveDueCount}</span><span>词待复习</span></> : '记忆封印稳固'}
           </p>
           <p className="text-[11px] text-stone-500 mt-0.5">
             共收录 <span className="font-mono font-bold">{vocabCount}</span> 词
@@ -242,7 +244,7 @@ export function BookshelfView({
             </div>
             <div>
               <h2 className="font-magical font-bold text-lg sm:text-xl text-amber-950">霍格沃茨魔法书架</h2>
-              <p className="text-xs text-stone-500 font-reading">难度由浅入深 · 逐句原版原音同步</p>
+              <p className="text-xs text-stone-500 font-reading">难度由浅入深 逐句原版原音同步</p>
             </div>
           </div>
           <span className="hidden sm:flex items-center gap-1 text-xs text-amber-800 bg-amber-500/10 px-3 py-1.5 rounded-full font-bold border border-amber-300/40">
@@ -260,14 +262,14 @@ export function BookshelfView({
             return (
               <div
                 key={book.id}
-                className={`duo-card p-4 flex items-center gap-4 hover:border-amber-400 transition-colors ${
+                onClick={() => setInspectingBook(book)}
+                className={`duo-card p-3.5 sm:p-4 flex items-center gap-3.5 sm:gap-4 hover:border-amber-400 transition-colors cursor-pointer group select-none ${
                   isSelected ? 'border-amber-400 ring-1 ring-amber-400/50' : ''
                 }`}
               >
                 {/* Cover: flat, square-ish, no 3D */}
                 <div
-                  onClick={() => setInspectingBook(book)}
-                  className="w-16 h-20 sm:w-20 sm:h-24 rounded-xl overflow-hidden border border-amber-300/60 shrink-0 cursor-pointer bg-stone-900 hover:scale-105 transition-transform"
+                  className="w-14 h-20 sm:w-20 sm:h-24 rounded-xl overflow-hidden border border-amber-300/60 shrink-0 bg-stone-900 group-hover:scale-[1.02] transition-transform"
                 >
                   {!coverErrorMap[book.id] ? (
                     <img
@@ -284,17 +286,17 @@ export function BookshelfView({
                   )}
                 </div>
 
-                {/* Book info */}
+                {/* Book info with plenty of breathing room */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${levelInfo.color}`}>
+                    <span className={levelInfo.pillClass}>
                       {levelInfo.level}
                     </span>
                     {isSelected && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">当前</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold border border-amber-300/60">当前精听</span>
                     )}
                   </div>
-                  <h3 className="font-magical font-bold text-sm sm:text-base text-amber-950 truncate leading-snug">
+                  <h3 className="font-magical font-bold text-sm sm:text-base text-amber-950 truncate leading-snug group-hover:text-amber-800 transition-colors">
                     {book.cnTitle || book.title}
                   </h3>
                   <p className="text-[11px] text-stone-400 italic truncate">{book.title}</p>
@@ -304,22 +306,42 @@ export function BookshelfView({
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex flex-col gap-2 shrink-0">
+                {/* Actions: Mobile single 44px play button; Desktop dual buttons */}
+                <div className="sm:hidden shrink-0 flex items-center">
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       onSelectBook(book.id);
                       if (chapters.length > 0) onSelectChapter(chapters[0].id, true);
                       onEnterPlayer();
                     }}
-                    className="duo-btn-primary min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1"
+                    className="w-11 h-11 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none"
+                    title="立即开始精听"
+                    aria-label="立即精听"
+                  >
+                    <Play size={16} className="fill-current translate-x-0.5" />
+                  </button>
+                </div>
+
+                <div className="hidden sm:flex flex-col gap-2 shrink-0">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectBook(book.id);
+                      if (chapters.length > 0) onSelectChapter(chapters[0].id, true);
+                      onEnterPlayer();
+                    }}
+                    className="duo-btn-primary min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1"
                   >
                     <Play size={12} className="fill-current" />
                     精听
                   </button>
                   <button
-                    onClick={() => setInspectingBook(book)}
-                    className="duo-btn-secondary min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setInspectingBook(book);
+                    }}
+                    className="duo-btn-secondary min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1"
                   >
                     <Layers size={12} />
                     目录

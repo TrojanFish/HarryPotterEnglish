@@ -22,6 +22,24 @@
   --c-text-primary:   #1e1610;
   --c-text-secondary: #5c4d3c;
   --c-text-muted:     #8b7b6b;
+  /* Hogwarts Houses Theme Factory Tokens (anthropics/skills/theme-factory) */
+  --c-gryffindor-scarlet: #b91c1c;
+  --c-gryffindor-gold:    #f59e0b;
+  --c-slytherin-emerald:  #047857;
+  --c-slytherin-silver:   #e2e8f0;
+  --c-ravenclaw-sapphire: #1d4ed8;
+  --c-ravenclaw-bronze:   #d97706;
+  --c-hufflepuff-gold:    #d97706;
+  --c-hufflepuff-earth:   #292524;
+  /* CEFR Scale Tokens (Dual-Channel Accessibility) */
+  --c-cefr-a2:    #059669;
+  --c-cefr-a2-bg: #ecfdf5;
+  --c-cefr-b1:    #d97706;
+  --c-cefr-b1-bg: #fffbeb;
+  --c-cefr-b2:    #2563eb;
+  --c-cefr-b2-bg: #eff6ff;
+  --c-cefr-c1:    #7c3aed;
+  --c-cefr-c1-bg: #f5f3ff;
   /* Spacing rhythm: 4-8-12-16-24-32 */
   --sp-1: 4px;
   --sp-2: 8px;
@@ -480,11 +498,18 @@ body:not(.theme-parchment) .lumos-active {
   animation: slideDown 0.2s ease-out forwards;
 }
 
-/* ── Progress bar scrubber (Spotify-style thin) ──────────────── */
+/* ── Progress bar scrubber (Spotify-style thin with expanded touch buffer) ── */
+.scrubber-touch-zone {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
 .scrubber-track {
   height: 4px;
   transition: height 0.15s ease;
 }
+.scrubber-touch-zone:hover .scrubber-track,
 .scrubber-track:hover {
   height: 6px;
 }
@@ -509,3 +534,82 @@ input,
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
+
+/* ── CEFR Dual-Channel Badges (Refactoring UI / Accessibility) ── */
+.cefr-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  font-size: 0.6875rem; /* 11px */
+  line-height: 1rem;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.025em;
+}
+
+.cefr-pill-a2 {
+  background-color: var(--c-cefr-a2-bg, #ecfdf5);
+  color: var(--c-cefr-a2, #059669);
+  border: 1px solid #a7f3d0;
+}
+
+.cefr-pill-b1 {
+  background-color: var(--c-cefr-b1-bg, #fffbeb);
+  color: var(--c-cefr-b1, #d97706);
+  border: 1px solid #fde68a;
+}
+
+.cefr-pill-b2 {
+  background-color: var(--c-cefr-b2-bg, #eff6ff);
+  color: var(--c-cefr-b2, #2563eb);
+  border: 1px solid #bfdbfe;
+}
+
+.cefr-pill-c1 {
+  background-color: var(--c-cefr-c1-bg, #f5f3ff);
+  color: var(--c-cefr-c1, #7c3aed);
+  border: 1px solid #ddd6fe;
+}
+
+/* ── Hero Unit Focus in Subtitle Reading (1.85 line-height) ──── */
+.reading-hero-sentence {
+  line-height: 1.85 !important;
+  font-weight: 600;
+  background-color: #fdfaf3 !important;
+  border-left: 4px solid var(--c-accent-dark, #d97706) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.reading-inactive-sentence {
+  opacity: 0.72;
+  transition: opacity 0.2s ease;
+}
+
+.reading-inactive-sentence:hover {
+  opacity: 1;
+}
+
+/* ── Print Media Optimization (Vector Print Engine) ────────── */
+@media print {
+  nav,
+  header,
+  .no-print,
+  .duo-touch-target,
+  .scrubber-touch-zone,
+  .screen-toolbar {
+    display: none !important;
+  }
+
+  body {
+    background: transparent !important;
+    color: #000000 !important;
+  }
+
+  .print-page {
+    page-break-after: always;
+    break-after: page;
+  }
+}
+

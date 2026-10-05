@@ -35,6 +35,21 @@ export function useAudioPlayback({
     }
   }, [volume]);
 
+  // Persist current playback position for breakpoint continue learning
+  useEffect(() => {
+    if (currentTime > 0 && currentBookObj?.id && currentChapterObj?.id) {
+      try {
+        localStorage.setItem('hp_last_position', JSON.stringify({
+          bookId: currentBookObj.id,
+          chapterId: currentChapterObj.id,
+          currentTime,
+          duration,
+          updatedAt: Date.now()
+        }));
+      } catch {}
+    }
+  }, [currentTime, duration, currentBookObj?.id, currentChapterObj?.id]);
+
   // 2. Play / Pause Control
   const togglePlayPause = useCallback(async () => {
     const audio = audioRef.current;
@@ -234,7 +249,7 @@ export function useAudioPlayback({
 
     if (currentBookObj && currentChapterObj) {
       const chapterTitle = currentChapterObj.title || currentBookObj.cnTitle || '魔法英语精听';
-      const artistName = 'J.K. Rowling · 霍格沃茨魔法学院';
+      const artistName = 'J.K. Rowling - 霍格沃茨魔法学院';
       const albumName = currentBookObj.cnTitle || currentBookObj.title || '哈利·波特原版有声书';
       const origin = window.location.origin;
       const coverUrl = currentBookObj.id 

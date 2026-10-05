@@ -36,7 +36,9 @@ const projectRoot = path.resolve(__dirname, '..');
 // Transpile VocabularyDrawer.jsx for Node test environment
 const drawerSrcPath = path.resolve(projectRoot, 'src', 'components', 'VocabularyDrawer.jsx');
 let drawerSrcCode = fs.readFileSync(drawerSrcPath, 'utf8');
-drawerSrcCode = drawerSrcCode.replace('../utils/ankiExport', '../src/utils/ankiExport.js');
+drawerSrcCode = drawerSrcCode
+  .replace('../utils/ankiExport', '../src/utils/ankiExport.js')
+  .replace('../utils/parchmentPdfGenerator', '../src/utils/parchmentPdfGenerator.js');
 const transformedDrawer = esbuild.transformSync(drawerSrcCode, { loader: 'jsx', format: 'esm' });
 const compiledDrawerPath = path.resolve(__dirname, 'VocabularyDrawer.compiled.js');
 fs.writeFileSync(compiledDrawerPath, transformedDrawer.code, 'utf8');

@@ -19,6 +19,7 @@ export function MobileMiniPlayer({
   currentChapter,
   isPlaying = false,
   onTogglePlay,
+  onPlayPause,
   onNextSentence,
   onEnterPlayer,
   onOpenPlayer,
@@ -28,6 +29,7 @@ export function MobileMiniPlayer({
   if (!currentChapter) return null;
 
   const handleOpen = onEnterPlayer || onOpenPlayer;
+  const handlePlayToggle = onPlayPause || onTogglePlay;
 
   const formatTime = (seconds) => {
     if (isNaN(seconds) || seconds < 0) return '00:00';
@@ -63,20 +65,21 @@ export function MobileMiniPlayer({
           </div>
         </div>
 
-        {/* Quick Transport Buttons */}
-        <div className="flex items-center gap-1.5 shrink-0 ml-2">
+        {/* Quick Transport Buttons (Apple HIG >= 44x44pt touch targets) */}
+        <div className="flex items-center gap-1 shrink-0 ml-2">
           <button
             onClick={(e) => {
               e.stopPropagation();
-              if (onTogglePlay) onTogglePlay();
+              if (handlePlayToggle) handlePlayToggle();
             }}
-            className="w-8 h-8 rounded-full bg-white text-amber-700 flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
-            title={isPlaying ? '暂停' : '播放'}
+            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-white text-amber-700 flex items-center justify-center active:scale-95 transition-transform cursor-pointer shadow-none shrink-0"
+            title={isPlaying ? '暂停 (Space)' : '播放 (Space)'}
+            aria-label={isPlaying ? '暂停音频' : '播放音频'}
           >
             {isPlaying ? (
-              <Pause size={14} className="fill-current" />
+              <Pause size={18} className="fill-current" />
             ) : (
-              <Play size={14} className="fill-current ml-0.5" />
+              <Play size={18} className="fill-current translate-x-0.5" />
             )}
           </button>
 
@@ -85,10 +88,11 @@ export function MobileMiniPlayer({
               e.stopPropagation();
               if (onNextSentence) onNextSentence();
             }}
-            className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
-            title="下一句"
+            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center active:scale-95 transition-transform cursor-pointer shrink-0"
+            title="下一句 (→)"
+            aria-label="跳转到下一句"
           >
-            <SkipForward size={13} />
+            <SkipForward size={16} />
           </button>
         </div>
       </div>
