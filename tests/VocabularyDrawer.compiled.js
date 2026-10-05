@@ -123,11 +123,11 @@ function VocabularyDrawer({
             onClose();
             onOpenSrs();
           },
-          className: "duo-btn-primary min-h-[44px] px-3 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap",
-          title: "\u542F\u52A8\u827E\u5BBE\u6D69\u65AF\u667A\u80FD\u7FFB\u8F6C\u95EA\u5361 (SRS \u9057\u5FD8\u66F2\u7EBF\u7B97\u6CD5)"
+          className: "duo-btn-primary min-h-[44px] min-w-[44px] w-11 h-11 rounded-xl text-xs font-bold flex items-center justify-center cursor-pointer shrink-0 active:scale-95",
+          title: "\u542F\u52A8\u827E\u5BBE\u6D69\u65AF\u667A\u80FD\u7FFB\u8F6C\u95EA\u5361 (SRS \u9057\u5FD8\u66F2\u7EBF\u7B97\u6CD5)",
+          "aria-label": "\u542F\u52A8\u827E\u5BBE\u6D69\u65AF\u667A\u80FD\u7FFB\u8F6C\u95EA\u5361"
         },
-        /* @__PURE__ */ React.createElement(BrainCircuit, { size: 15, className: "shrink-0" }),
-        /* @__PURE__ */ React.createElement("span", null, "\u827E\u5BBE\u6D69\u65AF\u80CC\u8BCD")
+        /* @__PURE__ */ React.createElement(BrainCircuit, { size: 18, className: "shrink-0" })
       ), /* @__PURE__ */ React.createElement(
         "button",
         {

@@ -450,19 +450,20 @@ function AnalyticsDashboardHarness({
     {
       onClick: handleManualSync,
       disabled: isSyncing,
-      className: "duo-btn-secondary min-h-[44px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95",
-      title: "\u7ACB\u5373\u4E0E\u4E91\u7AEF\u540C\u6B65\u6700\u65B0\u6570\u636E"
+      className: "duo-btn-secondary min-h-[44px] min-w-[44px] w-11 h-11 rounded-xl text-xs font-bold flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-50 shrink-0",
+      title: isSyncing ? "\u6B63\u5728\u4E0E\u4E91\u7AEF\u540C\u6B65..." : "\u7ACB\u5373\u4E0E\u4E91\u7AEF\u540C\u6B65\u6700\u65B0\u6570\u636E",
+      "aria-label": isSyncing ? "\u6B63\u5728\u4E0E\u4E91\u7AEF\u540C\u6B65..." : "\u7ACB\u5373\u4E0E\u4E91\u7AEF\u540C\u6B65\u6700\u65B0\u6570\u636E"
     },
-    /* @__PURE__ */ React.createElement(RefreshCw, { size: 12, className: isSyncing ? "animate-spin text-amber-600" : "text-stone-500" }),
-    /* @__PURE__ */ React.createElement("span", null, "\u540C\u6B65")
+    /* @__PURE__ */ React.createElement(RefreshCw, { size: 14, className: isSyncing ? "animate-spin text-amber-600" : "text-stone-500" })
   ))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-[#f0e8dc]" }, /* @__PURE__ */ React.createElement("div", { className: "p-3.5 rounded-2xl bg-[#fbf9f5] border border-[#e8ddd0]" }, /* @__PURE__ */ React.createElement("p", { className: "text-[11px] font-bold text-stone-500 mb-1" }, "\u672C\u673A\u9B54\u6CD5\u901A\u884C\u7801 (Passcode)"), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between gap-2" }, /* @__PURE__ */ React.createElement("span", { className: "font-mono font-bold text-lg text-amber-950 tracking-wider" }, syncState.meta?.syncCode || "HP-DEMO"), /* @__PURE__ */ React.createElement(
     "button",
     {
       onClick: handleCopySyncCode,
-      className: "duo-btn-secondary min-h-[44px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95"
+      className: "duo-btn-secondary min-h-[44px] min-w-[44px] w-11 h-11 rounded-xl text-xs font-bold flex items-center justify-center cursor-pointer active:scale-95 shrink-0",
+      title: copiedSyncCode ? "\u5DF2\u590D\u5236\u9B54\u6CD5\u901A\u884C\u7801" : "\u590D\u5236\u672C\u673A\u9B54\u6CD5\u901A\u884C\u7801",
+      "aria-label": copiedSyncCode ? "\u5DF2\u590D\u5236\u9B54\u6CD5\u901A\u884C\u7801" : "\u590D\u5236\u672C\u673A\u9B54\u6CD5\u901A\u884C\u7801"
     },
-    copiedSyncCode ? /* @__PURE__ */ React.createElement(Check, { size: 12, className: "text-emerald-600" }) : /* @__PURE__ */ React.createElement(Copy, { size: 12 }),
-    /* @__PURE__ */ React.createElement("span", null, copiedSyncCode ? "\u5DF2\u590D\u5236" : "\u590D\u5236\u53E3\u4EE4")
+    copiedSyncCode ? /* @__PURE__ */ React.createElement(Check, { size: 15, className: "text-emerald-600" }) : /* @__PURE__ */ React.createElement(Copy, { size: 15, className: "text-stone-600" })
   )), /* @__PURE__ */ React.createElement("p", { className: "text-[10px] text-stone-500 mt-1.5 font-reading" }, "\u5728\u53E6\u4E00\u53F0\u8BBE\u5907\uFF08\u5982 iPhone \u6216\u65B0\u7535\u8111\uFF09\u8F93\u5165\u6B64\u53E3\u4EE4\uFF0C\u4E24\u7AEF\u751F\u8BCD\u672C\u4E0E\u6253\u5361\u8FDB\u5EA6\u5C06\u81EA\u52A8\u5408\u5E76\u3002")), /* @__PURE__ */ React.createElement("form", { onSubmit: handlePairDevice, className: "p-3.5 rounded-2xl bg-[#fbf9f5] border border-[#e8ddd0] flex flex-col justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-[11px] font-bold text-stone-500 mb-1.5" }, "\u8FDE\u63A5\u5176\u4ED6\u8BBE\u5907\u901A\u884C\u7801"), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement(
     "input",
     {

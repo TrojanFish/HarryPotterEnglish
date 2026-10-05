@@ -802,11 +802,11 @@ export function AnalyticsDashboard({
                   <button
                     onClick={handleManualSync}
                     disabled={isSyncing}
-                    className="duo-btn-secondary min-h-[44px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95"
-                    title="立即与云端同步最新数据"
+                    className="duo-btn-secondary min-h-[44px] min-w-[44px] w-11 h-11 rounded-xl text-xs font-bold flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-50 shrink-0"
+                    title={isSyncing ? '正在与云端同步...' : '立即与云端同步最新数据'}
+                    aria-label={isSyncing ? '正在与云端同步...' : '立即与云端同步最新数据'}
                   >
-                    <RefreshCw size={12} className={isSyncing ? 'animate-spin text-amber-600' : 'text-stone-500'} />
-                    <span>同步</span>
+                    <RefreshCw size={14} className={isSyncing ? 'animate-spin text-amber-600' : 'text-stone-500'} />
                   </button>
                 </div>
               </div>
@@ -821,10 +821,11 @@ export function AnalyticsDashboard({
                     </span>
                     <button
                       onClick={handleCopySyncCode}
-                      className="duo-btn-secondary min-h-[44px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95"
+                      className="duo-btn-secondary min-h-[44px] min-w-[44px] w-11 h-11 rounded-xl text-xs font-bold flex items-center justify-center cursor-pointer active:scale-95 shrink-0"
+                      title={copiedSyncCode ? '已复制魔法通行码' : '复制本机魔法通行码'}
+                      aria-label={copiedSyncCode ? '已复制魔法通行码' : '复制本机魔法通行码'}
                     >
-                      {copiedSyncCode ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
-                      <span>{copiedSyncCode ? '已复制' : '复制口令'}</span>
+                      {copiedSyncCode ? <Check size={15} className="text-emerald-600" /> : <Copy size={15} className="text-stone-600" />}
                     </button>
                   </div>
                   <p className="text-[10px] text-stone-500 mt-1.5 font-reading">

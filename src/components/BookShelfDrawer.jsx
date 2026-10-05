@@ -85,11 +85,11 @@ export function BookShelfDrawer({
               <button
                 onClick={onRefreshCatalog}
                 disabled={isRefreshing}
-                className="duo-btn-secondary min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50"
-                title="重新扫描 R2 存储桶新文件"
+                className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0 disabled:opacity-50"
+                title={isRefreshing ? '正在重新扫描 R2 存储桶...' : '重新扫描 R2 存储桶新文件'}
+                aria-label={isRefreshing ? '正在重新扫描 R2 存储桶...' : '重新扫描 R2 存储桶新文件'}
               >
-                <RotateCw size={13} className={isRefreshing ? 'animate-spin' : ''} />
-                <span className="hidden sm:inline">{isRefreshing ? '扫描中...' : '刷新藏书'}</span>
+                <RotateCw size={15} className={isRefreshing ? 'animate-spin' : ''} />
               </button>
             )}
 
@@ -211,13 +211,16 @@ export function BookShelfDrawer({
                       )}
                     </div>
 
-                    <button className={`min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1 transition-all ${
-                      isCurrent
-                        ? 'bg-amber-500 text-white'
-                        : 'duo-btn-secondary'
-                    }`}>
-                      <Play size={11} className="fill-current" />
-                      <span>{isCurrent ? '播放中' : '播放'}</span>
+                    <button 
+                      className={`min-h-[44px] min-w-[44px] p-2 rounded-xl text-xs font-bold shrink-0 flex items-center justify-center transition-all ${
+                        isCurrent
+                          ? 'bg-amber-500 text-white'
+                          : 'duo-btn-secondary'
+                      }`}
+                      title={isCurrent ? '当前正在播放此章节' : '播放此章节'}
+                      aria-label={isCurrent ? '当前正在播放此章节' : '播放此章节'}
+                    >
+                      <Play size={14} className="fill-current" />
                     </button>
                   </div>
                 );
@@ -294,14 +297,15 @@ export function BookShelfDrawer({
                       if (onSelectBook) onSelectBook(book.id);
                       setActiveTab('chapters');
                     }}
-                    className={`min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1 ${
+                    className={`min-h-[44px] min-w-[44px] p-2 rounded-xl text-xs font-bold shrink-0 flex items-center justify-center active:scale-95 transition-all ${
                       isSelected
                         ? 'duo-btn-primary'
                         : 'duo-btn-secondary'
                     }`}
+                    title="展开章节列表"
+                    aria-label="展开章节列表"
                   >
-                    <span>查看章节</span>
-                    <ChevronRight size={13} />
+                    <ChevronRight size={18} />
                   </button>
                 </div>
               );

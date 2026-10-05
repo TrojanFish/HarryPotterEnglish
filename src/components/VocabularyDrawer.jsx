@@ -161,11 +161,11 @@ export function VocabularyDrawer({
                     onClose();
                     onOpenSrs();
                   }}
-                  className="duo-btn-primary min-h-[44px] px-3 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap"
+                  className="duo-btn-primary min-h-[44px] min-w-[44px] w-11 h-11 rounded-xl text-xs font-bold flex items-center justify-center cursor-pointer shrink-0 active:scale-95"
                   title="启动艾宾浩斯智能翻转闪卡 (SRS 遗忘曲线算法)"
+                  aria-label="启动艾宾浩斯智能翻转闪卡"
                 >
-                  <BrainCircuit size={15} className="shrink-0" />
-                  <span>艾宾浩斯背词</span>
+                  <BrainCircuit size={18} className="shrink-0" />
                 </button>
               )}
 

@@ -461,9 +461,12 @@ export function BookshelfView({
                           </p>
                         )}
                       </div>
-                      <button className="duo-btn-secondary min-h-[44px] px-3 py-1.5 rounded-xl text-[11px] font-bold shrink-0 flex items-center gap-1">
-                        <Play size={11} className="fill-current" />
-                        <span className="hidden sm:inline">精听</span>
+                      <button 
+                        className="duo-btn-secondary min-h-[44px] min-w-[44px] p-2 rounded-xl text-xs font-bold shrink-0 flex items-center justify-center active:scale-95 transition-all"
+                        title="立即精听此章节"
+                        aria-label="立即精听此章节"
+                      >
+                        <Play size={14} className="fill-current" />
                       </button>
                     </div>
                   );

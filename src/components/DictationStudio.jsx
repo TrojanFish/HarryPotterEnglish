@@ -430,15 +430,15 @@ export function DictationStudio({
                 {currentCue.translation && (
                   <button
                     onClick={() => setShowTranslationClue(prev => !prev)}
-                    className={`h-10 sm:h-11 px-2.5 sm:px-3 rounded-xl border text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer ${
+                    className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer active:scale-95 ${
                       showTranslationClue
                         ? 'bg-amber-50 text-amber-900 border-amber-300'
                         : 'border-[#e8ddd0] bg-white text-stone-500 hover:border-amber-300'
                     }`}
-                    title="遇到困难？点击查看中文释义线索"
+                    title={showTranslationClue ? '隐藏中文释义线索' : '查看中文释义线索'}
+                    aria-label={showTranslationClue ? '隐藏中文释义线索' : '查看中文释义线索'}
                   >
-                    <Languages size={13} className={showTranslationClue ? 'text-amber-600' : 'text-stone-400'} />
-                    <span className="hidden sm:inline">{showTranslationClue ? '隐藏译文' : '译文线索'}</span>
+                    <Languages size={16} className={showTranslationClue ? 'text-amber-600' : 'text-stone-400'} />
                   </button>
                 )}
               </div>
@@ -559,11 +559,11 @@ export function DictationStudio({
             <button
               onClick={advancePrev}
               disabled={activeCueIndex <= 0}
-              className="h-11 px-3 sm:px-4 rounded-xl border border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-colors cursor-pointer"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center active:scale-95 transition-colors cursor-pointer shrink-0"
               title="上一句 (←)"
+              aria-label="上一句"
             >
-              <SkipBack size={15} />
-              <span className="hidden sm:inline">上一句</span>
+              <SkipBack size={16} />
             </button>
 
             <button

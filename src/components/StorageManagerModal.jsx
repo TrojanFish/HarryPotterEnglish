@@ -230,12 +230,11 @@ export function StorageManagerModal({
             </h3>
             <button
               onClick={refreshStorage}
-              className="text-xs flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-xl border border-amber-300/70 bg-white/90 text-amber-900 hover:bg-amber-50 hover:border-amber-400 font-bold transition-all active:scale-95 cursor-pointer"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl border border-amber-300/70 bg-white/90 text-amber-900 hover:bg-amber-50 hover:border-amber-400 font-bold transition-all active:scale-95 cursor-pointer shrink-0"
               title="刷新本地离线存储信息"
               aria-label="刷新本地离线存储信息"
             >
-              <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
-              <span>刷新</span>
+              <RefreshCw size={15} className={isLoading ? 'animate-spin' : ''} />
             </button>
           </div>
 
@@ -289,11 +288,11 @@ export function StorageManagerModal({
                     {onPlayChapter && !isPlayingThis && (
                       <button
                         onClick={() => onPlayChapter(ch.chapterId)}
-                        className="duo-btn-secondary min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                        className="duo-btn-secondary w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-xs font-bold flex items-center justify-center active:scale-95 transition-all cursor-pointer shrink-0"
                         title="立即从离线本地播放此章"
+                        aria-label="立即从离线本地播放此章"
                       >
-                        <Play size={13} fill="currentColor" />
-                        <span className="hidden sm:inline">本地播放</span>
+                        <Play size={14} className="fill-current" />
                       </button>
                     )}
 
