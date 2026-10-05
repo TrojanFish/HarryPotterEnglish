@@ -324,12 +324,13 @@ export function DictationStudio({
             {/* Sound Toggle */}
             <button
               onClick={handleToggleSound}
-              className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${
+              className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-colors cursor-pointer duo-touch-target ${
                 soundEnabled
                   ? 'border-amber-300 bg-amber-50 text-amber-800'
                   : 'border-[#e8ddd0] bg-white text-stone-400 hover:border-amber-300'
               }`}
               title={soundEnabled ? '魔咒合成音效：开 (点击静音)' : '魔咒合成音效：关 (点击开启)'}
+              aria-label="魔咒合成音效开关"
             >
               {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
             </button>
@@ -337,8 +338,9 @@ export function DictationStudio({
             {/* Trophy report trigger */}
             <button
               onClick={() => setIsSummaryOpen(true)}
-              className="w-8 h-8 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 flex items-center justify-center transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 flex items-center justify-center transition-colors cursor-pointer duo-touch-target"
               title="查看全卷成绩单"
+              aria-label="查看全卷成绩单"
             >
               <Trophy size={14} className="text-amber-600" />
             </button>

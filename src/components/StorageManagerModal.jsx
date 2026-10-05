@@ -156,6 +156,7 @@ export function StorageManagerModal({
             onClick={onClose}
             className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
             title="关闭魔法行囊"
+            aria-label="关闭魔法行囊"
           >
             <X size={18} />
           </button>

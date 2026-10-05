@@ -380,6 +380,8 @@ export function BookshelfView({
               <button
                 onClick={() => { setInspectingBook(null); setChapterSearch(''); }}
                 className="duo-touch-target p-2 rounded-xl border border-[#e8ddd0] hover:bg-amber-50 text-stone-500 hover:text-amber-900 transition-all active:scale-90 cursor-pointer"
+                title="关闭章节选单"
+                aria-label="关闭章节选单"
               >
                 <X size={17} />
               </button>
@@ -399,7 +401,10 @@ export function BookshelfView({
                 />
                 {chapterSearch && (
                   <button onClick={() => setChapterSearch('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-stone-400 hover:text-stone-700 cursor-pointer duo-touch-target">
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-stone-400 hover:text-stone-700 cursor-pointer duo-touch-target"
+                    title="清除搜索内容"
+                    aria-label="清除搜索内容"
+                  >
                     <X size={13} />
                   </button>
                 )}
@@ -462,9 +467,13 @@ export function BookshelfView({
                         )}
                       </div>
                       <button 
-                        className="duo-btn-secondary min-h-[44px] min-w-[44px] p-2 rounded-xl text-xs font-bold shrink-0 flex items-center justify-center active:scale-95 transition-all"
-                        title="立即精听此章节"
-                        aria-label="立即精听此章节"
+                        className={`min-h-[44px] min-w-[44px] p-2 rounded-xl text-xs font-bold shrink-0 flex items-center justify-center active:scale-95 transition-all ${
+                          isCurrent
+                            ? 'bg-amber-500 text-white'
+                            : 'duo-btn-secondary'
+                        }`}
+                        title={isCurrent ? '当前正在播放此章节' : '立即精听此章节'}
+                        aria-label={isCurrent ? '当前正在播放此章节' : '立即精听此章节'}
                       >
                         <Play size={14} className="fill-current" />
                       </button>
