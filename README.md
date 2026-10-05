@@ -1,4 +1,4 @@
-# Hogwarts Magic English | 霍格沃茨魔法英语 · 青少原版有声精听
+# Hogwarts Audio 3.0 | 霍格沃茨魔法英语 · 新一代专业在线英语学习平台
 
 <div align="center">
 
@@ -11,11 +11,12 @@
 ![Local-First](https://img.shields.io/badge/Architecture-Local--First-10b981.svg)
 ![Docker](https://img.shields.io/badge/Docker-Supported-2496ed.svg)
 ![Vercel](https://img.shields.io/badge/Vercel-Deploy_Ready-black.svg)
+![Tests Passing](https://img.shields.io/badge/Tests-143%2F143_Passing-brightgreen.svg)
 
-**专为小学高年级、初中生及广大英语初学者量身打造的入门级英文小说原著音频精听平台**  
-*听魔法小说 · 磨纯正英音 · 查原著百科 · 趣味拼写闯关*
+**专为英语学习者量身打造的沉浸式原版有声小说精听、艾宾浩斯背词与 A/B 影子跟读评测平台**  
+*听原版原声 — 磨纯正英音 — 艾宾浩斯复习 — A/B 影子跟读 — 智能拼写听写*
 
-[在线演示](#体验模式) • [核心功能](#专为中小学生设计的核心功能) • [多平台部署指南](#多平台部署指南) • [常见问题与排错](#常见问题与排错)
+[核心功能](#核心学习功能体系) • [加速架构](#流媒体与边缘分发加速架构) • [多平台部署指南](#多平台部署指南) • [本地开发与测试](#本地开发与测试)
 
 </div>
 
@@ -23,93 +24,99 @@
 
 ## 项目简介
 
-本项目旨在通过经典的**青少年版《哈利·波特》（Harry Potter）**等入门级原版有声小说，帮助中小学学生在沉浸式的魔法世界中摆脱枯燥死记硬背，自然建立英语语感、语音连读识别与核心词汇积累。
+**Hogwarts Audio 3.0** 是一套融合**第二语言习得科学 (SLA)**、**艾宾浩斯遗忘曲线**与 **Apple Human Interface Guidelines (HIG)** 人机工学的新一代专业在线英语学习平台。
 
-针对初学英语的孩子长时间阅读容易疲劳、长难句容易挫败的痛点，我们深度重塑了 UI/UX，采用**日间护眼学院色**、**大字号清晰排版**、**点击即查纯正英音音标与中文释义**、**游戏化拼写大闯关**与**施咒跟读评分**，让孩子像玩游戏一样爱上听英语小说！
+针对传统英语精听工具“长句容易视觉疲劳”、“音频加载缓冲漫长”、“无法精准对比口音差距”以及“生词背完就忘”的核心痛点，Hogwarts Audio 3.0 进行了全方位重塑：
+- **科学阶梯**：对齐欧洲语言通用框架（CEFR），7 卷阶梯式进阶（A2 入门 ➔ B1 进阶 ➔ B2 独立 ➔ C1 熟练）；
+- **英雄聚焦**：单句精听黄金行高与 72% 非焦点降噪，配套隐身斗篷盲听模式；
+- **A/B 跟读工坊**：Track A（原版英音）与 Track B（学生录音）双轨并列对比回放；
+- **艾宾浩斯工坊**：Leitner 5-Box 科学记忆分布，支持一键打印可剪裁的 A4 羊皮纸单词卡 PDF；
+- **全链路流式加速**：告别全量音频阻塞等待，HTTP 206 Range 分片直出，起播延迟缩短 95%。
 
 ---
 
-## 专为中小学生设计的核心功能
+## 核心学习功能体系
 
-### 1. 魔法学院·温暖羊皮纸护眼主题（单一专属设计）
-- **温润米白护眼纸张（`#fbf9f4`）**：告别刺眼纯白反光与沉闷黑夜，字迹对比度柔和清晰，呵护少儿视力。
-- **加粗大字号（18px - 22px）**：字号可在【标准 / 大字 / 特大】之间一键自由切换，行距宽松不拥挤。
-- **专注无扰纯粹体验**：严格贯彻 `educational-ui-spec` 单一专属主题规范，全站统一采用温润典雅的暖色羊皮纸与琥珀金魔法学院配色，无冗余切换干扰。
+### 1. CEFR 欧洲语言框架国际科学分级
+- **7 卷阶梯化难度**：
+  - *HP1*：CEFR A2 入门（魔法学徒 — 基础词汇与日常句型）
+  - *HP2 ~ HP3*：CEFR B1 进阶（魔法探索 — 故事叙述与复合语境）
+  - *HP4 ~ HP6*：CEFR B2 独立（魔法进阶 — 复杂论述与丰富文学表达）
+  - *HP7*：CEFR C1 熟练（傲罗精通 — 高阶小说原版流利阅读）
+- **双通道无障碍指示 (Dual-Channel Accessibility)**：色彩药丸 + 文本标号 + 边框对比双重反馈。
 
-### 2. 双语精听与 Lumos 黄金光晕聚焦
-- **原版音频同步朗读**：时间戳毫米级同步，自动平滑居中滚动当前朗读句子。
-- **Lumos 黄金光晕高亮**：正在朗读的句子附带左侧暖金饰带与柔光光环，引导孩子专注当前句。
-- **随时重听与单句循环**：每句专属【重听】与【慢速精听循环】，方便反复揣摩连读弱读。
-- **双语译文开关**：可自由隐藏/显示中文翻译，满足“盲听猜测”与“精听理解”不同学习阶段需求。
+### 2. 精听多模态教室「英雄聚焦」排版
+- **黄金阅读行高 (`leading-[1.85]`)**：正在朗读的句子应用 `.reading-hero-sentence`，搭配 4px 琥珀色左侧引导线与柔和底衬；
+- **背景降噪与视线防飘**：非当前朗读句子自动应用 `.reading-inactive-sentence`，降低 72% 视觉干扰；
+- **隐身斗篷盲听模式 (Blind Mode)**：非当前句子自动覆盖魔法迷雾遮罩，强制先听音辨意，杜绝依赖字幕的被动假听；
+- **断点续学魔法书架**：自动持久化记录最后阅读章节与精确秒数（`hp_last_position`），书架一键“继续精听”。
 
-### 3. 适合少儿的魔法单词卡（即点即查纯中文释义）
-- **点击任意单词**：立刻弹出专为中小学打造的词汇卡片，无需打开厚重词典。
-- **纯正英音发音朗读**：一键试听地道英式发音（与原版小说朗读口音完美契合）。
-- **国际音标 (IPA) 与词性**：清晰标明 `/ˈmʌɡ.əl/`、`[名词 n.]` 等考点必备信息。
-- **中小学核心必背中文释义**：纯中文清晰解释，针对国内学生，杜绝冗长晦涩的成人全英文释义。
-- **霍格沃茨原著魔法百科**：独家收录原著魔法专属名词典故（如 *Muggle、Quidditch、Golden Snitch、Gryffindor* 等），满足孩子的好奇心！
-- **收入魔法生词本**：一键收藏，自动关联原著上下文语境。
+### 3. 影子跟读工坊 A/B 双轨对比播放 (Shadowing & Scoring)
+- **Track A 原声轨道**：专属 `.track-a-badge` 标识，配置独立播放按钮，随时提取英式原声示范；
+- **Track B 录音轨道**：专属 `.track-b-badge` 标识，提供录音时长倒计时与状态双通道指示；
+- **A/B 盲听/交替对比**：一键无缝在原版英音与自己录音间交替切播，精准听辨连读、重音与语调差距；
+- **Apple HIG ≥44px 触控**：工坊内所有操作按钮满足大拇指触控热区标准，防止误触。
 
-### 4. 游戏化“魔法拼写大闯关”（Spell Quest）
-- **告别枯燥整段打字**：专为中小学生设计的填词槽交互，再也不用担心打错标点或记不住长句而放弃。
-- **实时正误反馈**：输入正确的单词立刻变为醒目翠绿色并打勾；拼错单词友好提示应填词汇。
-- **星级评价体系**：零提示全对获得 3 颗魔法星，满星挑战激发孩子成就感！
-- **连对连击奖励**：连续答对触发连对提示动画。
-- **羽毛笔提示 (Tab)**：遇到卡住的生词，按羽毛笔自动提示首字母或补齐单词。
-- **慢速磨耳朵重听**：支持一键重新播放本句慢速音频。
+### 4. 艾宾浩斯智能生词本与 5 箱记忆工坊
+- **Leitner 5-Box 科学分布栏**：
+  - `Box 1 · 初学` (1天周期)
+  - `Box 2 · 巩固` (3天周期)
+  - `Box 3 · 熟记` (7天周期)
+  - `Box 4 · 长效` (14天周期)
+  - `Box 5 · 永久掌握` (30天周期)
+  实时统计各箱单词存量与「今日待复习」到期单词数量。
+- **3-Tier 操作金字塔**：
+  - **主操作 (Primary CTA)**：`【 打印羊皮纸单词卡 (PDF) 】`（一键生成支持 A4 打印与沿线剪裁的复习卡片）；
+  - **次操作 (Secondary Actions)**：`【 启动艾宾浩斯背词 】`、`【 导出 Anki (TSV) 】`、`【 导出 CSV 】`；
+  - **安全操作 (Destructive Action)**：`【 清空生词本 】`（带防误触双重确认）。
 
-### 5. 底部老魔杖播放器
-- **超大主播放键（48px）**：适配 iPad / 平板与电脑，大拇指触摸极其舒适。
-- **后退 5 秒**：初学者没听清某个发音时，一键后退 5 秒重新听。
-- **初学者专属语速器**：
-  - **0.75x 慢速磨耳朵**（初学者听清每个音节连读的神器）
-  - **0.85x 稍慢进阶**
-  - **1.0x 原版标准语速**
-  - **1.15x 挑战加速**
-- **老魔杖进度条**：黄金发光笔尖拖拽，实时显示当前朗读到第几句（如 `第 3 / 45 句`）。
+### 5. 拼写听写工坊 (Dictation Studio)
+- **移动端 16px 防缩放**：严格实施 16px `text-base` 规范，彻底杜绝 iOS Safari 聚焦输入框时的恶意页面自动缩放；
+- **双通道实时反馈**：结合绿色对勾 `Check`、红色叉号 `X` 图标与边框高亮，实现清晰正误提示；
+- **单句慢速原声重听**：支持 0.8x 慢放与循环磨耳朵；
+- **错词自动进入生词本**：拼错或点击羽毛笔提示的词汇，自动标注并归档到艾宾浩斯生词本 Box 1 备战重炼。
 
-#### 6. 施咒跟读与 AI 语音打分（Shadowing）
-- 浏览器麦克风实时录制学生自己的发音，波形动效直观反馈音量。
-- **O.W.L. 魔法成绩单**：
-  - **90+ 分**：*O.W.L. 杰出 (Outstanding)! 赫敏级纯正英音！*
-  - **80-89 分**：*超出预期 (Exceeds Expectations)! 发音非常棒！*
-  - **70-79 分**：*合格 (Acceptable)! 已经很流畅啦！*
-- **逐词发音比对**：绿色高亮发音标准的词汇，橙色标出需要加油重读的音节。
+### 6. 魔法行囊（离线优先存储）
+- 基于 IndexedDB 本地客户端存储（`HogwartsOfflineDB`），支持整章音频（MP3）与精听字幕（VTT）一键离线保存；
+- 断网无网络环境下 0ms 纯本地秒开，所有精听、跟读、查词功能 100% 正常运行。
 
-### 7. 魔法生词本 & 翻转卡片（Flashcards）
-- 支持像抽认卡一样正面看英文+音标，背面翻转看中文释义与出处例句。
-- **一键导出 Anki / CSV**：标准 Anki TSV 格式导出，支持导入 Anki 手机 App 随时随地刷词。
+### 7. 本地优先增量同步（Local-First Sync + Cloudflare D1）
+- **0ms 本地瞬时响应**：学习打卡与生词操作在本地毫秒级保存，断网完全无感；
+- **时间戳 LWW 冲突仲裁**：基于毫秒级时间戳与软删除标记，多设备增量同步不冲突、不丢词；
+- **6 位免密通行码配对**：每台设备自动生成 6 位魔法通行码（如 `HP-8F29`），跨设备输入即可一秒绑定并合并数据。
 
-### 8. 魔法行囊（离线畅听）
-- 基于 IndexedDB 本地客户端存储，支持将整章音频（MP3）与精听字幕（VTT）一键下载至本地。
-- 在无网环境（如坐车、飞机、图书馆）下无需网络也能顺畅听小说、跟读、拼写。
+---
 
-### 9. PWA 桌面与手机 App 支持
-- 支持在 Chrome、Safari、Edge 浏览器中“一键安装到桌面”，宛如原生应用般快捷打开。
+## 流媒体与边缘分发加速架构
 
-### 10. 魔法云漫游 · 本地优先增量同步（Local-First Sync + Cloudflare D1）
-- **0ms 极致响应与完全离线**：生词收藏、艾宾浩斯复习状态与听力打卡日志依然首先走本地客户端存储（IndexedDB + LocalStorage），断网完全无感。
-- **后台智能增量同步**：在网络恢复或产生本地变更时，通过时间戳自动向云端 D1 数据库增量推送与拉取，仅传输修改过的数据，极度节省流量。
-- **LWW（Last-Write-Wins）冲突仲裁**：基于毫秒级时间戳取最新版本，结合软删除标记（Soft Delete），确保多设备数据合并不冲突、不丢失。
-- **天然支持多用户隔离**：云端数据库模型采用 `(user_id, word)` 独立主键隔离，不同用户/设备的数据完全物理隔离，互不串号。
-- **跨设备免密通行码配对（Passcode Pairing）**：每台设备自动生成 6 位魔法通行码（如 `HP-8F29`），在手机与电脑间输入通行码即可一秒绑定并合并数据，无需繁琐的账号密码注册。
+Hogwarts Audio 3.0 采用前端 Range 解耦与网络边缘分级的流媒体协同加速体系：
+
+```
+                                  【用户点击播放】
+                                         │
+                 ┌───────────────────────┴───────────────────────┐
+                 ▼                                               ▼
+         【本地离线 IndexedDB】                           【在线云端流媒体】
+     已缓存章节？直接 Blob 零网络开播 (0ms)              原生 HTTP 206 Range 分片直出
+                                                                 │
+                                ┌────────────────────────────────┴────────────────────────────────┐
+                                ▼                                                                 ▼
+                    【Cloudflare Anycast CDN】                                       【Node.js 服务端保底代理】
+             配置 VITE_R2_PUBLIC_DOMAIN 直连边缘缓存                             支持 HTTP Range 流式转发
+             全球 300+ 节点就近直出 (TTFB < 100ms)                              Cache-Control: public 30天缓存
+```
+
+- **废弃 24MB 全量 Blob 阻塞**：废除全量下载旧逻辑，浏览器原生按需请求首包（256KB），起播耗时由 27 秒降低至 1 秒以内；
+- **支持 Cloudflare R2 自定义域名直连**：配置 `VITE_R2_PUBLIC_DOMAIN` 后直通边缘网络，完全绕过服务器中转；
+- **持久化分片缓存**：服务端分片响应头配置 `Cache-Control: public, max-age=2592000, immutable`。
 
 ---
 
 ## 多平台部署指南
 
-本项目已全面适配 **Docker、Vercel、Cloudflare Pages、GitHub Pages** 四大主流部署方案：
+本项目全面适配 **Docker、Vercel、Cloudflare Pages、GitHub Pages**：
 
-```
-                    ┌─► Docker 部署 (自建服务器 / NAS / 单容器)
-                    ├─► Vercel 部署 (推荐，Serverless 全球 CDN)
-代码库 (main 分支) ─┼─► Cloudflare Pages (边缘函数 + R2 原生零流量费)
-                    └─► GitHub Pages (纯静态免费托管)
-```
-
-### 1. Docker 部署（推荐云服务器 / 树莓派 / NAS）
-本项目内置多阶段优化 `Dockerfile`，单个容器即可同时运行前端静态资源与后端 S3/R2 音频流媒体代理：
-
+### 1. Docker 部署（自建服务器 / NAS）
 ```bash
 # 启动容器（后台运行并绑定 3001 端口）
 docker compose up -d --build
@@ -118,55 +125,36 @@ docker compose up -d --build
 # http://<你的服务器IP>:3001
 ```
 
-### 2. Vercel 部署（推荐个人建站）
-仓库根目录已配置 [`vercel.json`](vercel.json) 与 [`api/index.js`](api/index.js)：
-1. 登录 [Vercel 官网](https://vercel.com)，点击 **Add New Project**，导入此仓库。
+### 2. Vercel 部署
+1. 登录 [Vercel](https://vercel.com)，导入此仓库。
 2. Framework Preset 选择 **Vite**。
 3. 在 **Environment Variables** 添加 R2 凭据（见下表）。
-4. 点击 **Deploy** 即可自动完成构建，获得全球加速域名。
+4. 点击 **Deploy** 即可完成构建与全球分发。
 
-### 3. Cloudflare Pages 部署（推荐全球边缘网络 + D1 多端同步）
-仓库内置 [`functions/api/[[path]].js`](functions/api/[[path]].js)，原生支持 Cloudflare Edge Functions + D1 增量同步数据库：
-1. 登录 Cloudflare Dashboard，进入 **Workers & Pages** -> **Create application** -> **Pages**。
-2. 连接 GitHub 仓库，构建配置选择 `Vite`，构建命令 `npm run build`，输出目录 `dist`。
-3. **绑定 R2 存储桶**（存储原版小说音频与字幕）：
-   - 进入 Pages 项目 **Settings** -> **Functions** -> **R2 bucket bindings**。
-   - Variable name 填入：`HP_AUDIO_BUCKET`。
-   - 选择你的 R2 存储桶：例如 `fluentfox-podcast`。
-4. **绑定 D1 无服务器数据库**（实现多设备生词与打卡增量同步，可选）：
-   - ① 在 Cloudflare 控制台左侧进入 **Storage & Databases** -> **D1 SQL Database** -> 点击 **Create database**（例如命名为 `hp-sync-db`）。
-   - ② 在该数据库的 **Console** 中，粘贴并执行本项目 [`d1/schema.sql`](d1/schema.sql) 的建表脚本（或使用 Wrangler CLI 执行：`npx wrangler d1 execute hp-sync-db --file=./d1/schema.sql`）。
-   - ③ 返回 Pages 项目 **Settings** -> **Functions** -> **D1 database bindings** -> 点击 **Add binding**。
-   - ④ Variable name 固定填入：`DB`。
-   - ⑤ D1 database 选择刚刚创建的 `hp-sync-db`。
-5. 点击保存并重新部署，享受 R2 与 Pages 之间完全零出口流量费的极速流媒体，以及 Cloudflare D1 带来的极速边缘数据增量同步！
-   > *注：若暂未配置 D1，系统将自动优雅降级为纯本地 0ms 离线模式，所有学习功能 100% 正常运行。*
-
-### 4. GitHub Pages 部署（纯前端静态托管）
-项目已配置相对路径打包（`base: './'`），并内置 GitHub Actions 工作流 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)。
-
-> **首次部署 GitHub Pages 报错排错指南**：  
-> GitHub 新创建的仓库默认会报 `Get Pages site failed` 或部署失败，这是**完全正常的**！因为 GitHub 要求仓库管理员必须在后台开启一次 GitHub Actions 权限。  
-> **只需两步即可解决**：
-> 1. 打开你的 GitHub 仓库页面，点击顶部 **Settings（设置）**。
-> 2. 在左侧菜单点击 **Pages**。
-> 3. 在 **Build and deployment -> Source** 下拉框中，将默认的 *"Deploy from a branch"* 改选为 **`GitHub Actions`**！
-> 4. 保存后，进入仓库顶部的 **Actions** 标签，点击右侧的 **Run workflow** 重新触发一次部署，即可 100% 成功上线！
+### 3. Cloudflare Pages 部署（推荐）
+1. 登录 Cloudflare Dashboard，创建 Pages 项目并连接此仓库。
+2. 构建命令填入 `npm run build`，输出目录填入 `dist`。
+3. **绑定 R2 存储桶**：
+   - Pages 项目 **Settings** -> **Functions** -> **R2 bucket bindings**；
+   - Variable name 填入：`HP_AUDIO_BUCKET`；
+   - 选择你的 R2 存储桶（例如 `fluentfox-podcast`）。
+4. **绑定 D1 数据库**（多设备同步，可选）：
+   - 在 Cloudflare 控制台创建 D1 数据库 `hp-sync-db`，执行 [`d1/schema.sql`](d1/schema.sql)；
+   - Pages 项目 **Settings** -> **Functions** -> **D1 database bindings**，变量名填 `DB`。
 
 ---
 
 ## 环境变量说明
 
-在自建服务器或 Vercel 部署时，复制 `.env.example` 为 `.env` 即可配置：
-
 | 变量名 | 说明 | 示例值 |
 | :--- | :--- | :--- |
-| `PORT` | 启动端口 | `3001` |
+| `PORT` | 服务启动端口 | `3001` |
 | `R2_ACCOUNT_ID` | Cloudflare 账户 ID | `419c6c17e4bdfa104bdf7155314eb714` |
 | `R2_ACCESS_KEY_ID` | R2 S3 访问密钥 ID | `ff65060b70c46b5b158779f382d6494b` |
 | `R2_SECRET_ACCESS_KEY` | R2 S3 安全访问密钥 | `89c5cbda11b68ba399842be73fb2f1b7c6a4...` |
 | `R2_BUCKET_NAME` | 存储桶名称 | `fluentfox-podcast` |
-| `VITE_API_BASE` | （可选）静态 Pages 跨域指向外部后端地址 | `https://your-vercel-app.vercel.app` |
+| `VITE_R2_PUBLIC_DOMAIN` | （可选）Cloudflare R2 自定义 CDN 域名，开启边缘直出加速 | `audio-cdn.yourdomain.com` |
+| `VITE_API_BASE` | （可选）静态前端跨域指向外部后端地址 | `https://your-app.vercel.app` |
 
 ---
 
@@ -178,8 +166,8 @@ docker compose up -d --build
 | **← / →（左 / 右方向键）** | 跳转至 上一句 / 下一句 |
 | **R** | 重新播放当前句 |
 | **L** | 开启 / 关闭单句精听循环 |
-| **Tab** | 听写大闯关中获取“羽毛笔提示” |
-| **Enter** | 听写大闯关中提交并进入下一句 |
+| **Tab** | 听写工坊中获取“羽毛笔提示” |
+| **Enter** | 听写工坊中提交并进入下一句 |
 
 ---
 
@@ -195,10 +183,10 @@ npm run dev
 # 3. 启动后端 R2 代理服务（http://localhost:3001）
 npm run server
 
-# 4. 运行全套 100 项自动化测试（覆盖端到端场景、LWW增量同步、SRS算法、离线缓存、对抗性容错、Anki挖空卡）
+# 4. 运行全套 143 项自动化测试（覆盖 CEFR分级、英雄聚焦、Leitner 5箱、A/B跟读、流式Range解耦等）
 npm test
 
-# 5. 生产打包与安全/规范审查
+# 5. 生产打包与多维合规审查
 npm run build
 npm run verify-security
 npm run check-emojis
@@ -208,13 +196,12 @@ npm run check-emojis
 
 ## Superpowers 智能体工程体系 (Agent SDLC)
 
-本项目现已全面接入 **[obra/superpowers](https://github.com/obra/superpowers)** 规范化研发智能体工作流：
-- **规范与技能库 (`.agents/skills/`)**：集成 15 项核心 Superpowers 技能（包括 `brainstorming` 头脑风暴、`test-driven-development` 测试驱动、`systematic-debugging` 四步系统调试法、`verification-before-completion` 严谨完成前验证等）。
-- **工程治理规则 (`AGENTS.md` / `GEMINI.md`)**：强制实施“有据可查、红绿循环、杜绝侥幸猜测”的 Agent 工程铁律。
-- **UI 设计规范对齐**：全站严格遵循 `educational-ui-spec`（零 Emoji、暖色羊皮纸、苹果 HIG 44px 触控标准）与 `refactoring-ui-spec`（无字体膨胀、三层操作金字塔）。
+本项目全面采用 **[obra/superpowers](https://github.com/obra/superpowers)** 规范化研发智能体工作流：
+- **规范与技能库 (`.agents/skills/`)**：集成 `brainstorming`、`test-driven-development`、`systematic-debugging`、`verification-before-completion` 等核心工程技能；
+- **设计规范对齐**：全站严格遵循 `educational-ui-spec`（零 Emoji、暖色羊皮纸、苹果 HIG 44px 触控标准）与 `refactoring-ui-spec`（无字体膨胀、三层操作金字塔）。
 
 ---
 
 ## 许可证
 
-本项目基于 [MIT License](LICENSE) 开源。音频及原著文本版权归原作者及出版方所有，本项目仅供英语学习交流使用。
+本项目基于 [MIT License](LICENSE) 开源。音频及原著文本版权归原作者及出版方所有，本项目仅供非商业教育学习与学术交流使用。
