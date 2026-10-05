@@ -479,7 +479,7 @@ app.get(['/api/stream/audio/*', '/api/media/*'], async (req, res) => {
       'Accept-Ranges': 'bytes',
       'Content-Length': response.ContentLength,
       'Content-Range': response.ContentRange,
-      'Cache-Control': 'private, no-transform, max-age=604800',
+      'Cache-Control': 'public, max-age=2592000, immutable',
     });
 
     res.status(range ? 206 : 200);

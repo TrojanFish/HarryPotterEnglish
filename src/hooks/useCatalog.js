@@ -6,6 +6,37 @@ import { getCachedChapter, getOfflineStorageInfo } from '../utils/offlineStorage
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 /**
+ * Resolves the optimal streaming URL for a given chapter audio key.
+ * Hierarchy:
+ * 1. Cloudflare R2 Public CDN Domain (if configured via VITE_R2_PUBLIC_DOMAIN or window.__HP_CDN_DOMAIN__)
+ * 2. API Streaming endpoint (/api/stream/audio/:key)
+ *
+ * @param {string} audioKey - e.g. "podcasts/hp-book-1/episodes/ep01/audio.mp3"
+ * @param {string} [apiBase=''] - API base URL prefix
+ * @param {string} [customCdnDomain] - Optional custom CDN domain
+ * @returns {string} - Direct streaming URL
+ */
+export function resolveAudioStreamUrl(audioKey, apiBase = '', customCdnDomain = null) {
+  if (!audioKey) return '';
+
+  const cdn = customCdnDomain || 
+    (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_R2_PUBLIC_DOMAIN) ||
+    (typeof window !== 'undefined' && window.__HP_CDN_DOMAIN__) ||
+    '';
+
+  if (cdn) {
+    const cleanDomain = cdn.replace(/\/+$/, '');
+    const cleanKey = audioKey.replace(/^\/+/, '');
+    const prefix = cleanDomain.startsWith('http') ? cleanDomain : `https://${cleanDomain}`;
+    return `${prefix}/${cleanKey}`;
+  }
+
+  const streamKey = audioKey.replace(/\.(mp3|m4a|wav|aac|ogg|flac)$/i, '');
+  const cleanApiBase = apiBase ? apiBase.replace(/\/+$/, '') : '';
+  return `${cleanApiBase}/api/stream/audio/${streamKey}`;
+}
+
+/**
  * useCatalog Hook
  * Manages book catalog fetching, chapter selection, audio source resolution
  * (IndexedDB offline blob vs streaming URL), subtitle parsing, and storage statistics.
@@ -151,53 +182,31 @@ export function useCatalog() {
         setIsOfflineUncached(false);
       }
 
-      // Online streaming
+      // Online streaming: Instant URL resolution without blocking 24MB blob fetch
       setIsOfflinePlaying(false);
       const audioKey = currentChapterObj.audioKey || `podcasts/${selectedBook}/episodes/${currentChapterObj.epId || 'ep01'}/audio.mp3`;
       const subKey = currentChapterObj.subtitleKey || `podcasts/${selectedBook}/episodes/${currentChapterObj.epId || 'ep01'}/subtitle.vtt`;
 
-      const streamKey = audioKey.replace(/\.(mp3|m4a|wav|aac|ogg|flac)$/i, '');
-      const streamAudioUrl = `${API_BASE}/api/stream/audio/${streamKey}`;
+      const streamAudioUrl = resolveAudioStreamUrl(audioKey, API_BASE);
       const newVttUrl = `${API_BASE}/api/subtitles/${subKey}`;
 
-      // Concurrent fetch
-      const subPromise = (async () => {
-        try {
-          const res = await fetch(newVttUrl);
-          if (res.ok) {
-            const vttText = await res.text();
-            return parseVTT(vttText);
-          }
-        } catch {}
-        return parseVTT(SAMPLE_CHAPTER_1_VTT);
-      })();
+      // Immediately bind audio stream URL so browser <audio> begins HTTP Range streaming without delay
+      if (!cancelled) {
+        setAudioUrl(streamAudioUrl);
+      }
 
-      const audioPromise = (async () => {
-        try {
-          const res = await fetch(streamAudioUrl);
-          if (res.ok) {
-            const blob = await res.blob();
-            const blobUrl = URL.createObjectURL(blob);
-            return blobUrl;
-          }
-        } catch {}
-        return streamAudioUrl;
-      })();
-
+      // Fetch subtitles concurrently (subtitles are lightweight text < 30KB)
       try {
-        const [parsedCues, loadedAudioUrl] = await Promise.all([subPromise, audioPromise]);
-        if (!cancelled) {
-          setCues(parsedCues);
-          if (loadedAudioUrl.startsWith('blob:')) {
-            previousBlobUrlRef.current = loadedAudioUrl;
-          }
-          setAudioUrl(loadedAudioUrl);
+        const res = await fetch(newVttUrl);
+        if (res.ok && !cancelled) {
+          const vttText = await res.text();
+          setCues(parseVTT(vttText));
+        } else if (!cancelled) {
+          setCues(parseVTT(SAMPLE_CHAPTER_1_VTT));
         }
       } catch (err) {
-        console.warn('[Audio] Failed to load chapter content:', err);
         if (!cancelled) {
           setCues(parseVTT(SAMPLE_CHAPTER_1_VTT));
-          setAudioUrl(streamAudioUrl);
         }
       } finally {
         if (!cancelled) {

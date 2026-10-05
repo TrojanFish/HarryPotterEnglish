@@ -415,9 +415,13 @@ export async function onRequest(context) {
     );
   }
 
-  // 3. Audio streaming with Range support
-  if (action === 'media') {
-    const key = objectKey.endsWith('.mp3') ? objectKey : `${objectKey}.mp3`;
+  // 3. Audio streaming with Range support (support both /media/* and /stream/audio/*)
+  if (action === 'media' || action === 'stream') {
+    let cleanKey = objectKey;
+    if (action === 'stream' && cleanKey.startsWith('audio/')) {
+      cleanKey = cleanKey.replace(/^audio\//, '');
+    }
+    const key = cleanKey.endsWith('.mp3') ? cleanKey : `${cleanKey}.mp3`;
     const rangeHeader = request.headers.get('range');
     const getOptions = {};
     if (rangeHeader) {
@@ -434,7 +438,7 @@ export async function onRequest(context) {
     headers.set('etag', object.httpEtag);
     headers.set('Content-Type', 'audio/mpeg');
     headers.set('Accept-Ranges', 'bytes');
-    headers.set('Cache-Control', 'public, max-age=604800, immutable');
+    headers.set('Cache-Control', 'public, max-age=2592000, immutable');
 
     const status = rangeHeader ? 206 : 200;
     return new Response(object.body, { headers, status });
