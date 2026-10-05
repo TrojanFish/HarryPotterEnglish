@@ -192,13 +192,37 @@ export function AnalyticsDashboard({
     ? `${trendLinePath} L ${trendPoints[trendPoints.length - 1].x},${trendSvgHeight - trendPaddingY} L ${trendPoints[0].x},${trendSvgHeight - trendPaddingY} Z`
     : '';
 
+  const theme = isParchment ? {
+    modalBg: 'bg-[#fbf6ea]',
+    modalBorder: 'border-[#dec9a5]',
+    primaryText: 'text-[#2d1e12]',
+    cardBg: 'bg-[#fffdf8]',
+    cardBorder: 'border-[#dec9a5]',
+    secondaryText: 'text-[#7d6852]',
+    unitText: 'text-[#7d6852]',
+    gridStroke: '#e8dcbe',
+    axisFill: '#998369',
+    headerBg: 'bg-white/95'
+  } : {
+    modalBg: 'bg-[#0e1422]',
+    modalBorder: 'border-[#223147]',
+    primaryText: 'text-[#e2d9c8]',
+    cardBg: 'bg-[#131b2a]',
+    cardBorder: 'border-[#223147]',
+    secondaryText: 'text-[#8c9ba5]',
+    unitText: 'text-[#8c9ba5]',
+    gridStroke: '#1e293b',
+    axisFill: '#64748b',
+    headerBg: 'bg-[#0e1422]/95'
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
       {/* Click outside backdrop */}
       <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
 
       {/* Main Modal Container (Native Bottom Sheet on Mobile, Centered on Desktop) */}
-      <div className="relative w-full max-w-4xl max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-all z-10 pb-safe flex flex-col no-scrollbar">
+      <div className={`relative w-full max-w-4xl max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border ${theme.modalBorder} ${theme.modalBg} ${theme.primaryText} transition-all z-10 pb-safe flex flex-col no-scrollbar`}>
         
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
@@ -334,9 +358,9 @@ export function AnalyticsDashboard({
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             
             {/* 1. Continuous Streak Days */}
-            <div className="p-4 rounded-2xl border border-[#e8ddd0] bg-white relative overflow-hidden flex flex-col justify-between">
+            <div className={`p-4 rounded-2xl border ${theme.cardBorder} ${theme.cardBg} relative overflow-hidden flex flex-col justify-between`}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-stone-500">
+                <span className={`text-xs font-semibold ${theme.secondaryText}`}>
                   连续打卡天数
                 </span>
                 <div className="p-1.5 rounded-xl bg-orange-500/15 text-orange-500 border border-orange-500/30">
@@ -348,9 +372,9 @@ export function AnalyticsDashboard({
                   <span className="text-2xl sm:text-3xl font-bold font-mono text-orange-500 tracking-tight">
                     {currentSummary.streakDays}
                   </span>
-                  <span className="text-xs text-stone-400">天</span>
+                  <span className={`text-xs ${theme.unitText}`}>天</span>
                 </div>
-                <div className="text-[11px] mt-1.5 flex items-center gap-1 text-stone-500 font-medium">
+                <div className={`text-[11px] mt-1.5 flex items-center gap-1 ${theme.secondaryText} font-medium`}>
                   <Zap size={11} className="text-amber-500" />
                   <span>历史最长: {currentSummary.longestStreakDays} 天</span>
                 </div>
@@ -358,9 +382,9 @@ export function AnalyticsDashboard({
             </div>
 
             {/* 2. Total Listening Time */}
-            <div className="p-4 rounded-2xl border border-[#e8ddd0] bg-white flex flex-col justify-between">
+            <div className={`p-4 rounded-2xl border ${theme.cardBorder} ${theme.cardBg} flex flex-col justify-between`}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-stone-500">
+                <span className={`text-xs font-semibold ${theme.secondaryText}`}>
                   累计专注听力
                 </span>
                 <div className="p-1.5 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80">
@@ -372,20 +396,20 @@ export function AnalyticsDashboard({
                   <span className="text-2xl sm:text-3xl font-bold font-mono text-amber-700 tracking-tight">
                     {totalHours > 0 ? `${totalHours}h` : ''}{totalMinutes}
                   </span>
-                  <span className="text-xs text-stone-400">
+                  <span className={`text-xs ${theme.unitText}`}>
                     {totalHours > 0 ? '分钟' : '分钟'}
                   </span>
                 </div>
-                <div className="text-[11px] mt-1.5 text-stone-500">
+                <div className={`text-[11px] mt-1.5 ${theme.secondaryText}`}>
                   共 {currentSummary.totalListeningSeconds} 秒精听输入
                 </div>
               </div>
             </div>
 
             {/* 3. Completed Chapters Count */}
-            <div className="p-4 rounded-2xl border border-[#e8ddd0] bg-white flex flex-col justify-between">
+            <div className={`p-4 rounded-2xl border ${theme.cardBorder} ${theme.cardBg} flex flex-col justify-between`}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-stone-500">
+                <span className={`text-xs font-semibold ${theme.secondaryText}`}>
                   已学完章节
                 </span>
                 <div className="p-1.5 rounded-xl bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">
@@ -397,18 +421,18 @@ export function AnalyticsDashboard({
                   <span className="text-2xl sm:text-3xl font-bold font-mono text-emerald-600 tracking-tight">
                     {currentSummary.completedChaptersCount}
                   </span>
-                  <span className="text-xs text-stone-400">篇</span>
+                  <span className={`text-xs ${theme.unitText}`}>篇</span>
                 </div>
-                <div className="text-[11px] mt-1.5 text-stone-500">
+                <div className={`text-[11px] mt-1.5 ${theme.secondaryText}`}>
                   原著有声书通读成就
                 </div>
               </div>
             </div>
 
             {/* 4. Mastered Vocabulary Count */}
-            <div className="p-4 rounded-2xl border border-[#e8ddd0] bg-white flex flex-col justify-between">
+            <div className={`p-4 rounded-2xl border ${theme.cardBorder} ${theme.cardBg} flex flex-col justify-between`}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-stone-500">
+                <span className={`text-xs font-semibold ${theme.secondaryText}`}>
                   生词库收录
                 </span>
                 <div className="p-1.5 rounded-xl bg-amber-500/15 text-amber-800 border border-amber-300/60">
@@ -420,9 +444,9 @@ export function AnalyticsDashboard({
                   <span className="text-2xl sm:text-3xl font-bold font-mono text-amber-900 tracking-tight">
                     {vocabCount}
                   </span>
-                  <span className="text-xs text-stone-400">词</span>
+                  <span className={`text-xs ${theme.unitText}`}>词</span>
                 </div>
-                <div className="text-[11px] mt-1.5 text-stone-500">
+                <div className={`text-[11px] mt-1.5 ${theme.secondaryText}`}>
                   支持一键导出至 Anki
                 </div>
               </div>
@@ -431,7 +455,7 @@ export function AnalyticsDashboard({
           </div>
 
           {/* Chart 1: Weekly Listening Minutes Bar Chart */}
-          <div className="p-5 rounded-3xl border border-[#e8ddd0] bg-white">
+          <div className={`p-5 rounded-3xl border ${theme.cardBorder} ${theme.cardBg}`}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
                 <Calendar size={16} className="text-amber-600" />
@@ -439,7 +463,7 @@ export function AnalyticsDashboard({
                   本周听力时长分布 (最近 7 天)
                 </h3>
               </div>
-              <span className="text-xs text-stone-500">
+              <span className={`text-xs ${theme.secondaryText}`}>
                 单位: 分钟 (min)
               </span>
             </div>
@@ -472,7 +496,7 @@ export function AnalyticsDashboard({
                         y1={y} 
                         x2={chartWidth} 
                         y2={y} 
-                        stroke="#e8ddd0" 
+                        stroke={theme.gridStroke} 
                         strokeDasharray={ratio === 0 ? '0' : '4 4'}
                         strokeWidth="1"
                       />
@@ -480,7 +504,7 @@ export function AnalyticsDashboard({
                         x="4" 
                         y={y - 4} 
                         fontSize="9" 
-                        fill="#a89985"
+                        fill={theme.axisFill}
                         fontFamily="monospace"
                       >
                         {val}m
@@ -492,8 +516,9 @@ export function AnalyticsDashboard({
                 {/* Bars for 7 days */}
                 {weeklyData.map((d, idx) => {
                   const x = barGap + idx * (barWidth + barGap);
-                  const barH = maxWeeklyMinutes > 0 ? (d.minutes / maxWeeklyMinutes) * (chartHeight - 30) : 0;
-                  const y = chartHeight - barH;
+                  const safeMinutes = (typeof d?.minutes === 'number' && Number.isFinite(d.minutes) && d.minutes >= 0) ? d.minutes : 0;
+                  const barH = maxWeeklyMinutes > 0 ? (safeMinutes / maxWeeklyMinutes) * (chartHeight - 30) : 0;
+                  const y = chartHeight - (Number.isFinite(barH) ? barH : 0);
                   const isHovered = hoveredBarIndex === idx;
                   const isToday = idx === weeklyData.length - 1;
 
@@ -583,7 +608,7 @@ export function AnalyticsDashboard({
           </div>
 
           {/* Chart 2: Dictation Accuracy History Trend Curve */}
-          <div className="p-5 rounded-3xl border border-[#e8ddd0] bg-white">
+          <div className={`p-5 rounded-3xl border ${theme.cardBorder} ${theme.cardBg}`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 mb-4">
               <div className="flex items-center space-x-2">
                 <TrendingUp size={16} className="text-emerald-500 shrink-0" />
@@ -591,7 +616,7 @@ export function AnalyticsDashboard({
                   听写练习准确率走势 (最近 10 次练习)
                 </h3>
               </div>
-              <span className="text-[11px] sm:text-xs text-stone-500 font-medium">
+              <span className={`text-[11px] sm:text-xs ${theme.secondaryText} font-medium`}>
                 优秀基准线: 80% (O.W.L.s 优秀)
               </span>
             </div>
@@ -602,7 +627,7 @@ export function AnalyticsDashboard({
                 <Sparkles size={28} className="text-amber-500 animate-bounce" />
                 <p className="text-sm font-semibold text-stone-700">暂无听写练习记录</p>
                 <p className="text-xs max-w-sm text-stone-500">
-                  点击顶部闪电图标【拼写大闯关】完成第 1 篇逐句听写，准确率走势图将在此自动绘制！
+                  切换至顶部【听写工坊】完成第 1 篇逐句听写，准确率走势图将在此自动绘制！
                 </p>
               </div>
             ) : (
@@ -657,7 +682,7 @@ export function AnalyticsDashboard({
                         y1={y0} 
                         x2={trendSvgWidth - trendPaddingX} 
                         y2={y0} 
-                        stroke="#e8ddd0" 
+                        stroke={theme.gridStroke} 
                         strokeWidth="1.5"
                       />
                     );

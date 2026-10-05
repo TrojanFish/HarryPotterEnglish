@@ -37,9 +37,9 @@
 | E2E | E2E Testing Track | Build test harness & automated 4-tier E2E test suite, publish TEST_READY.md | none | DONE |
 | M1 | AI Speech Scoring Engine (R1) | `speechScoring.js`, `ShadowingRecorder.jsx` scoring & word highlight UI (<2s latency) | none | DONE |
 | M2 | Visual Learning Analytics (R2) | `analyticsStore.js`, `AnalyticsDashboard.jsx`, Header button, Dictation/Playback hooks | none | DONE |
-| M3 | Anki Export Pipeline (R3) | `ankiExport.js`, vocab schema extension, `VocabularyDrawer.jsx` export actions | none | IN_PROGRESS |
-| M4 | Complete Offline Caching (R4) | `offlineStorage.js`, `StorageManagerModal.jsx`, `App.jsx` offline Blob playback | none | PLANNED |
-| M5 | Final E2E Pass & Coverage Hardening | Pass 100% E2E tests, Tier 5 adversarial coverage hardening, clean build & audit | M1, M2, M3, M4, E2E | PLANNED |
+| M3 | Anki Export Pipeline (R3) | `ankiExport.js`, vocab schema extension, `VocabularyDrawer.jsx` export actions, Cloze cards | none | DONE |
+| M4 | Complete Offline Caching (R4) | `offlineStorage.js`, `StorageManagerModal.jsx`, `App.jsx` offline Blob playback | none | DONE |
+| M5 | Final E2E Pass & Coverage Hardening | Pass 100% E2E tests (100/100 tests), Tier 5 adversarial coverage, Superpowers SDLC integration | M1, M2, M3, M4, E2E | DONE |
 
 ## Interface Contracts
 

@@ -195,9 +195,23 @@ npm run dev
 # 3. 启动后端 R2 代理服务（http://localhost:3001）
 npm run server
 
-# 4. 运行全套 65 项自动化测试（覆盖端到端场景、LWW增量同步、SRS算法、离线缓存）
+# 4. 运行全套 100 项自动化测试（覆盖端到端场景、LWW增量同步、SRS算法、离线缓存、对抗性容错、Anki挖空卡）
 npm test
+
+# 5. 生产打包与安全/规范审查
+npm run build
+npm run verify-security
+npm run check-emojis
 ```
+
+---
+
+## Superpowers 智能体工程体系 (Agent SDLC)
+
+本项目现已全面接入 **[obra/superpowers](https://github.com/obra/superpowers)** 规范化研发智能体工作流：
+- **规范与技能库 (`.agents/skills/`)**：集成 15 项核心 Superpowers 技能（包括 `brainstorming` 头脑风暴、`test-driven-development` 测试驱动、`systematic-debugging` 四步系统调试法、`verification-before-completion` 严谨完成前验证等）。
+- **工程治理规则 (`AGENTS.md` / `GEMINI.md`)**：强制实施“有据可查、红绿循环、杜绝侥幸猜测”的 Agent 工程铁律。
+- **UI 设计规范对齐**：全站严格遵循 `educational-ui-spec`（零 Emoji、暖色羊皮纸、苹果 HIG 44px 触控标准）与 `refactoring-ui-spec`（无字体膨胀、三层操作金字塔）。
 
 ---
 

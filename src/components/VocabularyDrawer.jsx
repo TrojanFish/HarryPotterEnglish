@@ -66,6 +66,13 @@ export function VocabularyDrawer({
     showToast('已导出 Anki 牌组文件 (.tsv)，可在 Anki 中直接导入！');
   };
 
+  const handleExportAnkiCloze = () => {
+    if (!vocabList || vocabList.length === 0) return;
+    const content = generateAnkiTSV(vocabList, { deckName: 'Hogwarts Magic English (Cloze)', cloze: true });
+    downloadAnkiFile(content, `hogwarts_anki_cloze_${Date.now()}.tsv`);
+    showToast('已导出 Anki Cloze 填空卡牌组 (.tsv)！');
+  };
+
   const handleExportCSV = () => {
     if (vocabList.length === 0) return;
     const header = 'Word,Phonetic,Part of Speech,Translation,Context\n';
@@ -132,7 +139,7 @@ export function VocabularyDrawer({
               <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
               <div className="min-w-0 flex-1">
                 <h2 className="font-bold text-base sm:text-lg text-amber-950 truncate whitespace-nowrap">
-                  <span className="font-magical">魔法生词本</span> <span className="font-mono font-bold text-amber-900">({vocabList.length})</span>
+                  <span className="font-magical">魔法生词本 ({vocabList.length})</span>
                 </h2>
                 <p className="text-[11px] sm:text-xs text-stone-500 truncate">精听原著词汇与例句笔记</p>
               </div>
@@ -294,39 +301,50 @@ export function VocabularyDrawer({
               )}
               </div>
 
-              {/* Bottom Actions - only rendered when vocabulary is not empty */}
-              {vocabList.length > 0 && (
-                <div className="p-3.5 sm:p-4 border-t border-[#e8ddd0] bg-white flex flex-wrap items-center justify-between gap-2 text-xs shrink-0">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={handleExportAnki}
-                      className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs cursor-pointer whitespace-nowrap"
-                      title="导出为标准 Anki 卡片牌组 (.tsv)"
-                    >
-                      <Sparkles size={14} className="text-amber-600 shrink-0" />
-                      <span>导出至 Anki (TSV)</span>
-                    </button>
-
-                    <button
-                      onClick={handleExportCSV}
-                      className="duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs cursor-pointer whitespace-nowrap"
-                      title="导出为通用表格 CSV 格式"
-                    >
-                      <Download size={14} className="shrink-0" />
-                      <span>导出 CSV</span>
-                    </button>
-                  </div>
+              {/* Bottom Actions */}
+              <div className="p-3.5 sm:p-4 border-t border-[#e8ddd0] bg-white flex flex-wrap items-center justify-between gap-2 text-xs shrink-0">
+                <div className="flex items-center gap-2">
+                  <button
+                    disabled={vocabList.length === 0}
+                    onClick={handleExportAnki}
+                    className={`duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs whitespace-nowrap ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    title="导出为标准 Anki 卡片牌组 (.tsv)"
+                  >
+                    <Sparkles size={14} className="text-amber-600 shrink-0" />
+                    <span>导出至 Anki (TSV)</span>
+                  </button>
 
                   <button
-                    onClick={onClearAll}
-                    className="min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-200 text-rose-700 bg-rose-50/60 hover:bg-rose-100 hover:border-rose-300 transition-all active:scale-95 cursor-pointer whitespace-nowrap flex items-center gap-1"
-                    title="清空生词本内所有单词"
+                    disabled={vocabList.length === 0}
+                    onClick={handleExportAnkiCloze}
+                    className={`duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs whitespace-nowrap ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    title="导出为 Anki 挖空填空卡 (Cloze Deletion)"
                   >
-                    <Trash2 size={13} className="text-rose-600 shrink-0" />
-                    <span>清空生词本</span>
+                    <BrainCircuit size={14} className="text-amber-700 shrink-0" />
+                    <span>Anki 挖空卡</span>
+                  </button>
+
+                  <button
+                    disabled={vocabList.length === 0}
+                    onClick={handleExportCSV}
+                    className={`duo-btn-secondary min-h-[40px] flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs whitespace-nowrap ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    title="导出为通用表格 CSV 格式"
+                  >
+                    <Download size={14} className="shrink-0" />
+                    <span>导出 CSV</span>
                   </button>
                 </div>
-              )}
+
+                <button
+                  disabled={vocabList.length === 0}
+                  onClick={onClearAll}
+                  className={`min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-200 text-rose-700 bg-rose-50/60 transition-all whitespace-nowrap flex items-center gap-1 ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-rose-100 hover:border-rose-300 active:scale-95 cursor-pointer'}`}
+                  title="清空生词本内所有单词"
+                >
+                  <Trash2 size={13} className="text-rose-600 shrink-0" />
+                  <span>清空生词本</span>
+                </button>
+              </div>
 
           {/* Toast Feedback Notification */}
           {toastMessage && (

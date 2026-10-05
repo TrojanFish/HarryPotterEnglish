@@ -222,6 +222,9 @@ export function ShadowingRecorder({
       timerRef.current = setInterval(() => {
         setRecordSeconds(prev => prev + 1);
       }, 1000);
+      if (timerRef.current && typeof timerRef.current.unref === 'function') {
+        timerRef.current.unref();
+      }
 
     } catch (err) {
       console.error('Microphone access denied:', err);
@@ -289,6 +292,9 @@ export function ShadowingRecorder({
       }
       runEvaluation(transcriptRef.current, false);
     }, 1500);
+    if (safetyTimeoutRef.current && typeof safetyTimeoutRef.current.unref === 'function') {
+      safetyTimeoutRef.current.unref();
+    }
 
     if (recognitionRef.current) {
       recognitionRef.current.onend = () => {
@@ -513,7 +519,7 @@ export function ShadowingRecorder({
               <div className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl border ${gradeInfo.parchmentBadge}`}>
                 <span className="font-mono font-extrabold text-lg leading-tight">{evaluationResult.score}%</span>
                 <span className="text-[9px] uppercase tracking-wider font-sans font-bold">
-                  等阶 {gradeInfo.letter}
+                  Grade {gradeInfo.letter}
                 </span>
               </div>
               <div>

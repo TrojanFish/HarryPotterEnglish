@@ -29,7 +29,7 @@ const projectRoot = path.resolve(__dirname, '..');
 const dashboardOriginalSrc = fs.readFileSync(
   path.resolve(projectRoot, 'src', 'components', 'AnalyticsDashboard.jsx'),
   'utf8'
-).replace('../utils/analyticsStore', '../src/utils/analyticsStore.js');
+).replace(/\.\.\/utils\/(\w+)/g, '../src/utils/$1.js');
 
 const dashboardCompiled = esbuild.transformSync(dashboardOriginalSrc, { loader: 'jsx', format: 'esm' });
 const compiledPath = path.resolve(__dirname, 'AnalyticsDashboard.adversarial.compiled.js');
@@ -334,8 +334,8 @@ test('Adversarial R2.6: Malformed session accuracy (negative, >100%, null) is sa
   assert.strictEqual(/Infinity/.test(html), false, 'Malformed accuracies must not produce Infinity');
 });
 
-test('Adversarial R2.6b [FINDING]: AnalyticsDashboard line 341 fails to guard d.minutes=NaN producing SVG NaN attributes', () => {
-  // Directly test the un-guarded line 341 vulnerability in AnalyticsDashboard
+test('Adversarial R2.6b [REMEDIATED]: AnalyticsDashboard safely guards d.minutes=NaN preventing SVG NaN attributes', () => {
+  // Verify remediation of d.minutes=NaN vulnerability in AnalyticsDashboard
   const nanMinutesSummary = {
     totalListeningSeconds: 0,
     weeklyListeningMinutes: [
@@ -355,13 +355,11 @@ test('Adversarial R2.6b [FINDING]: AnalyticsDashboard line 341 fails to guard d.
     })
   );
 
-  // In line 341: const barH = maxWeeklyMinutes > 0 ? (d.minutes / maxWeeklyMinutes) * (chartHeight - 30) : 0;
-  // Because (NaN / 15) is NaN, height and y become NaN in the SVG rect!
   const hasNanInSvgRect = /<rect[^>]*y="NaN"/.test(html) || /<rect[^>]*height="NaN"/.test(html);
   assert.strictEqual(
     hasNanInSvgRect,
-    true,
-    'Confirmed vulnerability: d.minutes=NaN produces y="NaN" or height="NaN" attributes in SVG rect due to missing || 0 guard at line 341'
+    false,
+    'Remediated: d.minutes=NaN produces no y="NaN" or height="NaN" attributes in SVG rect'
   );
 });
 

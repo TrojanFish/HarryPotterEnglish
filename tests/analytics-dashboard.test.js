@@ -38,7 +38,7 @@ const projectRoot = path.resolve(__dirname, '..');
 
 // Transpile AnalyticsDashboard.jsx
 const dashboardSrc = fs.readFileSync(path.resolve(projectRoot, 'src', 'components', 'AnalyticsDashboard.jsx'), 'utf8')
-  .replace('../utils/analyticsStore', '../src/utils/analyticsStore.js');
+  .replace(/\.\.\/utils\/(\w+)/g, '../src/utils/$1.js');
 const dashboardCompiled = esbuild.transformSync(dashboardSrc, { loader: 'jsx', format: 'esm' });
 const dashboardCompiledPath = path.resolve(__dirname, 'AnalyticsDashboard.compiled.js');
 fs.writeFileSync(dashboardCompiledPath, dashboardCompiled.code, 'utf8');

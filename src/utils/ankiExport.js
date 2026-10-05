@@ -30,12 +30,15 @@ export function sanitizeForTSV(str) {
  * @param {string} word - The target vocabulary word
  * @returns {string} - Context quote with bolded target word, sanitized for TSV
  */
-export function boldWordInContext(quote, word) {
+export function boldWordInContext(quote, word, options = {}) {
   if (!quote) return '';
   if (!word) return sanitizeForTSV(quote);
 
   const trimmedWord = String(word).trim();
   if (!trimmedWord) return sanitizeForTSV(quote);
+
+  const replacementTag = options && options.cloze ? '{{c1::$1}}' : '<b>$1</b>';
+  const hasTagStr = options && options.cloze ? '{{c1::' : '<b>';
 
   // Escape regex meta characters while keeping hyphens, apostrophes, and spaces
   const escaped = trimmedWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -50,9 +53,9 @@ export function boldWordInContext(quote, word) {
 
   // Fast path: if quote does not contain HTML tags, replace directly
   if (!strQuote.includes('<')) {
-    let result = strQuote.replace(regex, '<b>$1</b>');
-    if (!result.includes('<b>')) {
-      result = strQuote.replace(looseRegex, '<b>$1</b>');
+    let result = strQuote.replace(regex, replacementTag);
+    if (!result.includes(hasTagStr)) {
+      result = strQuote.replace(looseRegex, replacementTag);
     }
     return sanitizeForTSV(result);
   }
@@ -66,7 +69,7 @@ export function boldWordInContext(quote, word) {
     if (seg.startsWith('<') && seg.endsWith('>')) {
       return seg;
     }
-    const replaced = seg.replace(regex, '<b>$1</b>');
+    const replaced = seg.replace(regex, replacementTag);
     if (replaced !== seg) matched = true;
     return replaced;
   });
@@ -77,7 +80,7 @@ export function boldWordInContext(quote, word) {
       if (seg.startsWith('<') && seg.endsWith('>')) {
         return seg;
       }
-      return seg.replace(looseRegex, '<b>$1</b>');
+      return seg.replace(looseRegex, replacementTag);
     });
   }
 
@@ -167,7 +170,8 @@ export function generateAnkiTSV(vocabList = [], options = {}) {
 
     const contextQuote = boldWordInContext(
       entry.contextQuote || entry.quote || entry.context || '',
-      entry.word || entry.front || ''
+      entry.word || entry.front || '',
+      options
     );
     const timestamp = formatAudioTimestamp(entry);
 

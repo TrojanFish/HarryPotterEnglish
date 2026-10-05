@@ -120,9 +120,10 @@ function createMockEnvironment() {
     stop() {
       this.isStopped = true;
       if (simulatedEndDelayMs > 0) {
-        setTimeout(() => {
+        const timer = setTimeout(() => {
           if (this.onend) this.onend();
         }, simulatedEndDelayMs);
+        if (timer && typeof timer.unref === 'function') timer.unref();
       } else {
         if (this.onend) this.onend();
       }
