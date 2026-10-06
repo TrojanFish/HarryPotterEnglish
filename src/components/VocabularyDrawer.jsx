@@ -179,11 +179,12 @@ export function VocabularyDrawer({
                 setDrawerTab('words');
                 setSearchTerm('');
               }}
-              className={`min-h-[34px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`min-h-[38px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
                 drawerTab === 'words'
                   ? 'bg-amber-500 text-white shadow-sm'
-                  : 'text-stone-600 hover:text-amber-950'
+                  : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
               }`}
+              aria-pressed={drawerTab === 'words'}
             >
               生词本 ({vocabList.length})
             </button>
@@ -192,11 +193,12 @@ export function VocabularyDrawer({
                 setDrawerTab('sentences');
                 setSearchTerm('');
               }}
-              className={`min-h-[34px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`min-h-[38px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
                 drawerTab === 'sentences'
                   ? 'bg-amber-500 text-white shadow-sm'
-                  : 'text-stone-600 hover:text-amber-950'
+                  : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
               }`}
+              aria-pressed={drawerTab === 'sentences'}
             >
               疑难句 ({bookmarkedSentences.length})
             </button>

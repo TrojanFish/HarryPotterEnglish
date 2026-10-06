@@ -511,6 +511,8 @@ export function App() {
       <DesktopSidebar
         currentView={currentView}
         onSwitchView={setCurrentView}
+        playerMode={playerMode}
+        onSwitchPlayerMode={handleSwitchPlayerMode}
         studyMode={studyMode}
         setStudyMode={setStudyMode}
         streakDays={analyticsSummary?.streakDays || 0}
@@ -536,6 +538,8 @@ export function App() {
       <TabletRail
         currentView={currentView}
         onSwitchView={setCurrentView}
+        playerMode={playerMode}
+        onSwitchPlayerMode={handleSwitchPlayerMode}
         studyMode={studyMode}
         setStudyMode={setStudyMode}
         streakDays={analyticsSummary?.streakDays || 0}
@@ -667,7 +671,6 @@ export function App() {
                     onToggleTranslation={() => setShowTranslation(prev => !prev)}
                     bookmarkedCueIds={currentChapterBookmarkedCueIds}
                     onToggleBookmarkCue={(cue) => toggleBookmarkSentence(cue, selectedBook, selectedChapter)}
-                    onSwitchToStudio={() => handleSwitchPlayerMode('studio')}
                   />
                 ) : (
                   <div className="flex-1 flex flex-col min-h-0 overflow-hidden">

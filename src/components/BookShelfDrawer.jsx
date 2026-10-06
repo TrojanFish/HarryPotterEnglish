@@ -113,22 +113,24 @@ export function BookShelfDrawer({
           <div className="flex rounded-xl p-1 bg-stone-100 border border-[#e8ddd0] gap-1 w-full max-w-sm">
             <button
               onClick={() => setActiveTab('chapters')}
-              className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+              className={`flex-1 min-h-[38px] py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none ${
                 activeTab === 'chapters'
-                  ? 'bg-amber-500 text-white'
-                  : 'text-stone-600 hover:text-amber-950'
+                  ? 'bg-amber-500 text-white shadow-sm'
+                  : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
               }`}
+              aria-pressed={activeTab === 'chapters'}
             >
               <Layers size={13} />
               <span>章节目录 ({chapters.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('books')}
-              className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+              className={`flex-1 min-h-[38px] py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none ${
                 activeTab === 'books'
-                  ? 'bg-amber-500 text-white'
-                  : 'text-stone-600 hover:text-amber-950'
+                  ? 'bg-amber-500 text-white shadow-sm'
+                  : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
               }`}
+              aria-pressed={activeTab === 'books'}
             >
               <BookOpen size={13} />
               <span>全部原著 ({validBooks.length})</span>

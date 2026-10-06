@@ -81,17 +81,23 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
             <div className="flex rounded-xl p-0.5 border border-[#e8ddd0] bg-stone-100 text-xs">
               <button
                 onClick={() => setActiveTab('touch')}
-                className={`px-2 py-1 rounded-lg font-bold transition-all ${
-                  activeTab === 'touch' ? 'bg-amber-500 text-white' : 'text-stone-600 hover:text-amber-950'
+                className={`min-h-[36px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer select-none ${
+                  activeTab === 'touch'
+                    ? 'bg-amber-500 text-white shadow-sm'
+                    : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
                 }`}
+                aria-pressed={activeTab === 'touch'}
               >
                 触屏手势
               </button>
               <button
                 onClick={() => setActiveTab('keyboard')}
-                className={`px-2 py-1 rounded-lg font-bold transition-all ${
-                  activeTab === 'keyboard' ? 'bg-amber-500 text-white' : 'text-stone-600 hover:text-amber-950'
+                className={`min-h-[36px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer select-none ${
+                  activeTab === 'keyboard'
+                    ? 'bg-amber-500 text-white shadow-sm'
+                    : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
                 }`}
+                aria-pressed={activeTab === 'keyboard'}
               >
                 键盘快捷键
               </button>

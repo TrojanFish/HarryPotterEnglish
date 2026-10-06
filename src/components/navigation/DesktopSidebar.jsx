@@ -26,6 +26,8 @@ import {
 export function DesktopSidebar({
   currentView = 'bookshelf',
   onSwitchView,
+  playerMode = 'podcast',
+  onSwitchPlayerMode,
   studyMode = 'normal',
   setStudyMode,
   streakDays = 0,
@@ -54,13 +56,25 @@ export function DesktopSidebar({
       onClick: () => onSwitchView && onSwitchView('bookshelf')
     },
     {
+      id: 'podcast',
+      label: '随行播客 (Podcast)',
+      desc: '大字歌词流与原声伴读',
+      icon: <Headphones size={18} className="shrink-0" />,
+      isActive: currentView === 'player' && playerMode === 'podcast',
+      onClick: () => {
+        if (onSwitchView) onSwitchView('player');
+        if (onSwitchPlayerMode) onSwitchPlayerMode('podcast');
+      }
+    },
+    {
       id: 'player_normal',
       label: '原著精听 (Reader)',
       desc: '逐句同步双语伴读',
-      icon: <Headphones size={18} className="shrink-0" />,
-      isActive: currentView === 'player' && studyMode === 'normal',
+      icon: <Sparkles size={18} className="shrink-0" />,
+      isActive: currentView === 'player' && playerMode === 'studio' && studyMode === 'normal',
       onClick: () => {
         if (onSwitchView) onSwitchView('player');
+        if (onSwitchPlayerMode) onSwitchPlayerMode('studio');
         if (setStudyMode) setStudyMode('normal');
       }
     },
@@ -69,9 +83,10 @@ export function DesktopSidebar({
       label: '魔法磨耳朵 (Blind)',
       desc: '迷雾遮罩盲听精进',
       icon: <EyeOff size={18} className="shrink-0" />,
-      isActive: currentView === 'player' && studyMode === 'blind',
+      isActive: currentView === 'player' && playerMode === 'studio' && studyMode === 'blind',
       onClick: () => {
         if (onSwitchView) onSwitchView('player');
+        if (onSwitchPlayerMode) onSwitchPlayerMode('studio');
         if (setStudyMode) setStudyMode('blind');
       }
     },
@@ -80,9 +95,10 @@ export function DesktopSidebar({
       label: '拼写大闯关 (Quest)',
       desc: '魔咒打字趣味通关',
       icon: <Zap size={18} className="shrink-0" />,
-      isActive: currentView === 'player' && studyMode === 'dictation',
+      isActive: currentView === 'player' && playerMode === 'studio' && studyMode === 'dictation',
       onClick: () => {
         if (onSwitchView) onSwitchView('player');
+        if (onSwitchPlayerMode) onSwitchPlayerMode('studio');
         if (setStudyMode) setStudyMode('dictation');
       }
     },

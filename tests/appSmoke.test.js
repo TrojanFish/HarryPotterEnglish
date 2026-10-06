@@ -40,4 +40,14 @@ test('App.jsx Integrity & Hook Binding Smoke Test', async (t) => {
     const importLine = appCode.split('\n')[0];
     assert.ok(importLine.includes('useMemo'), 'First import line must explicitly include useMemo');
   });
+
+  await t.test('1.3: DesktopSidebar and TabletRail receive playerMode and onSwitchPlayerMode props', () => {
+    assert.ok(appCode.includes('playerMode={playerMode}'), 'Must pass playerMode to sidebars');
+    assert.ok(appCode.includes('onSwitchPlayerMode={handleSwitchPlayerMode}'), 'Must pass onSwitchPlayerMode to sidebars');
+  });
+
+  await t.test('1.4: App wires playerMode properly to ReaderTopBar and dual study engines', () => {
+    assert.ok(appCode.includes("playerMode === 'podcast'"), 'Must conditionally switch between podcast and studio engines');
+    assert.ok(appCode.includes('onSwitchPlayerMode={handleSwitchPlayerMode}'), 'Must pass handleSwitchPlayerMode to ReaderTopBar');
+  });
 });

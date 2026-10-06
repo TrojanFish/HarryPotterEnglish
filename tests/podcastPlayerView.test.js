@@ -81,7 +81,7 @@ test('PodcastPlayerView Test Suite', async (t) => {
     assert.ok(html.includes('1.25x') || html.includes('1.25'), 'Must display current playback speed');
   });
 
-  await t.test('2.3: Renders Studio Mode switch CTA and flowing lyrics stream', () => {
+  await t.test('2.3: Renders flowing lyrics stream without redundant studio buttons (centralized in TopBar)', () => {
     const html = renderToString(
       React.createElement(PodcastPlayerView, {
         currentBook: mockBook,
@@ -91,12 +91,11 @@ test('PodcastPlayerView Test Suite', async (t) => {
         currentTime: 7,
         duration: 300,
         isPlaying: true,
-        onPlayPause: () => {},
-        onSwitchToStudio: () => {}
+        onPlayPause: () => {}
       })
     );
 
-    assert.ok(html.includes('精研工坊') || html.includes('进入精研'), 'Must provide CTA to switch to Studio Mode');
+    assert.ok(!html.includes('进入精研'), 'Must not render redundant studio button inside player body');
     assert.ok(html.includes('Mr and Mrs Dursley'), 'Must render embedded lyrics stream');
   });
 });

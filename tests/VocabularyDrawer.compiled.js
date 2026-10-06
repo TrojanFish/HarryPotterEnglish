@@ -135,7 +135,8 @@ function VocabularyDrawer({
             setDrawerTab("words");
             setSearchTerm("");
           },
-          className: `min-h-[34px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${drawerTab === "words" ? "bg-amber-500 text-white shadow-sm" : "text-stone-600 hover:text-amber-950"}`
+          className: `min-h-[38px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${drawerTab === "words" ? "bg-amber-500 text-white shadow-sm" : "text-stone-600 hover:text-amber-950 hover:bg-white/80"}`,
+          "aria-pressed": drawerTab === "words"
         },
         "\u751F\u8BCD\u672C (",
         vocabList.length,
@@ -147,7 +148,8 @@ function VocabularyDrawer({
             setDrawerTab("sentences");
             setSearchTerm("");
           },
-          className: `min-h-[34px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${drawerTab === "sentences" ? "bg-amber-500 text-white shadow-sm" : "text-stone-600 hover:text-amber-950"}`
+          className: `min-h-[38px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${drawerTab === "sentences" ? "bg-amber-500 text-white shadow-sm" : "text-stone-600 hover:text-amber-950 hover:bg-white/80"}`,
+          "aria-pressed": drawerTab === "sentences"
         },
         "\u7591\u96BE\u53E5 (",
         bookmarkedSentences.length,

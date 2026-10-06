@@ -88,9 +88,9 @@ export function ReaderTopBar({
           <div className="flex h-10 items-center p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1">
             <button
               onClick={() => onSwitchPlayerMode && onSwitchPlayerMode('podcast')}
-              className={`h-8 flex items-center gap-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`min-h-[36px] sm:min-h-[38px] flex items-center gap-1.5 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer select-none active:scale-95 ${
                 playerMode === 'podcast'
-                  ? 'bg-amber-500 text-white shadow-sm'
+                  ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                   : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
               }`}
               title="随行播客模式（大字歌词流、大画幅原声）"
@@ -102,9 +102,9 @@ export function ReaderTopBar({
 
             <button
               onClick={() => onSwitchPlayerMode && onSwitchPlayerMode('studio')}
-              className={`h-8 flex items-center gap-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`min-h-[36px] sm:min-h-[38px] flex items-center gap-1.5 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer select-none active:scale-95 ${
                 playerMode === 'studio'
-                  ? 'bg-amber-500 text-white shadow-sm'
+                  ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                   : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
               }`}
               title="精研工坊模式（单句精读、查词、影子跟读、听写）"

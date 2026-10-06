@@ -80,44 +80,40 @@ export function PodcastPlayerView({
 
   return (
     <div className={`relative flex flex-col h-full bg-[#fbf9f5] text-[#1e1610] overflow-hidden select-none ${className}`}>
-      {/* ── Sub-header: Mobile Tab Switcher & Quick Studio CTA ───────── */}
+      {/* ── Sub-header: Mobile Tab Switcher ───────── */}
       <div className="lg:hidden flex items-center justify-between px-4 py-2 border-b border-[#e8ddd0] bg-white/80 backdrop-blur-sm shrink-0">
-        {/* Mobile Tab Toggle */}
+        {/* Mobile Tab Toggle (Apple HIG Touch Target & Dual-Channel Status) */}
         <div className="flex items-center p-1 rounded-xl bg-stone-100 border border-[#e8ddd0] gap-1">
           <button
             onClick={() => setMobileTab('lyrics')}
-            className={`min-h-[36px] px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`min-h-[38px] px-3.5 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
               mobileTab === 'lyrics'
-                ? 'bg-amber-500 text-white'
-                : 'text-stone-600 hover:text-amber-950'
+                ? 'bg-amber-500 text-white shadow-sm'
+                : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
             }`}
+            aria-pressed={mobileTab === 'lyrics'}
           >
             歌词流
           </button>
           <button
             onClick={() => setMobileTab('cover')}
-            className={`min-h-[36px] px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`min-h-[38px] px-3.5 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
               mobileTab === 'cover'
-                ? 'bg-amber-500 text-white'
-                : 'text-stone-600 hover:text-amber-950'
+                ? 'bg-amber-500 text-white shadow-sm'
+                : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
             }`}
+            aria-pressed={mobileTab === 'cover'}
           >
             封面
           </button>
         </div>
 
-        {/* Studio Switch CTA */}
-        {onSwitchToStudio && (
-          <button
-            onClick={onSwitchToStudio}
-            className="duo-btn-secondary min-h-[38px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 text-amber-900 border border-amber-300 bg-amber-50/80 active:scale-95 cursor-pointer"
-            title="切换到精研工坊模式（单句精听/查词/跟读/听写）"
-          >
-            <Sparkles size={14} className="text-amber-600" />
-            <span>进入精研</span>
-            <ChevronRight size={13} />
-          </button>
-        )}
+        {/* Current Sentence Progress Indicator */}
+        <div className="flex items-center gap-1 text-xs font-mono text-stone-500 bg-[#fbf9f5] px-2.5 py-1.5 rounded-xl border border-[#e8ddd0]">
+          <span className="font-bold text-amber-900">{cues.length > 0 ? activeCueIndex + 1 : 0}</span>
+          <span className="text-stone-400">/</span>
+          <span>{cues.length}</span>
+        </div>
       </div>
 
       {/* ── Main Body: Responsive Dual-Column or Stacked ─────────────── */}
@@ -296,19 +292,6 @@ export function PodcastPlayerView({
                 </button>
               )}
             </div>
-
-            {/* Desktop Switch to Studio Mode CTA */}
-            {onSwitchToStudio && (
-              <button
-                onClick={onSwitchToStudio}
-                className="duo-btn-secondary min-h-[44px] w-full py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 text-amber-950 border border-amber-300 bg-amber-50/70 hover:bg-amber-100 active:scale-98 transition-all cursor-pointer mt-2"
-                title="切换到精研研学工坊（开启单词深度精析、影子跟读打分、拼写闯关）"
-              >
-                <Sparkles size={16} className="text-amber-600" />
-                <span>进入精研研学工坊 (查词/跟读/听写)</span>
-                <ChevronRight size={15} />
-              </button>
-            )}
           </div>
         </div>
 

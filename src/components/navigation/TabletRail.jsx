@@ -21,6 +21,8 @@ import {
 export function TabletRail({
   currentView = 'bookshelf',
   onSwitchView,
+  playerMode = 'podcast',
+  onSwitchPlayerMode,
   studyMode = 'normal',
   setStudyMode,
   streakDays = 0,
@@ -39,12 +41,23 @@ export function TabletRail({
       onClick: () => onSwitchView && onSwitchView('bookshelf')
     },
     {
-      id: 'player_normal',
-      title: '原著精听',
+      id: 'podcast',
+      title: '随行播客',
       icon: <Headphones size={20} />,
-      isActive: currentView === 'player' && studyMode === 'normal',
+      isActive: currentView === 'player' && playerMode === 'podcast',
       onClick: () => {
         if (onSwitchView) onSwitchView('player');
+        if (onSwitchPlayerMode) onSwitchPlayerMode('podcast');
+      }
+    },
+    {
+      id: 'player_normal',
+      title: '原著精听',
+      icon: <Sparkles size={20} />,
+      isActive: currentView === 'player' && playerMode === 'studio' && studyMode === 'normal',
+      onClick: () => {
+        if (onSwitchView) onSwitchView('player');
+        if (onSwitchPlayerMode) onSwitchPlayerMode('studio');
         if (setStudyMode) setStudyMode('normal');
       }
     },
@@ -52,9 +65,10 @@ export function TabletRail({
       id: 'player_blind',
       title: '魔法磨耳朵',
       icon: <EyeOff size={20} />,
-      isActive: currentView === 'player' && studyMode === 'blind',
+      isActive: currentView === 'player' && playerMode === 'studio' && studyMode === 'blind',
       onClick: () => {
         if (onSwitchView) onSwitchView('player');
+        if (onSwitchPlayerMode) onSwitchPlayerMode('studio');
         if (setStudyMode) setStudyMode('blind');
       }
     },
@@ -62,9 +76,10 @@ export function TabletRail({
       id: 'player_dictation',
       title: '拼写大闯关',
       icon: <Zap size={20} />,
-      isActive: currentView === 'player' && studyMode === 'dictation',
+      isActive: currentView === 'player' && playerMode === 'studio' && studyMode === 'dictation',
       onClick: () => {
         if (onSwitchView) onSwitchView('player');
+        if (onSwitchPlayerMode) onSwitchPlayerMode('studio');
         if (setStudyMode) setStudyMode('dictation');
       }
     },

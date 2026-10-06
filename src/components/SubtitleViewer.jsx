@@ -10,7 +10,8 @@ import {
   Copy,
   Check,
   LocateFixed,
-  Award
+  Award,
+  Bookmark
 } from 'lucide-react';
 import { tokenizeSentence, formatTime } from '../utils/vttParser';
 import { HP_LORE_DICTIONARY } from '../data/hpDictionary';
