@@ -134,5 +134,72 @@ test('BookshelfView CEFR & Hero Continue Card Test Suite', async (t) => {
     assert.ok(!html.includes('>精听<'), 'Book card buttons must be icon-only');
     assert.ok(!html.includes('>目录<'), 'Book card buttons must be icon-only');
   });
+
+  await t.test('4.6: 4 cards rendered in unified 4-column responsive grid container', () => {
+    const html = renderToString(
+      React.createElement(BookshelfView, {
+        books: mockBooks,
+        selectedBook: 'book1',
+        selectedChapter: 'b1_c01',
+        currentTime: 45,
+        duration: 300,
+        isParchment: true,
+        streakDays: 3,
+        todayListeningSeconds: 60,
+        vocabCount: 12
+      })
+    );
+
+    // Grid must use responsive 4-column grid on desktop
+    assert.ok(html.includes('lg:grid-cols-4'), 'Task and continue cards must be in a 4-column responsive grid');
+    // All 4 cards must be present
+    assert.ok(html.includes('今日契约'), 'Must include 今日契约 card');
+    assert.ok(html.includes('连续打卡'), 'Must include 连续打卡 card');
+    assert.ok(html.includes('艾宾浩斯复习'), 'Must include 艾宾浩斯复习 card');
+    assert.ok(html.includes('继续精听') || html.includes('正在精听'), 'Must include 继续精听 card in the row');
+  });
+
+  await t.test('4.7: 今日契约 and 连续打卡 share consistent leading big-number structure', () => {
+    const html = renderToString(
+      React.createElement(BookshelfView, {
+        books: mockBooks,
+        selectedBook: 'book1',
+        selectedChapter: 'b1_c01',
+        currentTime: 45,
+        duration: 300,
+        isParchment: true,
+        streakDays: 5,
+        todayListeningSeconds: 120, // 2 mins listened, 3 mins remaining (300 - 120 = 180s = 3m)
+        vocabCount: 10
+      })
+    );
+
+    // Streak card has leading big number: e.g. 5 天连胜
+    assert.ok(html.includes('>5</span>') && html.includes('天连胜'), 'Streak card must have leading big number');
+    // Daily goal card has leading big number: e.g. 3 分钟待听
+    assert.ok(html.includes('分钟待听'), 'Daily goal card must display 分钟待听 with leading number');
+    // Both cards have consistent font-extrabold text-lg
+    assert.ok(html.includes('font-mono font-extrabold text-lg'), 'Cards must use consistent typography for leading numbers');
+  });
+
+  await t.test('4.8: Continue listening card integrates compactly within the 4-card grid', () => {
+    const html = renderToString(
+      React.createElement(BookshelfView, {
+        books: mockBooks,
+        selectedBook: 'book1',
+        selectedChapter: 'b1_c01',
+        currentTime: 45,
+        duration: 300,
+        isParchment: true,
+        isPlaying: false
+      })
+    );
+
+    // Card 4 renders current chapter title
+    assert.ok(html.includes('大难不死的男孩'), 'Must display active chapter title');
+    assert.ok(html.includes('哈利·波特与魔法石'), 'Must display active book title');
+    // Eliminates the old separate mb-8 hero container
+    assert.ok(!html.includes('mb-8 border border-amber-300/80'), 'Old standalone full-width hero card must be replaced by grid card');
+  });
 });
 

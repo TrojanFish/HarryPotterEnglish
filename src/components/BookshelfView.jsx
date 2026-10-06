@@ -107,25 +107,43 @@ export function BookshelfView({
         </p>
       </div>
 
-      {/* ── 2. Horizontal Task Strip ────────────────────────────────── */}
-      <div className="flex gap-3 overflow-x-auto pb-2 mb-6 snap-x snap-mandatory no-scrollbar">
+      {/* ── 2. Unified 4-Card Responsive Grid ─────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
         {/* Card 1: Daily goal */}
         <div
           onClick={onOpenAnalytics}
-          className="snap-start shrink-0 w-48 sm:w-52 duo-card p-3.5 cursor-pointer hover:border-amber-400 transition-colors"
+          className="duo-card p-3.5 cursor-pointer hover:border-amber-400 transition-colors flex flex-col justify-between"
         >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold text-amber-800 flex items-center gap-1">
-              <Sparkles size={11} className="text-amber-600" />
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[11px] font-bold text-amber-800 flex items-center gap-1.5">
+              <Sparkles size={12} className="text-amber-600" />
               今日契约
             </span>
-            <DailyGoalRing todaySeconds={todayListeningSeconds} targetSeconds={300} isParchment={isParchment} size={36} minimal={true} />
+            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full ${
+              todayListeningSeconds >= 300
+                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300/60'
+                : 'bg-amber-100 text-amber-800 border border-amber-300/60'
+            }`}>
+              {todayListeningSeconds >= 300 ? '已达成' : `${goalPercent}%`}
+            </span>
           </div>
-          <p className="font-bold text-sm text-amber-950 leading-tight flex items-baseline gap-1">
-            {todayListeningSeconds >= 300 ? '今日达成！' : <><span>还差</span><span className="font-mono font-bold text-base">{Math.max(1, Math.ceil((300 - todayListeningSeconds) / 60))}</span><span>分钟</span></>}
+
+          <p className="font-bold text-amber-950 flex items-baseline gap-1 my-1">
+            {todayListeningSeconds >= 300 ? (
+              <span className="font-magical text-base text-emerald-800">今日达成！</span>
+            ) : (
+              <>
+                <span className="font-mono font-extrabold text-lg">{Math.max(1, Math.ceil((300 - todayListeningSeconds) / 60))}</span>
+                <span className="text-sm font-bold">分钟待听</span>
+              </>
+            )}
           </p>
-          <div className="flex items-center justify-between text-[11px] font-mono text-stone-500 mt-1">
-            <span>已听 {todayMinutes} 分钟</span>
+
+          <div className="flex items-center justify-between text-[11px] font-mono text-stone-500 mt-0.5">
+            <span className="flex items-center gap-1">
+              <Clock size={10} className="text-amber-500" />
+              已听 {todayMinutes} 分钟
+            </span>
             <span className="font-semibold text-amber-800">{goalPercent}%</span>
           </div>
         </div>
@@ -133,108 +151,151 @@ export function BookshelfView({
         {/* Card 2: Streak */}
         <div
           onClick={onOpenAnalytics}
-          className="snap-start shrink-0 w-48 sm:w-52 duo-card p-3.5 cursor-pointer hover:border-amber-400 transition-colors"
+          className="duo-card p-3.5 cursor-pointer hover:border-amber-400 transition-colors flex flex-col justify-between"
         >
-          <div className="flex items-center gap-1.5 text-[11px] font-bold text-orange-700 mb-1.5">
-            <Flame size={13} className="text-orange-500" />
-            连续打卡
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[11px] font-bold text-orange-700 flex items-center gap-1.5">
+              <Flame size={12} className="text-orange-500" />
+              连续打卡
+            </span>
+            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-300/60">
+              {streakDays >= 3 ? '连击加成' : '保持中'}
+            </span>
           </div>
-          <p className="font-bold text-base text-amber-950 flex items-baseline gap-1">
+
+          <p className="font-bold text-amber-950 flex items-baseline gap-1 my-1">
             <span className="font-mono font-extrabold text-lg">{streakDays}</span>
-            <span>天连胜</span>
-            {streakDays >= 3 && (
-              <span className="ml-1 text-[9px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold self-center">
-                连击
-              </span>
-            )}
+            <span className="text-sm font-bold">天连胜</span>
           </p>
-          <p className="text-[11px] text-stone-500 mt-0.5 flex items-center gap-1">
-            <RotateCcw size={9} className="text-amber-500" />
-            时间转换器 x{timeTurnersCount}
-          </p>
+
+          <div className="flex items-center justify-between text-[11px] text-stone-500 mt-0.5">
+            <span className="flex items-center gap-1 font-mono">
+              <RotateCcw size={10} className="text-amber-500" />
+              时间转换器 x{timeTurnersCount}
+            </span>
+            <span className="text-[10px] text-stone-400">学业罗盘</span>
+          </div>
         </div>
 
         {/* Card 3: SRS */}
         <div
           onClick={onOpenSrs}
-          className="snap-start shrink-0 w-48 sm:w-52 duo-card p-3.5 cursor-pointer hover:border-amber-400 transition-colors"
+          className="duo-card p-3.5 cursor-pointer hover:border-amber-400 transition-colors flex flex-col justify-between"
         >
-          <div className="flex items-center gap-1.5 text-[11px] font-bold text-indigo-700 mb-1.5">
-            <BrainCircuit size={13} className="text-indigo-600" />
-            艾宾浩斯复习
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[11px] font-bold text-indigo-700 flex items-center gap-1.5">
+              <BrainCircuit size={12} className="text-indigo-600" />
+              艾宾浩斯复习
+            </span>
+            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full ${
+              effectiveDueCount > 0
+                ? 'bg-rose-100 text-rose-800 border border-rose-300/60'
+                : 'bg-emerald-100 text-emerald-800 border border-emerald-300/60'
+            }`}>
+              {effectiveDueCount > 0 ? '待复习' : '稳固'}
+            </span>
           </div>
-          <p className="font-bold text-sm text-amber-950 flex items-baseline gap-1">
-            {effectiveDueCount > 0 ? <><span className="font-mono font-bold text-base">{effectiveDueCount}</span><span>词待复习</span></> : '记忆封印稳固'}
-          </p>
-          <p className="text-[11px] text-stone-500 mt-0.5">
-            共收录 <span className="font-mono font-bold">{vocabCount}</span> 词
-          </p>
-        </div>
-      </div>
 
-      {/* ── 3. Hero Continue Card (full-width, if active) ─────────── */}
-      {currentBookObj && currentChapterObj && (
-        <div className="duo-card p-4 sm:p-5 mb-8 border border-amber-300/80">
-          <div className="flex items-center gap-4">
-            {/* Book cover: flat, no 3D */}
-            <div
-              onClick={onEnterPlayer}
-              className="w-14 h-20 sm:w-16 sm:h-24 rounded-xl overflow-hidden border border-amber-400 shrink-0 cursor-pointer bg-stone-900 hover:scale-105 transition-transform"
-            >
-              {!coverErrorMap[currentBookObj.id] ? (
-                <img
-                  src={`/api/raw/podcasts/${currentBookObj.id}/cover.jpg`}
-                  alt={currentBookObj.title}
-                  className="w-full h-full object-cover"
-                  onError={() => handleImageError(currentBookObj.id)}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-amber-950/40">
-                  <BookOpen size={18} className="text-amber-400" />
-                </div>
-              )}
+          <p className="font-bold text-amber-950 flex items-baseline gap-1 my-1">
+            {effectiveDueCount > 0 ? (
+              <>
+                <span className="font-mono font-extrabold text-lg">{effectiveDueCount}</span>
+                <span className="text-sm font-bold">词待复习</span>
+              </>
+            ) : (
+              <span className="font-magical text-base text-stone-800">记忆封印稳固</span>
+            )}
+          </p>
+
+          <div className="flex items-center justify-between text-[11px] text-stone-500 mt-0.5">
+            <span className="flex items-center gap-1 font-mono">
+              <Bookmark size={10} className="text-indigo-500" />
+              共收录 {vocabCount} 词
+            </span>
+            <span className="text-[10px] text-stone-400">词汇重铸</span>
+          </div>
+        </div>
+
+        {/* Card 4: Continue listening hero card */}
+        {currentBookObj && currentChapterObj ? (
+          <div
+            onClick={onEnterPlayer}
+            className="duo-card p-3.5 cursor-pointer hover:border-amber-400 transition-colors flex flex-col justify-between group border-amber-300/80 bg-amber-50/30"
+          >
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[11px] font-bold text-amber-900 flex items-center gap-1.5 truncate">
+                <Headphones size={12} className="text-amber-600 shrink-0" />
+                <span className="truncate">{isPlaying ? '正在精听' : '继续精听'}</span>
+              </span>
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setInspectingBook(currentBookObj);
+                  }}
+                  className="w-7 h-7 min-w-[28px] min-h-[28px] rounded-lg border border-[#e8ddd0] bg-white hover:bg-amber-50 text-stone-600 hover:text-amber-950 flex items-center justify-center active:scale-90 transition-all cursor-pointer shadow-none"
+                  title="查看章节目录"
+                  aria-label="查看章节目录"
+                >
+                  <Layers size={12} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onTogglePlay();
+                  }}
+                  className="w-7 h-7 min-w-[28px] min-h-[28px] rounded-lg bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center active:scale-90 transition-all cursor-pointer shadow-none"
+                  title={isPlaying ? '暂停播放' : '继续精听'}
+                  aria-label={isPlaying ? '暂停播放' : '继续精听'}
+                >
+                  {isPlaying ? <Pause size={12} className="fill-current" /> : <Play size={12} className="fill-current ml-0.5" />}
+                </button>
+              </div>
             </div>
 
-            {/* Info */}
-            <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-bold text-amber-700 mb-0.5">
-                {currentBookObj.cnTitle || currentBookObj.title}
-              </p>
-              <h3 className="font-magical font-bold text-base sm:text-lg text-amber-950 truncate">
+            <div className="my-1 min-w-0">
+              <h4 className="font-magical font-bold text-sm sm:text-base text-amber-950 truncate leading-snug group-hover:text-amber-800 transition-colors">
                 {currentChapterObj.cnTitle || currentChapterObj.title}
-              </h3>
-              <div className="mt-2 w-full h-1.5 rounded-full bg-amber-100 overflow-hidden">
+              </h4>
+              <div className="mt-1.5 w-full h-1 rounded-full bg-amber-200/60 overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full transition-all"
                   style={{ width: `${Math.max(3, resumeProgressPercent)}%` }}
                 />
               </div>
-              <p className="text-[11px] font-mono text-amber-700 mt-1">
+            </div>
+
+            <div className="flex items-center justify-between text-[11px] text-stone-500 mt-0.5">
+              <span className="flex items-center gap-1 text-stone-600 truncate max-w-[55%]">
+                <BookOpen size={10} className="text-amber-600 shrink-0" />
+                <span className="truncate">{currentBookObj.cnTitle || currentBookObj.title}</span>
+              </span>
+              <span className="font-mono text-amber-700 text-[10px] shrink-0">
                 {formatTime(currentTime)} / {formatTime(duration)}
-              </p>
+              </span>
             </div>
           </div>
-
-          {/* Actions */}
-          <div className="flex gap-2.5 mt-4 pt-4 border-t border-[#eee4d5]">
-            <button
-              onClick={onEnterPlayer}
-              className="duo-btn-primary flex-1 min-h-[44px] px-4 py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5"
-            >
-              {isPlaying ? <Pause size={15} className="fill-current" /> : <Play size={15} className="fill-current" />}
-              {isPlaying ? '正在精听' : '继续精听'}
-            </button>
-            <button
-              onClick={() => setInspectingBook(currentBookObj)}
-              className="duo-btn-secondary w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center cursor-pointer active:scale-95 transition-all"
-              title="查看章节目录"
-              aria-label="查看章节目录"
-            >
-              <Layers size={16} />
-            </button>
+        ) : (
+          <div
+            onClick={onEnterPlayer}
+            className="duo-card p-3.5 cursor-pointer hover:border-amber-400 transition-colors flex flex-col justify-between"
+          >
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[11px] font-bold text-amber-800 flex items-center gap-1.5">
+                <Headphones size={12} className="text-amber-600" />
+                继续精听
+              </span>
+              <span className="text-[10px] font-mono text-stone-400">待启程</span>
+            </div>
+            <p className="font-magical font-bold text-sm text-stone-600 my-1">
+              选章节开启原声探险
+            </p>
+            <div className="text-[11px] text-stone-400 flex items-center gap-1">
+              <BookOpen size={10} /> 暂无播放记录
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ── 4. Book Grid (horizontal layout cards) ─────────────────── */}
       <section className="mb-14">
