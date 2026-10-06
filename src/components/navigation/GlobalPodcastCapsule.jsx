@@ -231,17 +231,20 @@ export function GlobalPodcastCapsule({
           <div className="flex items-center gap-2 shrink-0">
             {onToggleSleepTimer && (
               <button
+                type="button"
                 onClick={onToggleSleepTimer}
-                className={`min-h-[38px] px-2.5 rounded-xl border flex items-center gap-1 text-xs font-mono transition-colors active:scale-95 cursor-pointer ${
+                className={`min-h-[38px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${
                   sleepTimerMode
-                    ? 'bg-amber-500 text-white border-amber-600 font-bold'
-                    : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
+                    ? 'px-2.5 gap-1 bg-amber-500 text-white border-amber-600 font-bold'
+                    : 'w-[38px] border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
                 }`}
                 title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
                 aria-label="睡眠定时"
               >
-                <Moon size={13} />
-                <span className="text-[11px]">{sleepTimerMode ? sleepTimerRemaining : '定时'}</span>
+                <Moon size={14} />
+                {sleepTimerMode && (
+                  <span className="text-[11px] font-mono">{sleepTimerRemaining}</span>
+                )}
               </button>
             )}
 

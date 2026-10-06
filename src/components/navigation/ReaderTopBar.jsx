@@ -149,16 +149,18 @@ export function ReaderTopBar({
           {/* Bilingual translation toggle */}
           {studyMode !== 'dictation' && (
             <button
+              type="button"
               onClick={() => (onToggleTranslation ? onToggleTranslation() : setShowTranslation && setShowTranslation(!showTranslation))}
-              className={`w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl border transition-colors cursor-pointer active:scale-95 ${
+              className={`w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl border transition-colors cursor-pointer select-none ${
                 showTranslation
-                  ? 'bg-amber-50 text-amber-900 border-amber-300'
-                  : 'bg-white text-stone-500 border-[#e8ddd0] hover:border-amber-300'
+                  ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                  : 'bg-white text-stone-600 border-[#e8ddd0] hover:border-amber-300 hover:text-amber-950'
               }`}
               title={showTranslation ? '双语译文：开 (点击关闭)' : '双语译文：关 (点击开启)'}
               aria-label="中英双语切换"
+              aria-pressed={Boolean(showTranslation)}
             >
-              <Languages size={16} className={showTranslation ? 'text-amber-600' : 'text-stone-400'} />
+              <Languages size={17} className={showTranslation ? 'text-white' : 'text-stone-600'} />
             </button>
           )}
 

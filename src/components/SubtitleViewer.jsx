@@ -301,31 +301,23 @@ export function SubtitleViewer({
           )}
         </span>
 
-        {/* Font size 3-step switch */}
-        <div className="flex items-center rounded-xl border border-[#e8ddd0] bg-stone-50/80 p-0.5 select-none">
-          <span className="px-1.5 hidden sm:flex items-center gap-1 text-[11px] text-stone-400">
-            <Type size={11} />
+        {/* Concise Font Size Cycle Control */}
+        <button
+          type="button"
+          onClick={() => {
+            const nextSize = fontSize === 'normal' ? 'large' : fontSize === 'large' ? 'huge' : 'normal';
+            setFontSize(nextSize);
+            try { localStorage.setItem('hp_subtitle_font_size', nextSize); } catch {}
+          }}
+          className="h-8 min-h-[32px] px-2.5 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 active:bg-amber-50/50 flex items-center gap-1.5 text-xs font-bold text-stone-700 hover:text-amber-950 transition-colors cursor-pointer select-none"
+          title={`当前字号: ${fontSize === 'huge' ? '超大' : fontSize === 'large' ? '大号' : '标准'} (点击切换)`}
+          aria-label="调节字号"
+        >
+          <Type size={14} className="text-amber-600" />
+          <span className="font-mono text-[11px] font-extrabold text-amber-900">
+            {fontSize === 'huge' ? 'A++' : fontSize === 'large' ? 'A+' : 'A'}
           </span>
-          {[
-            { id: 'normal', label: '标准', short: 'A' },
-            { id: 'large',  label: '大号', short: 'A+' },
-            { id: 'huge',   label: '超大', short: 'A++' }
-          ].map((s) => (
-            <button
-              key={s.id}
-              onClick={() => {
-                setFontSize(s.id);
-                try { localStorage.setItem('hp_subtitle_font_size', s.id); } catch {}
-              }}
-              className={`px-2 py-0.5 min-h-[30px] min-w-[28px] inline-flex items-center justify-center rounded-lg text-xs font-bold transition-all active:scale-95 cursor-pointer ${
-                fontSize === s.id ? 'bg-amber-500 text-white' : 'text-stone-600 hover:text-amber-950'
-              }`}
-            >
-              <span className="hidden sm:inline">{s.label}</span>
-              <span className="sm:hidden">{s.short}</span>
-            </button>
-          ))}
-        </div>
+        </button>
       </div>
 
       {/* ── Sentence Cards ────────────────────────────────────────── */}

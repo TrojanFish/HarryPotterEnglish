@@ -245,30 +245,35 @@ export function PodcastPlayerView({
             </div>
 
             {/* Sub-controls: Sleep Timer, Speed, Translation */}
-            <div className="flex items-center justify-center gap-2 pt-1">
+            <div className="flex items-center justify-center gap-2.5 pt-1">
               {/* Sleep Timer */}
               {(onToggleSleepTimer || sleepTimerMode) && (
                 <button
+                  type="button"
                   onClick={onToggleSleepTimer}
-                  className={`min-h-[44px] px-3 rounded-xl border flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer ${
+                  className={`relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border flex items-center justify-center transition-colors cursor-pointer select-none ${
                     sleepTimerMode
-                      ? 'bg-amber-500 text-white border-amber-600 font-bold'
-                      : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
+                      ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                      : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
                   }`}
                   title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
                   aria-label="睡眠定时"
+                  aria-pressed={Boolean(sleepTimerMode)}
                 >
-                  <Moon size={15} />
-                  <span className="text-xs font-mono font-medium">
-                    {sleepTimerMode ? sleepTimerRemaining : '定时'}
-                  </span>
+                  <Moon size={18} />
+                  {sleepTimerMode && (
+                    <span className="absolute -top-1 -right-1 text-[9px] font-mono font-bold bg-amber-700 text-white px-1.5 py-0.5 rounded-full border border-white leading-none shadow-sm">
+                      {sleepTimerRemaining}
+                    </span>
+                  )}
                 </button>
               )}
 
               {/* Speed Cycle */}
               <button
+                type="button"
                 onClick={handleSpeedCycle}
-                className="min-h-[44px] px-3 rounded-xl border border-[#e8ddd0] bg-white text-stone-700 hover:text-amber-950 font-mono text-xs font-bold active:scale-95 transition-colors cursor-pointer"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border border-[#e8ddd0] bg-white text-stone-700 hover:text-amber-950 hover:border-amber-300 font-mono text-xs font-bold transition-colors cursor-pointer select-none"
                 title="切换播放倍速"
                 aria-label="播放倍速"
               >
@@ -278,17 +283,18 @@ export function PodcastPlayerView({
               {/* Bilingual Translation Toggle */}
               {onToggleTranslation && (
                 <button
+                  type="button"
                   onClick={onToggleTranslation}
-                  className={`min-h-[44px] px-3 rounded-xl border flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer ${
+                  className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border flex items-center justify-center transition-colors cursor-pointer select-none ${
                     showTranslation
-                      ? 'bg-amber-50 text-amber-900 border-amber-300 font-bold'
-                      : 'border-[#e8ddd0] bg-white text-stone-400 hover:text-stone-700'
+                      ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                      : 'border-[#e8ddd0] bg-white text-stone-400 hover:text-stone-700 hover:border-amber-300'
                   }`}
-                  title={showTranslation ? '隐藏译文' : '显示双语译文'}
-                  aria-label="译文开关"
+                  title={showTranslation ? '双语译文：开 (点击关闭)' : '双语译文：关 (点击开启)'}
+                  aria-label="中英双语切换"
+                  aria-pressed={showTranslation}
                 >
-                  <Languages size={15} />
-                  <span className="text-xs font-reading">译文</span>
+                  <Languages size={18} />
                 </button>
               )}
             </div>
@@ -363,16 +369,20 @@ export function PodcastPlayerView({
 
               {(onToggleSleepTimer || sleepTimerMode) && (
                 <button
+                  type="button"
                   onClick={onToggleSleepTimer}
-                  className={`min-h-[40px] px-2.5 rounded-xl border flex items-center gap-1 text-xs font-mono active:scale-95 cursor-pointer ${
+                  className={`min-h-[40px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none ${
                     sleepTimerMode
-                      ? 'bg-amber-500 text-white border-amber-600'
-                      : 'border-[#e8ddd0] bg-white text-stone-600'
+                      ? 'px-2 gap-1 bg-amber-500 text-white border-amber-600 font-bold'
+                      : 'w-10 border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
                   }`}
-                  title="睡眠定时"
+                  title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
+                  aria-label="睡眠定时"
                 >
-                  <Moon size={13} />
-                  <span>{sleepTimerMode ? sleepTimerRemaining : '定时'}</span>
+                  <Moon size={14} />
+                  {sleepTimerMode && (
+                    <span className="text-[10px] font-mono">{sleepTimerRemaining}</span>
+                  )}
                 </button>
               )}
             </div>

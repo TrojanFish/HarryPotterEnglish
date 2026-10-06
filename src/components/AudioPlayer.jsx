@@ -405,18 +405,20 @@ export function AudioPlayer({
           {/* Sleep Timer */}
           <button
             onClick={onToggleSleepTimer}
-            className={`min-h-[44px] px-2.5 shrink-0 rounded-xl border flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer select-none ${
+            className={`min-h-[44px] shrink-0 rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none ${
               sleepTimerMode
-                ? 'bg-amber-500 text-white border-amber-600 font-bold'
-                : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
+                ? 'px-2.5 gap-1.5 bg-amber-500 text-white border-amber-600 font-bold'
+                : 'w-11 h-11 border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
             }`}
             title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
             aria-label="睡眠定时"
           >
-            <Moon size={15} />
-            <span className="text-xs font-mono font-medium">
-              {sleepTimerMode ? sleepTimerRemaining : '定时'}
-            </span>
+            <Moon size={16} />
+            {sleepTimerMode && (
+              <span className="text-xs font-mono font-medium">
+                {sleepTimerRemaining}
+              </span>
+            )}
           </button>
 
           {/* Speed cycle button */}
