@@ -9,7 +9,10 @@ import {
   VolumeX,
   Mic,
   ChevronDown,
-  Sparkles
+  Sparkles,
+  RotateCcw,
+  RotateCw,
+  Moon
 } from 'lucide-react';
 import { formatTime } from '../utils/vttParser';
 import { playCorrectChime } from '../utils/spellAudioSynthesizer';
@@ -19,6 +22,8 @@ import { playCorrectChime } from '../utils/spellAudioSynthesizer';
  * Two-row layout: thin scrubber line + compact controls
  * - All controls visible on mobile (no hidden sm:flex)
  * - Speed: one-tap 3-step cycle (0.8x → 1.0x → 1.25x)
+ * - 15s skip backward & forward controls
+ * - Hogwarts sleep timer
  * - Volume moved to overflow sheet on mobile
  * - Milestone toast positioned at top-center of screen
  */
@@ -30,6 +35,7 @@ export function AudioPlayer({
   isPlaying,
   onPlayPause,
   onSeek,
+  onSeekRelative,
   onPrevSentence,
   onNextSentence,
   isLoopSentence,
@@ -43,7 +49,10 @@ export function AudioPlayer({
   activeCueIndex,
   isParchment,
   onToggleRecorder,
-  isRecordingActive
+  isRecordingActive,
+  sleepTimerMode,
+  sleepTimerRemaining,
+  onToggleSleepTimer
 }) {
   const [isMuted, setIsMuted] = useState(false);
   const [showVolume, setShowVolume] = useState(false);
@@ -192,9 +201,22 @@ export function AudioPlayer({
           </div>
         )}
 
-        {/* Right: Duration & Quick Shadowing Mic */}
+        {/* Right: Duration & Quick Shadowing Mic & Sleep Timer */}
         <div className="flex items-center gap-1.5">
           <span className="font-mono text-[11px] text-stone-400">{formatTime(duration)}</span>
+          <button
+            onClick={onToggleSleepTimer}
+            className={`min-h-[44px] min-w-[44px] -my-2 flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+              sleepTimerMode
+                ? 'text-amber-700 bg-amber-100/80 font-bold'
+                : 'text-stone-500 hover:text-amber-800'
+            }`}
+            title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
+            aria-label="睡眠定时"
+          >
+            <Moon size={15} />
+            {sleepTimerMode && <span className="text-[9px] font-mono ml-0.5">{sleepTimerRemaining}</span>}
+          </button>
           <button
             onClick={onToggleRecorder}
             className={`min-h-[44px] min-w-[44px] -my-2 flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
@@ -210,63 +232,68 @@ export function AudioPlayer({
         </div>
       </div>
 
-      {/* Mobile Layer 2: Thumb Zone Control Cluster (5-button array) */}
-      <div className="flex sm:hidden items-center justify-between px-4 pt-1 pb-3">
-        {/* 1. Loop */}
+      {/* Mobile Layer 2: Thumb Zone Control Cluster */}
+      <div className="flex sm:hidden items-center justify-between px-3 pt-1 pb-3">
+        {/* 1. Seek -15s */}
         <button
-          onClick={onToggleLoopSentence}
-          className={`w-11 h-11 shrink-0 rounded-2xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
-            isLoopSentence
-              ? 'bg-amber-500 text-white border-amber-600'
-              : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
-          }`}
-          title={isLoopSentence ? '单句循环：开 (L)' : '单句循环：关 (L)'}
-          aria-label="单句循环"
+          onClick={() => onSeekRelative && onSeekRelative(-15)}
+          className="w-10 h-10 shrink-0 rounded-2xl border border-[#e8ddd0] bg-white flex flex-col items-center justify-center text-stone-600 hover:text-amber-950 active:scale-95 transition-all cursor-pointer"
+          title="快退 15 秒 (←15s)"
+          aria-label="快退 15 秒"
         >
-          <div className="relative">
-            <Repeat size={16} />
-            <span className="absolute -bottom-1.5 -right-1.5 text-[8px] font-bold">1</span>
-          </div>
+          <RotateCcw size={14} />
+          <span className="text-[8px] font-mono font-bold leading-none mt-0.5">15s</span>
         </button>
 
         {/* 2. Prev Sentence */}
         <button
           onClick={onPrevSentence}
           disabled={activeCueIndex <= 0}
-          className="w-11 h-11 shrink-0 rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+          className="w-10 h-10 shrink-0 rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
           title="上一句 (←)"
           aria-label="上一句"
         >
-          <SkipBack size={18} />
+          <SkipBack size={16} />
         </button>
 
-        {/* 3. Main Play / Pause CTA (56×56px — Primary Focus CTA) */}
+        {/* 3. Main Play / Pause CTA (52×52px — Primary Focus CTA) */}
         <button
           onClick={onPlayPause}
-          className="w-14 h-14 shrink-0 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border-2 border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none"
+          className="w-13 h-13 min-w-[52px] min-h-[52px] shrink-0 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border-2 border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none"
           title="播放/暂停 (Space)"
           aria-label="播放或暂停"
         >
           {isPlaying
-            ? <Pause size={24} className="fill-current" />
-            : <Play size={24} className="fill-current translate-x-0.5" />}
+            ? <Pause size={22} className="fill-current" />
+            : <Play size={22} className="fill-current translate-x-0.5" />}
         </button>
 
         {/* 4. Next Sentence */}
         <button
           onClick={onNextSentence}
           disabled={activeCueIndex >= totalCues - 1}
-          className="w-11 h-11 shrink-0 rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+          className="w-10 h-10 shrink-0 rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
           title="下一句 (→)"
           aria-label="下一句"
         >
-          <SkipForward size={18} />
+          <SkipForward size={16} />
         </button>
 
-        {/* 5. Speed Cycle */}
+        {/* 5. Seek +15s */}
+        <button
+          onClick={() => onSeekRelative && onSeekRelative(15)}
+          className="w-10 h-10 shrink-0 rounded-2xl border border-[#e8ddd0] bg-white flex flex-col items-center justify-center text-stone-600 hover:text-amber-950 active:scale-95 transition-all cursor-pointer"
+          title="快进 15 秒 (→15s)"
+          aria-label="快进 15 秒"
+        >
+          <RotateCw size={14} />
+          <span className="text-[8px] font-mono font-bold leading-none mt-0.5">15s</span>
+        </button>
+
+        {/* 6. Speed Cycle */}
         <button
           onClick={handleSpeedCycle}
-          className={`w-11 h-11 shrink-0 rounded-2xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
+          className={`w-10 h-10 shrink-0 rounded-2xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
             playbackRate !== 1.0
               ? 'bg-amber-500 text-white border-amber-600'
               : 'border-[#e8ddd0] bg-white text-stone-700'
@@ -302,12 +329,23 @@ export function AudioPlayer({
         </div>
 
         {/* Center: Transport Controls */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
+          {/* Seek -15s */}
+          <button
+            onClick={() => onSeekRelative && onSeekRelative(-15)}
+            className="w-10 h-10 min-w-[40px] shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex flex-col items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
+            title="快退 15 秒 (←15s)"
+            aria-label="快退 15 秒"
+          >
+            <RotateCcw size={14} />
+            <span className="text-[8px] font-mono font-bold leading-none mt-0.5">15s</span>
+          </button>
+
           {/* Rewind / Prev Sentence */}
           <button
             onClick={onPrevSentence}
             disabled={activeCueIndex <= 0}
-            className="w-11 h-11 shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+            className="w-10 h-10 shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
             title="上一句 (←)"
           >
             <SkipBack size={16} />
@@ -328,16 +366,27 @@ export function AudioPlayer({
           <button
             onClick={onNextSentence}
             disabled={activeCueIndex >= totalCues - 1}
-            className="w-11 h-11 shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+            className="w-10 h-10 shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
             title="下一句 (→)"
           >
             <SkipForward size={16} />
           </button>
 
+          {/* Seek +15s */}
+          <button
+            onClick={() => onSeekRelative && onSeekRelative(15)}
+            className="w-10 h-10 min-w-[40px] shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex flex-col items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
+            title="快进 15 秒 (→15s)"
+            aria-label="快进 15 秒"
+          >
+            <RotateCw size={14} />
+            <span className="text-[8px] font-mono font-bold leading-none mt-0.5">15s</span>
+          </button>
+
           {/* Loop Toggle */}
           <button
             onClick={onToggleLoopSentence}
-            className={`w-11 h-11 shrink-0 rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+            className={`w-10 h-10 shrink-0 rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
               isLoopSentence
                 ? 'bg-amber-500 text-white border-amber-600'
                 : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 hover:border-amber-300'
@@ -351,8 +400,25 @@ export function AudioPlayer({
           </button>
         </div>
 
-        {/* Right: Speed + Record + Volume */}
+        {/* Right: Sleep Timer + Speed + Record + Volume */}
         <div className="flex items-center gap-2 justify-end flex-1 shrink-0">
+          {/* Sleep Timer */}
+          <button
+            onClick={onToggleSleepTimer}
+            className={`min-h-[44px] px-2.5 shrink-0 rounded-xl border flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer select-none ${
+              sleepTimerMode
+                ? 'bg-amber-500 text-white border-amber-600 font-bold'
+                : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
+            }`}
+            title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
+            aria-label="睡眠定时"
+          >
+            <Moon size={15} />
+            <span className="text-xs font-mono font-medium">
+              {sleepTimerMode ? sleepTimerRemaining : '定时'}
+            </span>
+          </button>
+
           {/* Speed cycle button */}
           <button
             onClick={handleSpeedCycle}

@@ -1,19 +1,31 @@
 import React from 'react';
-import { ArrowLeft, BookOpen, ChevronDown, Headphones, EyeOff, Zap, Languages, LocateFixed, HelpCircle } from 'lucide-react';
+import {
+  ArrowLeft,
+  BookOpen,
+  ChevronDown,
+  Headphones,
+  Sparkles,
+  EyeOff,
+  Zap,
+  Languages,
+  HelpCircle
+} from 'lucide-react';
 import { formatEnglishText } from '../../utils/vttParser';
 
 /**
- * ReaderTopBar — Minimalist Contextual Header for Study Classroom
+ * ReaderTopBar — Minimalist Contextual Header for Study Classroom & Podcast Modes
  * Clean, flat, and shadow-free reading toolbar:
- * - Left: Book & Chapter indicator with 1-click chapter drawer trigger
- * - Center: 3 Study modes (双语精听 / 魔法磨耳朵 / 拼写大闯关)
- * - Right: Reading controls (双语译文 / 跟随朗读 / 快捷键)
- * - Strictly zero duplicate navigation (no redundant back buttons or streak badges)
+ * - Left: Back Button & Book/Chapter selector pill
+ * - Center: Dual-Engine Switcher [随行播客 | 精研工坊] + Studio Sub-modes [精听 | 磨耳朵 | 听写]
+ * - Right: Reading controls (双语译文 / 快捷键)
+ * - Zero emojis, 100% Lucide React icons
  */
 export function ReaderTopBar({
   currentBook,
   currentChapter,
   onOpenShelf,
+  playerMode = 'podcast',
+  onSwitchPlayerMode,
   studyMode = 'normal',
   setStudyMode,
   showTranslation = true,
@@ -26,9 +38,9 @@ export function ReaderTopBar({
   isOfflinePlaying = false
 }) {
   const modes = [
-    { key: 'normal', label: '双语精听', icon: <Headphones size={14} /> },
-    { key: 'blind', label: '魔法磨耳朵', icon: <EyeOff size={14} /> },
-    { key: 'dictation', label: '拼写大闯关', icon: <Zap size={14} /> }
+    { key: 'normal', label: '双语精听', icon: <Headphones size={13} /> },
+    { key: 'blind', label: '魔法磨耳朵', icon: <EyeOff size={13} /> },
+    { key: 'dictation', label: '拼写大闯关', icon: <Zap size={13} /> }
   ];
 
   const bookTitle = currentBook ? (currentBook.cnTitle || currentBook.title) : '魔法故事';
@@ -41,21 +53,21 @@ export function ReaderTopBar({
       <div className="h-14 px-3 sm:px-6 flex items-center justify-between gap-2">
         {/* ── Left: Back Button & Chapter Selector ─────────────────── */}
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          {/* Mobile back to bookshelf - comfortable 40px touch zone */}
           {onBackToShelf && (
             <button
               onClick={onBackToShelf}
-              className="sm:hidden w-10 h-10 flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-stone-600 hover:text-amber-950 active:scale-95 transition-colors shrink-0 cursor-pointer"
+              className="sm:hidden w-10 h-10 min-w-[40px] flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-stone-600 hover:text-amber-950 active:scale-95 transition-colors shrink-0 cursor-pointer"
               title="返回书架"
               aria-label="返回书架"
             >
               <ArrowLeft size={18} />
             </button>
           )}
+
           {/* Chapter Selector Pill */}
           <button
             onClick={onOpenShelf}
-            className="h-10 flex items-center gap-1.5 sm:gap-2 px-3 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-amber-950 font-bold text-xs sm:text-sm transition-colors cursor-pointer group min-w-0 max-w-full sm:max-w-md truncate"
+            className="h-10 flex items-center gap-1.5 sm:gap-2 px-3 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-amber-950 font-bold text-xs sm:text-sm transition-colors cursor-pointer group min-w-0 max-w-[200px] sm:max-w-xs md:max-w-md truncate"
             title="点击切换全书章节或其他原著"
             aria-label="切换章节"
           >
@@ -71,26 +83,61 @@ export function ReaderTopBar({
           </button>
         </div>
 
-        {/* ── Center: 3 Study Modes (Desktop Only >= 640px) ─────────── */}
-        <div className="hidden sm:flex h-10 items-center p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1 shrink-0">
-          {modes.map(({ key, label, icon }) => {
-            const isActive = studyMode === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setStudyMode(key)}
-                className={`h-8 flex items-center gap-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-amber-500 text-white shadow-sm'
-                    : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
-                }`}
-                title={label}
-              >
-                {icon}
-                <span>{label}</span>
-              </button>
-            );
-          })}
+        {/* ── Center: Dual Engine Switcher [随行播客 | 精研工坊] ───────── */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="flex h-10 items-center p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1">
+            <button
+              onClick={() => onSwitchPlayerMode && onSwitchPlayerMode('podcast')}
+              className={`h-8 flex items-center gap-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                playerMode === 'podcast'
+                  ? 'bg-amber-500 text-white shadow-sm'
+                  : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
+              }`}
+              title="随行播客模式（大字歌词流、大画幅原声）"
+              aria-pressed={playerMode === 'podcast'}
+            >
+              <Headphones size={13} />
+              <span>随行播客</span>
+            </button>
+
+            <button
+              onClick={() => onSwitchPlayerMode && onSwitchPlayerMode('studio')}
+              className={`h-8 flex items-center gap-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                playerMode === 'studio'
+                  ? 'bg-amber-500 text-white shadow-sm'
+                  : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
+              }`}
+              title="精研工坊模式（单句精读、查词、影子跟读、听写）"
+              aria-pressed={playerMode === 'studio'}
+            >
+              <Sparkles size={13} />
+              <span>精研工坊</span>
+            </button>
+          </div>
+
+          {/* If in Studio Mode on Desktop, show SLA Sub-modes */}
+          {playerMode === 'studio' && (
+            <div className="hidden lg:flex h-10 items-center p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1 shrink-0 animate-fadeIn">
+              {modes.map(({ key, label, icon }) => {
+                const isActive = studyMode === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setStudyMode(key)}
+                    className={`h-8 flex items-center gap-1.5 px-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-amber-600 text-white shadow-sm'
+                        : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
+                    }`}
+                    title={label}
+                  >
+                    {icon}
+                    <span>{label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* ── Right: Reading Controls ─────────────────────────────────── */}
@@ -99,7 +146,7 @@ export function ReaderTopBar({
           {studyMode !== 'dictation' && (
             <button
               onClick={() => (onToggleTranslation ? onToggleTranslation() : setShowTranslation && setShowTranslation(!showTranslation))}
-              className={`w-10 h-10 min-w-[40px] flex items-center justify-center rounded-xl border transition-colors cursor-pointer active:scale-95 ${
+              className={`w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl border transition-colors cursor-pointer active:scale-95 ${
                 showTranslation
                   ? 'bg-amber-50 text-amber-900 border-amber-300'
                   : 'bg-white text-stone-500 border-[#e8ddd0] hover:border-amber-300'
@@ -115,7 +162,7 @@ export function ReaderTopBar({
           {onOpenShortcuts && (
             <button
               onClick={onOpenShortcuts}
-              className="hidden sm:flex w-10 h-10 items-center justify-center rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 transition-colors cursor-pointer shrink-0"
+              className="hidden sm:flex w-10 h-10 min-w-[40px] min-h-[40px] items-center justify-center rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 transition-colors cursor-pointer shrink-0"
               title="键盘快捷键与操作指南"
             >
               <HelpCircle size={15} />
@@ -124,30 +171,32 @@ export function ReaderTopBar({
         </div>
       </div>
 
-      {/* ── Mobile Layer 2: iOS Segmented Control for Study Modes (< 640px) ── */}
-      <div className="sm:hidden px-3 pb-2 pt-0.5">
-        <div className="grid grid-cols-3 p-1 rounded-xl bg-stone-100 border border-[#e8ddd0] gap-1">
-          {modes.map(({ key, label, icon }) => {
-            const isActive = studyMode === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setStudyMode(key)}
-                className={`min-h-[38px] flex items-center justify-center gap-1 px-1 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
-                  isActive
-                    ? 'bg-amber-500 text-white shadow-sm'
-                    : 'text-stone-600 hover:text-amber-950 active:bg-stone-200'
-                }`}
-                title={label}
-                aria-pressed={isActive}
-              >
-                {icon}
-                <span className="truncate">{label}</span>
-              </button>
-            );
-          })}
+      {/* ── Mobile/Tablet Sub-bar when in Studio Mode (< 1024px) ───────── */}
+      {playerMode === 'studio' && (
+        <div className="lg:hidden px-3 pb-2 pt-0.5 animate-fadeIn">
+          <div className="grid grid-cols-3 p-1 rounded-xl bg-stone-100 border border-[#e8ddd0] gap-1">
+            {modes.map(({ key, label, icon }) => {
+              const isActive = studyMode === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setStudyMode(key)}
+                  className={`min-h-[38px] flex items-center justify-center gap-1 px-1 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
+                    isActive
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-stone-600 hover:text-amber-950 active:bg-stone-200'
+                  }`}
+                  title={label}
+                  aria-pressed={isActive}
+                >
+                  {icon}
+                  <span className="truncate">{label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </header>
   );
 }

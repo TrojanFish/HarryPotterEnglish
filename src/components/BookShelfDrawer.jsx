@@ -13,6 +13,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { formatEnglishText } from '../utils/vttParser';
+import { PodcastEpisodeCard } from './podcast/PodcastEpisodeCard';
 
 export function BookShelfDrawer({
   isOpen,
@@ -24,7 +25,9 @@ export function BookShelfDrawer({
   onSelectChapter,
   onRefreshCatalog,
   isRefreshing,
-  isParchment
+  isParchment,
+  isPlaying = false,
+  getChapterBookmarkCount
 }) {
   const [activeTab, setActiveTab] = useState('chapters'); // 'chapters' | 'books'
   const [chapterSearch, setChapterSearch] = useState('');
@@ -165,67 +168,22 @@ export function BookShelfDrawer({
 
             {/* Chapters Scrollable Area */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-2.5 ios-scroll">
-              {filteredChapters.map((ch, idx) => {
-                const isCurrent = ch.id === selectedChapterId;
-                const cleanTitle = formatEnglishText(ch.title);
-                const hasDistinctCn = ch.cnTitle && ch.cnTitle.trim() !== '' && ch.cnTitle.trim() !== cleanTitle;
-
-                return (
-                  <div
-                    key={ch.id}
-                    onClick={() => {
-                      if (onSelectChapter) {
-                        onSelectChapter(ch.id, true);
-                      }
-                      onClose();
-                    }}
-                    className={`flex items-center gap-3 px-3.5 py-3 rounded-2xl border cursor-pointer transition-all ${
-                      isCurrent
-                        ? 'border-l-4 border-l-amber-500 border-[#e8ddd0] bg-amber-50/70 ring-1 ring-amber-400/40'
-                        : 'border-[#e8ddd0] bg-white hover:border-amber-400 hover:bg-stone-50/80'
-                    }`}
-                  >
-                    <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-magical font-bold text-xs shrink-0 ${
-                      isCurrent ? 'bg-amber-500 text-white' : 'bg-amber-500/15 text-amber-800'
-                    }`}>
-                      {ch.number || idx + 1}
-                    </span>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-magical font-bold text-sm text-amber-950 truncate">
-                          {hasDistinctCn ? ch.cnTitle : cleanTitle}
-                        </h4>
-                        {isCurrent && (
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500 text-white font-bold shrink-0">
-                            正在精听
-                          </span>
-                        )}
-                      </div>
-                      {hasDistinctCn && (
-                        <p className="text-[11px] text-stone-400 font-reading italic truncate">{cleanTitle}</p>
-                      )}
-                      {ch.duration && (
-                        <p className="text-[10px] text-stone-400 font-mono mt-0.5 flex items-center gap-1">
-                          <Clock size={10} />{ch.duration}
-                        </p>
-                      )}
-                    </div>
-
-                    <button 
-                      className={`min-h-[44px] min-w-[44px] p-2 rounded-xl text-xs font-bold shrink-0 flex items-center justify-center transition-all ${
-                        isCurrent
-                          ? 'bg-amber-500 text-white'
-                          : 'duo-btn-secondary'
-                      }`}
-                      title={isCurrent ? '当前正在播放此章节' : '播放此章节'}
-                      aria-label={isCurrent ? '当前正在播放此章节' : '播放此章节'}
-                    >
-                      <Play size={14} className="fill-current" />
-                    </button>
-                  </div>
-                );
-              })}
+              {filteredChapters.map((ch, idx) => (
+                <PodcastEpisodeCard
+                  key={ch.id}
+                  chapter={ch}
+                  chapterIndex={idx}
+                  isCurrent={ch.id === selectedChapterId}
+                  isPlaying={isPlaying && ch.id === selectedChapterId}
+                  bookmarkCount={getChapterBookmarkCount ? getChapterBookmarkCount(currentBook?.id, ch.id) : 0}
+                  onSelectChapter={(id, autoPlay) => {
+                    if (onSelectChapter) {
+                      onSelectChapter(id, autoPlay);
+                    }
+                    onClose();
+                  }}
+                />
+              ))}
             </div>
           </div>
         )}

@@ -17,15 +17,18 @@ import { DesktopSidebar } from './components/navigation/DesktopSidebar';
 import { TabletRail } from './components/navigation/TabletRail';
 import { MobileTopBar } from './components/navigation/MobileTopBar';
 import { MobileBottomNav } from './components/navigation/MobileBottomNav';
-import { MobileMiniPlayer } from './components/navigation/MobileMiniPlayer';
+import { GlobalPodcastCapsule } from './components/navigation/GlobalPodcastCapsule';
 import { ReaderTopBar } from './components/navigation/ReaderTopBar';
+import { PodcastPlayerView } from './components/podcast/PodcastPlayerView';
 import { Loader2, Eye, WifiOff } from 'lucide-react';
+import { getNextSleepTimerOption, formatSleepTimerRemaining } from './utils/sleepTimer';
 
 // Decoupled Domain Custom Hooks
 import { useAudioPlayback } from './hooks/useAudioPlayback';
 import { useCatalog } from './hooks/useCatalog';
 import { useStudyTracking } from './hooks/useStudyTracking';
 import { useVocabManager } from './hooks/useVocabManager';
+import { useBookmarkManager } from './hooks/useBookmarkManager';
 import { useModalManager } from './hooks/useModalManager';
 
 /**
@@ -67,14 +70,38 @@ export function App() {
     refreshOfflineCount
   } = catalog;
 
+  // Hogwarts Sleep Timer State & Countdown
+  const [sleepTimerMode, setSleepTimerMode] = useState(null);
+  const [sleepTimerRemaining, setSleepTimerRemaining] = useState(null);
+
+  // Dual-Engine Player Mode: 'podcast' (随行播客) vs 'studio' (精研工坊)
+  const [playerMode, setPlayerMode] = useState(() => {
+    try {
+      return localStorage.getItem('hp_player_mode') || 'podcast';
+    } catch {
+      return 'podcast';
+    }
+  });
+
+  const handleSwitchPlayerMode = useCallback((newMode) => {
+    setPlayerMode(newMode);
+    try {
+      localStorage.setItem('hp_player_mode', newMode);
+    } catch {}
+  }, []);
+
   // Chapter auto advance callback
   const handleChapterAutoAdvance = useCallback(() => {
+    if (sleepTimerMode === 'end_of_chapter') {
+      setSleepTimerMode(null);
+      return;
+    }
     const chapters = currentBookObj?.chapters || [];
     const currentIndex = chapters.findIndex(c => c.id === selectedChapter);
     if (currentIndex !== -1 && currentIndex < chapters.length - 1) {
       selectChapter(chapters[currentIndex + 1].id);
     }
-  }, [currentBookObj, selectedChapter, selectChapter]);
+  }, [currentBookObj, selectedChapter, selectChapter, sleepTimerMode]);
 
   const audio = useAudioPlayback({
     cues,
@@ -99,6 +126,7 @@ export function App() {
     activeCue,
     togglePlayPause,
     seekTo,
+    seekRelative,
     seekToCue,
     handlePrevSentence,
     handleNextSentence,
@@ -110,6 +138,44 @@ export function App() {
     handleCanPlay,
     handleAudioError
   } = audio;
+
+  // Hogwarts Sleep Timer Countdown & Auto-Pause
+  useEffect(() => {
+    if (!sleepTimerMode || sleepTimerMode === 'end_of_chapter') {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setSleepTimerRemaining((prev) => {
+        if (prev === null) return null;
+        if (prev <= 1) {
+          if (audioRef.current) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+          }
+          setSleepTimerMode(null);
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [sleepTimerMode, audioRef, setIsPlaying]);
+
+  const handleToggleSleepTimer = useCallback(() => {
+    setSleepTimerMode((prev) => {
+      const next = getNextSleepTimerOption(prev);
+      if (typeof next === 'number') {
+        setSleepTimerRemaining(next * 60);
+      } else {
+        setSleepTimerRemaining(null);
+      }
+      return next;
+    });
+  }, []);
+
+  const formattedSleepTime = formatSleepTimerRemaining(sleepTimerRemaining, sleepTimerMode);
 
   const tracking = useStudyTracking(isPlaying);
   const {
@@ -129,6 +195,16 @@ export function App() {
     removeWord,
     clearAllVocab
   } = vocab;
+
+  const bookmarkManager = useBookmarkManager();
+  const {
+    bookmarkedSentences,
+    bookmarkedCueIds,
+    toggleBookmarkSentence,
+    removeBookmark,
+    clearAllBookmarks,
+    getChapterBookmarkCount
+  } = bookmarkManager;
 
   const modals = useModalManager();
   const {
@@ -502,6 +578,8 @@ export function App() {
                 currentBook={currentBookObj}
                 currentChapter={currentChapterObj}
                 onOpenShelf={() => setIsShelfOpen(true)}
+                playerMode={playerMode}
+                onSwitchPlayerMode={handleSwitchPlayerMode}
                 studyMode={studyMode}
                 setStudyMode={setStudyMode}
                 showTranslation={showTranslation}
@@ -511,100 +589,145 @@ export function App() {
                 isOfflinePlaying={isOfflinePlaying}
               />
 
-              {/* Central Study Area */}
+              {/* Central Study Area: Dual-Engine Switch (Podcast Companion vs Studio Workshop) */}
               <div className="flex-1 overflow-hidden relative flex flex-col min-h-0">
                 {isLoadingContent ? (
                   <div className="flex-1 flex flex-col items-center justify-center gap-3 text-stone-500">
                     <Loader2 size={32} className="animate-spin text-amber-600" />
                     <p className="text-sm font-reading font-medium">正在开启有声原著羊皮卷...</p>
                   </div>
-                ) : studyMode === 'dictation' ? (
-                  <DictationStudio
+                ) : playerMode === 'podcast' ? (
+                  <PodcastPlayerView
+                    currentBook={currentBookObj}
+                    currentChapter={currentChapterObj}
                     cues={cues}
                     activeCueIndex={activeCueIndex}
-                    onSeekToCue={seekToCue}
-                    onPlayPause={togglePlayPause}
+                    currentTime={currentTime}
+                    duration={duration}
                     isPlaying={isPlaying}
                     playbackRate={playbackRate}
                     onChangePlaybackRate={setPlaybackRate}
+                    onPlayPause={togglePlayPause}
+                    onSeek={seekTo}
+                    onSeekRelative={seekRelative}
+                    onSeekToCue={seekToCue}
                     onPrevSentence={handlePrevSentence}
                     onNextSentence={handleNextSentence}
-                    onReplayCurrentSentence={handleReplayCurrentSentence}
-                    chapterId={selectedChapter}
-                    chapterTitle={currentChapterObj?.cnTitle || currentChapterObj?.title || ''}
-                    onCloseStudio={() => setStudyMode('normal')}
-                    isParchment={isParchment}
-                    onSaveErrorWordsToVocab={(errorWords) => {
-                      errorWords.forEach(w => {
-                        toggleSaveWord({ word: w, translation: '拼写错词重炼' }, activeCue, selectedBook, selectedChapter);
-                      });
-                    }}
+                    sleepTimerMode={sleepTimerMode}
+                    sleepTimerRemaining={formattedSleepTime}
+                    onToggleSleepTimer={handleToggleSleepTimer}
+                    showTranslation={showTranslation}
+                    onToggleTranslation={() => setShowTranslation(prev => !prev)}
+                    bookmarkedCueIds={bookmarkedCueIds}
+                    onToggleBookmarkCue={(cue) => toggleBookmarkSentence(cue, selectedBook, selectedChapter)}
+                    onSwitchToStudio={() => handleSwitchPlayerMode('studio')}
                   />
                 ) : (
-                  <SubtitleViewer
-                    cues={cues}
-                    activeCueIndex={activeCueIndex}
-                    onSeekToCue={seekToCue}
-                    onWordClick={handleWordClick}
-                    studyMode={studyMode}
-                    showTranslation={showTranslation}
-                    setShowTranslation={setShowTranslation}
-                    isLoopSentence={isLoopSentence}
-                    onToggleLoopSentence={() => setIsLoopSentence(prev => !prev)}
-                    onRecordCue={openRecorder}
-                    isParchment={isParchment}
-                    onSaveToVocab={(wordData, sentence) => toggleSaveWord(wordData, sentence, selectedBook, selectedChapter)}
-                    onPrevSentence={handlePrevSentence}
-                    onNextSentence={handleNextSentence}
-                  />
+                  <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                    <div className="flex-1 overflow-hidden relative flex flex-col min-h-0">
+                      {studyMode === 'dictation' ? (
+                        <DictationStudio
+                          cues={cues}
+                          activeCueIndex={activeCueIndex}
+                          onSeekToCue={seekToCue}
+                          onPlayPause={togglePlayPause}
+                          isPlaying={isPlaying}
+                          playbackRate={playbackRate}
+                          onChangePlaybackRate={setPlaybackRate}
+                          onPrevSentence={handlePrevSentence}
+                          onNextSentence={handleNextSentence}
+                          onReplayCurrentSentence={handleReplayCurrentSentence}
+                          chapterId={selectedChapter}
+                          chapterTitle={currentChapterObj?.cnTitle || currentChapterObj?.title || ''}
+                          onCloseStudio={() => setStudyMode('normal')}
+                          isParchment={isParchment}
+                          onSaveErrorWordsToVocab={(errorWords) => {
+                            errorWords.forEach(w => {
+                              toggleSaveWord({ word: w, translation: '拼写错词重炼' }, activeCue, selectedBook, selectedChapter);
+                            });
+                          }}
+                        />
+                      ) : (
+                        <SubtitleViewer
+                          cues={cues}
+                          activeCueIndex={activeCueIndex}
+                          onSeekToCue={seekToCue}
+                          onWordClick={handleWordClick}
+                          studyMode={studyMode}
+                          showTranslation={showTranslation}
+                          setShowTranslation={setShowTranslation}
+                          isLoopSentence={isLoopSentence}
+                          onToggleLoopSentence={() => setIsLoopSentence(prev => !prev)}
+                          onRecordCue={openRecorder}
+                          isParchment={isParchment}
+                          onSaveToVocab={(wordData, sentence) => toggleSaveWord(wordData, sentence, selectedBook, selectedChapter)}
+                          onPrevSentence={handlePrevSentence}
+                          onNextSentence={handleNextSentence}
+                          bookmarkedCueIds={bookmarkedCueIds}
+                          onToggleBookmarkCue={(cue) => toggleBookmarkSentence(cue, selectedBook, selectedChapter)}
+                        />
+                      )}
+                    </div>
+
+                    {/* Bottom Audio Controller (Active in Studio Mode when not in dictation) */}
+                    {studyMode !== 'dictation' && (
+                      <AudioPlayer
+                        currentBook={currentBookObj}
+                        currentChapter={currentChapterObj}
+                        audioSrc={audioUrl}
+                        currentTime={currentTime}
+                        duration={duration}
+                        isPlaying={isPlaying}
+                        onPlayPause={togglePlayPause}
+                        onSeek={seekTo}
+                        onSeekRelative={seekRelative}
+                        onPrevSentence={handlePrevSentence}
+                        onNextSentence={handleNextSentence}
+                        onReplayCurrentSentence={handleReplayCurrentSentence}
+                        isLoopSentence={isLoopSentence}
+                        onToggleLoopSentence={() => setIsLoopSentence(prev => !prev)}
+                        playbackRate={playbackRate}
+                        onChangePlaybackRate={setPlaybackRate}
+                        volume={volume}
+                        onChangeVolume={setVolume}
+                        activeCue={activeCue}
+                        totalCues={cues.length}
+                        activeCueIndex={activeCueIndex}
+                        isParchment={isParchment}
+                        onToggleRecorder={() => {
+                          if (activeCue) openRecorder(activeCue);
+                        }}
+                        isRecordingActive={isRecorderOpen}
+                        sleepTimerMode={sleepTimerMode}
+                        sleepTimerRemaining={formattedSleepTime}
+                        onToggleSleepTimer={handleToggleSleepTimer}
+                      />
+                    )}
+                  </div>
                 )}
               </div>
-
-              {/* Bottom Audio Controller (Active in Bilingual Listening & Blind Audio Modes) */}
-              {studyMode !== 'dictation' && (
-                <AudioPlayer
-                  currentBook={currentBookObj}
-                  currentChapter={currentChapterObj}
-                  audioSrc={audioUrl}
-                  currentTime={currentTime}
-                  duration={duration}
-                  isPlaying={isPlaying}
-                  onPlayPause={togglePlayPause}
-                  onSeek={seekTo}
-                  onPrevSentence={handlePrevSentence}
-                  onNextSentence={handleNextSentence}
-                  onReplayCurrentSentence={handleReplayCurrentSentence}
-                  isLoopSentence={isLoopSentence}
-                  onToggleLoopSentence={() => setIsLoopSentence(prev => !prev)}
-                  playbackRate={playbackRate}
-                  onChangePlaybackRate={setPlaybackRate}
-                  volume={volume}
-                  onChangeVolume={setVolume}
-                  activeCue={activeCue}
-                  totalCues={cues.length}
-                  activeCueIndex={activeCueIndex}
-                  isParchment={isParchment}
-                  onToggleRecorder={() => {
-                    if (activeCue) openRecorder(activeCue);
-                  }}
-                  isRecordingActive={isRecorderOpen}
-                />
-              )}
             </div>
           )}
         </div>
 
-        {/* Mobile Floating Mini Player (Bookshelf view with active audio) */}
-        {currentView === 'bookshelf' && (currentTime > 0 || isPlaying) && (
-          <MobileMiniPlayer
+        {/* Universal Persistent Podcast Capsule (Shown across non-player views when audio is active) */}
+        {currentView !== 'player' && (currentTime > 0 || isPlaying) && (
+          <GlobalPodcastCapsule
             currentBook={currentBookObj}
             currentChapter={currentChapterObj}
             isPlaying={isPlaying}
             onPlayPause={togglePlayPause}
+            onSeekRelative={seekRelative}
+            onNextSentence={handleNextSentence}
+            onEnterPlayer={() => setCurrentView('player')}
             currentTime={currentTime}
             duration={duration}
-            onOpenPlayer={() => setCurrentView('player')}
-            onNextSentence={handleNextSentence}
+            playbackRate={playbackRate}
+            onChangePlaybackRate={setPlaybackRate}
+            sleepTimerMode={sleepTimerMode}
+            sleepTimerRemaining={formattedSleepTime}
+            onToggleSleepTimer={handleToggleSleepTimer}
+            isMobile={isMobile}
           />
         )}
 
@@ -645,6 +768,8 @@ export function App() {
         onRefreshCatalog={() => fetchCatalog(true)}
         isRefreshing={isRefreshing}
         isParchment={isParchment}
+        isPlaying={isPlaying}
+        getChapterBookmarkCount={getChapterBookmarkCount}
       />
 
       <WordModal
@@ -664,6 +789,9 @@ export function App() {
         onClearAll={clearAllVocab}
         isParchment={isParchment}
         onOpenSrs={() => setIsSrsOpen(true)}
+        bookmarkedSentences={bookmarkedSentences}
+        onRemoveBookmark={removeBookmark}
+        onClearAllBookmarks={clearAllBookmarks}
       />
 
       <SrsFlashcardModal

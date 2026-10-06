@@ -15,15 +15,26 @@ import {
 
 import { printParchmentCards } from '../utils/parchmentPdfGenerator';
 
+/**
+ * VocabularyDrawer — Comprehensive Study Notebook & Starred Sentences Workshop
+ * - Tab 1: 核心生词本 (Vocabulary list with Leitner 5-Box Spaced Repetition)
+ * - Tab 2: 疑难句专练 (Starred / Bookmarked Sentences from Podcast & Studio modes)
+ * - Apple HIG >= 44x44px touch targets, zero emojis
+ */
 export function VocabularyDrawer({
   isOpen,
   onClose,
-  vocabList,
+  vocabList = [],
   onRemoveWord,
   onClearAll,
   isParchment,
-  onOpenSrs
+  onOpenSrs,
+  initialTab = 'words',
+  bookmarkedSentences = [],
+  onRemoveBookmark,
+  onClearAllBookmarks
 }) {
+  const [drawerTab, setDrawerTab] = useState(initialTab); // 'words' | 'sentences'
   const [searchTerm, setSearchTerm] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -49,15 +60,20 @@ export function VocabularyDrawer({
 
   if (!isOpen) return null;
 
-  const filteredList = vocabList.filter(item => 
-    item.word.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredVocab = (vocabList || []).filter(item => 
+    (item.word || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (item.translation && item.translation.includes(searchTerm))
   );
 
-  const playPronunciation = (word) => {
+  const filteredSentences = (bookmarkedSentences || []).filter(item =>
+    (item.text || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (item.translation && item.translation.includes(searchTerm))
+  );
+
+  const playPronunciation = (text) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(word);
+      const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'en-GB';
       utterance.rate = 0.9;
       window.speechSynthesis.speak(utterance);
@@ -145,282 +161,378 @@ export function VocabularyDrawer({
 
         {/* Drawer Header */}
         <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0">
-            <div className="flex items-center space-x-2 min-w-0 flex-1">
-              <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
-              <div className="min-w-0 flex-1">
-                <h2 className="font-bold text-base sm:text-lg text-amber-950 truncate whitespace-nowrap">
-                  <span className="font-magical">魔法生词本 ({vocabList.length})</span>
-                </h2>
-                <p className="text-[11px] sm:text-xs text-stone-500 truncate">精听原著词汇与例句笔记</p>
-              </div>
-            </div>
+          <div className="flex items-center space-x-2 min-w-0">
+            <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
+            <h2 className="font-bold text-base sm:text-lg text-amber-950 truncate whitespace-nowrap">
+              <span className="font-magical">魔法生词本 ({vocabList.length})</span>
+            </h2>
+          </div>
 
-              {onOpenSrs && vocabList.length > 0 && (
-                <button
-                  onClick={() => {
-                    onClose();
-                    onOpenSrs();
-                  }}
-                  className="duo-btn-primary min-h-[44px] min-w-[44px] w-11 h-11 rounded-xl text-xs font-bold flex items-center justify-center cursor-pointer shrink-0 active:scale-95"
-                  title="启动艾宾浩斯智能翻转闪卡 (SRS 遗忘曲线算法)"
-                  aria-label="启动艾宾浩斯智能翻转闪卡"
-                >
-                  <BrainCircuit size={18} className="shrink-0" />
-                </button>
-              )}
+          {/* Tab Switcher: 生词本 vs 疑难句 */}
+          <div className="flex items-center p-1 rounded-xl bg-stone-100 border border-[#e8ddd0] gap-1 shrink-0">
+            <button
+              onClick={() => {
+                setDrawerTab('words');
+                setSearchTerm('');
+              }}
+              className={`min-h-[34px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                drawerTab === 'words'
+                  ? 'bg-amber-500 text-white shadow-sm'
+                  : 'text-stone-600 hover:text-amber-950'
+              }`}
+            >
+              生词本 ({vocabList.length})
+            </button>
+            <button
+              onClick={() => {
+                setDrawerTab('sentences');
+                setSearchTerm('');
+              }}
+              className={`min-h-[34px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                drawerTab === 'sentences'
+                  ? 'bg-amber-500 text-white shadow-sm'
+                  : 'text-stone-600 hover:text-amber-950'
+              }`}
+            >
+              疑难句 ({bookmarkedSentences.length})
+            </button>
+          </div>
 
-              <button
-                onClick={onClose}
-                className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
-                title="关闭生词本"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-          {/* Leitner 5-Box Memory Distribution Strip */}
-          {vocabList.length > 0 && (
-            <div className="leitner-distribution px-4 py-2.5 bg-amber-50/70 border-b border-[#e8ddd0]">
-              <div className="flex items-center justify-between text-[11px] font-bold text-amber-900 mb-1.5">
-                <span className="flex items-center gap-1.5">
-                  <BrainCircuit size={13} className="text-amber-700" />
-                  <span>艾宾浩斯 5 箱记忆曲线</span>
-                </span>
-                {dueCount > 0 ? (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 font-bold border border-amber-300/80">
-                    今日 {dueCount} 词待复习
-                  </span>
-                ) : (
-                  <span className="text-[10px] text-stone-500 font-medium">今日记忆已牢固</span>
-                )}
-              </div>
-              <div className="grid grid-cols-5 gap-1.5 text-center">
-                {[
-                  { box: 1, label: 'Box 1 · 初学', short: '初学', color: 'bg-amber-100 text-amber-900 border-amber-300' },
-                  { box: 2, label: 'Box 2 · 巩固', short: '巩固', color: 'bg-amber-200/70 text-amber-950 border-amber-400' },
-                  { box: 3, label: 'Box 3 · 熟记', short: '熟记', color: 'bg-blue-100 text-blue-900 border-blue-300' },
-                  { box: 4, label: 'Box 4 · 长效', short: '长效', color: 'bg-purple-100 text-purple-900 border-purple-300' },
-                  { box: 5, label: 'Box 5 · 永久掌握', short: '永久掌握', color: 'bg-emerald-100 text-emerald-900 border-emerald-400 font-bold' }
-                ].map(({ box, label, short, color }) => {
-                  const count = boxCounts[box] || 0;
-                  return (
-                    <div key={box} className={`p-1 rounded-lg border text-[10px] ${color}`} title={label}>
-                      <div className="font-extrabold font-mono text-xs">{count}</div>
-                      <div className="truncate text-[9px]">{short}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+          {drawerTab === 'words' && onOpenSrs && vocabList.length > 0 && (
+            <button
+              onClick={() => {
+                onClose();
+                onOpenSrs();
+              }}
+              className="duo-btn-primary min-h-[44px] min-w-[44px] w-11 h-11 rounded-xl text-xs font-bold flex items-center justify-center cursor-pointer shrink-0 active:scale-95"
+              title="启动艾宾浩斯智能翻转闪卡 (SRS 遗忘曲线算法)"
+              aria-label="启动艾宾浩斯智能翻转闪卡"
+            >
+              <BrainCircuit size={18} className="shrink-0" />
+            </button>
           )}
 
-          {/* Search input - only show when vocabList has items */}
-          {vocabList.length > 0 && (
-                <div className="p-3 border-b border-[#e8ddd0] bg-white">
-                  <div className="relative">
-                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
-                    <input
-                      type="search"
-                      enterKeyHint="search"
-                      autoCapitalize="none"
-                      autoCorrect="off"
-                      spellCheck="false"
-                      placeholder="搜索生词或中文释义..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-base sm:text-sm rounded-xl border border-[#e8ddd0] bg-stone-50 text-[#1e1610] focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition-all"
-                    />
-                  </div>
-                </div>
+          <button
+            onClick={onClose}
+            className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
+            title="关闭研学本"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* ── Sub-header: Leitner strip (when in words tab) ───────────── */}
+        {drawerTab === 'words' && vocabList.length > 0 && (
+          <div className="leitner-distribution px-4 py-2.5 bg-amber-50/70 border-b border-[#e8ddd0]">
+            <div className="flex items-center justify-between text-[11px] font-bold text-amber-900 mb-1.5">
+              <span className="flex items-center gap-1.5">
+                <BrainCircuit size={13} className="text-amber-700" />
+                <span>艾宾浩斯 5 箱记忆曲线</span>
+              </span>
+              {dueCount > 0 ? (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 font-bold border border-amber-300/80">
+                  今日 {dueCount} 词待复习
+                </span>
+              ) : (
+                <span className="text-[10px] text-stone-500 font-medium">今日记忆已牢固</span>
               )}
+            </div>
+            <div className="grid grid-cols-5 gap-1.5 text-center">
+              {[
+                { box: 1, label: 'Box 1 · 初学', short: '初学', color: 'bg-amber-100 text-amber-900 border-amber-300' },
+                { box: 2, label: 'Box 2 · 巩固', short: '巩固', color: 'bg-amber-200/70 text-amber-950 border-amber-400' },
+                { box: 3, label: 'Box 3 · 熟记', short: '熟记', color: 'bg-blue-100 text-blue-900 border-blue-300' },
+                { box: 4, label: 'Box 4 · 长效', short: '长效', color: 'bg-purple-100 text-purple-900 border-purple-300' },
+                { box: 5, label: 'Box 5 · 永久掌握', short: '永久掌握', color: 'bg-emerald-100 text-emerald-900 border-emerald-400 font-bold' }
+              ].map(({ box, label, short, color }) => {
+                const count = boxCounts[box] || 0;
+                return (
+                  <div key={box} className={`p-1 rounded-lg border text-[10px] ${color}`} title={label}>
+                    <div className="font-extrabold font-mono text-xs">{count}</div>
+                    <div className="truncate text-[9px]">{short}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
-              {/* Vocab Cards List */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-3 ios-scroll">
-                {vocabList.length === 0 ? (
-                  <div className="flex-1 flex flex-col items-center justify-center py-16 px-4 text-center my-auto">
-                    <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 animate-pulse">
-                      <Bookmark size={28} className="text-amber-600" />
-                    </div>
-                    <h3 className="font-magical font-bold text-base text-amber-950 mb-1">
-                      暂无生词 · 魔杖尚未收录新词
-                    </h3>
-                    <p className="text-xs text-stone-500 max-w-xs leading-relaxed mb-6">
-                      在精听研读原著时，轻点任意英文单词即可实时查看权威释义，并一键收录至专属魔法生词本！
-                    </p>
-                    <button
-                      onClick={onClose}
-                      className="duo-btn-primary min-h-[44px] px-6 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer active:scale-95"
-                    >
-                      <Sparkles size={15} />
-                      <span>去精听挑词入库</span>
-                    </button>
-                  </div>
-                ) : filteredList.length === 0 ? (
-                  <div className="text-center py-16 text-stone-400 text-xs">
-                    <p className="font-bold text-sm text-stone-700 mb-1">未找到匹配生词</p>
-                    <p className="text-xs mb-3">没有搜索到包含 “{searchTerm}” 的生词或释义</p>
-                    <button
-                      onClick={() => setSearchTerm('')}
-                      className="duo-btn-secondary px-3 py-1.5 rounded-xl text-xs font-bold text-amber-900 cursor-pointer"
-                    >
-                      清除搜索条件
-                    </button>
-                  </div>
-                ) : (
-                  filteredList.map((item) => {
-                    const isDue = !item.nextReviewDate || item.nextReviewDate <= todayStr;
-                    return (
-                      <div
-                        key={item.id || item.word}
-                        className={`p-3.5 rounded-2xl border transition-all ${
-                          isDue
-                            ? 'bg-amber-500/5 border-amber-400/90 ring-1 ring-amber-400/30'
-                            : 'duo-card duo-card-hover'
-                        }`}
-                      >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0 pr-2">
-                          <div className="flex items-center space-x-2 flex-wrap">
-                            <h4 className="font-magical font-bold text-base text-amber-950">
-                              {item.word}
-                            </h4>
-                            {item.phonetic && (
-                              <span className="font-mono text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-800 font-semibold">
-                                {item.phonetic}
-                              </span>
-                            )}
-                            {item.isHpLore ? (
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-900 border border-red-300/80 font-bold">
-                                原著魔法
-                              </span>
-                            ) : item.tag === '中考核心' ? (
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300/80 font-bold">
-                                中考核心
-                              </span>
-                            ) : (
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-300 font-bold">
-                                进阶拓展
-                              </span>
-                            )}
-                            {/* SRS status dot */}
-                            {item.srsBox !== undefined && (
-                              <span className={`inline-block w-2 h-2 rounded-full ml-1.5 align-middle ${
-                                item.srsBox >= 5 ? 'bg-emerald-500' :
-                                item.srsBox >= 4 ? 'bg-amber-400' :
-                                item.srsBox >= 2 ? 'bg-orange-400' : 'bg-red-400'
-                              }`} title={`SRS盒子 ${item.srsBox || 1}: ${item.srsBox >= 5 ? '已掌握' : '复习中'}`} />
-                            )}
-                          </div>
-                          {renderSrsBadge(item)}
+        {/* ── Search Input ────────────────────────────────────────────── */}
+        {((drawerTab === 'words' && vocabList.length > 0) ||
+          (drawerTab === 'sentences' && bookmarkedSentences.length > 0)) && (
+          <div className="p-3 border-b border-[#e8ddd0] bg-white">
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+              <input
+                type="search"
+                enterKeyHint="search"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck="false"
+                placeholder={drawerTab === 'words' ? "搜索生词或中文释义..." : "搜索疑难句或中文释义..."}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 text-base sm:text-sm rounded-xl border border-[#e8ddd0] bg-stone-50 text-[#1e1610] focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition-all"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ── Tab 1: Vocab Cards List ─────────────────────────────────── */}
+        {drawerTab === 'words' && (
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 ios-scroll">
+            {vocabList.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center py-16 px-4 text-center my-auto">
+                <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 animate-pulse">
+                  <Bookmark size={28} className="text-amber-600" />
+                </div>
+                <h3 className="font-magical font-bold text-base text-amber-950 mb-1">
+                  暂无生词 · 魔杖尚未收录新词
+                </h3>
+                <p className="text-xs text-stone-500 max-w-xs leading-relaxed mb-6">
+                  在精听研读原著时，轻点任意英文单词即可实时查看权威释义，并一键收录至专属魔法生词本！
+                </p>
+                <button
+                  onClick={onClose}
+                  className="duo-btn-primary min-h-[44px] px-6 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer active:scale-95"
+                >
+                  <Sparkles size={15} />
+                  <span>去精听挑词入库</span>
+                </button>
+              </div>
+            ) : filteredVocab.length === 0 ? (
+              <div className="text-center py-16 text-stone-400 text-xs">
+                <p className="font-bold text-sm text-stone-700 mb-1">未找到匹配生词</p>
+                <p className="text-xs mb-3">没有搜索到包含 “{searchTerm}” 的生词或释义</p>
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="duo-btn-secondary px-3 py-1.5 rounded-xl text-xs font-bold text-amber-900 cursor-pointer"
+                >
+                  清除搜索条件
+                </button>
+              </div>
+            ) : (
+              filteredVocab.map((item) => {
+                const isDue = !item.nextReviewDate || item.nextReviewDate <= todayStr;
+                return (
+                  <div
+                    key={item.id || item.word}
+                    className={`p-3.5 rounded-2xl border transition-all ${
+                      isDue
+                        ? 'bg-amber-500/5 border-amber-400/90 ring-1 ring-amber-400/30'
+                        : 'duo-card duo-card-hover'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0 pr-2">
+                        <div className="flex items-center space-x-2 flex-wrap">
+                          <h4 className="font-magical font-bold text-base text-amber-950">
+                            {item.word}
+                          </h4>
+                          {item.phonetic && (
+                            <span className="font-mono text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-800 font-semibold">
+                              {item.phonetic}
+                            </span>
+                          )}
                         </div>
 
-                        <div className="flex items-center space-x-1 shrink-0">
-                          <button
-                            onClick={() => playPronunciation(item.word)}
-                            className="duo-touch-target rounded-xl border border-transparent hover:border-amber-300/80 bg-transparent hover:bg-amber-50 text-stone-500 hover:text-amber-800 transition-all active:scale-90 cursor-pointer"
-                            title="试听纯正英音发音"
-                          >
-                            <Volume2 size={16} />
-                          </button>
-                          <button
-                            onClick={() => onRemoveWord(item.word)}
-                            className="duo-touch-target rounded-xl border border-transparent hover:border-rose-300/80 bg-transparent hover:bg-rose-50 text-stone-400 hover:text-rose-600 transition-all active:scale-90 cursor-pointer"
-                            title="从生词本移除"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
+                        {renderSrsBadge(item)}
+
+                        <p className="text-sm font-reading text-stone-700 mt-2 font-medium">
+                          {item.translation}
+                        </p>
                       </div>
 
-                      <p className="text-xs sm:text-sm font-reading mt-1.5 font-bold text-amber-950">
-                        {item.translation}
-                      </p>
+                      <div className="flex items-center space-x-1 shrink-0">
+                        <button
+                          onClick={() => playPronunciation(item.word)}
+                          className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 active:scale-90 transition-all cursor-pointer"
+                          title="发音朗读"
+                          aria-label={`朗读 ${item.word}`}
+                        >
+                          <Volume2 size={16} />
+                        </button>
 
-                      {item.context && (
-                        <p className="text-[11px] font-reading italic mt-2 border-t border-[#e8ddd0] pt-1.5 line-clamp-2 text-stone-600">
-                          "{item.context}"
+                        <button
+                          onClick={() => onRemoveWord(item.id || item.word)}
+                          className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-400 hover:text-rose-600 active:scale-90 transition-all cursor-pointer"
+                          title="移出生词本"
+                          aria-label={`删除 ${item.word}`}
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {item.context && (
+                      <p className="text-[11px] font-reading italic mt-2 border-t border-[#e8ddd0] pt-1.5 line-clamp-2 text-stone-600">
+                        "{item.context}"
+                      </p>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        )}
+
+        {/* ── Tab 2: Starred Sentences List ───────────────────────────── */}
+        {drawerTab === 'sentences' && (
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 ios-scroll">
+            {bookmarkedSentences.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center py-16 px-4 text-center my-auto">
+                <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 animate-pulse">
+                  <Bookmark size={28} className="text-amber-600" />
+                </div>
+                <h3 className="font-magical font-bold text-base text-amber-950 mb-1">
+                  暂无星标疑句 · 随时随地收录
+                </h3>
+                <p className="text-xs text-stone-500 max-w-xs leading-relaxed mb-6">
+                  在播客随行或精听研读时，遇到听不懂或值得精细背诵的长难句，点击星标即可收录至此处集中突破！
+                </p>
+                <button
+                  onClick={onClose}
+                  className="duo-btn-primary min-h-[44px] px-6 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer active:scale-95"
+                >
+                  <Sparkles size={15} />
+                  <span>去听播客星标疑句</span>
+                </button>
+              </div>
+            ) : filteredSentences.length === 0 ? (
+              <div className="text-center py-16 text-stone-400 text-xs">
+                <p className="font-bold text-sm text-stone-700 mb-1">未找到匹配疑难句</p>
+                <p className="text-xs mb-3">没有搜索到包含 “{searchTerm}” 的句子或释义</p>
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="duo-btn-secondary px-3 py-1.5 rounded-xl text-xs font-bold text-amber-900 cursor-pointer"
+                >
+                  清除搜索条件
+                </button>
+              </div>
+            ) : (
+              filteredSentences.map((item) => (
+                <div
+                  key={item.id || item.cueId}
+                  className="p-3.5 rounded-2xl border border-[#e8ddd0] bg-white hover:border-amber-300 transition-all duo-card"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-reading text-sm sm:text-base font-semibold text-amber-950 leading-relaxed">
+                        {item.text}
+                      </p>
+                      {item.translation && (
+                        <p className="font-reading text-xs sm:text-sm text-stone-500 mt-1.5 leading-relaxed">
+                          {item.translation}
                         </p>
                       )}
                     </div>
-                  );
-                })
-              )}
-              </div>
 
-              {/* Bottom Actions */}
-              <div className="p-3.5 sm:p-4 border-t border-[#e8ddd0] bg-white flex flex-col gap-2 shrink-0">
-                {showClearConfirm ? (
-                  <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-2.5 p-3 rounded-2xl bg-rose-50 border border-rose-200 animate-fadeIn">
-                    <div className="flex items-center gap-2 text-xs font-bold text-rose-900 min-w-0">
-                      <Trash2 size={15} className="text-rose-600 shrink-0" />
-                      <span>确定清空全部 {vocabList.length} 个生词？此操作无法撤销</span>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+                    <div className="flex items-center gap-1 shrink-0">
                       <button
-                        onClick={() => setShowClearConfirm(false)}
-                        className="px-3.5 py-2 min-h-[44px] rounded-xl border border-stone-300 bg-white text-stone-700 font-bold text-xs hover:bg-stone-50 cursor-pointer active:scale-95"
+                        onClick={() => playPronunciation(item.text)}
+                        className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 active:scale-90 transition-all cursor-pointer"
+                        title="发音朗读整句"
+                        aria-label="发音朗读整句"
                       >
-                        取消
+                        <Volume2 size={16} />
                       </button>
-                      <button
-                        onClick={() => {
-                          setShowClearConfirm(false);
-                          onClearAll();
-                        }}
-                        className="px-3.5 py-2 min-h-[44px] rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700 cursor-pointer active:scale-95"
-                      >
-                        确认清空
-                      </button>
+
+                      {onRemoveBookmark && (
+                        <button
+                          onClick={() => onRemoveBookmark(item.id || item.cueId)}
+                          className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-400 hover:text-rose-600 active:scale-90 transition-all cursor-pointer"
+                          title="取消收录此疑难句"
+                          aria-label="取消收录此疑难句"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      )}
                     </div>
                   </div>
-                ) : (
-                  <div className="flex items-center justify-between gap-2 text-xs">
-                    <div className="flex items-center gap-2">
-                      <button
-                        disabled={vocabList.length === 0}
-                        onClick={handlePrintParchmentPdf}
-                        className={`duo-btn-primary min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 font-bold ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                        title="生成标准 A4 羊皮纸剪裁闪卡，直接打印或保存为 PDF"
-                        aria-label="打印羊皮纸单词卡 (PDF)"
-                      >
-                        <Printer size={14} className="shrink-0" />
-                        <span>打印羊皮纸单词卡 (PDF)</span>
-                      </button>
+                </div>
+              ))
+            )}
+          </div>
+        )}
 
-                      <button
-                        disabled={vocabList.length === 0}
-                        onClick={handleExportCSV}
-                        className={`duo-btn-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-xs active:scale-95 ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                        title="导出为通用表格 CSV 格式"
-                        aria-label="导出为通用表格 CSV 格式"
-                      >
-                        <Download size={15} className="shrink-0 text-stone-600" />
-                      </button>
-                    </div>
-
-                    <button
-                      disabled={vocabList.length === 0}
-                      onClick={() => setShowClearConfirm(true)}
-                      className={`min-h-[44px] min-w-[44px] rounded-xl border border-rose-200 text-rose-700 bg-rose-50/60 transition-all flex items-center justify-center ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-rose-100 hover:border-rose-300 active:scale-95 cursor-pointer'}`}
-                      title="清空生词本内所有单词"
-                      aria-label="清空生词本"
-                    >
-                      <Trash2 size={15} className="text-rose-600 shrink-0" />
-                    </button>
-                  </div>
-                )}
+        {/* ── Bottom Actions (When in words tab) ───────────────────────── */}
+        {drawerTab === 'words' && (
+          <div className="p-3.5 sm:p-4 border-t border-[#e8ddd0] bg-white flex flex-col gap-2 shrink-0">
+            {showClearConfirm ? (
+              <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-2.5 p-3 rounded-2xl bg-rose-50 border border-rose-200 animate-fadeIn">
+                <div className="flex items-center gap-2 text-xs font-bold text-rose-900 min-w-0">
+                  <Trash2 size={15} className="text-rose-600 shrink-0" />
+                  <span>确定清空全部 {vocabList.length} 个生词？此操作无法撤销</span>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+                  <button
+                    onClick={() => setShowClearConfirm(false)}
+                    className="px-3.5 py-2 min-h-[44px] rounded-xl border border-stone-300 bg-white text-stone-700 font-bold text-xs hover:bg-stone-50 cursor-pointer active:scale-95"
+                  >
+                    取消
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowClearConfirm(false);
+                      onClearAll();
+                    }}
+                    className="px-3.5 py-2 min-h-[44px] rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700 cursor-pointer active:scale-95"
+                  >
+                    确认清空
+                  </button>
+                </div>
               </div>
+            ) : (
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <button
+                    disabled={vocabList.length === 0}
+                    onClick={handlePrintParchmentPdf}
+                    className={`duo-btn-primary min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 font-bold ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    title="生成标准 A4 羊皮纸剪裁闪卡，直接打印或保存为 PDF"
+                    aria-label="打印羊皮纸单词卡 (PDF)"
+                  >
+                    <Printer size={14} className="shrink-0" />
+                    <span>打印羊皮纸单词卡 (PDF)</span>
+                  </button>
 
-          {/* Toast Feedback Notification */}
-          {toastMessage && (
-            <div className="absolute bottom-20 left-4 right-4 z-50 animate-bounce">
-              <div className="p-3 rounded-2xl bg-emerald-700/95 border border-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2">
-                <CheckCircle size={15} />
-                <span>{toastMessage}</span>
+                  <button
+                    disabled={vocabList.length === 0}
+                    onClick={handleExportCSV}
+                    className={`duo-btn-secondary min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-xs active:scale-95 ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    title="导出为通用表格 CSV 格式"
+                    aria-label="导出为通用表格 CSV 格式"
+                  >
+                    <Download size={15} className="shrink-0 text-stone-600" />
+                  </button>
+                </div>
+
+                <button
+                  disabled={vocabList.length === 0}
+                  onClick={() => setShowClearConfirm(true)}
+                  className={`min-h-[44px] min-w-[44px] rounded-xl border border-rose-200 text-rose-700 bg-rose-50/60 transition-all flex items-center justify-center ${vocabList.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-rose-100 hover:border-rose-300 active:scale-95 cursor-pointer'}`}
+                  title="清空生词本内所有单词"
+                  aria-label="清空生词本"
+                >
+                  <Trash2 size={15} className="text-rose-600 shrink-0" />
+                </button>
               </div>
+            )}
+          </div>
+        )}
+
+        {/* Toast Feedback Notification */}
+        {toastMessage && (
+          <div className="absolute bottom-20 left-4 right-4 z-50 animate-bounce">
+            <div className="p-3 rounded-2xl bg-emerald-700/95 border border-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2">
+              <CheckCircle size={15} />
+              <span>{toastMessage}</span>
             </div>
-          )}
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+export default VocabularyDrawer;

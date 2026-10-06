@@ -28,6 +28,8 @@ const SentenceCard = React.memo(function SentenceCard({
   idx,
   isActive,
   isRevealed,
+  isBookmarked = false,
+  onToggleBookmarkCue,
   studyMode,
   showTranslation,
   fontSizeClass,
@@ -68,6 +70,12 @@ const SentenceCard = React.memo(function SentenceCard({
           <span className="font-mono text-[10px] text-stone-400">
             {formatTime(cue.startTime)}
           </span>
+          {isBookmarked && (
+            <span className="inline-flex items-center gap-1 text-[10px] text-amber-800 font-bold bg-amber-100/90 px-1.5 py-0.5 rounded border border-amber-300">
+              <Bookmark size={9} className="fill-current text-amber-600" />
+              <span>已星标</span>
+            </span>
+          )}
           {isActive && (
             <span className="inline-flex items-center gap-1 text-[10px] text-amber-700 font-bold">
               <Sparkles size={10} />
@@ -78,6 +86,21 @@ const SentenceCard = React.memo(function SentenceCard({
 
         {/* Action buttons (Apple HIG >= 44x44pt ergonomic touch targets) */}
         <div className="flex items-center gap-1.5">
+          {onToggleBookmarkCue && (
+            <button
+              onClick={() => onToggleBookmarkCue(cue)}
+              className={`min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+                isBookmarked
+                  ? 'bg-amber-100 text-amber-800 border-amber-300'
+                  : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 hover:border-amber-300'
+              }`}
+              title={isBookmarked ? '已收录至疑难句 (点击取消)' : '星标收录此句 (Accio Bookmark)'}
+              aria-label="星标收录此句"
+            >
+              <Bookmark size={13} className={isBookmarked ? 'fill-current text-amber-600' : ''} />
+            </button>
+          )}
+
           <button
             onClick={() => onSeekToCue(cue)}
             className="min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
@@ -190,7 +213,9 @@ export function SubtitleViewer({
   isParchment,
   onSaveToVocab,
   onPrevSentence,
-  onNextSentence
+  onNextSentence,
+  bookmarkedCueIds = new Set(),
+  onToggleBookmarkCue
 }) {
   const activeCueRef = useRef(null);
   const containerRef = useRef(null);
@@ -312,39 +337,45 @@ export function SubtitleViewer({
           const prevChunk = prevCue ? Math.floor((prevCue.startTime || 0) / 300) : 0;
           const isNewWaypoint = idx > 0 && currentChunk > prevChunk && (cue.startTime || 0) >= 300;
 
-          return (
-            <React.Fragment key={cue.id}>
-              {/* 5-min milestone divider */}
-              {isNewWaypoint && (
-                <div className="flex items-center gap-3 my-4 select-none">
-                  <div className="h-px flex-1 bg-amber-200" />
-                  <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-200 text-[11px] font-bold text-amber-800">
-                    <Award size={12} className="text-amber-600" />
-                    <span>已精听 <span className="font-mono">{currentChunk * 5}</span> 分钟</span>
-                  </div>
-                  <div className="h-px flex-1 bg-amber-200" />
-                </div>
-              )}
+          const isBookmarked = bookmarkedCueIds instanceof Set
+            ? (bookmarkedCueIds.has(cue.id) || bookmarkedCueIds.has(String(cue.start)))
+            : (Array.isArray(bookmarkedCueIds) && (bookmarkedCueIds.includes(cue.id) || bookmarkedCueIds.includes(String(cue.start))));
 
-              <SentenceCard
-                cardRef={isActive ? activeCueRef : null}
-                cue={cue}
-                idx={idx}
-                isActive={isActive}
-                isRevealed={isRevealed}
-                studyMode={studyMode}
-                showTranslation={showTranslation}
-                fontSizeClass={fontSizeClass}
-                isParchment={isParchment}
-                onSeekToCue={onSeekToCue}
-                onWordClick={onWordClick}
-                onRecordCue={onRecordCue}
-                onCopySentence={handleCopySentence}
-                copiedCueId={copiedCueId}
-                onToggleReveal={toggleSentenceReveal}
-              />
-            </React.Fragment>
-          );
+          return (
+                <React.Fragment key={cue.id}>
+                  {/* 5-min milestone divider */}
+                  {isNewWaypoint && (
+                    <div className="flex items-center gap-3 my-4 select-none">
+                      <div className="h-px flex-1 bg-amber-200" />
+                      <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-200 text-[11px] font-bold text-amber-800">
+                        <Award size={12} className="text-amber-600" />
+                        <span>已精听 <span className="font-mono">{currentChunk * 5}</span> 分钟</span>
+                      </div>
+                      <div className="h-px flex-1 bg-amber-200" />
+                    </div>
+                  )}
+
+                  <SentenceCard
+                    cardRef={isActive ? activeCueRef : null}
+                    cue={cue}
+                    idx={idx}
+                    isActive={isActive}
+                    isRevealed={isRevealed}
+                    isBookmarked={isBookmarked}
+                    onToggleBookmarkCue={onToggleBookmarkCue}
+                    studyMode={studyMode}
+                    showTranslation={showTranslation}
+                    fontSizeClass={fontSizeClass}
+                    isParchment={isParchment}
+                    onSeekToCue={onSeekToCue}
+                    onWordClick={onWordClick}
+                    onRecordCue={onRecordCue}
+                    onCopySentence={handleCopySentence}
+                    copiedCueId={copiedCueId}
+                    onToggleReveal={toggleSentenceReveal}
+                  />
+                </React.Fragment>
+              );
         })}
       </div>
 

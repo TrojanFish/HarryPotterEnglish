@@ -77,6 +77,14 @@ export function useAudioPlayback({
     setCurrentTime(target);
   }, [duration]);
 
+  const seekRelative = useCallback((offsetSeconds) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const current = audio.currentTime || currentTime || 0;
+    const target = Math.max(0, Math.min(current + offsetSeconds, duration || audio.duration || 0));
+    seekTo(target);
+  }, [currentTime, duration, seekTo]);
+
   // 3. Sentence Navigation Controls
   const seekToCue = useCallback((target, autoPlay = true) => {
     if (!cues || cues.length === 0) return;
@@ -346,6 +354,7 @@ export function useAudioPlayback({
     activeCue: cues[activeCueIndex] || null,
     togglePlayPause,
     seekTo,
+    seekRelative,
     seekToCue,
     handlePrevSentence,
     handleNextSentence,
