@@ -146,23 +146,21 @@ export function ReaderTopBar({
 
         {/* ── Right: Reading Controls ─────────────────────────────────── */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Bilingual translation toggle */}
-          {studyMode !== 'dictation' && (
-            <button
-              type="button"
-              onClick={() => (onToggleTranslation ? onToggleTranslation() : setShowTranslation && setShowTranslation(!showTranslation))}
-              className={`w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl border transition-colors cursor-pointer select-none ${
-                showTranslation
-                  ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
-                  : 'bg-white text-stone-600 border-[#e8ddd0] hover:border-amber-300 hover:text-amber-950'
-              }`}
-              title={showTranslation ? '双语译文：开 (点击关闭)' : '双语译文：关 (点击开启)'}
-              aria-label="中英双语切换"
-              aria-pressed={Boolean(showTranslation)}
-            >
-              <Languages size={17} className={showTranslation ? 'text-white' : 'text-stone-600'} />
-            </button>
-          )}
+          {/* Bilingual translation toggle (consistent across all modes) */}
+          <button
+            type="button"
+            onClick={() => (onToggleTranslation ? onToggleTranslation() : setShowTranslation && setShowTranslation(!showTranslation))}
+            className={`w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl border transition-colors cursor-pointer select-none ${
+              showTranslation
+                ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                : 'bg-white text-stone-600 border-[#e8ddd0] hover:border-amber-300 hover:text-amber-950'
+            }`}
+            title={showTranslation ? '双语译文：开 (点击关闭)' : '双语译文：关 (点击开启)'}
+            aria-label="中英双语切换"
+            aria-pressed={Boolean(showTranslation)}
+          >
+            <Languages size={17} className={showTranslation ? 'text-white' : 'text-stone-600'} />
+          </button>
 
           {/* Shortcuts (desktop only) */}
           {onOpenShortcuts && (

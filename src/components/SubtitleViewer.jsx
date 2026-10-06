@@ -279,49 +279,64 @@ export function SubtitleViewer({
 
   return (
     <div
-      className="relative flex-1 overflow-y-auto max-w-4xl mx-auto w-full pb-4 ios-scroll"
+      className="relative flex-1 overflow-y-auto w-full pb-4 ios-scroll"
       ref={containerRef}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onWheel={() => { if (isFollowActive) setIsFollowActive(false); }}
     >
-      {/* ── Subtitle Cue Count & Font Sizing Ribbon ──────────────── */}
-      <div className={`sticky top-0 z-10 px-3 sm:px-4 py-2 border-b flex items-center justify-between gap-2 transition-colors ${
+      {/* ── Subtitle Cue Count & Font Sizing Ribbon (Full-Width Sticky) ── */}
+      <div className={`sticky top-0 z-10 w-full border-b transition-colors ${
         isParchment
-          ? 'bg-[#fbf9f4]/95 border-[#e8ddd0] backdrop-blur-sm'
+          ? 'bg-[#fbf9f4]/95 border-[#e8ddd0] backdrop-blur-md'
           : 'bg-[#0b0f19]/95 border-slate-800'
       }`}>
-        <span className="flex items-center gap-1.5 text-xs font-bold text-amber-900 select-none">
-          <Headphones size={13} className="text-amber-600" />
-          <span>全章共 <span className="font-mono">{cues.length}</span> 句原声</span>
-          {studyMode === 'blind' && (
-            <span className="ml-1 px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 text-[10px] font-bold">
-              迷雾模式
+        <div className="max-w-4xl mx-auto px-4 py-2 flex items-center justify-between gap-2">
+          {/* Left: Mode Identity Badge & Sentence Progress */}
+          <div className="flex items-center gap-2 min-w-0 select-none">
+            {studyMode === 'blind' ? (
+              <>
+                <span className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-indigo-950 font-magical shrink-0">
+                  <EyeOff size={14} className="text-indigo-600" />
+                  <span>魔法磨耳朵</span>
+                </span>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 border border-indigo-200 shrink-0">
+                  迷雾遮罩
+                </span>
+              </>
+            ) : (
+              <span className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-950 font-magical shrink-0">
+                <Headphones size={14} className="text-amber-600" />
+                <span>双语精听</span>
+              </span>
+            )}
+            <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-900 font-mono font-bold border border-amber-300/50 shrink-0">
+              {`第 ${activeCueIndex + 1} / ${cues.length} 句`}
             </span>
-          )}
-        </span>
+          </div>
 
-        {/* Concise Font Size Cycle Control */}
-        <button
-          type="button"
-          onClick={() => {
-            const nextSize = fontSize === 'normal' ? 'large' : fontSize === 'large' ? 'huge' : 'normal';
-            setFontSize(nextSize);
-            try { localStorage.setItem('hp_subtitle_font_size', nextSize); } catch {}
-          }}
-          className="h-8 min-h-[32px] px-2.5 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 active:bg-amber-50/50 flex items-center gap-1.5 text-xs font-bold text-stone-700 hover:text-amber-950 transition-colors cursor-pointer select-none"
-          title={`当前字号: ${fontSize === 'huge' ? '超大' : fontSize === 'large' ? '大号' : '标准'} (点击切换)`}
-          aria-label="调节字号"
-        >
-          <Type size={14} className="text-amber-600" />
-          <span className="font-mono text-[11px] font-extrabold text-amber-900">
-            {fontSize === 'huge' ? 'A++' : fontSize === 'large' ? 'A+' : 'A'}
-          </span>
-        </button>
+          {/* Right: Concise Font Size Cycle Control */}
+          <button
+            type="button"
+            onClick={() => {
+              const nextSize = fontSize === 'normal' ? 'large' : fontSize === 'large' ? 'huge' : 'normal';
+              setFontSize(nextSize);
+              try { localStorage.setItem('hp_subtitle_font_size', nextSize); } catch {}
+            }}
+            className="h-8 min-h-[32px] px-2.5 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 active:bg-amber-50/50 flex items-center gap-1.5 text-xs font-bold text-stone-700 hover:text-amber-950 transition-colors cursor-pointer select-none"
+            title={`当前字号: ${fontSize === 'huge' ? '超大' : fontSize === 'large' ? '大号' : '标准'} (点击切换)`}
+            aria-label="调节字号"
+          >
+            <Type size={14} className="text-amber-600" />
+            <span className="font-mono text-[11px] font-extrabold text-amber-900">
+              {fontSize === 'huge' ? 'A++' : fontSize === 'large' ? 'A+' : 'A'}
+            </span>
+          </button>
+        </div>
       </div>
 
-      {/* ── Sentence Cards ────────────────────────────────────────── */}
-      <div className="px-3 sm:px-4 py-3 space-y-2">
+      {/* ── Sentence Cards (Centered Max-W Container) ─────────────── */}
+      <div className="max-w-4xl mx-auto w-full px-3 sm:px-4 py-3 space-y-2">
         {cues.map((cue, idx) => {
           const isActive = idx === activeCueIndex;
           const isRevealed = Boolean(revealedSentences[cue.id]);

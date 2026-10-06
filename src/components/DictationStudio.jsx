@@ -63,7 +63,9 @@ export function DictationStudio({
   playbackRate = 1.0,
   onChangePlaybackRate,
   onSaveErrorWordsToVocab,
-  onReplayCurrentSentence
+  onReplayCurrentSentence,
+  showTranslation = false,
+  onToggleTranslation
 }) {
   const currentCue = cues[activeCueIndex];
   const advanceNext = onNextSentence || onNextCue;
@@ -103,6 +105,11 @@ export function DictationStudio({
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [feedbackState, setFeedbackState] = useState(null);
   const [showTranslationClue, setShowTranslationClue] = useState(false);
+  const isClueActive = Boolean(showTranslation || showTranslationClue);
+  const handleToggleClue = () => {
+    if (onToggleTranslation) onToggleTranslation();
+    setShowTranslationClue(prev => !prev);
+  };
 
   // Dueling Mode survival state
   const [shields, setShields] = useState(3);
@@ -295,89 +302,94 @@ export function DictationStudio({
     <div className="flex-1 flex flex-col h-full bg-[#fbf9f4] text-[#1e1610] select-none overflow-hidden">
       
       {/* ── 1. Sticky Mode Sub-Header (Integrated with Study TopBar) ── */}
-      <div className="sticky top-0 z-20 bg-[#fbf9f4]/95 border-b border-[#e8ddd0] backdrop-blur-md px-4 sm:px-6 py-2.5 shrink-0">
-        {/* Row 1: Quest Status, Stars & Audio Toggles */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-950 font-magical shrink-0">
-              <Zap size={15} className="text-amber-600" />
-              <span>拼写大闯关</span>
-            </span>
-            <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 font-mono font-bold border border-amber-300/60 shrink-0">
-              第 {activeCueIndex + 1} / {cues.length} 句
-            </span>
-            {streakCount >= 2 && (
-              <span className="hidden sm:inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold border border-orange-200 shrink-0">
-                <Flame size={11} className="text-orange-500" />
-                <span>连对 x{streakCount}</span>
+      <div className="sticky top-0 z-20 w-full bg-[#fbf9f4]/95 border-b border-[#e8ddd0] backdrop-blur-md shrink-0">
+        <div className="max-w-4xl mx-auto px-4 py-2 space-y-2">
+          {/* Row 1: Quest Status, Stars & Audio Toggles */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0 select-none">
+              <span className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-950 font-magical shrink-0">
+                <Zap size={14} className="text-amber-600" />
+                <span>拼写大闯关</span>
               </span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Stars counter */}
-            <div className="flex items-center gap-1 text-xs text-amber-900 font-bold bg-amber-50 px-2 sm:px-2.5 py-1 rounded-xl border border-amber-200/80">
-              <Star size={13} className="text-amber-500 fill-amber-500" />
-              <span>{totalStars} 星</span>
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-900 font-mono font-bold border border-amber-300/50 shrink-0">
+                {`第 ${activeCueIndex + 1} / ${cues.length} 句`}
+              </span>
+              {streakCount >= 2 && (
+                <span className="hidden sm:inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold border border-orange-200 shrink-0">
+                  <Flame size={11} className="text-orange-500" />
+                  <span>连对 x{streakCount}</span>
+                </span>
+              )}
             </div>
 
-            {/* Sound Toggle */}
-            <button
-              onClick={handleToggleSound}
-              className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-colors cursor-pointer duo-touch-target ${
-                soundEnabled
-                  ? 'border-amber-300 bg-amber-50 text-amber-800'
-                  : 'border-[#e8ddd0] bg-white text-stone-400 hover:border-amber-300'
-              }`}
-              title={soundEnabled ? '魔咒合成音效：开 (点击静音)' : '魔咒合成音效：关 (点击开启)'}
-              aria-label="魔咒合成音效开关"
-            >
-              {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
-            </button>
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {/* Stars counter */}
+              <div className="flex items-center gap-1 text-xs text-amber-900 font-bold bg-amber-50 px-2 sm:px-2.5 py-1 rounded-xl border border-amber-200/80">
+                <Star size={13} className="text-amber-500 fill-amber-500" />
+                <span>{totalStars} 星</span>
+              </div>
 
-            {/* Trophy report trigger */}
-            <button
-              onClick={() => setIsSummaryOpen(true)}
-              className="w-8 h-8 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 flex items-center justify-center transition-colors cursor-pointer duo-touch-target"
-              title="查看全卷成绩单"
-              aria-label="查看全卷成绩单"
-            >
-              <Trophy size={14} className="text-amber-600" />
-            </button>
-          </div>
-        </div>
-
-        {/* Row 2: 4-Tier Difficulty Segmented Control */}
-        <div className="mt-2 h-8 sm:h-9 flex items-center p-0.5 sm:p-1 rounded-xl bg-stone-100/90 border border-[#e8ddd0] gap-0.5 sm:gap-1">
-          {[
-            { key: 'accio',   label: '见习 · 飞来字块', short: '字块拼装', icon: <Sparkles size={12} /> },
-            { key: 'lumos',   label: '学徒 · 荧光挖空', short: '核心挖空', icon: <Lightbulb size={12} /> },
-            { key: 'auror',   label: '傲罗 · 全句盲听', short: '全句默写', icon: <Award size={12} /> },
-            { key: 'dueling', label: '决斗 · 限时生存', short: '限时试炼', icon: <Shield size={12} /> },
-          ].map((tier) => {
-            const isActive = difficultyMode === tier.key;
-            return (
+              {/* Sound Toggle */}
               <button
-                key={tier.key}
-                onClick={() => handleDifficultyChange(tier.key)}
-                className={`flex-1 h-7 sm:h-7.5 px-1 sm:px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-amber-500 text-white shadow-sm'
-                    : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
+                type="button"
+                onClick={handleToggleSound}
+                className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none ${
+                  soundEnabled
+                    ? 'border-amber-300 bg-amber-50 text-amber-800'
+                    : 'border-[#e8ddd0] bg-white text-stone-400 hover:border-amber-300'
                 }`}
+                title={soundEnabled ? '魔咒合成音效：开 (点击静音)' : '魔咒合成音效：关 (点击开启)'}
+                aria-label="魔咒合成音效开关"
               >
-                {tier.icon}
-                <span className="hidden sm:inline">{tier.label}</span>
-                <span className="sm:hidden">{tier.short}</span>
+                {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
               </button>
-            );
-          })}
+
+              {/* Trophy report trigger */}
+              <button
+                type="button"
+                onClick={() => setIsSummaryOpen(true)}
+                className="w-8 h-8 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 flex items-center justify-center transition-colors cursor-pointer select-none"
+                title="查看全卷成绩单"
+                aria-label="查看全卷成绩单"
+              >
+                <Trophy size={14} className="text-amber-600" />
+              </button>
+            </div>
+          </div>
+
+          {/* Row 2: 4-Tier Difficulty Segmented Control */}
+          <div className="h-8 sm:h-9 flex items-center p-0.5 sm:p-1 rounded-xl bg-stone-100/90 border border-[#e8ddd0] gap-0.5 sm:gap-1">
+            {[
+              { key: 'accio',   label: '见习 · 飞来字块', short: '字块拼装', icon: <Sparkles size={12} /> },
+              { key: 'lumos',   label: '学徒 · 荧光挖空', short: '核心挖空', icon: <Lightbulb size={12} /> },
+              { key: 'auror',   label: '傲罗 · 全句盲听', short: '全句默写', icon: <Award size={12} /> },
+              { key: 'dueling', label: '决斗 · 限时生存', short: '限时试炼', icon: <Shield size={12} /> },
+            ].map((tier) => {
+              const isActive = difficultyMode === tier.key;
+              return (
+                <button
+                  key={tier.key}
+                  type="button"
+                  onClick={() => handleDifficultyChange(tier.key)}
+                  className={`flex-1 h-7 sm:h-7.5 px-1 sm:px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer select-none ${
+                    isActive
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
+                  }`}
+                >
+                  {tier.icon}
+                  <span className="hidden sm:inline">{tier.label}</span>
+                  <span className="sm:hidden">{tier.short}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* ── 2. Scrollable Central Exercise Area ───────────────────────── */}
       <div className="flex-1 overflow-y-auto px-4 py-4 sm:py-6 ios-scroll">
-        <div className="max-w-3xl mx-auto w-full space-y-4">
+        <div className="max-w-4xl mx-auto w-full space-y-4">
 
           {/* Dueling Club Survival Bar (if dueling mode) */}
           {difficultyMode === 'dueling' && (
@@ -431,16 +443,18 @@ export function DictationStudio({
                 {/* Translation hint toggle */}
                 {currentCue.translation && (
                   <button
-                    onClick={() => setShowTranslationClue(prev => !prev)}
-                    className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer active:scale-95 ${
-                      showTranslationClue
-                        ? 'bg-amber-50 text-amber-900 border-amber-300'
-                        : 'border-[#e8ddd0] bg-white text-stone-500 hover:border-amber-300'
+                    type="button"
+                    onClick={handleToggleClue}
+                    className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none ${
+                      isClueActive
+                        ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                        : 'border-[#e8ddd0] bg-white text-stone-600 hover:border-amber-300 hover:text-amber-950'
                     }`}
-                    title={showTranslationClue ? '隐藏中文释义线索' : '查看中文释义线索'}
-                    aria-label={showTranslationClue ? '隐藏中文释义线索' : '查看中文释义线索'}
+                    title={isClueActive ? '隐藏中文释义线索' : '查看中文释义线索'}
+                    aria-label={isClueActive ? '隐藏中文释义线索' : '查看中文释义线索'}
+                    aria-pressed={isClueActive}
                   >
-                    <Languages size={16} className={showTranslationClue ? 'text-amber-600' : 'text-stone-400'} />
+                    <Languages size={17} className={isClueActive ? 'text-white' : 'text-stone-600'} />
                   </button>
                 )}
               </div>
@@ -451,7 +465,7 @@ export function DictationStudio({
             </div>
 
             {/* Revealed Chinese clue */}
-            {showTranslationClue && currentCue.translation && (
+            {isClueActive && currentCue.translation && (
               <div className="mb-5 p-3 rounded-xl bg-amber-50/60 border border-amber-200/80 text-xs sm:text-sm text-[#735839] font-reading leading-relaxed animate-fadeIn">
                 <span className="font-bold text-amber-900 mr-1.5">原著线索：</span>
                 {currentCue.translation}

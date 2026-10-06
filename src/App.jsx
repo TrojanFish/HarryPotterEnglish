@@ -729,6 +729,8 @@ export function App() {
                               toggleSaveWord({ word: w, translation: '拼写错词重炼' }, activeCue, selectedBook, selectedChapter);
                             });
                           }}
+                          showTranslation={showTranslation}
+                          onToggleTranslation={() => setShowTranslation(prev => !prev)}
                         />
                       ) : (
                         <SubtitleViewer
