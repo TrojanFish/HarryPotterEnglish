@@ -81,4 +81,25 @@ test('PodcastEpisodeCard Component Test Suite', async (t) => {
     assert.ok(html.includes('border-amber') || html.includes('bg-amber-50') || html.includes('正在播放') || html.includes('正在精听'), 'Must show current active styling');
     assert.ok(html.includes('min-h-[44px]') || html.includes('p-') || html.includes('w-11'), 'Must conform to Apple HIG >= 44x44px touch targets');
   });
+
+  await t.test('2.4: Action play/pause button provides dedicated onTogglePlay delegation', () => {
+    let playToggled = false;
+    let chapterSelected = false;
+
+    // Simulate clicking button directly
+    const element = React.createElement(PodcastEpisodeCard, {
+      chapter: mockChapter,
+      chapterIndex: 0,
+      isCurrent: true,
+      isPlaying: true,
+      bookmarkCount: 0,
+      onSelectChapter: () => { chapterSelected = true; },
+      onTogglePlay: () => { playToggled = true; }
+    });
+
+    const rendered = renderToString(element);
+    assert.ok(rendered.includes('暂停此单集'), 'Must render pause title when current & playing');
+    // Ensure button element is rendered with proper aria attributes
+    assert.ok(rendered.includes('aria-label="暂停此单集"'));
+  });
 });

@@ -10,7 +10,8 @@ import {
   BookOpen,
   BrainCircuit,
   Bookmark,
-  Printer
+  Printer,
+  Headphones
 } from 'lucide-react';
 
 import { printParchmentCards } from '../utils/parchmentPdfGenerator';
@@ -32,12 +33,14 @@ export function VocabularyDrawer({
   initialTab = 'words',
   bookmarkedSentences = [],
   onRemoveBookmark,
-  onClearAllBookmarks
+  onClearAllBookmarks,
+  onPlaySentence
 }) {
   const [drawerTab, setDrawerTab] = useState(initialTab); // 'words' | 'sentences'
   const [searchTerm, setSearchTerm] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showClearSentencesConfirm, setShowClearSentencesConfirm] = useState(false);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -47,6 +50,7 @@ export function VocabularyDrawer({
   useEffect(() => {
     if (!isOpen) {
       setShowClearConfirm(false);
+      setShowClearSentencesConfirm(false);
       return;
     }
     const handleKeyDown = (e) => {
@@ -428,6 +432,20 @@ export function VocabularyDrawer({
                     </div>
 
                     <div className="flex items-center gap-1 shrink-0">
+                      {onPlaySentence && (
+                        <button
+                          onClick={() => {
+                            onClose();
+                            onPlaySentence(item);
+                          }}
+                          className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 flex items-center justify-center text-amber-900 active:scale-90 transition-all cursor-pointer"
+                          title="定位播放原著英音原声"
+                          aria-label="回听原著原声"
+                        >
+                          <Headphones size={15} />
+                        </button>
+                      )}
+
                       <button
                         onClick={() => playPronunciation(item.text)}
                         className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 active:scale-90 transition-all cursor-pointer"
@@ -451,6 +469,53 @@ export function VocabularyDrawer({
                   </div>
                 </div>
               ))
+            )}
+          </div>
+        )}
+
+        {/* ── Bottom Actions (When in sentences tab) ────────────────────── */}
+        {drawerTab === 'sentences' && bookmarkedSentences.length > 0 && (
+          <div className="p-3.5 sm:p-4 border-t border-[#e8ddd0] bg-white flex flex-col gap-2 shrink-0">
+            {showClearSentencesConfirm ? (
+              <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-2.5 p-3 rounded-2xl bg-rose-50 border border-rose-200 animate-fadeIn">
+                <div className="flex items-center gap-2 text-xs font-bold text-rose-900 min-w-0">
+                  <Trash2 size={15} className="text-rose-600 shrink-0" />
+                  <span>确定清空全部 {bookmarkedSentences.length} 个疑难句？此操作无法撤销</span>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+                  <button
+                    onClick={() => setShowClearSentencesConfirm(false)}
+                    className="px-3.5 py-2 min-h-[44px] rounded-xl border border-stone-300 bg-white text-stone-700 font-bold text-xs hover:bg-stone-50 cursor-pointer active:scale-95"
+                  >
+                    取消
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowClearSentencesConfirm(false);
+                      if (onClearAllBookmarks) onClearAllBookmarks();
+                    }}
+                    className="px-3.5 py-2 min-h-[44px] rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700 cursor-pointer active:scale-95"
+                  >
+                    确认清空
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <span className="text-xs text-stone-500 font-reading">
+                  共收录 <span className="font-mono font-bold text-amber-900">{bookmarkedSentences.length}</span> 句重点长难句
+                </span>
+                {onClearAllBookmarks && (
+                  <button
+                    onClick={() => setShowClearSentencesConfirm(true)}
+                    className="min-h-[44px] min-w-[44px] rounded-xl border border-rose-200 text-rose-700 bg-rose-50/60 hover:bg-rose-100 hover:border-rose-300 transition-all flex items-center justify-center active:scale-95 cursor-pointer"
+                    title="清空所有疑难句"
+                    aria-label="清空所有疑难句"
+                  >
+                    <Trash2 size={15} className="text-rose-600 shrink-0" />
+                  </button>
+                )}
+              </div>
             )}
           </div>
         )}

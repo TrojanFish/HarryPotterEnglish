@@ -7,10 +7,11 @@ const STORAGE_KEY = 'hp_bookmarked_sentences';
  */
 export function normalizeSentenceBookmark(cue, bookId = '', chapterId = '') {
   if (!cue) return null;
-  const id = `bm_${bookId}_${chapterId}_${cue.id || cue.start}_${Date.now()}`;
+  const rawId = cue.id ?? cue.start ?? 0;
+  const id = `bm_${bookId}_${chapterId}_${rawId}_${Date.now()}`;
   return {
     id,
-    cueId: String(cue.id || cue.start),
+    cueId: String(rawId),
     start: cue.start || 0,
     end: cue.end || 0,
     text: cue.text || '',
@@ -26,15 +27,40 @@ export function normalizeSentenceBookmark(cue, bookId = '', chapterId = '') {
  */
 export function toggleBookmarkInList(list = [], cue, bookId = '', chapterId = '') {
   if (!cue) return list;
-  const targetCueId = String(cue.id || cue.start);
-  const exists = list.some(b => b.cueId === targetCueId && (!bookId || b.bookId === String(bookId)));
+  const targetCueId = String(cue.id ?? cue.start);
+  const targetBookId = String(bookId || '');
+  const targetChapterId = String(chapterId || '');
+
+  const exists = list.some(b => 
+    b.cueId === targetCueId &&
+    (!targetBookId || b.bookId === targetBookId) &&
+    (!targetChapterId || b.chapterId === targetChapterId)
+  );
 
   if (exists) {
-    return list.filter(b => !(b.cueId === targetCueId && (!bookId || b.bookId === String(bookId))));
+    return list.filter(b => !(
+      b.cueId === targetCueId &&
+      (!targetBookId || b.bookId === targetBookId) &&
+      (!targetChapterId || b.chapterId === targetChapterId)
+    ));
   } else {
-    const newItem = normalizeSentenceBookmark(cue, bookId, chapterId);
+    const newItem = normalizeSentenceBookmark(cue, targetBookId, targetChapterId);
     return newItem ? [newItem, ...list] : list;
   }
+}
+
+/**
+ * Pure function: Gets a Set of bookmarked cueIds strictly scoped to a book and chapter
+ */
+export function getChapterBookmarkedCueIds(list = [], bookId = '', chapterId = '') {
+  if (!Array.isArray(list)) return new Set();
+  const targetBookId = String(bookId || '');
+  const targetChapterId = String(chapterId || '');
+  const matched = list.filter(b => 
+    (!targetBookId || b.bookId === targetBookId) &&
+    (!targetChapterId || b.chapterId === targetChapterId)
+  );
+  return new Set(matched.map(b => b.cueId));
 }
 
 /**
@@ -89,13 +115,18 @@ export function useBookmarkManager() {
     return getChapterBookmarkCount(bookmarkedSentences, bookId, chapterId);
   }, [bookmarkedSentences]);
 
+  const getChapterCueIds = useCallback((bookId, chapterId) => {
+    return getChapterBookmarkedCueIds(bookmarkedSentences, bookId, chapterId);
+  }, [bookmarkedSentences]);
+
   return {
     bookmarkedSentences,
     bookmarkedCueIds,
     toggleBookmarkSentence,
     removeBookmark,
     clearAllBookmarks,
-    getChapterBookmarkCount: getChapterCount
+    getChapterBookmarkCount: getChapterCount,
+    getChapterBookmarkedCueIds: getChapterCueIds
   };
 }
 

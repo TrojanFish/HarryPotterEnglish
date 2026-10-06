@@ -21,7 +21,7 @@ import { GlobalPodcastCapsule } from './components/navigation/GlobalPodcastCapsu
 import { ReaderTopBar } from './components/navigation/ReaderTopBar';
 import { PodcastPlayerView } from './components/podcast/PodcastPlayerView';
 import { Loader2, Eye, WifiOff } from 'lucide-react';
-import { getNextSleepTimerOption, formatSleepTimerRemaining } from './utils/sleepTimer';
+import { getNextSleepTimerOption, formatSleepTimerRemaining, calculateSleepTimerRemaining } from './utils/sleepTimer';
 
 // Decoupled Domain Custom Hooks
 import { useAudioPlayback } from './hooks/useAudioPlayback';
@@ -139,36 +139,58 @@ export function App() {
     handleAudioError
   } = audio;
 
-  // Hogwarts Sleep Timer Countdown & Auto-Pause
+  const sleepTimerTargetRef = useRef(null);
+
+  // Hogwarts Sleep Timer Countdown & Auto-Pause (Timestamp-Anchored)
   useEffect(() => {
     if (!sleepTimerMode || sleepTimerMode === 'end_of_chapter') {
+      sleepTimerTargetRef.current = null;
       return;
     }
 
-    const timer = setInterval(() => {
-      setSleepTimerRemaining((prev) => {
-        if (prev === null) return null;
-        if (prev <= 1) {
-          if (audioRef.current) {
-            audioRef.current.pause();
-            setIsPlaying(false);
-          }
-          setSleepTimerMode(null);
-          return null;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    const checkAndSyncTimer = () => {
+      if (!sleepTimerTargetRef.current) return;
+      const remaining = calculateSleepTimerRemaining(sleepTimerTargetRef.current);
+      if (remaining === null) return;
 
-    return () => clearInterval(timer);
+      if (remaining <= 0) {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          setIsPlaying(false);
+        }
+        setSleepTimerMode(null);
+        setSleepTimerRemaining(null);
+        sleepTimerTargetRef.current = null;
+      } else {
+        setSleepTimerRemaining(remaining);
+      }
+    };
+
+    checkAndSyncTimer();
+    const timer = setInterval(checkAndSyncTimer, 1000);
+
+    const handleVisibility = () => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        checkAndSyncTimer();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, [sleepTimerMode, audioRef, setIsPlaying]);
 
   const handleToggleSleepTimer = useCallback(() => {
     setSleepTimerMode((prev) => {
       const next = getNextSleepTimerOption(prev);
       if (typeof next === 'number') {
-        setSleepTimerRemaining(next * 60);
+        const totalSecs = next * 60;
+        sleepTimerTargetRef.current = Date.now() + totalSecs * 1000;
+        setSleepTimerRemaining(totalSecs);
       } else {
+        sleepTimerTargetRef.current = null;
         setSleepTimerRemaining(null);
       }
       return next;
@@ -203,8 +225,13 @@ export function App() {
     toggleBookmarkSentence,
     removeBookmark,
     clearAllBookmarks,
-    getChapterBookmarkCount
+    getChapterBookmarkCount,
+    getChapterBookmarkedCueIds
   } = bookmarkManager;
+
+  const currentChapterBookmarkedCueIds = useMemo(() => {
+    return getChapterBookmarkedCueIds(selectedBook, selectedChapter);
+  }, [getChapterBookmarkedCueIds, selectedBook, selectedChapter]);
 
   const modals = useModalManager();
   const {
@@ -340,6 +367,26 @@ export function App() {
     setIsStorageOpen(false);
     setCurrentView('player');
   }, [books, selectedBook, selectBook, selectChapter, setIsStorageOpen]);
+
+  // Jump to sentence audio from bookmarked sentences workshop
+  const handlePlayBookmarkedSentence = useCallback((item) => {
+    if (!item) return;
+    setIsVocabOpen(false);
+    if (item.bookId && item.bookId !== selectedBook) {
+      selectBook(item.bookId);
+    }
+    if (item.chapterId && item.chapterId !== selectedChapter) {
+      selectChapter(item.chapterId);
+    }
+    setCurrentView('player');
+    const targetSeconds = Number(item.start) || 0;
+    setTimeout(() => {
+      seekTo(targetSeconds);
+      if (audioRef.current) {
+        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      }
+    }, 200);
+  }, [selectedBook, selectedChapter, selectBook, selectChapter, seekTo, audioRef, setIsPlaying, setIsVocabOpen]);
 
   // Desktop Sidebar Collapse state (persisted)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
@@ -618,7 +665,7 @@ export function App() {
                     onToggleSleepTimer={handleToggleSleepTimer}
                     showTranslation={showTranslation}
                     onToggleTranslation={() => setShowTranslation(prev => !prev)}
-                    bookmarkedCueIds={bookmarkedCueIds}
+                    bookmarkedCueIds={currentChapterBookmarkedCueIds}
                     onToggleBookmarkCue={(cue) => toggleBookmarkSentence(cue, selectedBook, selectedChapter)}
                     onSwitchToStudio={() => handleSwitchPlayerMode('studio')}
                   />
@@ -663,7 +710,7 @@ export function App() {
                           onSaveToVocab={(wordData, sentence) => toggleSaveWord(wordData, sentence, selectedBook, selectedChapter)}
                           onPrevSentence={handlePrevSentence}
                           onNextSentence={handleNextSentence}
-                          bookmarkedCueIds={bookmarkedCueIds}
+                          bookmarkedCueIds={currentChapterBookmarkedCueIds}
                           onToggleBookmarkCue={(cue) => toggleBookmarkSentence(cue, selectedBook, selectedChapter)}
                         />
                       )}
@@ -769,6 +816,7 @@ export function App() {
         isRefreshing={isRefreshing}
         isParchment={isParchment}
         isPlaying={isPlaying}
+        onTogglePlay={togglePlayPause}
         getChapterBookmarkCount={getChapterBookmarkCount}
       />
 
@@ -792,6 +840,7 @@ export function App() {
         bookmarkedSentences={bookmarkedSentences}
         onRemoveBookmark={removeBookmark}
         onClearAllBookmarks={clearAllBookmarks}
+        onPlaySentence={handlePlayBookmarkedSentence}
       />
 
       <SrsFlashcardModal

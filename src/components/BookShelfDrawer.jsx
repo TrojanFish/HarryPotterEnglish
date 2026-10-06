@@ -27,6 +27,7 @@ export function BookShelfDrawer({
   isRefreshing,
   isParchment,
   isPlaying = false,
+  onTogglePlay,
   getChapterBookmarkCount
 }) {
   const [activeTab, setActiveTab] = useState('chapters'); // 'chapters' | 'books'
@@ -176,6 +177,7 @@ export function BookShelfDrawer({
                   isCurrent={ch.id === selectedChapterId}
                   isPlaying={isPlaying && ch.id === selectedChapterId}
                   bookmarkCount={getChapterBookmarkCount ? getChapterBookmarkCount(currentBook?.id, ch.id) : 0}
+                  onTogglePlay={onTogglePlay}
                   onSelectChapter={(id, autoPlay) => {
                     if (onSelectChapter) {
                       onSelectChapter(id, autoPlay);

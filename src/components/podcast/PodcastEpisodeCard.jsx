@@ -16,7 +16,8 @@ export function PodcastEpisodeCard({
   isCurrent = false,
   isPlaying = false,
   bookmarkCount = 0,
-  onSelectChapter
+  onSelectChapter,
+  onTogglePlay
 }) {
   if (!chapter) return null;
 
@@ -109,6 +110,14 @@ export function PodcastEpisodeCard({
       {/* 3. Action Play Button (Apple HIG >= 44x44px) */}
       <button
         type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (isCurrent && onTogglePlay) {
+            onTogglePlay();
+          } else if (onSelectChapter) {
+            onSelectChapter(chapter.id, true);
+          }
+        }}
         className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center shrink-0 border transition-all active:scale-90 cursor-pointer ${
           isCurrent
             ? 'bg-amber-500 text-white border-amber-600'

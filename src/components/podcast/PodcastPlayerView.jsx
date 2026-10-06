@@ -173,7 +173,7 @@ export function PodcastPlayerView({
                   step="0.1"
                   value={currentTime}
                   onChange={(e) => onSeek && onSeek(parseFloat(e.target.value))}
-                  className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-[#e8ddd0] accent-amber-500"
+                  className="w-full h-2 py-2 rounded-lg appearance-none cursor-pointer bg-[#e8ddd0] accent-amber-500"
                   aria-label="音频时间进度条"
                 />
               </div>
@@ -340,7 +340,7 @@ export function PodcastPlayerView({
                 step="0.1"
                 value={currentTime}
                 onChange={(e) => onSeek && onSeek(parseFloat(e.target.value))}
-                className="flex-1 h-1.5 rounded-lg appearance-none cursor-pointer bg-[#e8ddd0] accent-amber-500"
+                className="flex-1 h-2 py-2 rounded-lg appearance-none cursor-pointer bg-[#e8ddd0] accent-amber-500"
                 aria-label="音频时间进度条"
               />
               <span className="text-[10px] font-mono text-stone-500">{formatTime(duration)}</span>

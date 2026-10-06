@@ -32,4 +32,15 @@ test('Sleep Timer Unit Tests', async (t) => {
     assert.strictEqual(getNextSleepTimerOption(45), 'end_of_chapter');
     assert.strictEqual(getNextSleepTimerOption('end_of_chapter'), null);
   });
+
+  await t.test('1.4: calculateSleepTimerRemaining avoids throttling drift using timestamps', async () => {
+    const { calculateSleepTimerRemaining } = await import('../src/utils/sleepTimer.js');
+    const now = 1000000;
+    const target = now + 900000; // 15 mins later
+    assert.strictEqual(calculateSleepTimerRemaining(target, now), 900);
+    assert.strictEqual(calculateSleepTimerRemaining(target, now + 300000), 600);
+    assert.strictEqual(calculateSleepTimerRemaining(target, now + 900000), 0);
+    assert.strictEqual(calculateSleepTimerRemaining(target, now + 950000), 0);
+    assert.strictEqual(calculateSleepTimerRemaining(null, now), null);
+  });
 });

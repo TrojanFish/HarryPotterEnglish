@@ -123,7 +123,7 @@ export function PodcastLyricsStream({
                   className={`min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all active:scale-90 cursor-pointer ${
                     isBookmarked
                       ? 'bg-amber-100 text-amber-700 border border-amber-300'
-                      : 'opacity-0 group-hover:opacity-100 sm:opacity-0 focus:opacity-100 text-stone-400 hover:text-amber-800 hover:bg-stone-100 border border-transparent'
+                      : 'opacity-40 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 text-stone-400 hover:text-amber-800 hover:bg-stone-100 border border-transparent'
                   }`}
                   title={isBookmarked ? '已收录至疑难生词句' : '星标收录此句 (Accio Bookmark)'}
                   aria-label={isBookmarked ? '取消收录' : '星标收录'}

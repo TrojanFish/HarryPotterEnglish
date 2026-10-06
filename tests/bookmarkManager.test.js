@@ -60,4 +60,45 @@ test('useBookmarkManager Logic & Helpers Test Suite', async (t) => {
     assert.equal(getChapterBookmarkCount(mockList, 'book1', 'ch2'), 1);
     assert.equal(getChapterBookmarkCount(mockList, 'book1', 'ch99'), 0);
   });
+
+  await t.test('1.4: toggleBookmarkInList prevents cross-chapter collision for same cueId', () => {
+    const cue0 = { id: 0, text: 'Sentence 0', translation: '句子 0' };
+    // Bookmark cue 0 in book1 ch1
+    const list1 = toggleBookmarkInList([], cue0, 'book1', 'ch1');
+    assert.equal(list1.length, 1);
+    assert.equal(list1[0].chapterId, 'ch1');
+
+    // Bookmark cue 0 in book1 ch2 (same book, same cue ID 0, different chapter)
+    const list2 = toggleBookmarkInList(list1, cue0, 'book1', 'ch2');
+    assert.equal(list2.length, 2, 'Must keep both bookmarks for ch1 and ch2');
+
+    // Toggle cue 0 in ch2 should remove ch2 only, keeping ch1 intact
+    const list3 = toggleBookmarkInList(list2, cue0, 'book1', 'ch2');
+    assert.equal(list3.length, 1);
+    assert.equal(list3[0].chapterId, 'ch1', 'ch1 bookmark must remain intact');
+  });
+
+  await t.test('1.5: getChapterBookmarkedCueIds scopes bookmarks strictly to chapter', async () => {
+    const { getChapterBookmarkedCueIds } = await import('../src/hooks/useBookmarkManager.js');
+    const mockList = [
+      { id: 'b1', bookId: 'book1', chapterId: 'ch1', cueId: '0' },
+      { id: 'b2', bookId: 'book1', chapterId: 'ch1', cueId: '1' },
+      { id: 'b3', bookId: 'book1', chapterId: 'ch2', cueId: '0' },
+      { id: 'b4', bookId: 'book2', chapterId: 'ch1', cueId: '0' }
+    ];
+
+    const ch1Set = getChapterBookmarkedCueIds(mockList, 'book1', 'ch1');
+    assert.ok(ch1Set.has('0'));
+    assert.ok(ch1Set.has('1'));
+    assert.equal(ch1Set.size, 2);
+
+    const ch2Set = getChapterBookmarkedCueIds(mockList, 'book1', 'ch2');
+    assert.ok(ch2Set.has('0'));
+    assert.ok(!ch2Set.has('1'), 'ch2 must not have cue 1 from ch1');
+    assert.equal(ch2Set.size, 1);
+
+    const book2Ch1Set = getChapterBookmarkedCueIds(mockList, 'book2', 'ch1');
+    assert.ok(book2Ch1Set.has('0'));
+    assert.equal(book2Ch1Set.size, 1);
+  });
 });

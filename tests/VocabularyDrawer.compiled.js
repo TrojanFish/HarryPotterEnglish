@@ -10,7 +10,8 @@ import {
   BookOpen,
   BrainCircuit,
   Bookmark,
-  Printer
+  Printer,
+  Headphones
 } from "lucide-react";
 import { printParchmentCards } from "../src/utils/parchmentPdfGenerator.js";
 function VocabularyDrawer({
@@ -24,12 +25,14 @@ function VocabularyDrawer({
   initialTab = "words",
   bookmarkedSentences = [],
   onRemoveBookmark,
-  onClearAllBookmarks
+  onClearAllBookmarks,
+  onPlaySentence
 }) {
   const [drawerTab, setDrawerTab] = useState(initialTab);
   const [searchTerm, setSearchTerm] = useState("");
   const [toastMessage, setToastMessage] = useState(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showClearSentencesConfirm, setShowClearSentencesConfirm] = useState(false);
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
@@ -37,6 +40,7 @@ function VocabularyDrawer({
   useEffect(() => {
     if (!isOpen) {
       setShowClearConfirm(false);
+      setShowClearSentencesConfirm(false);
       return;
     }
     const handleKeyDown = (e) => {
@@ -259,7 +263,19 @@ function VocabularyDrawer({
           key: item.id || item.cueId,
           className: "p-3.5 rounded-2xl border border-[#e8ddd0] bg-white hover:border-amber-300 transition-all duo-card"
         },
-        /* @__PURE__ */ React.createElement("div", { className: "flex items-start justify-between gap-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex-1 min-w-0" }, /* @__PURE__ */ React.createElement("p", { className: "font-reading text-sm sm:text-base font-semibold text-amber-950 leading-relaxed" }, item.text), item.translation && /* @__PURE__ */ React.createElement("p", { className: "font-reading text-xs sm:text-sm text-stone-500 mt-1.5 leading-relaxed" }, item.translation)), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1 shrink-0" }, /* @__PURE__ */ React.createElement(
+        /* @__PURE__ */ React.createElement("div", { className: "flex items-start justify-between gap-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex-1 min-w-0" }, /* @__PURE__ */ React.createElement("p", { className: "font-reading text-sm sm:text-base font-semibold text-amber-950 leading-relaxed" }, item.text), item.translation && /* @__PURE__ */ React.createElement("p", { className: "font-reading text-xs sm:text-sm text-stone-500 mt-1.5 leading-relaxed" }, item.translation)), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1 shrink-0" }, onPlaySentence && /* @__PURE__ */ React.createElement(
+          "button",
+          {
+            onClick: () => {
+              onClose();
+              onPlaySentence(item);
+            },
+            className: "w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 flex items-center justify-center text-amber-900 active:scale-90 transition-all cursor-pointer",
+            title: "\u5B9A\u4F4D\u64AD\u653E\u539F\u8457\u82F1\u97F3\u539F\u58F0",
+            "aria-label": "\u56DE\u542C\u539F\u8457\u539F\u58F0"
+          },
+          /* @__PURE__ */ React.createElement(Headphones, { size: 15 })
+        ), /* @__PURE__ */ React.createElement(
           "button",
           {
             onClick: () => playPronunciation(item.text),
@@ -278,6 +294,33 @@ function VocabularyDrawer({
           },
           /* @__PURE__ */ React.createElement(Trash2, { size: 15 })
         )))
+      ))),
+      drawerTab === "sentences" && bookmarkedSentences.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "p-3.5 sm:p-4 border-t border-[#e8ddd0] bg-white flex flex-col gap-2 shrink-0" }, showClearSentencesConfirm ? /* @__PURE__ */ React.createElement("div", { className: "w-full flex flex-col sm:flex-row items-center justify-between gap-2.5 p-3 rounded-2xl bg-rose-50 border border-rose-200 animate-fadeIn" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 text-xs font-bold text-rose-900 min-w-0" }, /* @__PURE__ */ React.createElement(Trash2, { size: 15, className: "text-rose-600 shrink-0" }), /* @__PURE__ */ React.createElement("span", null, "\u786E\u5B9A\u6E05\u7A7A\u5168\u90E8 ", bookmarkedSentences.length, " \u4E2A\u7591\u96BE\u53E5\uFF1F\u6B64\u64CD\u4F5C\u65E0\u6CD5\u64A4\u9500")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end" }, /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          onClick: () => setShowClearSentencesConfirm(false),
+          className: "px-3.5 py-2 min-h-[44px] rounded-xl border border-stone-300 bg-white text-stone-700 font-bold text-xs hover:bg-stone-50 cursor-pointer active:scale-95"
+        },
+        "\u53D6\u6D88"
+      ), /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          onClick: () => {
+            setShowClearSentencesConfirm(false);
+            if (onClearAllBookmarks) onClearAllBookmarks();
+          },
+          className: "px-3.5 py-2 min-h-[44px] rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700 cursor-pointer active:scale-95"
+        },
+        "\u786E\u8BA4\u6E05\u7A7A"
+      ))) : /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between gap-2 text-xs" }, /* @__PURE__ */ React.createElement("span", { className: "text-xs text-stone-500 font-reading" }, "\u5171\u6536\u5F55 ", /* @__PURE__ */ React.createElement("span", { className: "font-mono font-bold text-amber-900" }, bookmarkedSentences.length), " \u53E5\u91CD\u70B9\u957F\u96BE\u53E5"), onClearAllBookmarks && /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          onClick: () => setShowClearSentencesConfirm(true),
+          className: "min-h-[44px] min-w-[44px] rounded-xl border border-rose-200 text-rose-700 bg-rose-50/60 hover:bg-rose-100 hover:border-rose-300 transition-all flex items-center justify-center active:scale-95 cursor-pointer",
+          title: "\u6E05\u7A7A\u6240\u6709\u7591\u96BE\u53E5",
+          "aria-label": "\u6E05\u7A7A\u6240\u6709\u7591\u96BE\u53E5"
+        },
+        /* @__PURE__ */ React.createElement(Trash2, { size: 15, className: "text-rose-600 shrink-0" })
       ))),
       drawerTab === "words" && /* @__PURE__ */ React.createElement("div", { className: "p-3.5 sm:p-4 border-t border-[#e8ddd0] bg-white flex flex-col gap-2 shrink-0" }, showClearConfirm ? /* @__PURE__ */ React.createElement("div", { className: "w-full flex flex-col sm:flex-row items-center justify-between gap-2.5 p-3 rounded-2xl bg-rose-50 border border-rose-200 animate-fadeIn" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 text-xs font-bold text-rose-900 min-w-0" }, /* @__PURE__ */ React.createElement(Trash2, { size: 15, className: "text-rose-600 shrink-0" }), /* @__PURE__ */ React.createElement("span", null, "\u786E\u5B9A\u6E05\u7A7A\u5168\u90E8 ", vocabList.length, " \u4E2A\u751F\u8BCD\uFF1F\u6B64\u64CD\u4F5C\u65E0\u6CD5\u64A4\u9500")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end" }, /* @__PURE__ */ React.createElement(
         "button",

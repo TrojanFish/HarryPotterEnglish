@@ -74,4 +74,23 @@ test('VocabularyDrawer Starred Sentences Workshop Test Suite', async (t) => {
     assert.ok(html.includes('Mr and Mrs Dursley') || html.includes('德思礼夫妇'), 'Must display bookmarked sentence content');
     assert.ok(html.includes('min-h-[44px]') || html.includes('w-10') || html.includes('w-11') || html.includes('duo-touch-target'), 'Action buttons must respect Apple HIG touch targets');
   });
+
+  await t.test('3.3: Renders jump to original audio button and clear all bookmarks affordance', () => {
+    const html = renderToString(
+      React.createElement(VocabularyDrawer, {
+        isOpen: true,
+        initialTab: 'sentences',
+        onClose: () => {},
+        vocabList: mockVocab,
+        bookmarkedSentences: mockSentences,
+        onRemoveWord: () => {},
+        onRemoveBookmark: () => {},
+        onClearAllBookmarks: () => {},
+        onPlaySentence: () => {}
+      })
+    );
+
+    assert.ok(html.includes('回听原著原声') || html.includes('定位播放') || html.includes('原声'), 'Must provide jump to original audio affordance');
+    assert.ok(html.includes('清空所有疑难句') || html.includes('清空全部'), 'Must provide clear all bookmarks affordance');
+  });
 });
