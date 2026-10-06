@@ -519,14 +519,14 @@ export function App() {
         todayListeningSeconds={analyticsSummary?.todayListeningSeconds || 0}
         vocabCount={vocabList.length}
         cachedChaptersCount={cachedChaptersCount}
-        onOpenVocab={() => setIsVocabOpen(true)}
+        onOpenVocab={() => setCurrentView('vocab')}
         onOpenAnalytics={() => {
           refreshAnalytics();
-          setIsAnalyticsOpen(true);
+          setCurrentView('analytics');
         }}
         onOpenStorage={() => {
           refreshOfflineCount();
-          setIsStorageOpen(true);
+          setCurrentView('storage');
         }}
         canInstallPwa={canInstallPwa}
         onInstallPwa={handleInstallPwa}
@@ -545,14 +545,14 @@ export function App() {
         streakDays={analyticsSummary?.streakDays || 0}
         vocabCount={vocabList.length}
         cachedChaptersCount={cachedChaptersCount}
-        onOpenVocab={() => setIsVocabOpen(true)}
+        onOpenVocab={() => setCurrentView('vocab')}
         onOpenAnalytics={() => {
           refreshAnalytics();
-          setIsAnalyticsOpen(true);
+          setCurrentView('analytics');
         }}
         onOpenStorage={() => {
           refreshOfflineCount();
-          setIsStorageOpen(true);
+          setCurrentView('storage');
         }}
       />
 
@@ -584,9 +584,42 @@ export function App() {
           />
         )}
 
-        {/* ── Content Viewport: Bookshelf vs Player Studio ── */}
+        {/* ── Content Viewport: Bookshelf, Vocab, Analytics, Storage, vs Player Studio ── */}
         <div className="flex-1 overflow-hidden min-h-0 flex flex-col">
-          {currentView === 'bookshelf' ? (
+          {currentView === 'vocab' ? (
+            <VocabularyDrawer
+              isOpen={true}
+              isPageView={true}
+              onClose={() => setCurrentView('player')}
+              vocabList={vocabList}
+              onRemoveWord={removeWord}
+              onClearAll={clearAllVocab}
+              isParchment={isParchment}
+              onOpenSrs={() => setIsSrsOpen(true)}
+              bookmarkedSentences={bookmarkedSentences}
+              onRemoveBookmark={removeBookmark}
+              onClearAllBookmarks={clearAllBookmarks}
+              onPlaySentence={handlePlayBookmarkedSentence}
+            />
+          ) : currentView === 'analytics' ? (
+            <AnalyticsDashboard
+              isOpen={true}
+              isPageView={true}
+              onClose={() => setCurrentView('player')}
+              isParchment={isParchment}
+              vocabCount={vocabList.length}
+            />
+          ) : currentView === 'storage' ? (
+            <StorageManagerModal
+              isOpen={true}
+              isPageView={true}
+              onClose={() => setCurrentView('player')}
+              isParchment={isParchment}
+              currentBook={currentBookObj}
+              currentChapter={currentChapterObj}
+              onPlayChapter={handlePlayFromStorage}
+            />
+          ) : currentView === 'bookshelf' ? (
             <BookshelfView
               books={books}
               selectedBook={selectedBook}
@@ -612,14 +645,14 @@ export function App() {
               streakDays={analyticsSummary?.streakDays || 0}
               dueReviewCount={dueWordsCount}
               onOpenSrs={() => setIsSrsOpen(true)}
-              onOpenVocab={() => setIsVocabOpen(true)}
+              onOpenVocab={() => setCurrentView('vocab')}
               onOpenAnalytics={() => {
                 refreshAnalytics();
-                setIsAnalyticsOpen(true);
+                setCurrentView('analytics');
               }}
               onOpenStorage={() => {
                 refreshOfflineCount();
-                setIsStorageOpen(true);
+                setCurrentView('storage');
               }}
             />
           ) : (

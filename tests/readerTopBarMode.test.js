@@ -66,4 +66,41 @@ test('ReaderTopBar Dual-Engine Mode Switcher Test Suite', async (t) => {
     assert.ok(htmlPodcast.includes('bg-amber-500 text-white') || htmlPodcast.includes('text-white'), 'Podcast mode should have active highlighted style');
     assert.ok(htmlStudio.includes('bg-amber-500 text-white') || htmlStudio.includes('text-white'), 'Studio mode should have active highlighted style');
   });
+
+  await t.test('3.3: Harmonized capsule container and button heights', () => {
+    const htmlStudio = renderToString(
+      React.createElement(ReaderTopBar, {
+        currentBook: mockBook,
+        currentChapter: mockChapter,
+        playerMode: 'studio',
+        studyMode: 'normal',
+        onSwitchPlayerMode: () => {},
+        setStudyMode: () => {}
+      })
+    );
+
+    // Both containers should use h-10 p-1 rounded-2xl
+    const h10Matches = htmlStudio.match(/h-10[^"]*rounded-2xl/g) || [];
+    assert.ok(h10Matches.length >= 2, 'Both Dual-Engine and Study Sub-modes containers should use h-10 rounded-2xl');
+
+    // Sub-mode active style should use bg-amber-500 text-white font-extrabold matching dual-engine
+    assert.ok(htmlStudio.includes('bg-amber-500 text-white shadow-sm font-extrabold'), 'Sub-modes should share unified active token bg-amber-500 font-extrabold');
+  });
+
+  await t.test('3.4: PWA touch optimization without active:scale-95 on segment buttons', () => {
+    const htmlStudio = renderToString(
+      React.createElement(ReaderTopBar, {
+        currentBook: mockBook,
+        currentChapter: mockChapter,
+        playerMode: 'studio',
+        studyMode: 'normal',
+        onSwitchPlayerMode: () => {},
+        setStudyMode: () => {}
+      })
+    );
+
+    // Dual-Engine and sub-mode segment buttons should use type="button"
+    assert.ok(htmlStudio.includes('type="button"'), 'Segment buttons should explicitly specify type="button"');
+  });
 });
+

@@ -87,24 +87,33 @@ export function TabletRail({
       id: 'vocab',
       title: `生词本 (${vocabCount})`,
       icon: <Bookmark size={20} />,
-      isActive: false,
+      isActive: currentView === 'vocab',
       badge: vocabCount > 0 ? vocabCount : null,
-      onClick: onOpenVocab
+      onClick: () => {
+        if (onSwitchView) onSwitchView('vocab');
+        else if (onOpenVocab) onOpenVocab();
+      }
     },
     {
       id: 'analytics',
       title: '学业罗盘',
       icon: <BarChart2 size={20} />,
-      isActive: false,
-      onClick: onOpenAnalytics
+      isActive: currentView === 'analytics',
+      onClick: () => {
+        if (onSwitchView) onSwitchView('analytics');
+        else if (onOpenAnalytics) onOpenAnalytics();
+      }
     },
     {
       id: 'storage',
       title: `离线管理 (${cachedChaptersCount})`,
       icon: <HardDrive size={20} />,
-      isActive: false,
+      isActive: currentView === 'storage',
       badge: cachedChaptersCount > 0 ? cachedChaptersCount : null,
-      onClick: onOpenStorage
+      onClick: () => {
+        if (onSwitchView) onSwitchView('storage');
+        else if (onOpenStorage) onOpenStorage();
+      }
     }
   ];
 
@@ -150,7 +159,7 @@ export function TabletRail({
 
       {/* Streak badge at bottom */}
       <div 
-        onClick={onOpenAnalytics}
+        onClick={() => onSwitchView ? onSwitchView('analytics') : (onOpenAnalytics && onOpenAnalytics())}
         className="flex flex-col items-center cursor-pointer p-1.5 rounded-xl hover:bg-white text-orange-600 font-mono font-bold text-xs"
         title={`连续打卡 ${streakDays} 天`}
       >

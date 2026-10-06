@@ -26,7 +26,8 @@ export function StorageManagerModal({
   isParchment,
   currentBook,
   currentChapter,
-  onPlayChapter
+  onPlayChapter,
+  isPageView = false
 }) {
   const [storageInfo, setStorageInfo] = useState({
     usedBytes: 0,
@@ -56,12 +57,23 @@ export function StorageManagerModal({
   };
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen || isPageView) {
       refreshStorage();
     }
-  }, [isOpen, currentChapter?.id]);
+  }, [isOpen, isPageView, currentChapter?.id]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!isOpen && !isPageView) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isPageView, onClose]);
+
+  if (!isOpen && !isPageView) return null;
 
   // Format bytes into human-readable string
   const formatBytes = (bytes) => {
@@ -128,39 +140,43 @@ export function StorageManagerModal({
   const quotaStr = formatQuota(storageInfo.quotaBytes);
   const usedPercent = Math.min(100, Math.max(0, ((storageInfo.usedBytes / storageInfo.quotaBytes) * 100).toFixed(1)));
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-      <div 
-        className="relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88dvh] sm:max-h-[85dvh] transition-all duration-300 no-scrollbar"
-      >
-        {/* Mobile Pull Handle Indicator */}
-        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
+  const storageContent = (
+    <div 
+      className={isPageView
+        ? "w-full h-full bg-[#fbf9f5] text-[#1e1610] overflow-y-auto flex flex-col pb-safe no-scrollbar"
+        : "relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88dvh] sm:max-h-[85dvh] transition-all duration-300 no-scrollbar"
+      }
+    >
+      {/* Mobile Pull Handle Indicator */}
+      {!isPageView && <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />}
 
-        {/* Header */}
-        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2">
-          <div className="flex items-center space-x-2.5 min-w-0 flex-1">
-            <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-300/80 text-amber-700 shrink-0">
-              <HardDrive size={18} className="sm:w-5 sm:h-5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h2 className="font-magical text-base sm:text-lg font-bold text-amber-950 flex items-center gap-2 truncate">
-                魔法行囊 · 离线存储管理
-              </h2>
-              <p className="text-[11px] sm:text-xs text-stone-500 truncate">
-                原版双轨离线缓存 · 随时随地无网畅听
-              </p>
-            </div>
+      {/* Header */}
+      <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0">
+        <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+          <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-300/80 text-amber-700 shrink-0">
+            <HardDrive size={18} className="sm:w-5 sm:h-5" />
           </div>
+          <div className="min-w-0 flex-1">
+            <h2 className="font-magical text-base sm:text-lg font-bold text-amber-950 flex items-center gap-2 truncate">
+              魔法行囊 · 离线存储管理
+            </h2>
+            <p className="text-[11px] sm:text-xs text-stone-500 truncate">
+              原版双轨离线缓存 · 随时随地无网畅听
+            </p>
+          </div>
+        </div>
 
+        {onClose && (
           <button
             onClick={onClose}
             className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
-            title="关闭魔法行囊"
+            title={isPageView ? "返回" : "关闭魔法行囊"}
             aria-label="关闭魔法行囊"
           >
             <X size={18} />
           </button>
-        </div>
+        )}
+      </div>
 
         {/* Storage Quota Bar */}
         <div className="p-4 sm:p-5 border-b border-[#e8ddd0] bg-white">
@@ -318,6 +334,15 @@ export function StorageManagerModal({
           </div>
         </div>
       </div>
+  );
+
+  if (isPageView) {
+    return storageContent;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+      {storageContent}
     </div>
   );
 }

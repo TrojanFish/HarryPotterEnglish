@@ -87,13 +87,14 @@ export function ReaderTopBar({
         <div className="flex items-center gap-2 shrink-0">
           <div className="flex h-10 items-center p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1">
             <button
+              type="button"
               onClick={() => onSwitchPlayerMode && onSwitchPlayerMode('podcast')}
-              className={`min-h-[36px] sm:min-h-[38px] flex items-center gap-1.5 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer select-none active:scale-95 ${
+              className={`h-8 min-h-[32px] flex items-center justify-center gap-1.5 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
                 playerMode === 'podcast'
                   ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                   : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
               }`}
-              title="随行播客模式（大字歌词流、大画幅原声）"
+              aria-label="随行播客模式"
               aria-pressed={playerMode === 'podcast'}
             >
               <Headphones size={13} />
@@ -101,13 +102,14 @@ export function ReaderTopBar({
             </button>
 
             <button
+              type="button"
               onClick={() => onSwitchPlayerMode && onSwitchPlayerMode('studio')}
-              className={`min-h-[36px] sm:min-h-[38px] flex items-center gap-1.5 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer select-none active:scale-95 ${
+              className={`h-8 min-h-[32px] flex items-center justify-center gap-1.5 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
                 playerMode === 'studio'
                   ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                   : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
               }`}
-              title="精研工坊模式（单句精读、查词、影子跟读、听写）"
+              aria-label="精研工坊模式"
               aria-pressed={playerMode === 'studio'}
             >
               <Sparkles size={13} />
@@ -123,13 +125,15 @@ export function ReaderTopBar({
                 return (
                   <button
                     key={key}
+                    type="button"
                     onClick={() => setStudyMode(key)}
-                    className={`h-8 flex items-center gap-1.5 px-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    className={`h-8 min-h-[32px] flex items-center justify-center gap-1.5 px-3 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
                       isActive
-                        ? 'bg-amber-600 text-white shadow-sm'
+                        ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                         : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
                     }`}
-                    title={label}
+                    aria-label={label}
+                    aria-pressed={isActive}
                   >
                     {icon}
                     <span>{label}</span>
@@ -174,19 +178,20 @@ export function ReaderTopBar({
       {/* ── Mobile/Tablet Sub-bar when in Studio Mode (< 1024px) ───────── */}
       {playerMode === 'studio' && (
         <div className="lg:hidden px-3 pb-2 pt-0.5 animate-fadeIn">
-          <div className="grid grid-cols-3 p-1 rounded-xl bg-stone-100 border border-[#e8ddd0] gap-1">
+          <div className="grid grid-cols-3 h-10 p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1 items-center">
             {modes.map(({ key, label, icon }) => {
               const isActive = studyMode === key;
               return (
                 <button
                   key={key}
+                  type="button"
                   onClick={() => setStudyMode(key)}
-                  className={`min-h-[38px] flex items-center justify-center gap-1 px-1 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
+                  className={`h-8 min-h-[32px] flex items-center justify-center gap-1 px-1 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
                     isActive
-                      ? 'bg-amber-500 text-white shadow-sm'
+                      ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                       : 'text-stone-600 hover:text-amber-950 active:bg-stone-200'
                   }`}
-                  title={label}
+                  aria-label={label}
                   aria-pressed={isActive}
                 >
                   {icon}

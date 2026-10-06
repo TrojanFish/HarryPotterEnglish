@@ -108,16 +108,22 @@ export function DesktopSidebar({
       desc: `${vocabCount} 个难词收藏与复习`,
       badge: vocabCount > 0 ? `${vocabCount}` : null,
       icon: <Bookmark size={18} className="shrink-0" />,
-      isActive: false,
-      onClick: onOpenVocab
+      isActive: currentView === 'vocab',
+      onClick: () => {
+        if (onSwitchView) onSwitchView('vocab');
+        else if (onOpenVocab) onOpenVocab();
+      }
     },
     {
       id: 'analytics',
       label: '学业罗盘 (Analytics)',
       desc: '连续打卡与学情趋势',
       icon: <BarChart2 size={18} className="shrink-0" />,
-      isActive: false,
-      onClick: onOpenAnalytics
+      isActive: currentView === 'analytics',
+      onClick: () => {
+        if (onSwitchView) onSwitchView('analytics');
+        else if (onOpenAnalytics) onOpenAnalytics();
+      }
     },
     {
       id: 'storage',
@@ -125,8 +131,11 @@ export function DesktopSidebar({
       desc: `已缓存 ${cachedChaptersCount} 个原声章节`,
       badge: cachedChaptersCount > 0 ? `${cachedChaptersCount}` : null,
       icon: <HardDrive size={18} className="shrink-0" />,
-      isActive: false,
-      onClick: onOpenStorage
+      isActive: currentView === 'storage',
+      onClick: () => {
+        if (onSwitchView) onSwitchView('storage');
+        else if (onOpenStorage) onOpenStorage();
+      }
     }
   ];
 

@@ -34,7 +34,8 @@ export function VocabularyDrawer({
   bookmarkedSentences = [],
   onRemoveBookmark,
   onClearAllBookmarks,
-  onPlaySentence
+  onPlaySentence,
+  isPageView = false
 }) {
   const [drawerTab, setDrawerTab] = useState(initialTab); // 'words' | 'sentences'
   const [searchTerm, setSearchTerm] = useState('');
@@ -48,21 +49,21 @@ export function VocabularyDrawer({
   };
 
   useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen && !isPageView) {
       setShowClearConfirm(false);
       setShowClearSentencesConfirm(false);
       return;
     }
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && onClose) {
         onClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, isPageView, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen && !isPageView) return null;
 
   const filteredVocab = (vocabList || []).filter(item => 
     (item.word || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -151,19 +152,18 @@ export function VocabularyDrawer({
     );
   };
 
-  return (
+  const drawerContent = (
     <div 
-      className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm flex items-end sm:items-stretch sm:justify-end animate-fadeIn"
-      onClick={onClose}
+      onClick={(e) => e.stopPropagation()}
+      className={isPageView
+        ? "w-full h-full flex flex-col bg-[#fbf9f5] text-[#1e1610] pb-safe overflow-hidden"
+        : "w-full sm:w-screen sm:max-w-md flex flex-col max-h-[92dvh] sm:max-h-full rounded-t-3xl sm:rounded-none border-t sm:border-t-0 sm:border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe overflow-hidden"
+      }
     >
-      <div 
-        onClick={(e) => e.stopPropagation()}
-        className="w-full sm:w-screen sm:max-w-md flex flex-col max-h-[92dvh] sm:max-h-full rounded-t-3xl sm:rounded-none border-t sm:border-t-0 sm:border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe overflow-hidden"
-      >
-        {/* Mobile Pull Handle Indicator */}
-        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
+      {/* Mobile Pull Handle Indicator */}
+      {!isPageView && <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />}
 
-        {/* Drawer Header */}
+      {/* Drawer Header */}
         <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0">
           <div className="flex items-center space-x-2 min-w-0">
             <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
@@ -218,13 +218,16 @@ export function VocabularyDrawer({
             </button>
           )}
 
-          <button
-            onClick={onClose}
-            className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
-            title="关闭研学本"
-          >
-            <X size={18} />
-          </button>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
+              title={isPageView ? "返回" : "关闭研学本"}
+              aria-label="关闭研学本"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
 
         {/* ── Sub-header: Leitner strip (when in words tab) ───────────── */}
@@ -598,6 +601,18 @@ export function VocabularyDrawer({
           </div>
         )}
       </div>
+  );
+
+  if (isPageView) {
+    return drawerContent;
+  }
+
+  return (
+    <div 
+      className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm flex items-end sm:items-stretch sm:justify-end animate-fadeIn"
+      onClick={onClose}
+    >
+      {drawerContent}
     </div>
   );
 }
