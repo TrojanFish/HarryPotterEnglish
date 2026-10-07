@@ -15,12 +15,12 @@ export function HouseSelectorModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn select-none">
       <div 
-        className="relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-5 sm:p-7 max-h-[90dvh] overflow-y-auto pb-safe transition-all shadow-xl"
+        className="relative w-full max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-5 sm:p-7 max-h-[90dvh] overflow-y-auto pb-safe transition-all"
         role="dialog"
         aria-label="霍格沃茨四大学院分院仪式"
       >
         {/* Mobile Pull Handle Indicator */}
-        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto mb-3 shrink-0" />
+        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
 
         {/* Header Bar */}
         <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-[#e8ddd0]">
@@ -45,7 +45,7 @@ export function HouseSelectorModal({
             <button
               type="button"
               onClick={onClose}
-              className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 flex items-center justify-center text-stone-500 hover:text-stone-800 transition-colors cursor-pointer"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-amber-950 transition-all active:scale-95 cursor-pointer shrink-0"
               title="关闭"
               aria-label="关闭"
             >
@@ -140,7 +140,7 @@ export function HouseSelectorModal({
           <button
             type="button"
             onClick={onClose}
-            className="duo-btn-primary min-h-[44px] px-5 py-2 rounded-xl text-xs font-bold cursor-pointer"
+            className="duo-btn-primary min-h-[48px] px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold cursor-pointer active:scale-95 transition-all"
           >
             确认选定
           </button>

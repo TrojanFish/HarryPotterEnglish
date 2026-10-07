@@ -90,7 +90,7 @@ function BookshelfViewComponent({
   const goalPercent = Math.min(100, Math.round((todayListeningSeconds / 300) * 100));
 
   return (
-    <div className="flex-1 overflow-y-auto pb-36 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full select-none ios-scroll">
+    <div className="flex-1 overflow-y-auto pb-36 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full select-none ios-scroll">
 
       {/* ── 1. Header greeting ─────────────────────────────────────── */}
       <div className="mb-5">

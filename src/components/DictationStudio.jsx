@@ -551,7 +551,7 @@ export function DictationStudio({
       }`}>
         {feedbackState ? (
           /* Duolingo Celebratory Feedback State */
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 animate-fadeIn">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 animate-fadeIn">
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white ${
                 feedbackState.isCorrect ? 'bg-emerald-600' : 'bg-rose-600'
@@ -582,7 +582,7 @@ export function DictationStudio({
           </div>
         ) : (
           /* Active Exercise Navigation Bar */
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3">
             <button
               onClick={advancePrev}
               disabled={activeCueIndex <= 0}

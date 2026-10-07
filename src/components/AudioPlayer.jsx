@@ -231,7 +231,7 @@ export function AudioPlayer({
       </div>
 
       {/* Mobile Layer 2: Symmetrical 5-Button Thumb Zone Control Cluster (2 + 1 + 2) */}
-      <div className="flex sm:hidden items-center justify-center gap-2.5 sm:gap-3 px-3 pt-1 pb-3">
+      <div className="flex sm:hidden items-center justify-center gap-2.5 sm:gap-3 px-4 pt-1 pb-3">
         {/* Loop Toggle */}
         <button
           onClick={onToggleLoopSentence}

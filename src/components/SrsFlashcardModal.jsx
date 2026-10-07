@@ -116,10 +116,10 @@ export function SrsFlashcardModal({
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-5 sm:p-7 flex flex-col justify-between max-h-[88dvh] sm:max-h-[85dvh] sm:min-h-[480px] overflow-y-auto pb-safe transition-all no-scrollbar"
+        className="w-full max-w-lg rounded-t-3xl sm:rounded-2xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-5 sm:p-7 flex flex-col justify-between max-h-[88dvh] sm:max-h-[85dvh] sm:min-h-[480px] overflow-y-auto pb-safe transition-all no-scrollbar"
       >
         {/* Mobile Pull Handle */}
-        <div className="sm:hidden w-10 h-1.5 rounded-full bg-stone-300 mx-auto mb-3 shrink-0" />
+        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
 
         {/* Top Header & Progress */}
         <div className="flex items-center justify-between pb-3 border-b border-[#e8ddd0] mb-4">
@@ -140,8 +140,9 @@ export function SrsFlashcardModal({
           {!(dueWords.length === 0 || isFinished) && (
             <button
               onClick={onClose}
-              className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-amber-950 transition-all active:scale-95 cursor-pointer shrink-0"
               title="关闭复习"
+              aria-label="关闭"
             >
               <X size={18} />
             </button>
@@ -201,7 +202,7 @@ export function SrsFlashcardModal({
 
             <button
               onClick={onClose}
-              className="duo-btn-primary min-h-[46px] px-8 py-3 rounded-2xl text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer transition-all"
+              className="duo-btn-primary min-h-[48px] px-8 py-2.5 rounded-xl text-xs sm:text-sm font-bold inline-flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
             >
               <span>收入魔法行囊并返回</span>
             </button>

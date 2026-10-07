@@ -57,10 +57,10 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-md max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-white text-[#1e1610] p-5 sm:p-6 pb-safe transition-all duration-300 flex flex-col no-scrollbar"
+        className="relative w-full max-w-md max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto rounded-t-3xl sm:rounded-2xl border-t sm:border border-[#e8ddd0] bg-white text-[#1e1610] p-5 sm:p-6 pb-safe transition-all duration-300 flex flex-col no-scrollbar"
       >
         {/* Mobile Pull Handle Indicator */}
-        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto mb-3 shrink-0" />
+        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
 
         <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#e8ddd0] gap-2">
           <div className="flex items-center space-x-2 min-w-0 flex-1">
@@ -78,10 +78,10 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
 
           <div className="flex items-center gap-1.5 shrink-0">
             {/* Tab switch for desktop/mobile */}
-            <div className="flex rounded-xl p-0.5 border border-[#e8ddd0] bg-stone-100 text-xs">
+            <div className="flex rounded-xl p-1 border border-[#e8ddd0] bg-stone-100 text-xs gap-1">
               <button
                 onClick={() => setActiveTab('touch')}
-                className={`min-h-[36px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer select-none ${
+                className={`min-h-[38px] sm:min-h-[36px] px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer select-none ${
                   activeTab === 'touch'
                     ? 'bg-amber-500 text-white shadow-sm'
                     : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
@@ -92,7 +92,7 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
               </button>
               <button
                 onClick={() => setActiveTab('keyboard')}
-                className={`min-h-[36px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer select-none ${
+                className={`min-h-[38px] sm:min-h-[36px] px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer select-none ${
                   activeTab === 'keyboard'
                     ? 'bg-amber-500 text-white shadow-sm'
                     : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
@@ -105,8 +105,9 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
 
             <button 
               onClick={onClose} 
-              className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-amber-950 transition-all active:scale-95 cursor-pointer shrink-0"
               title="关闭指南 (ESC)"
+              aria-label="关闭"
             >
               <X size={18} />
             </button>

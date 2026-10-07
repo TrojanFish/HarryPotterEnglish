@@ -75,15 +75,15 @@ export function WordModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
       onClick={onClose}
     >
       <div
         onClick={e => e.stopPropagation()}
-        className="relative w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-white text-[#1e1610] max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto pb-safe flex flex-col no-scrollbar"
+        className="relative w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl border-t sm:border border-[#e8ddd0] bg-white text-[#1e1610] max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto pb-safe flex flex-col no-scrollbar"
       >
         {/* Mobile drag handle */}
-        <div className="sm:hidden w-10 h-1.5 rounded-full bg-stone-300 mx-auto mt-2.5 shrink-0" />
+        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
 
         {/* Header: word + phonetic + play + close */}
         <div className="px-5 sm:px-6 pt-4 sm:pt-5 pb-3 border-b border-[#e8ddd0] shrink-0">
@@ -113,7 +113,9 @@ export function WordModal({
             {/* Close button */}
             <button
               onClick={onClose}
-              className="duo-touch-target p-2 rounded-xl border border-transparent hover:border-[#e8ddd0] hover:bg-stone-50 text-stone-400 hover:text-amber-950 transition-all active:scale-90 cursor-pointer shrink-0"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-500 hover:text-amber-950 flex items-center justify-center transition-all active:scale-95 cursor-pointer shrink-0"
+              title="关闭 (ESC)"
+              aria-label="关闭"
             >
               <X size={18} />
             </button>

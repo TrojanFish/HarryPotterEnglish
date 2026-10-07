@@ -183,14 +183,14 @@ export function VocabularyDrawer({
       onClick={(e) => e.stopPropagation()}
       className={isPageView
         ? "w-full h-full flex flex-col bg-[#fbf9f5] text-[#1e1610] pb-safe overflow-hidden"
-        : "w-full sm:w-screen sm:max-w-md flex flex-col max-h-[92dvh] sm:max-h-full rounded-t-3xl sm:rounded-none border-t sm:border-t-0 sm:border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe overflow-hidden"
+        : "w-full sm:w-screen sm:max-w-lg flex flex-col max-h-[92dvh] sm:max-h-full rounded-t-3xl sm:rounded-none border-t sm:border-t-0 sm:border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe overflow-hidden"
       }
     >
       {/* Mobile Pull Handle Indicator */}
       {!isPageView && <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />}
 
       {/* Drawer Header */}
-        <div className="px-4 sm:px-5 py-3 sm:py-3.5 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0 select-none">
+      <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0 select-none">
           <div className="flex items-center space-x-2.5 min-w-0 flex-1">
             <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shrink-0">
               {drawerTab === 'words' ? (
@@ -263,7 +263,7 @@ export function VocabularyDrawer({
           {onClose && (
             <button
               onClick={onClose}
-              className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-amber-950 transition-all active:scale-95 cursor-pointer shrink-0"
               title={isPageView ? "返回" : "关闭研学本"}
               aria-label="关闭研学本"
             >
@@ -316,18 +316,29 @@ export function VocabularyDrawer({
           (drawerTab === 'sentences' && bookmarkedSentences.length > 0)) && (
           <div className="p-3 border-b border-[#e8ddd0] bg-white">
             <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
               <input
                 type="search"
                 enterKeyHint="search"
                 autoCapitalize="none"
                 autoCorrect="off"
-                spellCheck="false"
+                spellCheck={false}
                 placeholder={drawerTab === 'words' ? "搜索生词或中文释义..." : "搜索疑难句或中文释义..."}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 text-base sm:text-sm rounded-xl border border-[#e8ddd0] bg-stone-50 text-[#1e1610] focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition-all"
+                className="w-full h-11 min-h-[44px] pl-10 pr-9 text-base sm:text-xs rounded-xl border border-[#e8ddd0] bg-stone-50 text-[#1e1610] focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition-all"
               />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 p-2 duo-touch-target text-stone-400 hover:text-stone-700 cursor-pointer"
+                  title="清空搜索"
+                  aria-label="清空搜索"
+                >
+                  <X size={14} />
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -337,8 +348,8 @@ export function VocabularyDrawer({
           <div className="flex-1 overflow-y-auto p-4 space-y-3 ios-scroll">
             {vocabList.length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center py-16 px-4 text-center my-auto">
-                <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 animate-pulse">
-                  <Bookmark size={28} className="text-amber-600" />
+                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-300/60 flex items-center justify-center text-amber-700 mb-3">
+                  <Bookmark size={24} className="text-amber-700" />
                 </div>
                 <h3 className="font-magical font-bold text-base text-amber-950 mb-1">
                   暂无生词 · 魔杖尚未收录新词
@@ -348,7 +359,7 @@ export function VocabularyDrawer({
                 </p>
                 <button
                   onClick={onClose}
-                  className="duo-btn-primary min-h-[44px] px-6 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer active:scale-95"
+                  className="duo-btn-primary min-h-[44px] px-6 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 cursor-pointer active:scale-95"
                 >
                   <Sparkles size={15} />
                   <span>去精听挑词入库</span>
@@ -435,8 +446,8 @@ export function VocabularyDrawer({
           <div className="flex-1 overflow-y-auto p-4 space-y-3 ios-scroll">
             {bookmarkedSentences.length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center py-16 px-4 text-center my-auto">
-                <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-300/80 flex items-center justify-center text-amber-600 mb-4 animate-pulse">
-                  <Bookmark size={28} className="text-amber-600" />
+                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-300/60 flex items-center justify-center text-amber-700 mb-3">
+                  <Bookmark size={24} className="text-amber-700" />
                 </div>
                 <h3 className="font-magical font-bold text-base text-amber-950 mb-1">
                   暂无星标疑句 · 随时随地收录
@@ -446,7 +457,7 @@ export function VocabularyDrawer({
                 </p>
                 <button
                   onClick={onClose}
-                  className="duo-btn-primary min-h-[44px] px-6 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer active:scale-95"
+                  className="duo-btn-primary min-h-[44px] px-6 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 cursor-pointer active:scale-95"
                 >
                   <Sparkles size={15} />
                   <span>去听播客星标疑句</span>

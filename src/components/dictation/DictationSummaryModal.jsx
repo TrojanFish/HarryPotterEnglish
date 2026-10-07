@@ -80,7 +80,7 @@ export function DictationSummaryModal({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-xl max-h-[88dvh] sm:max-h-[85dvh] flex flex-col rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden transition-all pb-safe no-scrollbar"
+        className="w-full max-w-xl max-h-[88dvh] sm:max-h-[85dvh] flex flex-col rounded-t-3xl sm:rounded-2xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden transition-all pb-safe no-scrollbar"
       >
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
@@ -220,7 +220,7 @@ export function DictationSummaryModal({
           {errorWords.length > 0 && onRetryErrors ? (
             <button
               onClick={onRetryErrors}
-              className="duo-btn-secondary min-h-[48px] flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer"
+              className="duo-btn-secondary min-h-[48px] flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold cursor-pointer active:scale-95 transition-all"
             >
               <RotateCcw size={15} />
               <span>重炼错词</span>
@@ -229,7 +229,7 @@ export function DictationSummaryModal({
 
           <button
             onClick={onClose}
-            className="duo-btn-primary min-h-[48px] flex items-center gap-2 px-6 sm:px-8 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer ml-auto"
+            className="duo-btn-primary min-h-[48px] flex items-center gap-2 px-6 sm:px-8 py-2.5 rounded-xl text-xs sm:text-sm font-bold cursor-pointer ml-auto active:scale-95 transition-all"
           >
             <span>完成本章试炼</span>
             <ChevronRight size={16} />

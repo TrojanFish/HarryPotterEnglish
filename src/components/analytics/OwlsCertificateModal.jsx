@@ -379,10 +379,10 @@ export function OwlsCertificateModal({
       >
         <div
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-2xl max-h-[92dvh] sm:max-h-[88dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] shadow-xl p-5 sm:p-7 flex flex-col no-scrollbar pb-safe"
+          className="relative w-full max-w-2xl max-h-[92dvh] sm:max-h-[88dvh] overflow-y-auto rounded-t-3xl sm:rounded-2xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-5 sm:p-7 flex flex-col no-scrollbar pb-safe"
         >
           {/* Mobile Pull Handle Indicator (Apple HIG standard) */}
-          <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto mb-3 shrink-0" />
+          <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
 
           {/* Standard Modal Header Bar */}
           <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-[#e8ddd0] shrink-0">
@@ -407,7 +407,7 @@ export function OwlsCertificateModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 flex items-center justify-center text-stone-500 hover:text-stone-800 transition-colors cursor-pointer shrink-0"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-amber-950 transition-all active:scale-95 cursor-pointer shrink-0"
                 title="关闭 (ESC)"
                 aria-label="关闭"
               >
@@ -526,13 +526,13 @@ export function OwlsCertificateModal({
                 type="button"
                 onClick={handleExportImage}
                 disabled={isExporting}
-                className="duo-btn-primary min-h-[44px] px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-50"
+                className="duo-btn-primary min-h-[48px] px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-50"
                 title="导出官方羊皮纸 O.W.L.s 学业荣誉高清长图，支持保存至手机相册或电脑下载"
               >
                 {isExporting ? (
                   <RefreshCw size={14} className="animate-spin" />
                 ) : (
-                  <Download size={14} />
+                  <Download size={15} />
                 )}
                 <span>{isExporting ? '生成高清长图中...' : '导出荣誉长图'}</span>
               </button>
@@ -544,7 +544,7 @@ export function OwlsCertificateModal({
       {/* Mobile / Screen Long-Press Image Preview Modal */}
       {showPreviewModal && exportedImageUrl && (
         <div
-          className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md animate-fadeIn"
+          className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
           onClick={() => setShowPreviewModal(false)}
           role="dialog"
           aria-modal="true"
@@ -552,10 +552,10 @@ export function OwlsCertificateModal({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-lg max-h-[92dvh] sm:max-h-[90dvh] flex flex-col rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-4 sm:p-6 overflow-hidden pb-safe"
+            className="relative w-full max-w-lg max-h-[92dvh] sm:max-h-[90dvh] flex flex-col rounded-t-3xl sm:rounded-2xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] p-4 sm:p-6 overflow-hidden pb-safe"
           >
             {/* Pull handle */}
-            <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto mb-3 shrink-0" />
+            <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
 
             <div className="flex items-center justify-between pb-3 border-b border-[#e8ddd0] shrink-0">
               <div className="flex items-center space-x-2">
@@ -569,10 +569,10 @@ export function OwlsCertificateModal({
               <button
                 type="button"
                 onClick={() => setShowPreviewModal(false)}
-                className="w-8 h-8 rounded-lg border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-500 hover:text-stone-800"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-amber-950 transition-all active:scale-95 cursor-pointer"
                 aria-label="关闭预览"
               >
-                <X size={16} />
+                <X size={18} />
               </button>
             </div>
 
@@ -597,18 +597,18 @@ export function OwlsCertificateModal({
                 <button
                   type="button"
                   onClick={handleNativeShare}
-                  className="duo-touch-target px-3 py-2 rounded-xl border border-[#dec9a5] bg-white text-xs font-bold text-amber-950 flex items-center gap-1.5 active:scale-95"
+                  className="duo-touch-target px-3.5 py-2.5 rounded-xl border border-[#dec9a5] bg-white text-xs font-bold text-amber-950 flex items-center gap-1.5 active:scale-95"
                 >
-                  <Share2 size={13} />
+                  <Share2 size={14} />
                   <span>系统分享</span>
                 </button>
               )}
               <button
                 type="button"
                 onClick={handleDownloadSavedImage}
-                className="duo-btn-primary min-h-[44px] px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 active:scale-95"
+                className="duo-btn-primary min-h-[48px] px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 active:scale-95"
               >
-                <Download size={14} />
+                <Download size={15} />
                 <span>保存/下载图片</span>
               </button>
             </div>

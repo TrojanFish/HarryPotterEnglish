@@ -150,7 +150,7 @@ export function StorageManagerModal({
     <div 
       className={isPageView
         ? "w-full h-full bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col no-scrollbar"
-        : "relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88dvh] sm:max-h-[85dvh] transition-all duration-300 no-scrollbar"
+        : "relative w-full max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88dvh] sm:max-h-[85dvh] transition-all duration-300 no-scrollbar"
       }
     >
       {/* Mobile Pull Handle Indicator */}
@@ -175,7 +175,7 @@ export function StorageManagerModal({
         {onClose && (
           <button
             onClick={onClose}
-            className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
+            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-amber-950 transition-all active:scale-95 cursor-pointer shrink-0"
             title={isPageView ? "返回" : "关闭魔法行囊"}
             aria-label="关闭魔法行囊"
           >
@@ -263,8 +263,8 @@ export function StorageManagerModal({
 
           {storageInfo.chapters.length === 0 ? (
             <div className="p-8 text-center rounded-2xl border border-dashed border-[#e8ddd0] bg-white flex flex-col items-center justify-center">
-              <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600 mb-2">
-                <BookOpen size={24} className="text-amber-600" />
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-300/60 flex items-center justify-center text-amber-700 mb-3">
+                <BookOpen size={24} className="text-amber-700" />
               </div>
               <p className="text-sm font-semibold text-amber-950 mb-1">魔法行囊尚空</p>
               <p className="text-xs max-w-sm text-stone-500">
@@ -347,7 +347,7 @@ export function StorageManagerModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
       {storageContent}
     </div>
   );

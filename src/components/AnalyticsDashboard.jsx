@@ -228,7 +228,7 @@ export function AnalyticsDashboard({
   const dashboardContent = (
     <div className={isPageView
       ? `w-full h-full overflow-hidden ${theme.modalBg} ${theme.primaryText} transition-all flex flex-col`
-      : `relative w-full max-w-4xl max-h-[88dvh] sm:max-h-[85dvh] overflow-hidden rounded-t-3xl sm:rounded-3xl border-t sm:border ${theme.modalBorder} ${theme.modalBg} ${theme.primaryText} transition-all z-10 flex flex-col`
+      : `relative w-full max-w-4xl max-h-[88dvh] sm:max-h-[85dvh] overflow-hidden rounded-t-3xl sm:rounded-2xl border-t sm:border ${theme.modalBorder} ${theme.modalBg} ${theme.primaryText} transition-all z-10 flex flex-col`
     }>
       
       {/* Mobile Pull Handle Indicator */}
@@ -279,9 +279,9 @@ export function AnalyticsDashboard({
       </div>
 
         {/* Content Body - Only inner content scrolls */}
-        <div className={`flex-1 overflow-y-auto overscroll-contain no-scrollbar ${isPageView ? 'pb-32' : 'pb-6'}`}>
+        <div className={`flex-1 overflow-y-auto overscroll-contain no-scrollbar ${isPageView ? 'pb-36 pb-safe' : 'pb-6'}`}>
         {showHonorScroll ? (
-          <div className="p-6 sm:p-8 space-y-6 animate-fadeIn">
+          <div className="p-4 sm:p-8 max-w-5xl mx-auto space-y-6 animate-fadeIn">
             <div className="p-6 sm:p-8 rounded-3xl border border-amber-400/80 bg-gradient-to-br from-white via-[#fbf9f5] to-amber-500/5 text-center relative overflow-hidden">
               {/* Background Watermark Accent */}
               <div className="absolute right-3 -bottom-6 pointer-events-none opacity-5 text-amber-700">
@@ -348,7 +348,7 @@ export function AnalyticsDashboard({
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                 <button
                   onClick={handleCopyHonorReport}
-                  className="duo-btn-primary min-h-[44px] flex items-center gap-2 px-7 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer"
+                  className="duo-btn-primary min-h-[44px] flex items-center gap-2 px-7 py-2.5 rounded-xl text-xs sm:text-sm font-bold cursor-pointer"
                 >
                   {isCopied ? <Check size={16} /> : <Copy size={16} />}
                   <span>{isCopied ? '喜报文本已复制！可发给家长' : '一键复制喜报文本'}</span>
@@ -356,7 +356,7 @@ export function AnalyticsDashboard({
 
                 <button
                   onClick={() => setShowHonorScroll(false)}
-                  className="duo-btn-secondary min-h-[44px] px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer"
+                  className="duo-btn-secondary min-h-[44px] px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold cursor-pointer"
                 >
                   查看详细学情图表
                 </button>
@@ -364,7 +364,7 @@ export function AnalyticsDashboard({
             </div>
           </div>
         ) : (
-        <div className="p-5 sm:p-6 space-y-6">
+        <div className="px-4 py-5 sm:p-6 max-w-6xl mx-auto w-full space-y-6">
           {/* Great Hall Four Houses Gem Hourglasses */}
           <HouseHourglasses
             userHouse={activeHouse}

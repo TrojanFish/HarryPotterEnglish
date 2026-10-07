@@ -59,7 +59,7 @@ export function BookShelfDrawer({
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="w-full sm:w-screen sm:max-w-xl flex flex-col max-h-[92dvh] sm:max-h-full rounded-t-3xl sm:rounded-none border-t sm:border-t-0 sm:border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe overflow-hidden"
+        className="w-full sm:w-screen sm:max-w-lg flex flex-col max-h-[92dvh] sm:max-h-full rounded-t-3xl sm:rounded-none border-t sm:border-t-0 sm:border-l border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] transition-colors duration-300 pb-safe overflow-hidden"
       >
         {/* Mobile Pull Handle Indicator */}
         <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />
@@ -89,7 +89,7 @@ export function BookShelfDrawer({
               <button
                 onClick={onRefreshCatalog}
                 disabled={isRefreshing}
-                className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0 disabled:opacity-50"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-95 cursor-pointer shrink-0 disabled:opacity-50 flex items-center justify-center"
                 title={isRefreshing ? '正在重新扫描 R2 存储桶...' : '重新扫描 R2 存储桶新文件'}
                 aria-label={isRefreshing ? '正在重新扫描 R2 存储桶...' : '重新扫描 R2 存储桶新文件'}
               >
@@ -99,7 +99,7 @@ export function BookShelfDrawer({
 
             <button
               onClick={onClose}
-              className="duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-500 hover:text-amber-950 flex items-center justify-center transition-all active:scale-95 cursor-pointer shrink-0"
               title="关闭选单"
               aria-label="关闭选单"
             >
@@ -144,20 +144,21 @@ export function BookShelfDrawer({
             {/* Search Input */}
             <div className="p-3 sm:px-6 border-b border-[#e8ddd0] bg-[#fbf9f5] shrink-0">
               <div className="relative">
-                <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
                 <input
                   type="search"
                   enterKeyHint="search"
                   autoCapitalize="none"
                   autoCorrect="off"
-                  spellCheck="false"
+                  spellCheck={false}
                   placeholder="搜索章节名或关键词..."
                   value={chapterSearch}
                   onChange={(e) => setChapterSearch(e.target.value)}
-                  className="w-full pl-9 pr-9 py-2.5 rounded-xl text-base sm:text-sm border border-amber-200 bg-white focus:border-amber-500 focus:outline-none transition-all"
+                  className="w-full h-11 min-h-[44px] pl-10 pr-9 rounded-xl text-base sm:text-xs border border-[#e8ddd0] bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 focus:outline-none transition-all"
                 />
                 {chapterSearch && (
                   <button
+                    type="button"
                     onClick={() => setChapterSearch('')}
                     className="absolute right-1 top-1/2 -translate-y-1/2 p-2 duo-touch-target text-stone-400 hover:text-stone-700 cursor-pointer"
                     title="清空搜索"
