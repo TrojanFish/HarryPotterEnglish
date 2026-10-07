@@ -152,8 +152,8 @@ function GlobalPodcastCapsuleComponent({
             </div>
           </div>
 
-          {/* Quick Transport Buttons (Unified 44px Touch Targets) */}
-          <div className="flex items-center gap-1.5 shrink-0">
+          {/* Quick Transport Buttons (Unified Standard 44px/48px Touch Targets) */}
+          <div className="flex items-center gap-2 shrink-0">
             {/* Prev Sentence */}
             {onPrevSentence && (
               <button
@@ -162,29 +162,29 @@ function GlobalPodcastCapsuleComponent({
                   e.stopPropagation();
                   onPrevSentence();
                 }}
-                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-700 hover:text-amber-950 flex items-center justify-center active:scale-95 transition-all cursor-pointer shrink-0"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-700 hover:text-amber-950 flex items-center justify-center active:scale-95 transition-all cursor-pointer shrink-0"
                 title="上一句"
                 aria-label="上一句"
               >
-                <SkipBack size={16} />
+                <SkipBack size={18} />
               </button>
             )}
 
-            {/* Play / Pause (44x44px Amber Primary Circle) */}
+            {/* Play / Pause (48x48px Amber Primary Circle) */}
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 if (onPlayPause) onPlayPause();
               }}
-              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center active:scale-95 transition-all cursor-pointer shadow-none shrink-0"
+              className="w-12 h-12 min-w-[48px] min-h-[48px] rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border-2 border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none shrink-0"
               title={isPlaying ? '暂停 (Space)' : '播放 (Space)'}
               aria-label={isPlaying ? '暂停音频' : '播放音频'}
             >
               {isPlaying ? (
-                <Pause size={18} className="fill-current" />
+                <Pause size={20} className="fill-current" />
               ) : (
-                <Play size={18} className="fill-current translate-x-0.5" />
+                <Play size={20} className="fill-current translate-x-0.5" />
               )}
             </button>
 
@@ -196,11 +196,11 @@ function GlobalPodcastCapsuleComponent({
                   e.stopPropagation();
                   onNextSentence();
                 }}
-                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-700 hover:text-amber-950 flex items-center justify-center active:scale-95 transition-all cursor-pointer shrink-0"
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-700 hover:text-amber-950 flex items-center justify-center active:scale-95 transition-all cursor-pointer shrink-0"
                 title="下一句"
                 aria-label="下一句"
               >
-                <SkipForward size={16} />
+                <SkipForward size={18} />
               </button>
             )}
           </div>
@@ -298,11 +298,11 @@ function GlobalPodcastCapsuleComponent({
                     e.stopPropagation();
                     onPrevSentence();
                   }}
-                  className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-amber-50/50 flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer shadow-none"
+                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-amber-50/50 flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer shadow-none"
                   title="上一句 (←)"
                   aria-label="上一句"
                 >
-                  <SkipBack size={16} />
+                  <SkipBack size={18} />
                 </button>
               )}
 
@@ -330,11 +330,11 @@ function GlobalPodcastCapsuleComponent({
                     e.stopPropagation();
                     onNextSentence();
                   }}
-                  className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-amber-50/50 flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer shadow-none"
+                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-amber-50/50 flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer shadow-none"
                   title="下一句 (→)"
                   aria-label="下一句"
                 >
-                  <SkipForward size={16} />
+                  <SkipForward size={18} />
                 </button>
               )}
             </div>
@@ -349,7 +349,7 @@ function GlobalPodcastCapsuleComponent({
                   e.stopPropagation();
                   handleSpeedCycle();
                 }}
-                className={`w-9 h-9 min-w-[36px] min-h-[36px] rounded-xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
+                className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
                   playbackRate !== 1.0
                     ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
                     : 'border-[#e8ddd0] bg-white text-stone-700 hover:text-amber-950 hover:border-amber-300'
@@ -368,15 +368,15 @@ function GlobalPodcastCapsuleComponent({
                   e.stopPropagation();
                   onToggleSleepTimer();
                 }}
-                className={`min-h-[36px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${
+                className={`min-h-[44px] min-w-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${
                   sleepTimerMode
                     ? 'px-2.5 gap-1 bg-amber-500 text-white border-amber-600 font-bold'
-                    : 'w-9 border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
+                    : 'w-11 border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
                 }`}
                 title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
                 aria-label="睡眠定时"
               >
-                <Moon size={14} />
+                <Moon size={16} />
                 {sleepTimerMode && (
                   <span className="text-[11px] font-mono">{sleepTimerRemaining}</span>
                 )}
@@ -389,7 +389,7 @@ function GlobalPodcastCapsuleComponent({
                 e.stopPropagation();
                 if (handleOpen) handleOpen();
               }}
-              className="duo-btn-primary min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 cursor-pointer"
+              className="duo-btn-primary min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 cursor-pointer"
               title="进入全功能精听教室（字幕、查词、跟读、听写）"
             >
               <span>进入精听</span>

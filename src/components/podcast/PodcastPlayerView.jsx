@@ -9,7 +9,9 @@ import {
   Headphones,
   BookOpen,
   ChevronRight,
-  Disc3
+  Disc3,
+  RotateCcw,
+  RotateCw
 } from 'lucide-react';
 import { PodcastLyricsStream } from './PodcastLyricsStream';
 import { formatEnglishText } from '../../utils/vttParser';
@@ -201,8 +203,21 @@ function PodcastPlayerViewComponent({
               </div>
             </div>
 
-            {/* Transport Controls Row */}
-            <div className="flex items-center justify-center gap-3">
+            {/* Transport Controls Row - 5 Symmetrical buttons tailored for podcast */}
+            <div className="flex items-center justify-center gap-2 sm:gap-2.5">
+              {/* Skip backward 15s */}
+              <button
+                onClick={() => onSeekRelative && onSeekRelative(-15)}
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 hover:border-amber-300 active:scale-95 transition-colors cursor-pointer"
+                title="快退 15 秒 (-15s)"
+                aria-label="快退 15 秒"
+              >
+                <div className="relative flex items-center justify-center">
+                  <RotateCcw size={18} />
+                  <span className="absolute text-[8px] font-bold font-mono leading-none pt-0.5">15</span>
+                </div>
+              </button>
+
               {/* Prev Sentence */}
               {onPrevSentence && (
                 <button
@@ -242,16 +257,29 @@ function PodcastPlayerViewComponent({
                   <SkipForward size={18} />
                 </button>
               )}
+
+              {/* Skip forward 15s */}
+              <button
+                onClick={() => onSeekRelative && onSeekRelative(15)}
+                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 hover:border-amber-300 active:scale-95 transition-colors cursor-pointer"
+                title="快进 15 秒 (+15s)"
+                aria-label="快进 15 秒"
+              >
+                <div className="relative flex items-center justify-center">
+                  <RotateCw size={18} />
+                  <span className="absolute text-[8px] font-bold font-mono leading-none pt-0.5">15</span>
+                </div>
+              </button>
             </div>
 
-            {/* Sub-controls: Sleep Timer, Speed */}
-            <div className="flex items-center justify-center gap-2.5 pt-0.5">
-              {/* Sleep Timer */}
+            {/* Sub-controls: Sleep Timer, Speed - Both 44px standard rounded-xl */}
+            <div className="flex items-center justify-center gap-3 pt-1">
+              {/* Sleep Timer (44px) */}
               {(onToggleSleepTimer || sleepTimerMode) && (
                 <button
                   type="button"
                   onClick={onToggleSleepTimer}
-                  className={`relative w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none active:scale-95 ${
+                  className={`relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none active:scale-95 ${
                     sleepTimerMode
                       ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
                       : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
@@ -269,11 +297,11 @@ function PodcastPlayerViewComponent({
                 </button>
               )}
 
-              {/* Speed Cycle */}
+              {/* Speed Cycle (44px) */}
               <button
                 type="button"
                 onClick={handleSpeedCycle}
-                className={`w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
+                className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
                   playbackRate !== 1.0
                     ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
                     : 'border-[#e8ddd0] bg-white text-stone-700 hover:text-amber-950 hover:border-amber-300'
@@ -374,88 +402,111 @@ function PodcastPlayerViewComponent({
           <span className="text-[10px] font-mono text-stone-500 min-w-[34px] shrink-0">{formatTime(duration)}</span>
         </div>
 
-        {/* Controls Row: Balanced layout with absolute center play anchor */}
-        <div className="relative flex items-center justify-between px-2 pt-1 pb-2 min-h-[64px]">
-          {/* 1. Left tool: Sleep Timer */}
-          <div className="flex items-center z-10">
-            {(onToggleSleepTimer || sleepTimerMode) && (
-              <button
-                type="button"
-                onClick={onToggleSleepTimer}
-                className={`relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none active:scale-95 ${
-                  sleepTimerMode
-                    ? 'bg-amber-500 text-white border-amber-600'
-                    : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
-                }`}
-                title={sleepTimerMode ? `安眠魔药生效中: ${sleepTimerRemaining}` : '开启安眠魔药定时'}
-                aria-label="睡眠定时"
-                aria-pressed={Boolean(sleepTimerMode)}
-              >
-                <Moon size={16} />
-                {sleepTimerMode && (
-                  <span className="absolute -top-1 -right-1 text-[8px] font-mono font-bold bg-amber-700 text-white px-1 py-0.2 rounded-full border border-white leading-none">
-                    {sleepTimerRemaining}
-                  </span>
-                )}
-              </button>
-            )}
-          </div>
-
-          {/* Absolute Center Anchor: Symmetrical 3-button cluster with 56x56 Play dead-center */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-2.5 z-20">
-            {/* Prev Sentence */}
-            <button
-              onClick={onPrevSentence}
-              disabled={activeCueIndex <= 0}
-              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
-              title="上一句 (←)"
-              aria-label="上一句"
-            >
-              <SkipBack size={18} />
-            </button>
-
-            {/* Play / Pause CTA (56×56px Center Anchor) */}
-            <button
-              onClick={onPlayPause}
-              className="w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border-2 border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none"
-              title={isPlaying ? '暂停 (Space)' : '播放 (Space)'}
-              aria-label={isPlaying ? '暂停' : '播放'}
-            >
-              {isPlaying ? (
-                <Pause size={24} className="fill-current" />
-              ) : (
-                <Play size={24} className="fill-current translate-x-0.5" />
-              )}
-            </button>
-
-            {/* Next Sentence */}
-            <button
-              onClick={onNextSentence}
-              disabled={activeCueIndex >= cues.length - 1}
-              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
-              title="下一句 (→)"
-              aria-label="下一句"
-            >
-              <SkipForward size={18} />
-            </button>
-          </div>
-
-          {/* Right tools: Speed Cycle */}
-          <div className="flex items-center justify-end gap-1.5 z-10 min-w-[44px]">
+        {/* Mobile Layer 1: Auxiliary Tools Row (Sleep Timer & Speed) */}
+        <div className="flex items-center justify-between px-3 pt-1 text-xs text-stone-500">
+          {(onToggleSleepTimer || sleepTimerMode) ? (
             <button
               type="button"
-              onClick={handleSpeedCycle}
-              className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
-                playbackRate !== 1.0
+              onClick={onToggleSleepTimer}
+              className={`min-h-[44px] px-3 rounded-xl border flex items-center gap-1.5 transition-colors cursor-pointer select-none active:scale-95 ${
+                sleepTimerMode
                   ? 'bg-amber-500 text-white border-amber-600'
-                  : 'border-[#e8ddd0] bg-white text-stone-700 hover:text-amber-950'
+                  : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
               }`}
-              title="切换播放倍速"
-              aria-label="播放倍速"
+              title={sleepTimerMode ? `安眠魔药生效中: ${sleepTimerRemaining}` : '开启安眠魔药定时'}
+              aria-label="睡眠定时"
+              aria-pressed={Boolean(sleepTimerMode)}
             >
-              <span>{playbackRate}x</span>
+              <Moon size={15} />
+              <span className="text-[11px] font-bold font-mono">
+                {sleepTimerMode ? sleepTimerRemaining : '安眠定时'}
+              </span>
             </button>
-          </div>
+          ) : <div />}
+
+          <button
+            type="button"
+            onClick={handleSpeedCycle}
+            className={`min-h-[44px] px-3 rounded-xl border text-xs font-mono font-bold flex items-center justify-center transition-colors active:scale-95 cursor-pointer select-none ${
+              playbackRate !== 1.0
+                ? 'bg-amber-500 text-white border-amber-600'
+                : 'border-[#e8ddd0] bg-white text-stone-700 hover:text-amber-950'
+            }`}
+            title="切换播放倍速"
+            aria-label="播放倍速"
+          >
+            <span>{playbackRate}x</span>
+          </button>
+        </div>
+
+        {/* Mobile Layer 2: Symmetrical 5-Button Podcast Thumb Cluster */}
+        <div className="flex items-center justify-center gap-2 sm:gap-3 px-2 pt-1 pb-2">
+          {/* Skip backward 15s */}
+          <button
+            type="button"
+            onClick={() => onSeekRelative && onSeekRelative(-15)}
+            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 active:scale-95 transition-colors cursor-pointer"
+            title="快退 15 秒 (-15s)"
+            aria-label="快退 15 秒"
+          >
+            <div className="relative flex items-center justify-center">
+              <RotateCcw size={18} />
+              <span className="absolute text-[8px] font-bold font-mono leading-none pt-0.5">15</span>
+            </div>
+          </button>
+
+          {/* Prev Sentence */}
+          <button
+            type="button"
+            onClick={onPrevSentence}
+            disabled={activeCueIndex <= 0}
+            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
+            title="上一句 (←)"
+            aria-label="上一句"
+          >
+            <SkipBack size={18} />
+          </button>
+
+          {/* Play / Pause CTA (56×56px Center Anchor) */}
+          <button
+            type="button"
+            onClick={onPlayPause}
+            className="w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border-2 border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none"
+            title={isPlaying ? '暂停 (Space)' : '播放 (Space)'}
+            aria-label={isPlaying ? '暂停' : '播放'}
+          >
+            {isPlaying ? (
+              <Pause size={24} className="fill-current" />
+            ) : (
+              <Play size={24} className="fill-current translate-x-0.5" />
+            )}
+          </button>
+
+          {/* Next Sentence */}
+          <button
+            type="button"
+            onClick={onNextSentence}
+            disabled={activeCueIndex >= cues.length - 1}
+            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
+            title="下一句 (→)"
+            aria-label="下一句"
+          >
+            <SkipForward size={18} />
+          </button>
+
+          {/* Skip forward 15s */}
+          <button
+            type="button"
+            onClick={() => onSeekRelative && onSeekRelative(15)}
+            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 active:scale-95 transition-colors cursor-pointer"
+            title="快进 15 秒 (+15s)"
+            aria-label="快进 15 秒"
+          >
+            <div className="relative flex items-center justify-center">
+              <RotateCw size={18} />
+              <span className="absolute text-[8px] font-bold font-mono leading-none pt-0.5">15</span>
+            </div>
+          </button>
         </div>
       </div>
     </div>

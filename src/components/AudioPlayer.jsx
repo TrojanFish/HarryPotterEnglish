@@ -235,7 +235,7 @@ export function AudioPlayer({
         {/* Loop Toggle */}
         <button
           onClick={onToggleLoopSentence}
-          className={`w-11 h-11 shrink-0 rounded-2xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+          className={`w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
             isLoopSentence
               ? 'bg-amber-500 text-white border-amber-600'
               : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
@@ -253,7 +253,7 @@ export function AudioPlayer({
         <button
           onClick={onPrevSentence}
           disabled={activeCueIndex <= 0}
-          className="w-11 h-11 shrink-0 rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+          className="w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
           title="上一句 (←)"
           aria-label="上一句"
         >
@@ -276,7 +276,7 @@ export function AudioPlayer({
         <button
           onClick={onNextSentence}
           disabled={activeCueIndex >= totalCues - 1}
-          className="w-11 h-11 shrink-0 rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+          className="w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
           title="下一句 (→)"
           aria-label="下一句"
         >
@@ -286,7 +286,7 @@ export function AudioPlayer({
         {/* Speed Cycle */}
         <button
           onClick={handleSpeedCycle}
-          className={`w-11 h-11 shrink-0 rounded-2xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
+          className={`w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
             playbackRate !== 1.0
               ? 'bg-amber-500 text-white border-amber-600'
               : 'border-[#e8ddd0] bg-white text-stone-700'
@@ -327,30 +327,30 @@ export function AudioPlayer({
           <button
             onClick={onPrevSentence}
             disabled={activeCueIndex <= 0}
-            className="w-10 h-10 min-w-[40px] shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+            className="w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
             title="上一句 (←)"
             aria-label="上一句"
           >
             <SkipBack size={18} />
           </button>
 
-          {/* Main Play / Pause (48px) */}
+          {/* Main Play / Pause CTA (56×56px Primary Anchor) */}
           <button
             onClick={onPlayPause}
-            className="w-12 h-12 shrink-0 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none"
+            className="w-14 h-14 min-w-[56px] min-h-[56px] shrink-0 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border-2 border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none"
             title="播放/暂停 (Space)"
             aria-label="播放或暂停"
           >
             {isPlaying
-              ? <Pause size={20} className="fill-current" />
-              : <Play size={20} className="fill-current translate-x-0.5" />}
+              ? <Pause size={24} className="fill-current" />
+              : <Play size={24} className="fill-current translate-x-0.5" />}
           </button>
 
           {/* Next Sentence */}
           <button
             onClick={onNextSentence}
             disabled={activeCueIndex >= totalCues - 1}
-            className="w-10 h-10 min-w-[40px] shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
+            className="w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-95 cursor-pointer"
             title="下一句 (→)"
             aria-label="下一句"
           >
@@ -360,7 +360,7 @@ export function AudioPlayer({
           {/* Loop Toggle */}
           <button
             onClick={onToggleLoopSentence}
-            className={`w-10 h-10 shrink-0 rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+            className={`w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
               isLoopSentence
                 ? 'bg-amber-500 text-white border-amber-600'
                 : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 hover:border-amber-300'
@@ -369,8 +369,8 @@ export function AudioPlayer({
             aria-label="单句循环"
           >
             <div className="relative">
-              <Repeat size={14} />
-              <span className="absolute -bottom-1.5 -right-1.5 text-[8px] font-bold">1</span>
+              <Repeat size={16} />
+              <span className="absolute -bottom-1 -right-1 text-[8px] font-bold">1</span>
             </div>
           </button>
         </div>

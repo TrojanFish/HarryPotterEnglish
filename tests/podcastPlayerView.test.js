@@ -84,8 +84,8 @@ test('PodcastPlayerView Test Suite', async (t) => {
 
     assert.ok(html.includes('上一句'), 'Must have 上一句 button');
     assert.ok(html.includes('下一句'), 'Must have 下一句 button');
-    assert.ok(!html.includes('快退 15 秒'), 'Must not have 15s skip backward');
-    assert.ok(!html.includes('快进 15 秒'), 'Must not have 15s skip forward');
+    assert.ok(html.includes('快退 15 秒') || html.includes('快退'), 'Podcast mode must have 15s skip backward');
+    assert.ok(html.includes('快进 15 秒') || html.includes('快进'), 'Podcast mode must have 15s skip forward');
     assert.ok(html.includes('14:20') || html.includes('定时'), 'Must display active sleep timer indicator');
     assert.ok(html.includes('1.25x') || html.includes('1.25'), 'Must display current playback speed');
   });
