@@ -56,6 +56,8 @@ test('Hogwarts Immersion: House Hourglasses & O.W.L.s Certificate Test Suite', a
     // Hourglass visual elements
     assert.ok(html.includes('学院沙漏') || html.includes('礼堂沙漏') || html.includes('House Points'), 'Must mention House hourglass points');
     assert.ok(html.includes('分') || html.includes('pts') || html.includes('宝石'), 'Must display house points or gems');
+    assert.ok(html.includes('whitespace-nowrap'), 'House Points badge must have whitespace-nowrap');
+    assert.ok(html.includes('rounded-b-full rounded-t-sm'), 'Gem fill must have rounded-b-full rounded-t-sm for natural accumulation');
   });
 
   // 3. Compile OwlsCertificateModal
@@ -79,14 +81,38 @@ test('Hogwarts Immersion: House Hourglasses & O.W.L.s Certificate Test Suite', a
     assert.ok(html.includes('42') || html.includes('词'), 'Must render student stats');
     assert.ok(html.includes('wax-seal') || html.includes('svg'), 'Must render wax seal badge');
 
+    // Apple HIG Mobile Bottom Sheet layout check
+    assert.ok(html.includes('items-end'), 'Must use items-end on mobile for upward sliding sheet');
+    assert.ok(html.includes('rounded-t-3xl'), 'Must use rounded-t-3xl on mobile for sheet top curves');
+    assert.ok(html.includes('w-10 h-1.5') || html.includes('pull-handle'), 'Must include mobile drag/pull handle indicator');
+
     // Zero emojis check
     const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
     assert.ok(!emojiRegex.test(html), 'Must have strictly zero emojis');
   });
 
+  // 4. Compile AnalyticsDashboard
+  compileJsx('src/components/AnalyticsDashboard.jsx', 'AnalyticsDashboard.compiled.js');
+  const { AnalyticsDashboard } = await import('./AnalyticsDashboard.compiled.js');
+
+  await t.test('5.3: AnalyticsDashboard renders responsive Owls honor button avoiding mobile truncation', () => {
+    const html = renderToString(
+      React.createElement(AnalyticsDashboard, {
+        isOpen: true,
+        onClose: () => {},
+        userHouse: 'gryffindor',
+        vocabCount: 42
+      })
+    );
+
+    assert.ok(html.includes('霍格沃茨学业数据罗盘'), 'Must render compass title');
+    assert.ok(html.includes('hidden sm:inline') && html.includes('学业喜报 (O.W.L.s 证书)'), 'Must render full label on desktop');
+    assert.ok(html.includes('sm:hidden') && html.includes('学业喜报'), 'Must render short label on mobile');
+  });
+
   t.after(() => {
     try {
-      ['WaxSealBadge.compiled.js', 'HouseHourglasses.compiled.js', 'OwlsCertificateModal.compiled.js'].forEach(f => {
+      ['WaxSealBadge.compiled.js', 'HouseHourglasses.compiled.js', 'OwlsCertificateModal.compiled.js', 'AnalyticsDashboard.compiled.js'].forEach(f => {
         const full = path.resolve(__dirname, f);
         if (fs.existsSync(full)) fs.unlinkSync(full);
       });

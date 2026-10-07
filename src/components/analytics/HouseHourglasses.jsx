@@ -44,9 +44,9 @@ export function HouseHourglasses({
             <Trophy size={16} />
           </div>
           <div>
-            <h3 className="text-sm sm:text-base font-bold font-magical text-amber-950 flex items-center gap-1.5">
+            <h3 className="text-sm sm:text-base font-bold font-magical text-amber-950 flex items-center gap-1.5 flex-wrap">
               <span>礼堂学院沙漏 · 学院杯争夺战</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-300 font-sans font-bold">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-300 font-sans font-bold whitespace-nowrap shrink-0">
                 House Points
               </span>
             </h3>
@@ -103,7 +103,7 @@ export function HouseHourglasses({
 
                 {/* Gem Fill */}
                 <div
-                  className="w-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+                  className="w-full rounded-b-full rounded-t-sm transition-all duration-700 ease-out relative overflow-hidden"
                   style={{
                     height: `${fillPercent}%`,
                     backgroundColor: house.gemColor,

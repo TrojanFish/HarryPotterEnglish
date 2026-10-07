@@ -53,7 +53,7 @@ export function OwlsCertificateModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -61,12 +61,15 @@ export function OwlsCertificateModal({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-2xl max-h-[92dvh] overflow-y-auto rounded-3xl border-2 border-[#dec9a5] bg-[#fbf9f5] text-[#1e1610] shadow-2xl p-6 sm:p-8 flex flex-col no-scrollbar"
+        className="relative w-full max-w-2xl max-h-[92dvh] sm:max-h-[88dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border-2 border-[#dec9a5] bg-[#fbf9f5] text-[#1e1610] shadow-2xl p-4 sm:p-8 flex flex-col no-scrollbar pb-safe"
       >
+        {/* Mobile Pull Handle Indicator (Apple HIG standard) */}
+        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-1.5 shrink-0" />
+
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="duo-touch-target absolute top-4 right-4 rounded-xl border border-[#e8ddd0] bg-white/90 hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 cursor-pointer z-10"
+          className="duo-touch-target absolute top-3 sm:top-4 right-3 sm:right-4 rounded-xl border border-[#e8ddd0] bg-white/90 hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 cursor-pointer z-10"
           title="关闭证书 (ESC)"
           aria-label="关闭证书"
         >
@@ -74,11 +77,11 @@ export function OwlsCertificateModal({
         </button>
 
         {/* Certificate Parchment Inner Frame */}
-        <div className="p-6 sm:p-8 rounded-2xl border-2 border-dashed border-amber-600/40 bg-gradient-to-b from-[#fffefc] via-[#fdfaf3] to-amber-50/40 relative overflow-hidden text-center">
+        <div className="p-4 sm:p-8 rounded-2xl border-2 border-dashed border-amber-600/40 bg-gradient-to-b from-[#fffefc] via-[#fdfaf3] to-amber-50/40 relative text-center shrink-0">
           {/* Top Crest & Monogram */}
-          <div className="flex flex-col items-center mb-4">
-            <WaxSealBadge text="H" size={48} title="Hogwarts Seal of Approval" />
-            <div className="mt-2 text-[10px] tracking-widest font-magical font-bold text-amber-900 uppercase">
+          <div className="flex flex-col items-center mb-3 sm:mb-4">
+            <WaxSealBadge text="H" size={44} title="Hogwarts Seal of Approval" />
+            <div className="mt-1.5 text-[10px] tracking-widest font-magical font-bold text-amber-900 uppercase">
               Hogwarts School of Witchcraft and Wizardry
             </div>
             <div className="text-[9px] text-stone-500 tracking-wider">
@@ -87,25 +90,25 @@ export function OwlsCertificateModal({
           </div>
 
           {/* Certificate Title */}
-          <h2 className="text-xl sm:text-2xl font-bold font-magical text-amber-950 mb-1">
+          <h2 className="text-lg sm:text-2xl font-bold font-magical text-amber-950 mb-1">
             普通巫师等级考试 (O.W.L.s) 学业荣誉通报
           </h2>
-          <p className="text-[11px] text-stone-600 mb-6 font-reading">
+          <p className="text-[10px] sm:text-[11px] text-stone-600 mb-4 sm:mb-6 font-reading">
             ORDINARY WIZARDING LEVEL ACADEMIC RECORD
           </p>
 
-          {/* House Ribbon */}
+          {/* House Ribbon - Responsive dual-part wrap preventing single-character break */}
           <div
-            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border mb-6 text-xs font-bold"
+            className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full border mb-4 sm:mb-6 text-[11px] sm:text-xs font-bold max-w-full flex-wrap"
             style={{
               backgroundColor: house.bgLight,
               borderColor: house.borderColor,
               color: house.primaryColor
             }}
           >
-            <Shield size={13} />
-            <span>{house.nameZh} 学院 · {house.nameEn}</span>
-            <span className="opacity-75 font-normal">| {house.mottoZh}</span>
+            <Shield size={13} className="shrink-0" />
+            <span className="whitespace-nowrap">{house.nameZh} 学院 · {house.nameEn}</span>
+            <span className="opacity-75 font-normal whitespace-nowrap">| {house.mottoZh}</span>
           </div>
 
           {/* 4 Pillars Stats Grid */}
@@ -136,34 +139,34 @@ export function OwlsCertificateModal({
           </div>
 
           {/* Evaluation Banner */}
-          <div className="p-3.5 rounded-xl border border-amber-400/60 bg-amber-500/10 mb-6 flex items-center justify-center gap-3">
-            <WaxSealBadge text="O" size={32} title="杰出级 (Outstanding)" />
-            <div className="text-left">
+          <div className="p-3 sm:p-3.5 rounded-xl border border-amber-400/60 bg-amber-500/10 mb-4 sm:mb-6 flex items-center justify-center gap-2.5 sm:gap-3 text-left">
+            <WaxSealBadge text="O" size={30} title="杰出级 (Outstanding)" />
+            <div className="min-w-0 flex-1">
               <div className="text-xs font-bold text-amber-950">
                 O.W.L.s 综合研学鉴定：杰出级 (O · Outstanding)
               </div>
-              <div className="text-[10px] text-stone-600">
+              <div className="text-[10px] text-stone-600 mt-0.5 leading-snug">
                 该学员在英语原著精听研读与魔咒辨识中展现非凡专注，予以最高嘉奖。
               </div>
             </div>
           </div>
 
           {/* Dumbledore Signature Quote */}
-          <div className="border-t border-amber-200/80 pt-4 text-center">
-            <blockquote className="text-xs italic text-stone-700 font-reading mb-2 leading-relaxed">
+          <div className="border-t border-amber-200/80 pt-3.5 sm:pt-4 text-center">
+            <blockquote className="text-xs italic text-stone-700 font-reading mb-1.5 leading-relaxed">
               “决定我们成为什么样的人的，不是我们的能力，而是我们的选择。”
             </blockquote>
             <div className="text-[11px] font-bold font-magical text-amber-900">
               阿不思·邓布利多 (Albus Dumbledore)
             </div>
-            <div className="text-[9px] text-stone-500">
+            <div className="text-[9px] text-stone-500 mt-0.5">
               霍格沃茨魔法学校校长 · 梅林爵士团一级大魔法师
             </div>
           </div>
         </div>
 
         {/* Footer Action Buttons */}
-        <div className="mt-5 flex items-center justify-between gap-3 flex-wrap">
+        <div className="mt-4 sm:mt-5 flex items-center justify-between gap-2.5 sm:gap-3 flex-wrap shrink-0">
           <div className="text-[11px] text-stone-500 flex items-center gap-1">
             <Sparkles size={12} className="text-amber-600" />
             <span>可复制喜报文本或直接调起系统打印为 PDF</span>

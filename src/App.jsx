@@ -621,7 +621,7 @@ export function App() {
             streakDays={analyticsSummary?.streakDays || 0}
             onOpenAnalytics={() => {
               refreshAnalytics();
-              setIsAnalyticsOpen(true);
+              handleSwitchCurrentView('analytics');
             }}
             onOpenStorage={() => {
               refreshOfflineCount();
@@ -655,7 +655,7 @@ export function App() {
             <AnalyticsDashboard
               isOpen={true}
               isPageView={true}
-              onClose={() => setCurrentView('player')}
+              onClose={() => setCurrentView(selectedChapter ? 'player' : 'bookshelf')}
               isParchment={isParchment}
               vocabCount={vocabList.length}
               userHouse={currentHouse}

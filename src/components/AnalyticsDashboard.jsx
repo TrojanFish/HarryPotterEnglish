@@ -257,11 +257,12 @@ export function AnalyticsDashboard({
         <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
           <button
             onClick={() => setShowOwlsCertificate(true)}
-            className="duo-btn-primary min-h-[44px] flex items-center gap-1 sm:gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer whitespace-nowrap shrink-0"
+            className="duo-btn-primary min-h-[44px] flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer whitespace-nowrap shrink-0"
             title="生成官方霍格沃茨 O.W.L.s 学业荣誉通报证书，支持直接打印与分享"
           >
             <Award size={14} className="shrink-0" />
-            <span>学业喜报 (O.W.L.s 证书)</span>
+            <span className="hidden sm:inline">学业喜报 (O.W.L.s 证书)</span>
+            <span className="sm:hidden">学业喜报</span>
           </button>
 
           {onClose && (
