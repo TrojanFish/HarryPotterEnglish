@@ -23,7 +23,7 @@ import {
  * - Toggle via top header button or Ctrl+B / Cmd+B keyboard shortcut
  * - Strictly 100% Lucide SVG icons, strictly zero Unicode emojis
  */
-export function DesktopSidebar({
+function DesktopSidebarComponent({
   currentView = 'bookshelf',
   onSwitchView,
   playerMode = 'podcast',
@@ -361,4 +361,5 @@ export function DesktopSidebar({
   );
 }
 
+export const DesktopSidebar = React.memo(DesktopSidebarComponent);
 export default DesktopSidebar;

@@ -18,7 +18,7 @@ import {
  * - Tooltip descriptions
  * - Strictly Lucide SVG, zero Unicode emojis
  */
-export function TabletRail({
+function TabletRailComponent({
   currentView = 'bookshelf',
   onSwitchView,
   playerMode = 'podcast',
@@ -170,4 +170,5 @@ export function TabletRail({
   );
 }
 
+export const TabletRail = React.memo(TabletRailComponent);
 export default TabletRail;

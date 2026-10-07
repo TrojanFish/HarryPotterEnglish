@@ -18,7 +18,7 @@ import { formatEnglishText } from '../../utils/vttParser';
  * - Mobile (< 768px): Compact bottom-docked capsule with Apple HIG 44px touch targets
  * - Strictly 100% Lucide React SVG, zero Unicode emojis
  */
-export function GlobalPodcastCapsule({
+function GlobalPodcastCapsuleComponent({
   currentBook,
   currentChapter,
   isPlaying = false,
@@ -267,4 +267,5 @@ export function GlobalPodcastCapsule({
   );
 }
 
+export const GlobalPodcastCapsule = React.memo(GlobalPodcastCapsuleComponent);
 export default GlobalPodcastCapsule;

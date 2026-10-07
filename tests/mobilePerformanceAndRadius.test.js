@@ -48,4 +48,29 @@ test('Mobile PWA Performance & Border Radius Standardization Test Suite', async 
       );
     }
   });
+
+  // =========================================================================
+  // TASK 3: React.memo View Boundary Isolation
+  // =========================================================================
+  await t.test('3.1: High-frequency views and navigation bars are protected with React.memo to isolate audio tick re-renders', () => {
+    const memoViews = [
+      'src/components/BookshelfView.jsx',
+      'src/components/podcast/PodcastPlayerView.jsx',
+      'src/components/navigation/DesktopSidebar.jsx',
+      'src/components/navigation/TabletRail.jsx',
+      'src/components/navigation/ReaderTopBar.jsx',
+      'src/components/navigation/MobileTopBar.jsx',
+      'src/components/navigation/GlobalPodcastCapsule.jsx'
+    ];
+
+    for (const relPath of memoViews) {
+      const fullPath = path.resolve(projectRoot, relPath);
+      const content = fs.readFileSync(fullPath, 'utf8');
+      const hasMemo = /React\.memo\(|\bmemo\(/.test(content);
+      assert.ok(
+        hasMemo,
+        `${relPath} must be wrapped in React.memo to prevent unnecessary re-rendering during audio ticks`
+      );
+    }
+  });
 });

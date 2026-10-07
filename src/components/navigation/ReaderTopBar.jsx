@@ -20,7 +20,7 @@ import { formatEnglishText } from '../../utils/vttParser';
  * - Right: Reading controls (双语译文 / 快捷键)
  * - Zero emojis, 100% Lucide React icons
  */
-export function ReaderTopBar({
+function ReaderTopBarComponent({
   currentBook,
   currentChapter,
   onOpenShelf,
@@ -206,4 +206,5 @@ export function ReaderTopBar({
   );
 }
 
+export const ReaderTopBar = React.memo(ReaderTopBarComponent);
 export default ReaderTopBar;

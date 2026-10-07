@@ -23,7 +23,7 @@ import { formatTime, formatEnglishText } from '../utils/vttParser';
 import { DailyGoalRing } from './DailyGoalRing';
 import { getCefrInfo } from '../data/books';
 
-export function BookshelfView({
+function BookshelfViewComponent({
   books = [],
   selectedBook,
   selectedChapter,
@@ -549,4 +549,5 @@ export function BookshelfView({
   );
 }
 
+export const BookshelfView = React.memo(BookshelfViewComponent);
 export default BookshelfView;

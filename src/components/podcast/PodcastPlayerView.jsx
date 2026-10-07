@@ -24,7 +24,7 @@ import { formatEnglishText } from '../../utils/vttParser';
  * - 1-Click seamless transition to SLA Studio Mode (精研研学工坊)
  * - Strictly 100% Lucide React icons, zero emojis
  */
-export function PodcastPlayerView({
+function PodcastPlayerViewComponent({
   currentBook,
   currentChapter,
   cues = [],
@@ -453,4 +453,5 @@ export function PodcastPlayerView({
   );
 }
 
+export const PodcastPlayerView = React.memo(PodcastPlayerViewComponent);
 export default PodcastPlayerView;

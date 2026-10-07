@@ -16,7 +16,7 @@ import {
  * - Right: Streak flame badge + Quick tools dropdown
  * - Strictly 100% Lucide SVG, zero Unicode emojis
  */
-export function MobileTopBar({
+function MobileTopBarComponent({
   currentView = 'bookshelf',
   onSwitchView,
   currentBook,
@@ -132,7 +132,7 @@ export function MobileTopBar({
       </div>
     </div>
   </header>
-);
 }
 
+export const MobileTopBar = React.memo(MobileTopBarComponent);
 export default MobileTopBar;
