@@ -4,14 +4,14 @@
 
 ![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![React](https://img.shields.io/badge/React-18-61dafb.svg)
-![Vite](https://img.shields.io/badge/Vite-5-646cff.svg)
+![Vite](https://img.shields.io/badge/Vite-6-646cff.svg)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-38bdf8.svg)
 ![Cloudflare R2](https://img.shields.io/badge/Cloudflare-R2_Ready-f38020.svg)
 ![Cloudflare D1](https://img.shields.io/badge/Cloudflare-D1_Sync-f38020.svg)
 ![Local-First](https://img.shields.io/badge/Architecture-Local--First-10b981.svg)
 ![Docker](https://img.shields.io/badge/Docker-Supported-2496ed.svg)
 ![Vercel](https://img.shields.io/badge/Vercel-Deploy_Ready-black.svg)
-![Tests Passing](https://img.shields.io/badge/Tests-233%2F233_Passing-brightgreen.svg)
+![Tests Passing](https://img.shields.io/badge/Tests-236%2F236_Passing-brightgreen.svg)
 
 **专为英语学习者量身打造的沉浸式原版有声小说精听、艾宾浩斯背词与 A/B 影子跟读评测平台**  
 *听原版原声 — 磨纯正英音 — 艾宾浩斯复习 — A/B 影子跟读 — 智能拼写听写*
@@ -134,16 +134,63 @@ docker compose up -d --build
 3. 在 **Environment Variables** 添加 R2 凭据（见下表）。
 4. 点击 **Deploy** 即可完成构建与全球分发。
 
-### 3. Cloudflare Pages 部署（推荐）
-1. 登录 Cloudflare Dashboard，创建 Pages 项目并连接此仓库。
-2. 构建命令填入 `npm run build`，输出目录填入 `dist`。
-3. **绑定 R2 存储桶**：
-   - Pages 项目 **Settings** -> **Functions** -> **R2 bucket bindings**；
-   - Variable name 填入：`HP_AUDIO_BUCKET`；
-   - 选择你的 R2 存储桶（例如 `fluentfox-podcast`）。
-4. **绑定 D1 数据库**（多设备同步，可选）：
-   - 在 Cloudflare 控制台创建 D1 数据库 `hp-sync-db`，执行 [`d1/schema.sql`](d1/schema.sql)；
-   - Pages 项目 **Settings** -> **Functions** -> **D1 database bindings**，变量名填 `DB`。
+### 3. Cloudflare Pages 部署（推荐全球边缘网络）
+
+本项目深度适配 Cloudflare Serverless 生态，支持零服务器费用、全球边缘 Anycast 加速及离线优先同步。
+
+#### 步骤 1：创建 Pages 项目
+1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)，进入 **Workers & Pages** -> **Create application** -> **Pages** -> **Connect to Git**；
+2. 授权 GitHub 并选择本仓库。
+
+#### 步骤 2：配置构建参数 (Build Settings)
+- **Framework preset**：选择 **`None`**（或 Vite，推荐选 None 以避免 Wrangler 隐式插件拦截）；
+- **Build command**：`npm run build`；
+- **Build output directory**：`dist`；
+- **Environment variables**（可选建议）：
+  - `NODE_VERSION`：`20`；
+  - `VITE_R2_PUBLIC_DOMAIN`：（可选）你的 R2 自定义 CDN 域名（如 `audio-cdn.yourdomain.com`）。
+- 点击 **Save and Deploy** 完成初始部署。
+
+#### 步骤 3：绑定 R2 音频存储桶（必须）
+1. 在 Pages 项目设置页进入 **Settings** -> **Functions** -> **R2 bucket bindings**；
+2. 点击 **Add binding**：
+   - **Variable name**（必须大写且完全一致）：`HP_AUDIO_BUCKET`；
+   - **R2 bucket**：选择存放音频的存储桶（例如 `fluentfox-podcast`）；
+3. 点击 **Save**。
+
+#### 步骤 4：绑定 D1 数据库（多端增量同步）
+1. 在 Cloudflare 控制台进入 **Storage & Databases** -> **D1 SQL Database** -> **Create database**（例如命名为 `hp-sync-db`）；
+2. 进入该数据库控制台（Console），执行 [`d1/schema.sql`](d1/schema.sql) 中的建表语句（创建 `user_vocab`、`user_analytics`、`user_devices` 3 张表）；
+3. 回到 Pages 项目的 **Settings** -> **Functions** -> **D1 database bindings** -> 点击 **Add binding**：
+   - **Variable name**（必须大写且完全一致）：`DB`；
+   - **D1 database**：选择刚创建的 `hp-sync-db`；
+4. 点击 **Save**。
+
+#### 步骤 5：配置 R2 跨域策略 (CORS，保障 iOS 切片播放)
+进入 R2 存储桶 -> **Settings** -> **CORS Policy**，添加以下规则以放行 HTTP 206 Range 切片头：
+```json
+[
+  {
+    "AllowedOrigins": ["*"],
+    "AllowedMethods": ["GET", "HEAD"],
+    "AllowedHeaders": ["Range", "Content-Type"],
+    "ExposeHeaders": ["Content-Range", "Accept-Ranges", "Content-Length", "ETag"],
+    "MaxAgeSeconds": 86400
+  }
+]
+```
+
+#### 步骤 6：预生成静态书目索引（推荐）
+在本地终端执行一次：
+```bash
+npm run build:catalog
+```
+该指令将自动扫描 R2 书目并在存储桶生成 `podcasts/catalog.json`，使 Cloudflare Function 目录请求耗时从 3 秒降至 20 毫秒，彻底避免 50 次子请求上限。
+
+#### 步骤 7：重新部署与健康检查验证
+1. 在 Pages 项目的 **Deployments** 页面，在最新一条记录旁点击 `...` -> **Retry deployment**（重新部署），使 R2 和 D1 绑定生效；
+2. 访问健康探针接口：`https://你的项目名.pages.dev/api/config`；
+3. 若返回 `{"status":"ok","r2Bound":true,"d1Bound":true}`，代表全栈无服务器环境已全部就绪！
 
 ---
 
