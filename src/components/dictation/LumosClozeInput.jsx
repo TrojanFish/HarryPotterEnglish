@@ -76,6 +76,7 @@ export function LumosClozeInput({
       // Auto advance to next blank
       if (blankIndex < totalBlanks - 1 && inputRefs.current[blankIndex + 1]) {
         inputRefs.current[blankIndex + 1].focus();
+        inputRefs.current[blankIndex + 1].scrollIntoView?.({ behavior: 'smooth', block: 'nearest' });
       }
     }
   };

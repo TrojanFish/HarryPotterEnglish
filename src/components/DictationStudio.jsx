@@ -310,7 +310,7 @@ export function DictationStudio({
   const maxStarsPossible = cues.length * 3;
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#fbf9f4] text-[#1e1610] select-none overflow-hidden">
+    <div className="flex-1 flex flex-col h-full min-h-[100dvh] max-h-[100dvh] md:min-h-0 md:max-h-full bg-[#fbf9f4] text-[#1e1610] select-none overflow-hidden overscroll-contain">
       
       {/* ── 1. Sticky Mode Sub-Header (Integrated with Study TopBar) ── */}
       <div className="sticky top-0 z-20 w-full bg-[#fbf9f4]/95 border-b border-[#e8ddd0] backdrop-blur-md shrink-0">
@@ -399,7 +399,7 @@ export function DictationStudio({
       </div>
 
       {/* ── 2. Scrollable Central Exercise Area ───────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 sm:py-6 ios-scroll">
+      <div className="flex-1 overflow-y-auto px-4 py-4 sm:py-6 ios-scroll overscroll-contain">
         <div className="max-w-4xl mx-auto w-full space-y-4">
 
           {/* Dueling Club Survival Bar (if dueling mode) */}

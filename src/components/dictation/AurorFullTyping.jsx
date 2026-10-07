@@ -34,7 +34,7 @@ export function AurorFullTyping({
     if (typeof window === 'undefined' || !window.visualViewport) return;
     const handleViewportChange = () => {
       if (document.activeElement === inputRef.current) {
-        inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     };
     window.visualViewport.addEventListener('resize', handleViewportChange);
