@@ -42,20 +42,29 @@ export function useAudioPlayback({
     }
   }, [volume]);
 
-  // Persist current playback position for breakpoint continue learning
+  const lastPositionSaveRef = useRef(0);
+
+  // Persist current playback position for breakpoint continue learning (throttled to 5000ms on mobile)
   useEffect(() => {
     if (currentTime > 0 && currentBookObj?.id && currentChapterObj?.id) {
-      try {
-        localStorage.setItem('hp_last_position', JSON.stringify({
-          bookId: currentBookObj.id,
-          chapterId: currentChapterObj.id,
-          currentTime,
-          duration,
-          updatedAt: Date.now()
-        }));
-      } catch {}
+      const now = Date.now();
+      const shouldSaveImmediately = !isPlaying;
+      const isThrottled = now - lastPositionSaveRef.current >= 5000;
+
+      if (shouldSaveImmediately || isThrottled) {
+        lastPositionSaveRef.current = now;
+        try {
+          localStorage.setItem('hp_last_position', JSON.stringify({
+            bookId: currentBookObj.id,
+            chapterId: currentChapterObj.id,
+            currentTime,
+            duration,
+            updatedAt: now
+          }));
+        } catch {}
+      }
     }
-  }, [currentTime, duration, currentBookObj?.id, currentChapterObj?.id]);
+  }, [currentTime, duration, isPlaying, currentBookObj?.id, currentChapterObj?.id]);
 
   // 2. Play / Pause Control
   const togglePlayPause = useCallback(async () => {
