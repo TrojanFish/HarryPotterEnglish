@@ -55,7 +55,7 @@ export function GlobalPodcastCapsule({
   return (
     <>
       {/* ── 1. Mobile Version (< 768px): Harmonized Warm Parchment Capsule ── */}
-      <div className="md:hidden fixed bottom-[calc(3.4rem+max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.25rem)))] left-2.5 right-2.5 z-40 rounded-2xl bg-white/95 text-[#1e1610] border border-amber-300 backdrop-blur-md flex flex-col overflow-hidden select-none animate-slideUp shadow-sm">
+      <div className="md:hidden fixed bottom-[calc(3.4rem+max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.25rem)))] left-2.5 right-2.5 z-40 rounded-2xl bg-[#fbf9f5] text-[#1e1610] border border-amber-300 flex flex-col overflow-hidden select-none animate-slideUp shadow-sm">
         {/* Top Slim Audio Scrubber Line */}
         <div className="h-1 bg-amber-500/15 w-full overflow-hidden">
           <div
@@ -142,7 +142,7 @@ export function GlobalPodcastCapsule({
       </div>
 
       {/* ── 2. Desktop & Tablet Floating Capsule (>= 768px) ─────────── */}
-      <div className="hidden md:flex fixed bottom-5 left-1/2 -translate-x-1/2 z-40 max-w-2xl w-[92%] rounded-2xl bg-white/95 border-2 border-amber-400/90 text-[#1e1610] backdrop-blur-xl flex-col overflow-hidden select-none animate-slideUp shadow-none">
+      <div className="hidden md:flex fixed bottom-5 left-1/2 -translate-x-1/2 z-40 max-w-2xl w-[92%] rounded-2xl bg-[#fbf9f5] border-2 border-amber-400/90 text-[#1e1610] flex-col overflow-hidden select-none animate-slideUp shadow-none">
         {/* Top Slim Audio Scrubber Line */}
         <div className="h-1 bg-amber-500/15 w-full overflow-hidden">
           <div

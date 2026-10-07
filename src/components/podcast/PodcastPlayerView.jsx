@@ -86,7 +86,7 @@ export function PodcastPlayerView({
   return (
     <div className={`relative flex flex-col h-full bg-[#fbf9f5] text-[#1e1610] overflow-hidden select-none ${className}`}>
       {/* ── Sub-header: Mobile Tab Switcher ───────── */}
-      <div className="lg:hidden flex items-center justify-between px-4 py-2 border-b border-[#e8ddd0] bg-white/80 backdrop-blur-sm shrink-0">
+      <div className="lg:hidden flex items-center justify-between px-4 py-2 border-b border-[#e8ddd0] bg-[#fbf9f5] shrink-0">
         {/* Mobile Tab Toggle (Apple HIG Touch Target & Dual-Channel Status) */}
         <div className="flex items-center p-1 rounded-xl bg-stone-100 border border-[#e8ddd0] gap-1">
           <button
@@ -141,7 +141,7 @@ export function PodcastPlayerView({
                 <Headphones size={64} className="text-amber-400" />
               )}
               {/* Subtle Ambient Disc Badge */}
-              <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono text-amber-200 border border-amber-400/30 flex items-center gap-1">
+              <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/80 text-[10px] font-mono text-amber-200 border border-amber-400/30 flex items-center gap-1">
                 <Disc3 size={12} className={isPlaying ? 'animate-spin' : ''} />
                 <span>PODCAST</span>
               </div>
@@ -303,7 +303,7 @@ export function PodcastPlayerView({
               ) : (
                 <Headphones size={56} className="text-amber-400" />
               )}
-              <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono text-amber-200 border border-amber-400/30 flex items-center gap-1">
+              <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/80 text-[10px] font-mono text-amber-200 border border-amber-400/30 flex items-center gap-1">
                 <Disc3 size={12} className={isPlaying ? 'animate-spin' : ''} />
                 <span>PODCAST</span>
               </div>
@@ -337,7 +337,7 @@ export function PodcastPlayerView({
       </div>
 
       {/* ── Stationary Anchored Bottom Player Console (Mobile < 1024px) ── */}
-      <div className="lg:hidden podcast-anchored-console border-t border-[#e8ddd0] bg-white/95 backdrop-blur-md px-3 sm:px-4 pt-2.5 pb-safe pb-3 flex flex-col gap-2 shrink-0 select-none">
+      <div className="lg:hidden podcast-anchored-console border-t border-[#e8ddd0] bg-[#fbf9f5] px-3 sm:px-4 pt-2.5 pb-safe pb-3 flex flex-col gap-2 shrink-0 select-none">
         {/* Scrubber Line */}
         <div className="w-full flex items-center gap-2">
           <span className="text-[10px] font-mono text-stone-500 min-w-[32px] text-right">{formatTime(currentTime)}</span>

@@ -506,8 +506,8 @@ export function SubtitleViewer({
       {/* ── Subtitle Cue Count & Font Sizing Ribbon (Full-Width Sticky) ── */}
       <div className={`sticky top-0 z-10 w-full border-b transition-colors ${
         isParchment
-          ? 'bg-[#fbf9f4]/95 border-[#e8ddd0] backdrop-blur-md'
-          : 'bg-[#0b0f19]/95 border-slate-800'
+          ? 'bg-[#fbf9f4] border-[#e8ddd0]'
+          : 'bg-[#0b0f19] border-slate-800'
       }`}>
         <div className="max-w-4xl mx-auto px-4 py-2 flex items-center justify-between gap-2">
           {/* Left: Mode Identity Badge & Sentence Progress & Mastery stats */}
@@ -617,7 +617,7 @@ export function SubtitleViewer({
       {!isFollowActive && cues.length > 0 && activeCueIndex >= 0 && (
         <button
           onClick={scrollToActiveCue}
-          className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:bottom-24 right-4 sm:right-8 z-30 flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-full border border-amber-300 bg-white/95 backdrop-blur-sm text-amber-950 font-bold text-xs active:scale-95 cursor-pointer shadow-none"
+          className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:bottom-24 right-4 sm:right-8 z-30 flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-full border border-amber-300 bg-[#fbf9f5] text-amber-950 font-bold text-xs active:scale-95 cursor-pointer shadow-none"
           title="定位到正在朗读的句子"
           aria-label="定位到正在朗读的句子"
         >

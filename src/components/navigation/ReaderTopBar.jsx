@@ -48,7 +48,7 @@ export function ReaderTopBar({
   const chapterTitle = formatEnglishText(rawChapterTitle);
 
   return (
-    <header className="sticky top-0 z-30 pt-safe bg-white/95 border-b border-[#e8ddd0] backdrop-blur-md select-none shrink-0">
+    <header className="sticky top-0 z-30 pt-safe bg-[#fbf9f5] border-b border-[#e8ddd0] select-none shrink-0">
       {/* ── Primary Top Bar Navigation Row ────────────────────────── */}
       <div className="h-14 px-3 sm:px-6 flex items-center justify-between gap-2">
         {/* ── Left: Back Button & Chapter Selector ─────────────────── */}

@@ -26,4 +26,26 @@ test('Mobile PWA Performance & Border Radius Standardization Test Suite', async 
       'useAudioPlayback must throttle playback position persistence by at least 5000ms'
     );
   });
+
+  // =========================================================================
+  // TASK 2: Eliminate Heavy GPU Backdrop-Blur on Mobile Navigation & Player Consoles
+  // =========================================================================
+  await t.test('2.1: Mobile navigation bars and player consoles do not use expensive backdrop-blur GPU shaders', () => {
+    const filesToCheck = [
+      'src/components/navigation/ReaderTopBar.jsx',
+      'src/components/navigation/MobileTopBar.jsx',
+      'src/components/navigation/GlobalPodcastCapsule.jsx',
+      'src/components/podcast/PodcastPlayerView.jsx',
+      'src/components/navigation/MobileBottomNav.jsx'
+    ];
+
+    for (const relPath of filesToCheck) {
+      const fullPath = path.resolve(projectRoot, relPath);
+      const content = fs.readFileSync(fullPath, 'utf8');
+      assert.ok(
+        !content.includes('backdrop-blur'),
+        `${relPath} must not contain GPU-expensive 'backdrop-blur-*' classes`
+      );
+    }
+  });
 });

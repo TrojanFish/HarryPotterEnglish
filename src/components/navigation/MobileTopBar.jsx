@@ -47,7 +47,7 @@ export function MobileTopBar({
   }, [showTools]);
 
   return (
-    <header className="md:hidden sticky top-0 z-30 pt-safe bg-white/95 border-b border-[#e8ddd0] backdrop-blur-md select-none">
+    <header className="md:hidden sticky top-0 z-30 pt-safe bg-[#fbf9f5] border-b border-[#e8ddd0] select-none">
       <div className="h-14 px-3 flex items-center justify-between">
         {/* ── Left: Brand Identity ──────────────────────────────────── */}
         <div className="flex items-center gap-2.5 min-w-0">
