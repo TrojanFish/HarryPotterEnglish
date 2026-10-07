@@ -50,4 +50,79 @@ test('App.jsx Integrity & Hook Binding Smoke Test', async (t) => {
     assert.ok(appCode.includes("playerMode === 'podcast'"), 'Must conditionally switch between podcast and studio engines');
     assert.ok(appCode.includes('onSwitchPlayerMode={handleSwitchPlayerMode}'), 'Must pass handleSwitchPlayerMode to ReaderTopBar');
   });
+
+  await t.test('1.5: All custom hooks in src/hooks have all React hooks explicitly imported', () => {
+    const hooksDir = path.resolve(projectRoot, 'src', 'hooks');
+    const hookFiles = fs.readdirSync(hooksDir).filter(f => f.endsWith('.js'));
+    const reactHooks = ['useState', 'useEffect', 'useRef', 'useCallback', 'useMemo', 'useTransition', 'useReducer'];
+
+    for (const file of hookFiles) {
+      const code = fs.readFileSync(path.join(hooksDir, file), 'utf8');
+      const lines = code.split('\n');
+      for (const rHook of reactHooks) {
+        let isUsed = false;
+        let isImported = false;
+        lines.forEach(line => {
+          if (line.includes('import ') && line.includes(rHook)) {
+            isImported = true;
+          } else if (!line.trim().startsWith('//') && !line.trim().startsWith('*')) {
+            if (new RegExp(`(?<!React\\.)\\b${rHook}\\b`).test(line)) {
+              isUsed = true;
+            }
+          }
+        });
+        if (isUsed) {
+          assert.ok(
+            isImported,
+            `File src/hooks/${file} uses ${rHook} but does not import it from 'react'`
+          );
+        }
+      }
+    }
+  });
+
+  await t.test('1.6: All React components in src/components have all React hooks explicitly imported', () => {
+    const compDir = path.resolve(projectRoot, 'src', 'components');
+    function walkDir(dir) {
+      let results = [];
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          results = results.concat(walkDir(fullPath));
+        } else if (entry.isFile() && (entry.name.endsWith('.jsx') || entry.name.endsWith('.js'))) {
+          results.push(fullPath);
+        }
+      }
+      return results;
+    }
+
+    const compFiles = walkDir(compDir);
+    const reactHooks = ['useState', 'useEffect', 'useRef', 'useCallback', 'useMemo', 'useTransition', 'useReducer'];
+
+    for (const filePath of compFiles) {
+      const code = fs.readFileSync(filePath, 'utf8');
+      const lines = code.split('\n');
+      for (const rHook of reactHooks) {
+        let isUsed = false;
+        let isImported = false;
+        lines.forEach(line => {
+          if (line.includes('import ') && line.includes(rHook)) {
+            isImported = true;
+          } else if (!line.trim().startsWith('//') && !line.trim().startsWith('*')) {
+            if (new RegExp(`(?<!React\\.)\\b${rHook}\\b`).test(line)) {
+              isUsed = true;
+            }
+          }
+        });
+        if (isUsed) {
+          const relPath = path.relative(projectRoot, filePath);
+          assert.ok(
+            isImported,
+            `Component ${relPath} uses ${rHook} but does not import it from 'react'`
+          );
+        }
+      }
+    }
+  });
 });
+

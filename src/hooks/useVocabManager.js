@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ensureSrsMetadata, getDueWords } from '../utils/srsEngine';
 import { syncEngine } from '../utils/syncEngine';
 
