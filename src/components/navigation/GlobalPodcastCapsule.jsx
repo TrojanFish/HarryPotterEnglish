@@ -198,7 +198,11 @@ function GlobalPodcastCapsuleComponent({
           <div className="flex items-center gap-3">
             {onPrevSentence && (
               <button
-                onClick={onPrevSentence}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPrevSentence();
+                }}
                 className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
                 title="上一句 (←)"
                 aria-label="上一句"
@@ -208,7 +212,11 @@ function GlobalPodcastCapsuleComponent({
             )}
 
             <button
-              onClick={onPlayPause}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onPlayPause) onPlayPause();
+              }}
               className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none shrink-0"
               title={isPlaying ? '暂停音频 (Space)' : '继续播放 (Space)'}
               aria-label={isPlaying ? '暂停音频' : '继续播放'}
@@ -222,7 +230,11 @@ function GlobalPodcastCapsuleComponent({
 
             {onNextSentence && (
               <button
-                onClick={onNextSentence}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNextSentence();
+                }}
                 className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
                 title="下一句 (→)"
                 aria-label="下一句"
@@ -258,7 +270,10 @@ function GlobalPodcastCapsuleComponent({
           {onChangePlaybackRate && (
             <button
               type="button"
-              onClick={handleSpeedCycle}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSpeedCycle();
+              }}
               className={`w-9 h-9 min-w-[36px] min-h-[36px] rounded-xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
                 playbackRate !== 1.0
                   ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
@@ -274,7 +289,10 @@ function GlobalPodcastCapsuleComponent({
           {onToggleSleepTimer && (
             <button
               type="button"
-              onClick={onToggleSleepTimer}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSleepTimer();
+              }}
               className={`min-h-[36px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${
                 sleepTimerMode
                   ? 'px-2.5 gap-1 bg-amber-500 text-white border-amber-600 font-bold'
@@ -291,7 +309,11 @@ function GlobalPodcastCapsuleComponent({
           )}
 
           <button
-            onClick={handleOpen}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (handleOpen) handleOpen();
+            }}
             className="duo-btn-primary min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 cursor-pointer"
             title="进入全功能精听教室（字幕、查词、跟读、听写）"
           >

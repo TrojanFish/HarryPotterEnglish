@@ -42,4 +42,47 @@ test('Podcast Companion Playback Stability & Continuous Play Test Suite', async 
       'togglePlayPause must reset stopAtCueEnd to false when starting playback'
     );
   });
+
+  await t.test('1.4: App.jsx keeps GlobalPodcastCapsule persistently mounted on non-player views whenever currentChapterObj exists', () => {
+    // Regression check: App.jsx must not unmount bottom player bar on (currentTime > 0 || isPlaying),
+    // which caused the bar to disappear immediately on play click or when paused at 0:00!
+    assert.ok(
+      !appCode.includes('(currentTime > 0 || isPlaying) && (\n          <GlobalPodcastCapsule') &&
+      !appCode.includes('(currentTime > 0 || isPlaying) && ('),
+      'App.jsx must not conditionally unmount GlobalPodcastCapsule on (currentTime > 0 || isPlaying)'
+    );
+    assert.ok(
+      appCode.includes("currentView !== 'player' && Boolean(currentChapterObj) && (") ||
+      appCode.includes("currentView !== 'player' && currentChapterObj && ("),
+      'App.jsx must mount GlobalPodcastCapsule whenever currentChapterObj exists on non-player views'
+    );
+  });
+
+  await t.test('1.5: GlobalPodcastCapsule desktop transport buttons include type="button" and stopPropagation', () => {
+    const capsulePath = path.resolve(projectRoot, 'src', 'components', 'navigation', 'GlobalPodcastCapsule.jsx');
+    const capsuleCode = fs.readFileSync(capsulePath, 'utf8');
+
+    // Desktop play button section
+    const desktopPlayMatch = capsuleCode.match(/<button[\s\S]*?onClick=\{[\s\S]*?onPlayPause[\s\S]*?title=\{isPlaying \? '暂停音频/);
+    assert.ok(desktopPlayMatch, 'Desktop play button must exist in GlobalPodcastCapsule');
+    assert.ok(
+      desktopPlayMatch[0].includes('stopPropagation'),
+      'Desktop play button must stop event propagation'
+    );
+    assert.ok(
+      desktopPlayMatch[0].includes('type="button"'),
+      'Desktop play button must specify type="button"'
+    );
+  });
+
+  await t.test('1.6: useCatalog initializes audioUrl synchronously for immediate playback readiness', () => {
+    const catalogHookPath = path.resolve(projectRoot, 'src', 'hooks', 'useCatalog.js');
+    const catalogHookCode = fs.readFileSync(catalogHookPath, 'utf8');
+
+    assert.ok(
+      !catalogHookCode.includes("const [audioUrl, setAudioUrl] = useState('');"),
+      'useCatalog must not initialize audioUrl with empty string when default book/chapter exists'
+    );
+  });
 });
+

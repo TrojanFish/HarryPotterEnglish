@@ -62,7 +62,18 @@ export function useCatalog() {
   });
 
   const [cues, setCues] = useState([]);
-  const [audioUrl, setAudioUrl] = useState('');
+  const [audioUrl, setAudioUrl] = useState(() => {
+    try {
+      const initBookId = (typeof localStorage !== 'undefined' && localStorage.getItem('hp_last_played_book')) || 'hp-book-1';
+      const initChapterId = (typeof localStorage !== 'undefined' && localStorage.getItem('hp_last_played_chapter')) || 'hp-book-1_ep01';
+      const bObj = HP_BOOKS.find(b => b.id === initBookId) || HP_BOOKS[0];
+      const chObj = (bObj?.chapters || []).find(c => c.id === initChapterId) || (bObj?.chapters || [])[0];
+      const audioKey = chObj?.audioKey || `podcasts/${initBookId}/episodes/${chObj?.epId || 'ep01'}/audio.mp3`;
+      return resolveAudioStreamUrl(audioKey, API_BASE);
+    } catch {
+      return resolveAudioStreamUrl('podcasts/hp-book-1/episodes/ep01/audio.mp3', API_BASE);
+    }
+  });
   const [isLoadingContent, setIsLoadingContent] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isOfflinePlaying, setIsOfflinePlaying] = useState(false);

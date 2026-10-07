@@ -840,8 +840,8 @@ export function App() {
           )}
         </div>
 
-        {/* Universal Persistent Podcast Capsule (Shown across non-player views when audio is active) */}
-        {currentView !== 'player' && (currentTime > 0 || isPlaying) && (
+        {/* Universal Persistent Podcast Capsule (Shown across non-player views whenever chapter is selected) */}
+        {currentView !== 'player' && Boolean(currentChapterObj) && (
           <GlobalPodcastCapsule
             currentBook={currentBookObj}
             currentChapter={currentChapterObj}
