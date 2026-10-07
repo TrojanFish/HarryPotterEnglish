@@ -131,7 +131,8 @@ function MobileTopBarComponent({
         </div>
       </div>
     </div>
-  </header>
+    </header>
+  );
 }
 
 export const MobileTopBar = React.memo(MobileTopBarComponent);
