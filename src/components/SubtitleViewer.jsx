@@ -351,10 +351,10 @@ export const SentenceCard = React.memo(function SentenceCard({
                       isClicked ? 'word-click-flash' : ''
                     } ${
                       isHpTerm
-                        ? 'border-b border-amber-400 text-amber-900 font-medium hover:bg-amber-100/60'
+                        ? 'border-b-2 border-dashed border-amber-600/70 text-amber-950 font-semibold bg-amber-500/10 hover:bg-amber-500/20'
                         : ''
                     } ${wordClasses}`}
-                    title={isHpTerm ? `魔法词汇: ${token.text}` : '点击查看释义'}
+                    title={isHpTerm ? `魔法世界词汇: ${token.text} (点击查看原著背景)` : '点击查看释义'}
                   >
                     {token.text}
                   </span>

@@ -22,7 +22,7 @@ export function WordModal({
   isParchment
 }) {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [activeTab, setActiveTab] = useState('meaning'); // 'meaning' | 'phonics' | 'lore'
+  const [activeTab, setActiveTab] = useState(() => (wordData?.lore ? 'lore' : 'meaning'));
 
   useEffect(() => {
     const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -30,8 +30,10 @@ export function WordModal({
     return () => window.removeEventListener('keydown', handleKey);
   }, [onClose]);
 
-  // Reset tab when word changes
-  useEffect(() => { setActiveTab('meaning'); }, [wordData?.word]);
+  // Reset tab when word changes (default to lore tab if the word possesses wizarding lore)
+  useEffect(() => {
+    setActiveTab(wordData?.lore ? 'lore' : 'meaning');
+  }, [wordData?.word, wordData?.lore]);
 
   // Clean up any ongoing TTS speech on modal unmount
   useEffect(() => {
