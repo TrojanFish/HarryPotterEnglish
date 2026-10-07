@@ -149,7 +149,7 @@ export function StorageManagerModal({
   const storageContent = (
     <div 
       className={isPageView
-        ? "w-full h-full bg-[#fbf9f5] text-[#1e1610] overflow-y-auto flex flex-col pb-safe no-scrollbar"
+        ? "w-full h-full bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col no-scrollbar"
         : "relative w-full max-w-2xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88dvh] sm:max-h-[85dvh] transition-all duration-300 no-scrollbar"
       }
     >
@@ -157,7 +157,7 @@ export function StorageManagerModal({
       {!isPageView && <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />}
 
       {/* Header */}
-      <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0">
+      <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0 select-none">
         <div className="flex items-center space-x-2.5 min-w-0 flex-1">
           <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-300/80 text-amber-700 shrink-0">
             <HardDrive size={18} className="sm:w-5 sm:h-5" />
@@ -185,7 +185,7 @@ export function StorageManagerModal({
       </div>
 
         {/* Storage Quota Bar */}
-        <div className="p-4 sm:p-5 border-b border-[#e8ddd0] bg-white">
+        <div className="p-4 sm:p-5 border-b border-[#e8ddd0] bg-white shrink-0">
           <div className="flex items-center justify-between text-xs mb-2">
             <span className="font-semibold text-stone-700 flex items-center gap-1.5">
               <Layers size={14} className="text-amber-600" />
@@ -244,7 +244,7 @@ export function StorageManagerModal({
         </div>
 
         {/* Cached Chapter List */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-3">
+        <div className={`flex-1 overflow-y-auto overscroll-contain no-scrollbar p-5 space-y-3 ${isPageView ? 'pb-32' : 'pb-6'}`}>
           <div className="flex items-center justify-between mb-1">
             <h3 className={`text-xs font-bold uppercase tracking-wider ${
               isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'

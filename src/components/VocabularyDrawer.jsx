@@ -190,21 +190,28 @@ export function VocabularyDrawer({
       {!isPageView && <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />}
 
       {/* Drawer Header */}
-        <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0">
-          <div className="flex items-center space-x-2 min-w-0">
-            {drawerTab === 'words' ? (
-              <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
-            ) : (
-              <Bookmark className="w-5 h-5 text-amber-600 shrink-0" />
-            )}
-            <h2 className="font-bold text-base sm:text-lg text-amber-950 truncate whitespace-nowrap">
-              <span className="font-magical">
-                {drawerTab === 'words' ? '魔法生词本' : '冥想盆疑难句'}
-              </span>
-              <span className="text-xs font-mono font-normal text-stone-500 ml-1.5">
-                ({drawerTab === 'words' ? vocabList.length : bookmarkedSentences.length})
-              </span>
-            </h2>
+        <div className="px-4 sm:px-5 py-3 sm:py-3.5 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0 select-none">
+          <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+            <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shrink-0">
+              {drawerTab === 'words' ? (
+                <BookOpen size={18} className="text-amber-700 sm:w-5 sm:h-5" />
+              ) : (
+                <Bookmark size={18} className="text-amber-700 sm:w-5 sm:h-5" />
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-magical font-bold text-sm sm:text-lg text-amber-950 flex items-center gap-1.5 sm:gap-2 truncate">
+                <span>{drawerTab === 'words' ? '魔法生词本' : '冥想盆疑难句'}</span>
+                <span className="text-[10px] sm:text-[11px] font-sans px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 font-bold shrink-0">
+                  {drawerTab === 'words' ? `${vocabList.length} 词` : `${bookmarkedSentences.length} 句`}
+                </span>
+              </h2>
+              <p className="text-[10px] sm:text-xs text-stone-500 font-reading truncate mt-0.5">
+                {drawerTab === 'words' 
+                  ? '高频原著生词 · 艾宾浩斯遗忘曲线智能重铸' 
+                  : '原声重点长难句 · 回听原声与深度背诵突破'}
+              </p>
+            </div>
           </div>
 
           {/* Tab Switcher: 生词本 vs 疑难句 */}

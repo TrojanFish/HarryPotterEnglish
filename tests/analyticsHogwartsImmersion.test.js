@@ -86,6 +86,10 @@ test('Hogwarts Immersion: House Hourglasses & O.W.L.s Certificate Test Suite', a
     assert.ok(html.includes('rounded-t-3xl'), 'Must use rounded-t-3xl on mobile for sheet top curves');
     assert.ok(html.includes('w-10 h-1.5') || html.includes('pull-handle'), 'Must include mobile drag/pull handle indicator');
 
+    // Export Image and Actions check
+    assert.ok(html.includes('导出荣誉长图') || html.includes('保存证书长图') || html.includes('导出长图'), 'Must render image export button');
+    assert.ok(html.includes('复制喜报'), 'Must render copy report button');
+
     // Zero emojis check
     const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
     assert.ok(!emojiRegex.test(html), 'Must have strictly zero emojis');

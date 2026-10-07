@@ -227,15 +227,15 @@ export function AnalyticsDashboard({
 
   const dashboardContent = (
     <div className={isPageView
-      ? `w-full h-full overflow-y-auto ${theme.modalBg} ${theme.primaryText} transition-all pb-safe flex flex-col no-scrollbar`
-      : `relative w-full max-w-4xl max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border ${theme.modalBorder} ${theme.modalBg} ${theme.primaryText} transition-all z-10 pb-safe flex flex-col no-scrollbar`
+      ? `w-full h-full overflow-hidden ${theme.modalBg} ${theme.primaryText} transition-all flex flex-col`
+      : `relative w-full max-w-4xl max-h-[88dvh] sm:max-h-[85dvh] overflow-hidden rounded-t-3xl sm:rounded-3xl border-t sm:border ${theme.modalBorder} ${theme.modalBg} ${theme.primaryText} transition-all z-10 flex flex-col`
     }>
       
       {/* Mobile Pull Handle Indicator */}
       {!isPageView && <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />}
 
       {/* Header Bar */}
-      <div className="sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[#e8ddd0] bg-white/95 backdrop-blur-md gap-2">
+      <div className="shrink-0 z-20 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[#e8ddd0] bg-white/95 backdrop-blur-md gap-2 select-none">
         <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1">
           <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shrink-0">
             <BarChart2 size={18} className="text-amber-600 sm:w-5 sm:h-5" />
@@ -278,7 +278,8 @@ export function AnalyticsDashboard({
         </div>
       </div>
 
-        {/* Content Body */}
+        {/* Content Body - Only inner content scrolls */}
+        <div className={`flex-1 overflow-y-auto overscroll-contain no-scrollbar ${isPageView ? 'pb-32' : 'pb-6'}`}>
         {showHonorScroll ? (
           <div className="p-6 sm:p-8 space-y-6 animate-fadeIn">
             <div className="p-6 sm:p-8 rounded-3xl border border-amber-400/80 bg-gradient-to-br from-white via-[#fbf9f5] to-amber-500/5 text-center relative overflow-hidden">
@@ -896,6 +897,7 @@ export function AnalyticsDashboard({
           </div>
         </div>
         )}
+        </div>
 
         {/* O.W.L.s Academic Certificate Modal */}
         <OwlsCertificateModal

@@ -536,7 +536,7 @@ export function App() {
   ]);
 
   return (
-    <div className={`h-screen h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col md:flex-row transition-colors duration-300 ${
+    <div className={`fixed inset-0 w-full h-full h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col md:flex-row transition-colors duration-300 select-none ${
       isParchment ? 'theme-parchment' : 'bg-[#0f172a] text-slate-100'
     }`}>
       {/* Hidden Audio Element */}

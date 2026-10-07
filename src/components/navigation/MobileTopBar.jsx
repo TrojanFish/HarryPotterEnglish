@@ -47,20 +47,23 @@ function MobileTopBarComponent({
   }, [showTools]);
 
   return (
-    <header className="md:hidden sticky top-0 z-30 pt-safe bg-[#fbf9f5] border-b border-[#e8ddd0] select-none">
-      <div className="h-14 px-3 flex items-center justify-between">
+    <header className="md:hidden shrink-0 z-30 pt-safe bg-[#fbf9f5] border-b border-[#e8ddd0] select-none touch-none overscroll-none">
+      <div className="h-14 px-3 flex items-center justify-between gap-2">
         {/* ── Left: Brand Identity ──────────────────────────────────── */}
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center text-white shrink-0">
-            <Sparkles size={16} className="text-white stroke-[2.5]" />
+        <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+          <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shrink-0">
+            <Sparkles size={18} className="text-amber-700" />
           </div>
-          <div className="flex flex-col min-w-0">
-            <h1 className="font-magical font-bold text-sm text-amber-950 truncate">
-              霍格沃茨魔法英语
+          <div className="min-w-0 flex-1">
+            <h1 className="font-magical font-bold text-sm sm:text-base text-amber-950 flex items-center gap-1.5 truncate">
+              <span>霍格沃茨魔法英语</span>
+              <span className="text-[10px] font-sans px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-900 border border-amber-200 font-bold shrink-0">
+                藏书阁
+              </span>
             </h1>
-            <span className="text-[10px] text-stone-500 font-reading leading-tight">
-              原版有声书精听
-            </span>
+            <p className="text-[10px] text-stone-500 font-reading leading-tight truncate mt-0.5">
+              原版有声书精听 · 双轨沉浸研学
+            </p>
           </div>
         </div>
 
