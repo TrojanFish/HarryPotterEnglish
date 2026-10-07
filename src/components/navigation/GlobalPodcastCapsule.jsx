@@ -25,6 +25,7 @@ function GlobalPodcastCapsuleComponent({
   onPlayPause,
   onPrevSentence,
   onNextSentence,
+  onSeek,
   onSeekRelative,
   onEnterPlayer,
   onOpenPlayer,
@@ -40,6 +41,14 @@ function GlobalPodcastCapsuleComponent({
   if (!currentChapter) return null;
 
   const handleOpen = onEnterPlayer || onOpenPlayer;
+
+  const rates = [0.8, 1.0, 1.25, 1.5, 2.0];
+  const handleSpeedCycle = () => {
+    if (!onChangePlaybackRate) return;
+    const currentIndex = rates.indexOf(playbackRate);
+    const nextRate = currentIndex === -1 || currentIndex === rates.length - 1 ? rates[0] : rates[currentIndex + 1];
+    onChangePlaybackRate(nextRate);
+  };
 
   const formatTime = (seconds) => {
     if (isNaN(seconds) || seconds < 0) return '00:00';
@@ -141,68 +150,60 @@ function GlobalPodcastCapsuleComponent({
         </div>
       </div>
 
-      {/* ── 2. Desktop & Tablet Floating Capsule (>= 768px) ─────────── */}
-      <div className="hidden md:flex fixed bottom-5 left-1/2 -translate-x-1/2 z-40 max-w-2xl w-[92%] rounded-2xl bg-[#fbf9f5] border-2 border-amber-400/90 text-[#1e1610] flex-col overflow-hidden select-none animate-slideUp shadow-none">
-        {/* Top Slim Audio Scrubber Line */}
-        <div className="h-1 bg-amber-500/15 w-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-200"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-
-        <div className="flex items-center justify-between p-3 gap-3">
-          {/* Left: Thumbnail & Chapter Details */}
-          <div
-            onClick={handleOpen}
-            className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer group"
-            title="点击进入全功能精听教室"
-          >
-            <div className="w-11 h-11 rounded-xl overflow-hidden border border-amber-300 shrink-0 bg-stone-900 flex items-center justify-center">
-              {currentBook?.id ? (
-                <img
-                  src={`/api/raw/podcasts/${currentBook.id}/cover.jpg`}
-                  alt="Cover"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              ) : (
-                <Headphones size={18} className="text-amber-400" />
-              )}
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5">
-                {isPlaying && (
-                  <span className="flex items-center gap-0.5 text-amber-500 shrink-0">
-                    <span className="w-[3px] h-2.5 bg-amber-500 rounded-full animate-wave-1" />
-                    <span className="w-[3px] h-3.5 bg-amber-600 rounded-full animate-wave-2" />
-                    <span className="w-[3px] h-2 bg-amber-400 rounded-full animate-wave-3" />
-                  </span>
-                )}
-                <h4 className="font-magical font-bold text-sm text-amber-950 truncate group-hover:text-amber-800 transition-colors">
-                  {cleanTitle}
-                </h4>
-              </div>
-              <p className="text-[11px] text-stone-500 font-reading truncate mt-0.5 flex items-center gap-2">
-                <span className="truncate">{bookTitle}</span>
-                <span className="font-mono text-stone-400 shrink-0">{formatTime(currentTime)} / {formatTime(duration)}</span>
-              </p>
-            </div>
+      {/* ── 2. Desktop Full-Width Docked Player Console (>= 768px, Spotify Scheme A) ── */}
+      <div className="hidden md:flex fixed bottom-0 left-0 right-0 z-40 h-20 bg-[#fbf9f5] border-t border-[#e8ddd0] text-[#1e1610] items-center justify-between px-4 lg:px-8 select-none shadow-sm animate-slideUp">
+        {/* Left: Thumbnail & Chapter Details (w-1/4 min-w-[200px]) */}
+        <div
+          onClick={handleOpen}
+          className="flex items-center gap-3 w-1/4 min-w-[200px] max-w-xs cursor-pointer group"
+          title="点击进入全功能精听教室"
+        >
+          <div className="w-12 h-12 rounded-xl overflow-hidden border border-amber-300/80 shrink-0 bg-stone-900 flex items-center justify-center group-hover:border-amber-500 transition-colors">
+            {currentBook?.id ? (
+              <img
+                src={`/api/raw/podcasts/${currentBook.id}/cover.jpg`}
+                alt="Cover"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            ) : (
+              <Headphones size={20} className="text-amber-400" />
+            )}
           </div>
 
-          {/* Center: Transport Controls (Prev, Play/Pause, Next) */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              {isPlaying && (
+                <span className="flex items-center gap-0.5 text-amber-500 shrink-0">
+                  <span className="w-[3px] h-2.5 bg-amber-500 rounded-full animate-wave-1" />
+                  <span className="w-[3px] h-3.5 bg-amber-600 rounded-full animate-wave-2" />
+                  <span className="w-[3px] h-2 bg-amber-400 rounded-full animate-wave-3" />
+                </span>
+              )}
+              <h4 className="font-magical font-bold text-sm text-amber-950 truncate group-hover:text-amber-800 transition-colors">
+                {cleanTitle}
+              </h4>
+            </div>
+            <p className="text-xs text-stone-500 font-reading truncate mt-0.5">
+              {bookTitle}
+            </p>
+          </div>
+        </div>
+
+        {/* Center: Transport Controls & Scrubber Timeline */}
+        <div className="flex-1 max-w-xl mx-4 flex flex-col items-center justify-center gap-1">
+          {/* Controls Cluster */}
+          <div className="flex items-center gap-3">
             {onPrevSentence && (
               <button
                 onClick={onPrevSentence}
-                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
+                className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
                 title="上一句 (←)"
                 aria-label="上一句"
               >
-                <SkipBack size={16} />
+                <SkipBack size={15} />
               </button>
             )}
 
@@ -222,45 +223,81 @@ function GlobalPodcastCapsuleComponent({
             {onNextSentence && (
               <button
                 onClick={onNextSentence}
-                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
+                className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
                 title="下一句 (→)"
                 aria-label="下一句"
               >
-                <SkipForward size={16} />
+                <SkipForward size={15} />
               </button>
             )}
           </div>
 
-          {/* Right: Sleep Timer, Speed & Expand CTA */}
-          <div className="flex items-center gap-2 shrink-0">
-            {onToggleSleepTimer && (
-              <button
-                type="button"
-                onClick={onToggleSleepTimer}
-                className={`min-h-[38px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${
-                  sleepTimerMode
-                    ? 'px-2.5 gap-1 bg-amber-500 text-white border-amber-600 font-bold'
-                    : 'w-[38px] border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
-                }`}
-                title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
-                aria-label="睡眠定时"
-              >
-                <Moon size={14} />
-                {sleepTimerMode && (
-                  <span className="text-[11px] font-mono">{sleepTimerRemaining}</span>
-                )}
-              </button>
-            )}
+          {/* Scrubber Timeline */}
+          <div className="w-full flex items-center gap-2">
+            <span className="text-[10px] font-mono text-stone-500 min-w-[36px] text-right">
+              {formatTime(currentTime)}
+            </span>
+            <input
+              type="range"
+              min="0"
+              max={duration || 100}
+              step="0.1"
+              value={currentTime}
+              onChange={(e) => onSeek && onSeek(parseFloat(e.target.value))}
+              className="flex-1 h-1.5 py-1 appearance-none cursor-pointer bg-[#e8ddd0] accent-amber-500 rounded-lg"
+              aria-label="音频时间进度条"
+            />
+            <span className="text-[10px] font-mono text-stone-500 min-w-[36px]">
+              {formatTime(duration)}
+            </span>
+          </div>
+        </div>
 
+        {/* Right: Tools & Expand Button (w-1/4 min-w-[200px] flex justify-end) */}
+        <div className="w-1/4 min-w-[200px] max-w-xs flex items-center justify-end gap-2.5">
+          {onChangePlaybackRate && (
             <button
-              onClick={handleOpen}
-              className="duo-btn-primary min-h-[38px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 cursor-pointer"
-              title="进入全功能精听教室（字幕、查词、跟读、听写）"
+              type="button"
+              onClick={handleSpeedCycle}
+              className={`w-9 h-9 min-w-[36px] min-h-[36px] rounded-xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
+                playbackRate !== 1.0
+                  ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                  : 'border-[#e8ddd0] bg-white text-stone-700 hover:text-amber-950 hover:border-amber-300'
+              }`}
+              title="切换播放倍速"
+              aria-label="播放倍速"
             >
-              <span>进入精听</span>
-              <ChevronRight size={14} />
+              <span>{playbackRate}x</span>
             </button>
-          </div>
+          )}
+
+          {onToggleSleepTimer && (
+            <button
+              type="button"
+              onClick={onToggleSleepTimer}
+              className={`min-h-[36px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${
+                sleepTimerMode
+                  ? 'px-2.5 gap-1 bg-amber-500 text-white border-amber-600 font-bold'
+                  : 'w-9 border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
+              }`}
+              title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
+              aria-label="睡眠定时"
+            >
+              <Moon size={14} />
+              {sleepTimerMode && (
+                <span className="text-[11px] font-mono">{sleepTimerRemaining}</span>
+              )}
+            </button>
+          )}
+
+          <button
+            onClick={handleOpen}
+            className="duo-btn-primary min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 cursor-pointer"
+            title="进入全功能精听教室（字幕、查词、跟读、听写）"
+          >
+            <span>进入精听</span>
+            <ChevronRight size={14} />
+          </button>
         </div>
       </div>
     </>

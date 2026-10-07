@@ -849,6 +849,7 @@ export function App() {
             onPlayPause={togglePlayPause}
             onPrevSentence={handlePrevSentence}
             onNextSentence={handleNextSentence}
+            onSeek={seekTo}
             onEnterPlayer={() => setCurrentView('player')}
             currentTime={currentTime}
             duration={duration}

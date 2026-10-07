@@ -73,4 +73,39 @@ test('Mobile PWA Performance & Border Radius Standardization Test Suite', async 
       );
     }
   });
+
+  // =========================================================================
+  // TASK 4: 4-Tier Border Radius Standardization & Desktop Docked Bottom Bar (Scheme A)
+  // =========================================================================
+  await t.test('4.1: PodcastPlayerView transport buttons standardize to rounded-xl (12px) and play CTA to rounded-full', () => {
+    const fullPath = path.resolve(projectRoot, 'src/components/podcast/PodcastPlayerView.jsx');
+    const content = fs.readFileSync(fullPath, 'utf8');
+
+    const anchoredConsoleMatch = content.match(/podcast-anchored-console[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/);
+    assert.ok(anchoredConsoleMatch, 'Must find anchored console section');
+    const anchoredConsole = anchoredConsoleMatch[0];
+
+    assert.ok(
+      !anchoredConsole.includes('rounded-2xl border'),
+      'Anchored console transport buttons must use rounded-xl instead of rounded-2xl'
+    );
+    assert.ok(
+      anchoredConsole.includes('rounded-full bg-amber-500'),
+      'Center Play CTA must remain rounded-full'
+    );
+  });
+
+  await t.test('4.2: GlobalPodcastCapsule adheres to Scheme A desktop full-width docked bottom bar (Spotify pattern)', () => {
+    const fullPath = path.resolve(projectRoot, 'src/components/navigation/GlobalPodcastCapsule.jsx');
+    const content = fs.readFileSync(fullPath, 'utf8');
+
+    assert.ok(
+      content.includes('fixed bottom-0 left-0 right-0') || content.includes('fixed bottom-0 inset-x-0'),
+      'Desktop capsule must dock to bottom full width across left-0 right-0'
+    );
+    assert.ok(
+      !content.includes('bottom-5 left-1/2 -translate-x-1/2'),
+      'Desktop capsule must eliminate floating bottom-5 centered translate pill'
+    );
+  });
 });

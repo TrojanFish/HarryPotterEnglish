@@ -187,7 +187,7 @@ function PodcastPlayerViewComponent({
                 <button
                   onClick={onPrevSentence}
                   disabled={activeCueIndex <= 0}
-                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
+                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
                   title="上一句 (←)"
                   aria-label="上一句"
                 >
@@ -214,7 +214,7 @@ function PodcastPlayerViewComponent({
                 <button
                   onClick={onNextSentence}
                   disabled={activeCueIndex >= cues.length - 1}
-                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
+                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
                   title="下一句 (→)"
                   aria-label="下一句"
                 >
@@ -361,7 +361,7 @@ function PodcastPlayerViewComponent({
             <button
               type="button"
               onClick={onToggleTranslation}
-              className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border flex items-center justify-center transition-colors cursor-pointer select-none active:scale-95 ${
+              className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none active:scale-95 ${
                 showTranslation
                   ? 'bg-amber-500 text-white border-amber-600'
                   : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950'
@@ -379,7 +379,7 @@ function PodcastPlayerViewComponent({
             <button
               type="button"
               onClick={onToggleSleepTimer}
-              className={`relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border flex items-center justify-center transition-colors cursor-pointer select-none active:scale-95 ${
+              className={`relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none active:scale-95 ${
                 sleepTimerMode
                   ? 'bg-amber-500 text-white border-amber-600'
                   : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
@@ -401,7 +401,7 @@ function PodcastPlayerViewComponent({
           <button
             onClick={onPrevSentence}
             disabled={activeCueIndex <= 0}
-            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
+            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
             title="上一句 (←)"
             aria-label="上一句"
           >
@@ -426,7 +426,7 @@ function PodcastPlayerViewComponent({
           <button
             onClick={onNextSentence}
             disabled={activeCueIndex >= cues.length - 1}
-            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
+            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
             title="下一句 (→)"
             aria-label="下一句"
           >
@@ -437,7 +437,7 @@ function PodcastPlayerViewComponent({
           <button
             type="button"
             onClick={handleSpeedCycle}
-            className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
+            className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border text-xs font-mono font-bold flex items-center justify-center whitespace-nowrap transition-colors active:scale-95 cursor-pointer select-none ${
               playbackRate !== 1.0
                 ? 'bg-amber-500 text-white border-amber-600'
                 : 'border-[#e8ddd0] bg-white text-stone-700 hover:text-amber-950'
