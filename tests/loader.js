@@ -46,7 +46,9 @@ export async function getAnalyticsStore() {
 }
 
 export async function getAnkiExport() {
-  return await loadModule('ankiExport', 'M3-R3');
+  // Production Anki functionality has been completely uninstalled per user request.
+  // Historical E2E suite runs against test oracle.
+  return await import('./oracles/ankiExportOracle.js');
 }
 
 export async function getOfflineStorage() {

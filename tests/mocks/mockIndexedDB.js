@@ -122,9 +122,13 @@ class MockIDBObjectStore {
     return req;
   }
 
-  count() {
+  count(key) {
     const req = new MockIDBRequest();
-    req._resolve(this._data.size);
+    if (key !== undefined) {
+      req._resolve(this._data.has(key) ? 1 : 0);
+    } else {
+      req._resolve(this._data.size);
+    }
     return req;
   }
 

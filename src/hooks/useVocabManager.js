@@ -39,7 +39,7 @@ export function useVocabManager() {
   }, [vocabList]);
 
   // Duolingo SRS: count words due for review today
-  const dueWordsCount = getDueWords(vocabList).length;
+  const dueWordsCount = useMemo(() => getDueWords(vocabList).length, [vocabList]);
 
   const isWordSaved = useCallback((word) => {
     if (!word) return false;
@@ -47,39 +47,40 @@ export function useVocabManager() {
     return vocabList.some(v => (v.word || v.front || '').toLowerCase().trim() === target);
   }, [vocabList]);
 
-  // Toggle word in vocabulary
+  // Toggle word in vocabulary (atomic state update)
   const toggleSaveWord = useCallback((wordData, sentenceCue = null, bookId = '', chapterId = '') => {
     if (!wordData || !wordData.word) return;
 
     const targetWord = wordData.word.toLowerCase().trim();
-    const exists = vocabList.some(v => (v.word || v.front || '').toLowerCase().trim() === targetWord);
+    setVocabList(prev => {
+      const exists = prev.some(v => (v.word || v.front || '').toLowerCase().trim() === targetWord);
+      if (exists) {
+        syncEngine.markVocabDirty(targetWord);
+        return prev.filter(v => (v.word || v.front || '').toLowerCase().trim() !== targetWord);
+      } else {
+        const newEntry = ensureSrsMetadata({
+          id: Date.now().toString(),
+          word: wordData.word,
+          front: wordData.word,
+          translation: wordData.translation || wordData.meaning || '',
+          definition: wordData.definition || wordData.meaning || '',
+          phonetic: wordData.phonetic || wordData.ipa || '',
+          context: sentenceCue ? (sentenceCue.text || '') : (wordData.context || ''),
+          contextQuote: sentenceCue ? (sentenceCue.text || '') : (wordData.contextQuote || ''),
+          startTime: sentenceCue ? sentenceCue.startTime : null,
+          endTime: sentenceCue ? sentenceCue.endTime : null,
+          chapterId: chapterId || '',
+          bookId: bookId || '',
+          tags: ['Hogwarts', 'Reading'],
+          addedAt: new Date().toISOString(),
+          updatedAt: Date.now()
+        });
 
-    if (exists) {
-      setVocabList(prev => prev.filter(v => (v.word || v.front || '').toLowerCase().trim() !== targetWord));
-      syncEngine.markVocabDirty(targetWord);
-    } else {
-      const newEntry = ensureSrsMetadata({
-        id: Date.now().toString(),
-        word: wordData.word,
-        front: wordData.word,
-        translation: wordData.translation || wordData.meaning || '',
-        definition: wordData.definition || wordData.meaning || '',
-        phonetic: wordData.phonetic || wordData.ipa || '',
-        context: sentenceCue ? (sentenceCue.text || '') : (wordData.context || ''),
-        contextQuote: sentenceCue ? (sentenceCue.text || '') : (wordData.contextQuote || ''),
-        startTime: sentenceCue ? sentenceCue.startTime : null,
-        endTime: sentenceCue ? sentenceCue.endTime : null,
-        chapterId: chapterId || '',
-        bookId: bookId || '',
-        tags: ['Hogwarts', 'Reading'],
-        addedAt: new Date().toISOString(),
-        updatedAt: Date.now()
-      });
-
-      setVocabList(prev => [newEntry, ...prev]);
-      syncEngine.markVocabDirty(wordData.word);
-    }
-  }, [vocabList]);
+        syncEngine.markVocabDirty(wordData.word);
+        return [newEntry, ...prev];
+      }
+    });
+  }, []);
 
   const removeWord = useCallback((word) => {
     if (!word) return;

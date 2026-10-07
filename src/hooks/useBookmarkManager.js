@@ -7,13 +7,15 @@ const STORAGE_KEY = 'hp_bookmarked_sentences';
  */
 export function normalizeSentenceBookmark(cue, bookId = '', chapterId = '') {
   if (!cue) return null;
-  const rawId = cue.id ?? cue.start ?? 0;
+  const rawId = cue.id ?? cue.startTime ?? cue.start ?? 0;
+  const startSec = Number(cue.startTime ?? cue.start ?? 0);
+  const endSec = Number(cue.endTime ?? cue.end ?? 0);
   const id = `bm_${bookId}_${chapterId}_${rawId}_${Date.now()}`;
   return {
     id,
     cueId: String(rawId),
-    start: cue.start || 0,
-    end: cue.end || 0,
+    start: startSec,
+    end: endSec,
     text: cue.text || '',
     translation: cue.translation || '',
     bookId: String(bookId),
@@ -27,7 +29,7 @@ export function normalizeSentenceBookmark(cue, bookId = '', chapterId = '') {
  */
 export function toggleBookmarkInList(list = [], cue, bookId = '', chapterId = '') {
   if (!cue) return list;
-  const targetCueId = String(cue.id ?? cue.start);
+  const targetCueId = String(cue.id ?? cue.startTime ?? cue.start ?? 0);
   const targetBookId = String(bookId || '');
   const targetChapterId = String(chapterId || '');
 

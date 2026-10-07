@@ -28,6 +28,11 @@ export function useAudioPlayback({
   }, []);
   const [activeCueIndex, setActiveCueIndex] = useState(0);
   const lastTimeUpdateRef = useRef(0);
+  const hasMarkedCompleteRef = useRef(false);
+
+  useEffect(() => {
+    hasMarkedCompleteRef.current = false;
+  }, [currentChapterObj?.id]);
 
   // 1. Synchronize audio playback properties
   useEffect(() => {
@@ -186,8 +191,9 @@ export function useAudioPlayback({
       }
     }
 
-    // Hook chapter completion near audio end
-    if (duration > 0 && now >= duration - 1.5 && currentChapterObj?.id) {
+    // Hook chapter completion near audio end (deduplicated)
+    if (duration > 0 && now >= duration - 1.5 && currentChapterObj?.id && !hasMarkedCompleteRef.current) {
+      hasMarkedCompleteRef.current = true;
       markChapterCompleted(currentChapterObj.id);
     }
 
@@ -217,6 +223,16 @@ export function useAudioPlayback({
 
   // Stall recovery
   const stallTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (stallTimeoutRef.current) {
+        clearTimeout(stallTimeoutRef.current);
+        stallTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
   const handleWaiting = useCallback(() => {
     if (stallTimeoutRef.current) clearTimeout(stallTimeoutRef.current);
     stallTimeoutRef.current = setTimeout(() => {

@@ -34,8 +34,23 @@ test('useBookmarkManager Logic & Helpers Test Suite', async (t) => {
     assert.equal(item.chapterId, 'chapter1');
     assert.equal(item.text, sampleCue.text);
     assert.equal(item.translation, sampleCue.translation);
+    assert.equal(item.start, 12.5);
+    assert.equal(item.end, 18.0);
     assert.ok(item.id, 'Must generate unique id');
     assert.ok(item.createdAt, 'Must have timestamp');
+
+    // Test with real VTT parser cue containing startTime and endTime
+    const vttCue = {
+      id: 5,
+      startTime: 34.2,
+      endTime: 39.8,
+      text: 'The Dursleys had a small son called Dudley.',
+      translation: '德思礼夫妇有一个名叫达力的幼子。'
+    };
+    const vttItem = normalizeSentenceBookmark(vttCue, 'book1', 'ch1');
+    assert.equal(vttItem.start, 34.2, 'Must map startTime to start seconds');
+    assert.equal(vttItem.end, 39.8, 'Must map endTime to end seconds');
+    assert.equal(vttItem.cueId, '5');
   });
 
   await t.test('1.2: toggleBookmarkInList adds if missing and removes if present', () => {

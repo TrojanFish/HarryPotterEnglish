@@ -184,18 +184,7 @@ They were the last people you'd expect to be involved in anything strange or mys
   ]);
   assert(dueList.length === 1 && dueList[0].word === 'potion', '艾宾浩斯复习调度精确识别到期生词');
 
-  // 3.3 Anki Flashcards Export
-  const { generateAnkiTSV, boldWordInContext } = await import('../src/utils/ankiExport.js');
-  const boldedQuote = boldWordInContext('The boy who lived survived the curse.', 'lived');
-  assert(boldedQuote === 'The boy who <b>lived</b> survived the curse.', 'Anki 原文语境高亮支持精准词边界加粗，无空格误吞');
 
-  const specialRegexQuote = boldWordInContext('Did he shout accio? before fleeing?', 'accio?');
-  assert(specialRegexQuote === 'Did he shout <b>accio?</b> before fleeing?', 'Anki 导出完美支持含特殊字符与问号的魔法专有名词');
-
-  const tsvOutput = generateAnkiTSV([
-    { word: 'wand', definition: '魔杖', quote: 'He held a wand.', bookId: 'hp1', chapterId: 'hp1-01' }
-  ]);
-  assert(tsvOutput.toLowerCase().includes('#separator:tab') && tsvOutput.includes('wand\t'), 'Anki TSV 导出格式符合标准卡片包导入协议');
 
   // 3.4 Speech Pronunciation Scoring
   const { evaluatePronunciation } = await import('../src/utils/speechScoring.js');

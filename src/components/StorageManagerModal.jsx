@@ -19,6 +19,7 @@ import {
   saveChapterOffline, 
   isChapterCached 
 } from '../utils/offlineStorage';
+import { resolveAudioStreamUrl } from '../hooks/useCatalog';
 
 export function StorageManagerModal({
   isOpen,
@@ -101,9 +102,14 @@ export function StorageManagerModal({
   const handleDownloadCurrent = async () => {
     if (!currentChapter || !currentChapter.id) return;
     const chapterId = currentChapter.id;
-    const title = currentChapter.title || `Chapter ${chapterId}`;
-    const audioUrl = currentChapter.audioUrl || `/api/stream/audio/podcasts/${currentBook?.id || 'hp-book-1'}/episodes/${chapterId}`;
-    const vttUrl = currentChapter.vttUrl || `/api/subtitles/podcasts/${currentBook?.id || 'hp-book-1'}/episodes/${chapterId}/subtitle.vtt`;
+    const title = currentChapter.cnTitle || currentChapter.title || `Chapter ${chapterId}`;
+    const apiBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE) || '';
+    const bookId = currentBook?.id || 'hp-book-1';
+    const epId = currentChapter.epId || currentChapter.id || 'ep01';
+    const audioKey = currentChapter.audioKey || `podcasts/${bookId}/episodes/${epId}/audio.mp3`;
+    const subKey = currentChapter.subtitleKey || `podcasts/${bookId}/episodes/${epId}/subtitle.vtt`;
+    const audioUrl = currentChapter.audioUrl || resolveAudioStreamUrl(audioKey, apiBase);
+    const vttUrl = currentChapter.vttUrl || `${apiBase}/api/subtitles/${subKey}`;
 
     setDownloadProgress({ chapterId, progress: 0 });
 

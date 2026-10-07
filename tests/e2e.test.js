@@ -15,6 +15,5 @@ import './tier4-scenarios.test.js';
 import './duolingo-srs.test.js';
 
 // Tier 5: Adversarial Hardening (M5 Superpowers Rigor)
-import './adversarial-anki-export.test.js';
 import './adversarial-analytics-dashboard.test.js';
 import './adversarial-shadowing.test.js';

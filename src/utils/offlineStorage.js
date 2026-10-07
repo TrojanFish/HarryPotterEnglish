@@ -24,7 +24,7 @@ function openDatabase() {
     const idb = globalThis.indexedDB || indexedDB;
     const req = idb.open(DB_NAME, DB_VERSION);
 
-    req.onupgradeneeded = (e) => {
+    req.onupgradeneeded = () => {
       const db = req.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, { keyPath: 'chapterId' });
@@ -187,8 +187,18 @@ export async function getCachedChapter(chapterId) {
  */
 export async function isChapterCached(chapterId) {
   if (!chapterId) return false;
-  const record = await getCachedChapter(chapterId);
-  return record !== null;
+  const db = await openDatabase();
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.count(chapterId);
+      req.onsuccess = () => resolve(req.result > 0);
+      req.onerror = () => resolve(false);
+    } catch {
+      resolve(false);
+    }
+  });
 }
 
 /**

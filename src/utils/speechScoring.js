@@ -6,6 +6,8 @@
 
 // 1. Soundex Phonetic Encoder with Cache
 const soundexCache = new Map();
+const MAX_SOUNDEX_CACHE = 1000;
+
 export function soundex(str) {
   if (!str || typeof str !== 'string') return '';
   const cached = soundexCache.get(str);
@@ -45,14 +47,16 @@ export function soundex(str) {
 
   while (code.length < 4) code += '0';
   const result = code.slice(0, 4);
+
+  if (soundexCache.size >= MAX_SOUNDEX_CACHE) {
+    const firstKey = soundexCache.keys().next().value;
+    soundexCache.delete(firstKey);
+  }
   soundexCache.set(str, result);
   return result;
 }
 
-// 2. Space-Optimized Levenshtein Distance with Buffer Reuse
-let prevBuf = new Int32Array(256);
-let currBuf = new Int32Array(256);
-
+// 2. Space-Optimized Levenshtein Distance (Thread/Re-entrant Safe)
 export function levenshteinDistance(s1, s2) {
   if (!s1) return s2 ? s2.length : 0;
   if (!s2) return s1.length;
@@ -61,8 +65,8 @@ export function levenshteinDistance(s1, s2) {
   const m = s1.length;
   const n = s2.length;
 
-  let prev = prevBuf.length >= n + 1 ? prevBuf : new Int32Array(n + 1);
-  let curr = currBuf.length >= n + 1 ? currBuf : new Int32Array(n + 1);
+  const prev = new Int32Array(n + 1);
+  const curr = new Int32Array(n + 1);
 
   for (let j = 0; j <= n; j++) prev[j] = j;
 
@@ -418,20 +422,20 @@ export function evaluatePronunciation(targetSentence, spokenText, isFallback = f
       dir = 3;
     }
 
-    if (dir === 1) {
+    if (dir === 1 && i >= 1 && j >= 1) {
       targetMap.set(i - 1, { spokenWords: [spokenTokens[j - 1]], type: '1-1' });
       i--;
       j--;
-    } else if (dir === 4) {
+    } else if (dir === 4 && i >= 1 && j >= 2) {
       targetMap.set(i - 1, { spokenWords: [spokenTokens[j - 2], spokenTokens[j - 1]], type: '1-2' });
       i--;
       j -= 2;
-    } else if (dir === 5) {
+    } else if (dir === 5 && i >= 2 && j >= 1) {
       targetMap.set(i - 1, { spokenWords: [spokenTokens[j - 1]], type: '2-1-second' });
       targetMap.set(i - 2, { spokenWords: [spokenTokens[j - 1]], type: '2-1-first' });
       i -= 2;
       j--;
-    } else if (dir === 6) {
+    } else if (dir === 6 && i >= 1) {
       targetMap.set(i - 1, { spokenWords: [], type: 'punct' });
       i--;
     } else if (dir === 2) {

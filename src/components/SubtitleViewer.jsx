@@ -547,7 +547,7 @@ export function SubtitleViewer({
               setFontSize(nextSize);
               try { localStorage.setItem('hp_subtitle_font_size', nextSize); } catch {}
             }}
-            className="h-8 min-h-[32px] px-2.5 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 active:bg-amber-50/50 flex items-center gap-1.5 text-xs font-bold text-stone-700 hover:text-amber-950 transition-colors cursor-pointer select-none"
+            className="min-h-[44px] min-w-[44px] px-3 rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 active:bg-amber-50/50 flex items-center justify-center gap-1.5 text-xs font-bold text-stone-700 hover:text-amber-950 transition-colors cursor-pointer select-none"
             title={`当前字号: ${fontSize === 'huge' ? '超大' : fontSize === 'large' ? '大号' : '标准'} (点击切换)`}
             aria-label="调节字号"
           >

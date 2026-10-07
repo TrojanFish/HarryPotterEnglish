@@ -863,16 +863,16 @@ export function App() {
           />
         )}
 
-        {/* Mobile Native Bottom Navigation Bar (< 768px in bookshelf view) */}
-        {isMobile && currentView === 'bookshelf' && (
+        {/* Mobile Native Bottom Navigation Bar (< 768px in non-player views) */}
+        {isMobile && currentView !== 'player' && (
           <MobileBottomNav
             currentView={currentView}
-            onSwitchView={setCurrentView}
+            onSwitchView={handleSwitchCurrentView}
             vocabCount={vocabList.length}
-            onOpenVocab={() => setIsVocabOpen(true)}
+            onOpenVocab={() => handleSwitchCurrentView('vocab')}
             onOpenAnalytics={() => {
               refreshAnalytics();
-              setIsAnalyticsOpen(true);
+              handleSwitchCurrentView('analytics');
             }}
           />
         )}
