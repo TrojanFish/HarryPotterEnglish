@@ -102,5 +102,30 @@ test('ReaderTopBar Dual-Engine Mode Switcher Test Suite', async (t) => {
     // Dual-Engine and sub-mode segment buttons should use type="button"
     assert.ok(htmlStudio.includes('type="button"'), 'Segment buttons should explicitly specify type="button"');
   });
+
+  await t.test('3.5: Renders canonical bilingual translation toggle in both podcast and studio modes', () => {
+    const htmlPodcast = renderToString(
+      React.createElement(ReaderTopBar, {
+        currentBook: mockBook,
+        currentChapter: mockChapter,
+        playerMode: 'podcast',
+        showTranslation: true,
+        onToggleTranslation: () => {}
+      })
+    );
+
+    const htmlStudio = renderToString(
+      React.createElement(ReaderTopBar, {
+        currentBook: mockBook,
+        currentChapter: mockChapter,
+        playerMode: 'studio',
+        showTranslation: false,
+        onToggleTranslation: () => {}
+      })
+    );
+
+    assert.ok(htmlPodcast.includes('aria-label="中英双语切换"'), 'ReaderTopBar must provide canonical translation toggle in podcast mode');
+    assert.ok(htmlStudio.includes('aria-label="中英双语切换"'), 'ReaderTopBar must provide canonical translation toggle in studio mode');
+  });
 });
 

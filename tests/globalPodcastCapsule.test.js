@@ -195,6 +195,27 @@ test('GlobalPodcastCapsule Test Suite', async (t) => {
       'Homepage center play cluster must eliminate redundant time indicator below play button'
     );
   });
+
+  await t.test('3.9: Mobile capsule maintains uniform height without redundant pb-safe on analytics page', () => {
+    const htmlAnalytics = renderToString(
+      React.createElement(GlobalPodcastCapsule, {
+        currentBook: mockBook,
+        currentChapter: mockChapter,
+        currentTime: 45,
+        duration: 300,
+        isPlaying: true,
+        isMobile: true,
+        currentView: 'analytics',
+        onPlayPause: () => {}
+      })
+    );
+
+    // Mobile capsule must not include pb-safe to prevent excessive height stacking above MobileBottomNav
+    assert.ok(
+      !htmlAnalytics.includes('pb-safe'),
+      'Mobile capsule must not apply pb-safe on analytics view to maintain uniform height with other pages'
+    );
+  });
 });
 
 

@@ -102,7 +102,7 @@ test('PodcastPlayerView Test Suite', async (t) => {
     assert.ok(html.includes('Mr and Mrs Dursley'), 'Must render embedded lyrics stream');
   });
 
-  await t.test('2.4: Anchored unified bottom console rendered persistently with full transport controls', () => {
+  await t.test('2.4: Anchored unified bottom console rendered persistently with full transport controls (eliminates duplicate translation toggle)', () => {
     const html = renderToString(
       React.createElement(PodcastPlayerView, {
         currentBook: mockBook,
@@ -120,14 +120,13 @@ test('PodcastPlayerView Test Suite', async (t) => {
         onPrevSentence: () => {},
         onNextSentence: () => {},
         onToggleSleepTimer: () => {},
-        onToggleTranslation: () => {},
         onChangePlaybackRate: () => {}
       })
     );
 
     // Dedicated anchored bottom console must be present
     assert.ok(html.includes('podcast-anchored-console'), 'Must render dedicated anchored bottom console');
-    assert.ok(html.includes('中英双语') || html.includes('双语译文'), 'Anchored console must provide translation toggle');
+    assert.ok(!html.includes('aria-label="中英双语切换"'), 'Anchored console eliminates duplicate translation toggle (centralized in ReaderTopBar)');
     assert.ok(html.includes('播放倍速') || html.includes('1.0x'), 'Anchored console must provide speed cycle');
     assert.ok(html.includes('上一句') && html.includes('下一句'), 'Anchored console must provide sentence navigation');
   });

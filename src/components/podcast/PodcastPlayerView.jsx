@@ -8,7 +8,6 @@ import {
   Sparkles,
   Headphones,
   BookOpen,
-  Languages,
   ChevronRight,
   Disc3
 } from 'lucide-react';
@@ -223,26 +222,8 @@ function PodcastPlayerViewComponent({
               )}
             </div>
 
-            {/* Sub-controls: Sleep Timer, Speed, Translation */}
+            {/* Sub-controls: Sleep Timer, Speed */}
             <div className="flex items-center justify-center gap-2.5 pt-0.5">
-              {/* Bilingual Translation Toggle */}
-              {onToggleTranslation && (
-                <button
-                  type="button"
-                  onClick={onToggleTranslation}
-                  className={`w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none active:scale-95 ${
-                    showTranslation
-                      ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
-                      : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-stone-800 hover:border-amber-300'
-                  }`}
-                  title={showTranslation ? '双语译文：开 (点击关闭)' : '双语译文：关 (点击开启)'}
-                  aria-label="中英双语切换"
-                  aria-pressed={showTranslation}
-                >
-                  <Languages size={16} />
-                </button>
-              )}
-
               {/* Sleep Timer */}
               {(onToggleSleepTimer || sleepTimerMode) && (
                 <button
@@ -356,25 +337,8 @@ function PodcastPlayerViewComponent({
 
         {/* Controls Row: Balanced layout with absolute center play anchor */}
         <div className="relative flex items-center justify-between px-2 pt-1 pb-2 min-h-[64px]">
-          {/* 1 & 2. Left tools: Bilingual Translation + Sleep Timer */}
-          <div className="flex items-center gap-1.5 z-10">
-            {onToggleTranslation && (
-              <button
-                type="button"
-                onClick={onToggleTranslation}
-                className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none active:scale-95 ${
-                  showTranslation
-                    ? 'bg-amber-500 text-white border-amber-600'
-                    : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950'
-                }`}
-                title={showTranslation ? '双语译文：开' : '双语译文：关'}
-                aria-label="中英双语切换"
-                aria-pressed={showTranslation}
-              >
-                <Languages size={17} />
-              </button>
-            )}
-
+          {/* 1. Left tool: Sleep Timer */}
+          <div className="flex items-center z-10">
             {(onToggleSleepTimer || sleepTimerMode) && (
               <button
                 type="button"

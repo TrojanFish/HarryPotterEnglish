@@ -84,7 +84,7 @@ function ReaderTopBarComponent({
         </div>
 
         {/* ── Center: Dual Engine Switcher [随行播客 | 精研工坊] ───────── */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center shrink-0">
           <div className="flex h-10 items-center p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1">
             <button
               type="button"
@@ -116,32 +116,6 @@ function ReaderTopBarComponent({
               <span>精研工坊</span>
             </button>
           </div>
-
-          {/* If in Studio Mode on Desktop, show SLA Sub-modes */}
-          {playerMode === 'studio' && (
-            <div className="hidden lg:flex h-10 items-center p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1 shrink-0 animate-fadeIn">
-              {modes.map(({ key, label, icon }) => {
-                const isActive = studyMode === key;
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setStudyMode(key)}
-                    className={`h-8 min-h-[32px] flex items-center justify-center gap-1.5 px-3 rounded-xl text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
-                      isActive
-                        ? 'bg-amber-500 text-white shadow-sm font-extrabold'
-                        : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
-                    }`}
-                    aria-label={label}
-                    aria-pressed={isActive}
-                  >
-                    {icon}
-                    <span>{label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
         </div>
 
         {/* ── Right: Reading Controls ─────────────────────────────────── */}
@@ -175,30 +149,32 @@ function ReaderTopBarComponent({
         </div>
       </div>
 
-      {/* ── Mobile/Tablet Sub-bar when in Studio Mode (< 1024px) ───────── */}
+      {/* ── Studio Mode Secondary Workbench Ribbon (Unified Across All Viewports) ── */}
       {playerMode === 'studio' && (
-        <div className="lg:hidden px-3 pb-2 pt-0.5 animate-fadeIn">
-          <div className="grid grid-cols-3 h-10 p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1 items-center">
-            {modes.map(({ key, label, icon }) => {
-              const isActive = studyMode === key;
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setStudyMode(key)}
-                  className={`h-8 min-h-[32px] flex items-center justify-center gap-1 px-1 rounded-xl text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
-                    isActive
-                      ? 'bg-amber-500 text-white shadow-sm font-extrabold'
-                      : 'text-stone-600 hover:text-amber-950 active:bg-stone-200'
-                  }`}
-                  aria-label={label}
-                  aria-pressed={isActive}
-                >
-                  {icon}
-                  <span className="truncate">{label}</span>
-                </button>
-              );
-            })}
+        <div className="w-full border-t border-[#f0e6d8] bg-[#fbf9f4]/95 px-3 sm:px-6 py-1.5 animate-fadeIn shrink-0">
+          <div className="max-w-md mx-auto">
+            <div className="grid grid-cols-3 h-10 p-1 rounded-2xl bg-stone-100 border border-[#e8ddd0] gap-1 items-center">
+              {modes.map(({ key, label, icon }) => {
+                const isActive = studyMode === key;
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setStudyMode(key)}
+                    className={`h-8 min-h-[32px] flex items-center justify-center gap-1.5 px-1.5 sm:px-3 rounded-xl text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
+                      isActive
+                        ? 'bg-amber-500 text-white shadow-sm font-extrabold'
+                        : 'text-stone-600 hover:text-amber-950 active:bg-stone-200'
+                    }`}
+                    aria-label={label}
+                    aria-pressed={isActive}
+                  >
+                    {icon}
+                    <span className="truncate">{label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}

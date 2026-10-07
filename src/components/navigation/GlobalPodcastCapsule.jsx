@@ -102,9 +102,7 @@ function GlobalPodcastCapsuleComponent({
   return (
     <>
       {/* ── 1. Mobile Version (< 768px): Unified Full-Width Docked Console ── */}
-      <div className={`md:hidden w-full shrink-0 bg-[#fbf9f5] border-t border-[#e8ddd0] text-[#1e1610] relative z-30 select-none shadow-none ${
-        currentView !== 'bookshelf' ? 'pb-safe' : ''
-      }`}>
+      <div className="md:hidden w-full shrink-0 bg-[#fbf9f5] border-t border-[#e8ddd0] text-[#1e1610] relative z-30 select-none shadow-none">
         {/* Top Flush Hidden/Subtle Interactive Progress Scrubber */}
         <div
           ref={scrubberRef}
