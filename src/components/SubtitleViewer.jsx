@@ -209,7 +209,7 @@ export const SentenceCard = React.memo(function SentenceCard({
               </span>
             </div>
             <span className="text-[11px] text-stone-400 font-reading italic hidden sm:inline">
-              脱字幕自测模式
+              脱字幕听力自测模式
             </span>
           </div>
 

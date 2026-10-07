@@ -45,13 +45,17 @@ fs.writeFileSync(dashboardCompiledPath, dashboardCompiled.code, 'utf8');
 
 const { AnalyticsDashboard } = await import('./AnalyticsDashboard.compiled.js');
 
-// Transpile Header.jsx
-const headerSrc = fs.readFileSync(path.resolve(projectRoot, 'src', 'components', 'Header.jsx'), 'utf8');
-const headerCompiled = esbuild.transformSync(headerSrc, { loader: 'jsx', format: 'esm' });
-const headerCompiledPath = path.resolve(__dirname, 'Header.compiled.js');
-fs.writeFileSync(headerCompiledPath, headerCompiled.code, 'utf8');
-
-const { Header } = await import('./Header.compiled.js');
+// Import Header (from precompiled or source if exists)
+let Header = null;
+const headerPath = path.resolve(projectRoot, 'src', 'components', 'Header.jsx');
+if (fs.existsSync(headerPath)) {
+  const headerSrc = fs.readFileSync(headerPath, 'utf8');
+  const headerCompiled = esbuild.transformSync(headerSrc, { loader: 'jsx', format: 'esm' });
+  const headerCompiledPath = path.resolve(__dirname, 'Header.compiled.js');
+  fs.writeFileSync(headerCompiledPath, headerCompiled.code, 'utf8');
+}
+const headerMod = await import('./Header.compiled.js');
+Header = headerMod.Header;
 
 test('R2 Unit: Dual-key storage synchronization', () => {
   resetTestEnvironment();

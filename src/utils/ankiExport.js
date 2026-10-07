@@ -44,9 +44,10 @@ export function boldWordInContext(quote, word, options = {}) {
   const escaped = trimmedWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const startsWithWord = /^\w/.test(trimmedWord);
   const endsWithWord = /\w$/.test(trimmedWord);
-  const prefix = startsWithWord ? '\\b' : '(?:^|\\s|(?<=\\W))';
-  const suffix = endsWithWord ? '\\b' : '(?:$|\\s|(?=\\W))';
+  const prefix = startsWithWord ? '\\b' : '(?<=^|[\\s\\W])';
+  const suffix = endsWithWord ? '\\b' : '(?=$|[\\s\\W])';
   const regex = new RegExp(`${prefix}(${escaped})${suffix}`, 'gi');
+  const hasSpecialChars = !startsWithWord || !endsWithWord || /[^\w]/.test(trimmedWord);
   const looseRegex = new RegExp(`(${escaped})`, 'gi');
 
   const strQuote = String(quote);
@@ -54,7 +55,7 @@ export function boldWordInContext(quote, word, options = {}) {
   // Fast path: if quote does not contain HTML tags, replace directly
   if (!strQuote.includes('<')) {
     let result = strQuote.replace(regex, replacementTag);
-    if (!result.includes(hasTagStr)) {
+    if (!result.includes(hasTagStr) && hasSpecialChars) {
       result = strQuote.replace(looseRegex, replacementTag);
     }
     return sanitizeForTSV(result);
@@ -74,8 +75,8 @@ export function boldWordInContext(quote, word, options = {}) {
     return replaced;
   });
 
-  // Second pass fallback: if no match found, try loose regex on non-tag text segments
-  if (!matched) {
+  // Second pass fallback: if no match found and word has special characters, try loose regex on non-tag text segments
+  if (!matched && hasSpecialChars) {
     replacedSegments = segments.map(seg => {
       if (seg.startsWith('<') && seg.endsWith('>')) {
         return seg;
