@@ -11,20 +11,26 @@ import {
   Check,
   LocateFixed,
   Award,
-  Bookmark
+  Bookmark,
+  RotateCcw,
+  Zap
 } from 'lucide-react';
 import { tokenizeSentence, formatTime } from '../utils/vttParser';
 import { HP_LORE_DICTIONARY } from '../data/hpDictionary';
+import {
+  extractKeywordRadar,
+  formatSentenceMetrics,
+  calculateBlindMastery
+} from '../utils/blindListeningEngine';
 
 /**
  * SentenceCard v2 (Memoized)
- * - No "第 X 句" number badge (removed noise)
- * - Timestamps only on hover
- * - Active: border-l-4 amber + bg-amber-50/60
  * - Inactive: bg-white, no border (spacing separates)
- * - Blind mode: opacity/letter-spacing (no GPU blur)
+ * - Normal Active: border-l-4 amber + bg-amber-50/60
+ * - Blind Active: border-l-4 indigo + bg-indigo-50/50 + soundwave & keyword radar
+ * - Blind Inactive: clean mist placeholder
  */
-const SentenceCard = React.memo(function SentenceCard({
+export const SentenceCard = React.memo(function SentenceCard({
   cue,
   idx,
   isActive,
@@ -41,7 +47,9 @@ const SentenceCard = React.memo(function SentenceCard({
   onCopySentence,
   copiedCueId,
   onToggleReveal,
-  cardRef
+  cardRef,
+  onAssessSentence,
+  isPlaying = false
 }) {
   const tokens = useMemo(() => tokenizeSentence(cue.text), [cue.text]);
   const [clickedWord, setClickedWord] = useState(null);
@@ -52,14 +60,19 @@ const SentenceCard = React.memo(function SentenceCard({
     onWordClick(word, cueObj);
   }, [onWordClick]);
 
-  const isBlindHidden = studyMode === 'blind' && !isRevealed && !isActive;
+  const isBlind = studyMode === 'blind';
+  const isVeiled = isBlind && !isRevealed;
+  const metrics = useMemo(() => (isBlind ? formatSentenceMetrics(cue) : null), [isBlind, cue]);
+  const radarWords = useMemo(() => (isBlind ? extractKeywordRadar(cue.text) : []), [isBlind, cue.text]);
 
   return (
     <div
       ref={cardRef}
       className={`group relative rounded-2xl transition-all duration-200 subtitle-item-render ${
         isActive
-          ? 'reading-hero-sentence border-l-4 border-l-amber-500 bg-amber-50/60 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4 shadow-sm'
+          ? isBlind
+            ? 'reading-hero-sentence border-l-4 border-l-indigo-600 bg-indigo-50/50 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4 shadow-sm'
+            : 'reading-hero-sentence border-l-4 border-l-amber-500 bg-amber-50/60 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4 shadow-sm'
           : 'reading-inactive-sentence border-l-4 border-l-transparent bg-white hover:bg-stone-50/80 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4'
       }`}
     >
@@ -67,7 +80,7 @@ const SentenceCard = React.memo(function SentenceCard({
       <div className={`flex items-center justify-between mb-2 gap-2 ${
         isActive ? 'opacity-100' : 'opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-150'
       }`}>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap">
           <span className="font-mono text-[10px] text-stone-400">
             {formatTime(cue.startTime)}
           </span>
@@ -78,9 +91,16 @@ const SentenceCard = React.memo(function SentenceCard({
             </span>
           )}
           {isActive && (
-            <span className="inline-flex items-center gap-1 text-[10px] text-amber-700 font-bold">
+            <span className={`inline-flex items-center gap-1 text-[10px] font-bold ${
+              isBlind ? 'text-indigo-800' : 'text-amber-700'
+            }`}>
               <Sparkles size={10} />
-              正在朗读
+              {isBlind ? '听力自测中' : '正在朗读'}
+            </span>
+          )}
+          {isBlind && metrics && (
+            <span className="font-mono text-[10px] text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded border border-stone-200">
+              {metrics.label}
             </span>
           )}
         </div>
@@ -89,6 +109,7 @@ const SentenceCard = React.memo(function SentenceCard({
         <div className="flex items-center gap-1.5">
           {onToggleBookmarkCue && (
             <button
+              type="button"
               onClick={() => onToggleBookmarkCue(cue)}
               className={`min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
                 isBookmarked
@@ -103,6 +124,7 @@ const SentenceCard = React.memo(function SentenceCard({
           )}
 
           <button
+            type="button"
             onClick={() => onSeekToCue(cue)}
             className="min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
             title="从此句播放"
@@ -111,8 +133,9 @@ const SentenceCard = React.memo(function SentenceCard({
             <Play size={13} className="fill-current translate-x-0.5" />
           </button>
 
-          {isActive && (
+          {isActive && !isBlind && (
             <button
+              type="button"
               onClick={() => onCopySentence(cue)}
               className="hidden sm:inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-xl border border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
               title={copiedCueId === cue.id ? '已复制' : '复制本句'}
@@ -124,17 +147,21 @@ const SentenceCard = React.memo(function SentenceCard({
             </button>
           )}
 
-          <button
-            onClick={() => onRecordCue(cue)}
-            className="min-h-[44px] min-w-[44px] rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
-            title="跟读施咒（AI评分）"
-            aria-label="跟读施咒AI评分"
-          >
-            <Mic size={14} className="text-amber-700" />
-          </button>
-
-          {studyMode === 'blind' && (
+          {(!isBlind || isRevealed) && (
             <button
+              type="button"
+              onClick={() => onRecordCue(cue)}
+              className="min-h-[44px] min-w-[44px] rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
+              title="跟读施咒（AI评分）"
+              aria-label="跟读施咒AI评分"
+            >
+              <Mic size={14} className="text-amber-700" />
+            </button>
+          )}
+
+          {isBlind && (
+            <button
+              type="button"
               onClick={() => onToggleReveal(cue.id)}
               className="min-w-[44px] min-h-[44px] rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
               title={isRevealed ? '重新遮罩' : '揭示本句'}
@@ -146,49 +173,168 @@ const SentenceCard = React.memo(function SentenceCard({
         </div>
       </div>
 
-      {/* English Text */}
-      <div
-        className={`font-reading ${fontSizeClass} select-text leading-[1.85] transition-all duration-300 ${
-          isBlindHidden ? 'opacity-0 select-none pointer-events-none' : ''
-        }`}
-      >
-        {isBlindHidden ? (
-          <span className="italic text-stone-300 text-sm">— 迷雾遮罩：聆听原声辨认内容 —</span>
-        ) : (
-          tokens.map((token, tokenIdx) => {
-            if (!token.isWord) return <span key={tokenIdx}>{token.text}</span>;
-            const cleanWord = token.text.toLowerCase().replace(/[^a-z]/g, '');
-            const isHpTerm = Boolean(HP_LORE_DICTIONARY[cleanWord]?.lore);
-            const isClicked = clickedWord === token.text;
-            return (
-              <span
-                key={tokenIdx}
-                onClick={() => handleWordClick(token.text, cue)}
-                className={`cursor-pointer inline rounded-sm transition-colors ${
-                  isClicked ? 'word-click-flash' : ''
-                } ${
-                  isHpTerm
-                    ? 'border-b border-amber-400 text-amber-900 font-medium hover:bg-amber-100/60 px-0.5'
-                    : isActive
-                      ? 'text-amber-950 hover:bg-amber-400/25 hover:text-amber-900 px-0.5'
-                      : 'text-[#1e1610] hover:bg-amber-400/15 hover:text-amber-900 px-0.5'
-                }`}
-                title={isHpTerm ? `魔法词汇: ${token.text}` : '点击查看释义'}
+      {/* Active Blindfold Workout Station (Veiled State) */}
+      {isBlind && isActive && isVeiled ? (
+        <div className="py-2.5 px-3.5 rounded-xl bg-white/90 border border-indigo-100 space-y-3">
+          {/* Soundwave + Listening Status */}
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <div
+                className="flex items-end gap-1 h-5 px-2 py-1 bg-indigo-50 rounded-md border border-indigo-200/60"
+                aria-label="声音波形"
               >
-                {token.text}
+                <span className={`w-1 rounded-full bg-indigo-600 transition-all ${isPlaying ? 'animate-wave-1' : 'h-1.5'}`} />
+                <span className={`w-1 rounded-full bg-indigo-600 transition-all ${isPlaying ? 'animate-wave-2' : 'h-2.5'}`} />
+                <span className={`w-1 rounded-full bg-indigo-700 transition-all ${isPlaying ? 'animate-wave-3' : 'h-3.5'}`} />
+                <span className={`w-1 rounded-full bg-indigo-600 transition-all ${isPlaying ? 'animate-wave-2' : 'h-2.5'}`} />
+                <span className={`w-1 rounded-full bg-indigo-600 transition-all ${isPlaying ? 'animate-wave-1' : 'h-1.5'}`} />
+              </div>
+              <span className="text-xs font-bold text-indigo-950">
+                {isPlaying ? '原声播放中 · 专注辨音' : '音频就绪 · 聆听原声并自测'}
               </span>
-            );
-          })
-        )}
-      </div>
+            </div>
+            <span className="text-[11px] text-stone-400 font-reading italic hidden sm:inline">
+              脱字幕自测模式
+            </span>
+          </div>
 
-      {/* Chinese Translation */}
-      {showTranslation && cue.translation && !isBlindHidden && (
-        <div className={`mt-2.5 pt-2 border-t border-dashed text-sm font-reading leading-relaxed ${
-          isParchment ? 'border-amber-200/60 text-[#735839]' : 'border-slate-700 text-slate-400'
-        }`}>
-          {cue.translation}
+          {/* Keyword Radar Focus Tags */}
+          {radarWords.length > 0 && (
+            <div className="pt-2 border-t border-dashed border-indigo-100 flex items-center flex-wrap gap-1.5">
+              <span className="text-[11px] font-bold text-stone-500 flex items-center gap-1">
+                <Zap size={12} className="text-amber-600 fill-amber-500" />
+                <span>听辨焦点雷达:</span>
+              </span>
+              {radarWords.map((item, rIdx) => (
+                <span
+                  key={rIdx}
+                  className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md font-mono font-bold border ${
+                    item.isHpLore
+                      ? 'bg-amber-50 text-amber-900 border-amber-300'
+                      : 'bg-stone-50 text-stone-700 border-stone-200'
+                  }`}
+                >
+                  <span>{item.word}</span>
+                  {item.isHpLore && (
+                    <span className="text-[10px] text-amber-700 font-sans font-medium">原著词汇</span>
+                  )}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Lumos Reveal Button */}
+          <div>
+            <button
+              type="button"
+              onClick={() => onToggleReveal(cue.id)}
+              className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 rounded-xl bg-indigo-900 hover:bg-indigo-950 text-amber-100 border border-indigo-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer shadow-none"
+              title="揭示英文原文及译文 (空格键)"
+              aria-label="揭示英文原文及译文"
+            >
+              <Eye size={15} className="text-amber-300" />
+              <span>Lumos 破雾对答案</span>
+              <span className="text-[10px] font-mono font-bold text-indigo-300 bg-indigo-800/80 px-1.5 py-0.5 rounded border border-indigo-700">
+                Space
+              </span>
+            </button>
+          </div>
         </div>
+      ) : isBlind && !isActive && isVeiled ? (
+        /* Inactive Veiled Placeholder */
+        <div
+          onClick={() => onSeekToCue(cue)}
+          className="py-2 px-1 text-stone-400 text-xs italic cursor-pointer hover:text-stone-600 transition-colors flex items-center gap-2 select-none"
+          title="点击从此句播放"
+        >
+          <EyeOff size={13} className="text-stone-400" />
+          <span>迷雾遮罩 · 点击跳转播放</span>
+          {metrics && (
+            <span className="font-mono text-[10px] text-stone-300 not-italic">
+              ({metrics.wordCount} 词)
+            </span>
+          )}
+        </div>
+      ) : (
+        /* Revealed or Normal Mode Content */
+        <>
+          {/* English Text Tokens */}
+          <div className={`font-reading ${fontSizeClass} select-text leading-[1.85] transition-all duration-300`}>
+            {tokens.map((token, tokenIdx) => {
+              if (!token.isWord) return <span key={tokenIdx}>{token.text}</span>;
+              const cleanWord = token.text.toLowerCase().replace(/[^a-z]/g, '');
+              const isHpTerm = Boolean(HP_LORE_DICTIONARY[cleanWord]?.lore);
+              const isClicked = clickedWord === token.text;
+              return (
+                <span
+                  key={tokenIdx}
+                  onClick={() => handleWordClick(token.text, cue)}
+                  className={`cursor-pointer inline rounded-sm transition-colors ${
+                    isClicked ? 'word-click-flash' : ''
+                  } ${
+                    isHpTerm
+                      ? 'border-b border-amber-400 text-amber-900 font-medium hover:bg-amber-100/60 px-0.5'
+                      : isActive
+                        ? 'text-amber-950 hover:bg-amber-400/25 hover:text-amber-900 px-0.5'
+                        : 'text-[#1e1610] hover:bg-amber-400/15 hover:text-amber-900 px-0.5'
+                  }`}
+                  title={isHpTerm ? `魔法词汇: ${token.text}` : '点击查看释义'}
+                >
+                  {token.text}
+                </span>
+              );
+            })}
+          </div>
+
+          {/* Chinese Translation */}
+          {showTranslation && cue.translation && (
+            <div className={`mt-2.5 pt-2 border-t border-dashed text-sm font-reading leading-relaxed ${
+              isParchment ? 'border-amber-200/60 text-[#735839]' : 'border-slate-700 text-slate-400'
+            }`}>
+              {cue.translation}
+            </div>
+          )}
+
+          {/* Self-Assessment Feedback Loop (Active Revealed Sentence in Blind Mode) */}
+          {isBlind && isActive && (
+            <div className="mt-3 pt-3 border-t border-indigo-100 flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => onAssessSentence?.(cue.id, false)}
+                  className="min-h-[44px] px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300 active:scale-95 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="降速至 0.8x 慢速重听本句"
+                  aria-label="没听清，0.8x 慢速重听"
+                >
+                  <RotateCcw size={14} className="text-stone-600" />
+                  <span>没听清 (0.8x 慢速重听)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onAssessSentence?.(cue.id, true)}
+                  className="min-h-[44px] px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white border border-emerald-600 active:scale-95 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-none"
+                  title="标记听懂并进入下一句"
+                  aria-label="听懂了，下一句"
+                >
+                  <Check size={14} />
+                  <span>听懂了 (下一句)</span>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onToggleReveal(cue.id)}
+                className="min-h-[44px] px-2.5 py-1.5 text-stone-500 hover:text-stone-700 text-xs flex items-center gap-1 rounded-xl transition-colors cursor-pointer"
+                title="重新隐藏文字"
+                aria-label="重新隐藏文字"
+              >
+                <EyeOff size={13} />
+                <span>重新遮罩</span>
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -199,6 +345,7 @@ const SentenceCard = React.memo(function SentenceCard({
  * - Two-row compact toolbar
  * - Touch swipe gesture (left/right) for sentence navigation
  * - Floating locate button at bottom-right
+ * - Auditory decoding workout gym in blind mode
  */
 export function SubtitleViewer({
   cues,
@@ -216,11 +363,16 @@ export function SubtitleViewer({
   onPrevSentence,
   onNextSentence,
   bookmarkedCueIds = new Set(),
-  onToggleBookmarkCue
+  onToggleBookmarkCue,
+  isPlaying = false,
+  playbackRate = 1.0,
+  onChangePlaybackRate,
+  onReplayCurrentSentence
 }) {
   const activeCueRef = useRef(null);
   const containerRef = useRef(null);
   const [revealedSentences, setRevealedSentences] = useState({});
+  const [blindAssessments, setBlindAssessments] = useState(() => ({}));
   const [fontSize, setFontSize] = useState(() => {
     try { return localStorage.getItem('hp_subtitle_font_size') || 'large'; } catch { return 'large'; }
   });
@@ -253,6 +405,38 @@ export function SubtitleViewer({
     setRevealedSentences(prev => ({ ...prev, [cueId]: !prev[cueId] }));
   }, []);
 
+  const handleAssessSentence = useCallback((cueId, isMastered) => {
+    setBlindAssessments(prev => ({ ...prev, [cueId]: isMastered }));
+    if (isMastered) {
+      if (onChangePlaybackRate && playbackRate < 1.0) {
+        onChangePlaybackRate(1.0);
+      }
+      if (onNextSentence) onNextSentence();
+    } else {
+      if (onChangePlaybackRate) onChangePlaybackRate(0.8);
+      if (onReplayCurrentSentence) onReplayCurrentSentence();
+    }
+  }, [onNextSentence, onChangePlaybackRate, onReplayCurrentSentence, playbackRate]);
+
+  // Space key shortcut in blind mode: toggle reveal for active sentence
+  useEffect(() => {
+    if (studyMode !== 'blind') return;
+    const handleKeyDown = (e) => {
+      const tag = e.target?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || e.target?.isContentEditable) return;
+      if (e.code === 'Space' || e.key === ' ') {
+        const currentCue = cues[activeCueIndex];
+        if (currentCue) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleSentenceReveal(currentCue.id);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
+  }, [studyMode, cues, activeCueIndex, toggleSentenceReveal]);
+
   const fontSizeClass = useMemo(() => {
     if (fontSize === 'huge') return 'text-xl sm:text-2xl';
     if (fontSize === 'large') return 'text-lg sm:text-xl';
@@ -277,6 +461,10 @@ export function SubtitleViewer({
     touchStartY.current = null;
   }, [onNextSentence, onPrevSentence]);
 
+  const reviewedCount = Object.keys(blindAssessments).length;
+  const masteredCount = Object.values(blindAssessments).filter(Boolean).length;
+  const masteryRate = calculateBlindMastery(masteredCount, reviewedCount);
+
   return (
     <div
       className="relative flex-1 overflow-y-auto w-full pb-4 ios-scroll"
@@ -292,8 +480,8 @@ export function SubtitleViewer({
           : 'bg-[#0b0f19]/95 border-slate-800'
       }`}>
         <div className="max-w-4xl mx-auto px-4 py-2 flex items-center justify-between gap-2">
-          {/* Left: Mode Identity Badge & Sentence Progress */}
-          <div className="flex items-center gap-2 min-w-0 select-none">
+          {/* Left: Mode Identity Badge & Sentence Progress & Mastery stats */}
+          <div className="flex items-center gap-2 min-w-0 select-none flex-wrap">
             {studyMode === 'blind' ? (
               <>
                 <span className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-indigo-950 font-magical shrink-0">
@@ -301,7 +489,7 @@ export function SubtitleViewer({
                   <span>魔法磨耳朵</span>
                 </span>
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 border border-indigo-200 shrink-0">
-                  迷雾遮罩
+                  脱字幕听力自测
                 </span>
               </>
             ) : (
@@ -313,6 +501,12 @@ export function SubtitleViewer({
             <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-900 font-mono font-bold border border-amber-300/50 shrink-0">
               {`第 ${activeCueIndex + 1} / ${cues.length} 句`}
             </span>
+            {studyMode === 'blind' && reviewedCount > 0 && (
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-mono font-bold border border-emerald-200 flex items-center gap-1 shrink-0">
+                <Check size={11} className="text-emerald-600" />
+                <span>{`听懂率 ${masteryRate}% (${masteredCount}/${reviewedCount})`}</span>
+              </span>
+            )}
           </div>
 
           {/* Right: Concise Font Size Cycle Control */}
@@ -350,40 +544,42 @@ export function SubtitleViewer({
             : (Array.isArray(bookmarkedCueIds) && (bookmarkedCueIds.includes(cue.id) || bookmarkedCueIds.includes(String(cue.start))));
 
           return (
-                <React.Fragment key={cue.id}>
-                  {/* 5-min milestone divider */}
-                  {isNewWaypoint && (
-                    <div className="flex items-center gap-3 my-4 select-none">
-                      <div className="h-px flex-1 bg-amber-200" />
-                      <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-200 text-[11px] font-bold text-amber-800">
-                        <Award size={12} className="text-amber-600" />
-                        <span>已精听 <span className="font-mono">{currentChunk * 5}</span> 分钟</span>
-                      </div>
-                      <div className="h-px flex-1 bg-amber-200" />
-                    </div>
-                  )}
+            <React.Fragment key={cue.id}>
+              {/* 5-min milestone divider */}
+              {isNewWaypoint && (
+                <div className="flex items-center gap-3 my-4 select-none">
+                  <div className="h-px flex-1 bg-amber-200" />
+                  <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-200 text-[11px] font-bold text-amber-800">
+                    <Award size={12} className="text-amber-600" />
+                    <span>已精听 <span className="font-mono">{currentChunk * 5}</span> 分钟</span>
+                  </div>
+                  <div className="h-px flex-1 bg-amber-200" />
+                </div>
+              )}
 
-                  <SentenceCard
-                    cardRef={isActive ? activeCueRef : null}
-                    cue={cue}
-                    idx={idx}
-                    isActive={isActive}
-                    isRevealed={isRevealed}
-                    isBookmarked={isBookmarked}
-                    onToggleBookmarkCue={onToggleBookmarkCue}
-                    studyMode={studyMode}
-                    showTranslation={showTranslation}
-                    fontSizeClass={fontSizeClass}
-                    isParchment={isParchment}
-                    onSeekToCue={onSeekToCue}
-                    onWordClick={onWordClick}
-                    onRecordCue={onRecordCue}
-                    onCopySentence={handleCopySentence}
-                    copiedCueId={copiedCueId}
-                    onToggleReveal={toggleSentenceReveal}
-                  />
-                </React.Fragment>
-              );
+              <SentenceCard
+                cardRef={isActive ? activeCueRef : null}
+                cue={cue}
+                idx={idx}
+                isActive={isActive}
+                isRevealed={isRevealed}
+                isBookmarked={isBookmarked}
+                onToggleBookmarkCue={onToggleBookmarkCue}
+                studyMode={studyMode}
+                showTranslation={showTranslation}
+                fontSizeClass={fontSizeClass}
+                isParchment={isParchment}
+                onSeekToCue={onSeekToCue}
+                onWordClick={onWordClick}
+                onRecordCue={onRecordCue}
+                onCopySentence={handleCopySentence}
+                copiedCueId={copiedCueId}
+                onToggleReveal={toggleSentenceReveal}
+                onAssessSentence={handleAssessSentence}
+                isPlaying={isPlaying}
+              />
+            </React.Fragment>
+          );
         })}
       </div>
 
@@ -404,3 +600,4 @@ export function SubtitleViewer({
 }
 
 export default SubtitleViewer;
+

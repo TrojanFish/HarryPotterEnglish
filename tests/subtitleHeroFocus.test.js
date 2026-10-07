@@ -15,8 +15,8 @@ const projectRoot = path.resolve(__dirname, '..');
 const viewerSrcPath = path.resolve(projectRoot, 'src', 'components', 'SubtitleViewer.jsx');
 let viewerSrcCode = fs.readFileSync(viewerSrcPath, 'utf8');
 viewerSrcCode = viewerSrcCode
-  .replace('../utils/vttParser', '../src/utils/vttParser.js')
-  .replace('../data/hpDictionary', '../src/data/hpDictionary.js');
+  .replace(/from '(\.\.\/)+utils\/([^']+)'/g, "from '../src/utils/$2.js'")
+  .replace(/from '(\.\.\/)+data\/([^']+)'/g, "from '../src/data/$2.js'");
 
 const transformedViewer = esbuild.transformSync(viewerSrcCode, { loader: 'jsx', format: 'esm' });
 const compiledViewerPath = path.resolve(__dirname, 'SubtitleViewer.compiled.js');

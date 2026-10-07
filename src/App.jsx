@@ -750,6 +750,10 @@ export function App() {
                           onNextSentence={handleNextSentence}
                           bookmarkedCueIds={currentChapterBookmarkedCueIds}
                           onToggleBookmarkCue={(cue) => toggleBookmarkSentence(cue, selectedBook, selectedChapter)}
+                          isPlaying={isPlaying}
+                          playbackRate={playbackRate}
+                          onChangePlaybackRate={setPlaybackRate}
+                          onReplayCurrentSentence={handleReplayCurrentSentence}
                         />
                       )}
                     </div>

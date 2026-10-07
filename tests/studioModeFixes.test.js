@@ -24,8 +24,8 @@ test('Studio Mode & Capsule Switchers Rectification Suite', async (t) => {
     assert.ok(importedIcons.includes('Bookmark'), 'SubtitleViewer.jsx must import Bookmark from lucide-react');
 
     viewerSrcCode = viewerSrcCode
-      .replace('../utils/vttParser', '../src/utils/vttParser.js')
-      .replace('../data/hpDictionary', '../src/data/hpDictionary.js');
+      .replace(/from '(\.\.\/)+utils\/([^']+)'/g, "from '../src/utils/$2.js'")
+      .replace(/from '(\.\.\/)+data\/([^']+)'/g, "from '../src/data/$2.js'");
 
     const transformed = esbuild.transformSync(viewerSrcCode, { loader: 'jsx', format: 'esm' });
     const compiledPath = path.resolve(__dirname, 'SubtitleViewerFix.compiled.js');
