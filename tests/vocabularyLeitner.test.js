@@ -11,12 +11,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 
+// Transpile WaxSealBadge.jsx
+const waxSealSrcPath = path.resolve(projectRoot, 'src', 'components', 'common', 'WaxSealBadge.jsx');
+const transformedWaxSeal = esbuild.transformSync(fs.readFileSync(waxSealSrcPath, 'utf8'), { loader: 'jsx', format: 'esm' });
+fs.writeFileSync(path.resolve(__dirname, 'WaxSealBadge.compiled.js'), transformedWaxSeal.code, 'utf8');
+
 // Transpile VocabularyDrawer.jsx
 const drawerSrcPath = path.resolve(projectRoot, 'src', 'components', 'VocabularyDrawer.jsx');
 let drawerSrcCode = fs.readFileSync(drawerSrcPath, 'utf8')
   .replace("from '../utils/ankiExport'", "from '../src/utils/ankiExport.js'")
   .replace("from '../utils/parchmentPdfGenerator'", "from '../src/utils/parchmentPdfGenerator.js'")
-  .replace("from '../utils/srsEngine'", "from '../src/utils/srsEngine.js'");
+  .replace("from '../utils/srsEngine'", "from '../src/utils/srsEngine.js'")
+  .replace("from './common/WaxSealBadge.jsx'", "from './WaxSealBadge.compiled.js'")
+  .replace("from '../constants/hogwartsTheme.js'", "from '../src/constants/hogwartsTheme.js'");
 
 const transformedDrawer = esbuild.transformSync(drawerSrcCode, { loader: 'jsx', format: 'esm' });
 const compiledDrawerPath = path.resolve(__dirname, 'VocabularyDrawerLeitner.compiled.js');

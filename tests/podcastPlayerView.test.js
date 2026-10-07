@@ -15,11 +15,17 @@ const projectRoot = path.resolve(__dirname, '..');
 const viewSrcPath = path.resolve(projectRoot, 'src', 'components', 'podcast', 'PodcastPlayerView.jsx');
 
 test('PodcastPlayerView Test Suite', async (t) => {
-  assert.ok(fs.existsSync(viewSrcPath), 'Source file PodcastPlayerView.jsx must exist');
+  // Transpile GoldenSnitchScrubber.jsx
+  const snitchPath = path.resolve(projectRoot, 'src', 'components', 'common', 'GoldenSnitchScrubber.jsx');
+  const transformedSnitch = esbuild.transformSync(fs.readFileSync(snitchPath, 'utf8'), { loader: 'jsx', format: 'esm' });
+  fs.writeFileSync(path.resolve(__dirname, 'GoldenSnitchScrubber.compiled.js'), transformedSnitch.code, 'utf8');
+
   let viewSrcCode = fs.readFileSync(viewSrcPath, 'utf8');
   viewSrcCode = viewSrcCode
     .replace("from '../../utils/vttParser'", "from '../src/utils/vttParser.js'")
-    .replace("from './PodcastLyricsStream'", "from './PodcastLyricsStream.compiled.js'");
+    .replace("from '../../utils/magicalSound.js'", "from '../src/utils/magicalSound.js'")
+    .replace("from './PodcastLyricsStream'", "from './PodcastLyricsStream.compiled.js'")
+    .replace("from '../common/GoldenSnitchScrubber.jsx'", "from './GoldenSnitchScrubber.compiled.js'");
 
   const transformed = esbuild.transformSync(viewSrcCode, { loader: 'jsx', format: 'esm' });
   const compiledPath = path.resolve(__dirname, 'PodcastPlayerView.compiled.js');

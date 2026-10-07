@@ -12,11 +12,18 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 
 // Transpile GlobalPodcastCapsule.jsx
+// Transpile GoldenSnitchScrubber.jsx
+const snitchPath = path.resolve(projectRoot, 'src', 'components', 'common', 'GoldenSnitchScrubber.jsx');
+const transformedSnitch = esbuild.transformSync(fs.readFileSync(snitchPath, 'utf8'), { loader: 'jsx', format: 'esm' });
+fs.writeFileSync(path.resolve(__dirname, 'GoldenSnitchScrubber.compiled.js'), transformedSnitch.code, 'utf8');
+
 const capsuleSrcPath = path.resolve(projectRoot, 'src', 'components', 'navigation', 'GlobalPodcastCapsule.jsx');
 let capsuleSrcCode = fs.readFileSync(capsuleSrcPath, 'utf8');
 capsuleSrcCode = capsuleSrcCode
   .replace("from '../../utils/vttParser'", "from '../src/utils/vttParser.js'")
-  .replace("from '../../utils/sleepTimer'", "from '../src/utils/sleepTimer.js'");
+  .replace("from '../../utils/sleepTimer'", "from '../src/utils/sleepTimer.js'")
+  .replace("from '../../utils/magicalSound.js'", "from '../src/utils/magicalSound.js'")
+  .replace("from '../common/GoldenSnitchScrubber.jsx'", "from './GoldenSnitchScrubber.compiled.js'");
 
 const transformedCapsule = esbuild.transformSync(capsuleSrcCode, { loader: 'jsx', format: 'esm' });
 const compiledCapsulePath = path.resolve(__dirname, 'GlobalPodcastCapsule.compiled.js');

@@ -9,6 +9,8 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { formatEnglishText } from '../../utils/vttParser';
+import { GoldenSnitchScrubber } from '../common/GoldenSnitchScrubber.jsx';
+import { magicalSound } from '../../utils/magicalSound.js';
 
 /**
  * GlobalPodcastCapsule — Universal Persistent Podcast Audio Controller
@@ -113,11 +115,15 @@ function GlobalPodcastCapsuleComponent({
           title="点击或拖动调整播放进度"
           aria-label="音频时间进度条"
         >
-          <div className="w-full bg-[#e8ddd0]/90 h-[2px] group-hover/scrubber:h-[4px] group-active/scrubber:h-[4px] transition-all duration-150 relative overflow-hidden">
+          <div className="w-full bg-[#e8ddd0]/90 h-[2px] group-hover/scrubber:h-[4px] group-active/scrubber:h-[4px] transition-all duration-150 relative">
             <div
-              className="h-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-150"
+              className="h-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-150 relative"
               style={{ width: `${progressPercent}%` }}
-            />
+            >
+              <div className="absolute top-1/2 -translate-y-1/2 -right-3 pointer-events-none opacity-0 group-hover/scrubber:opacity-100 transition-opacity">
+                <GoldenSnitchScrubber progress={progressPercent} size={12} isHovered={isPlaying} />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -220,8 +226,10 @@ function GlobalPodcastCapsuleComponent({
               className="h-full bg-gradient-to-r from-amber-500 to-amber-600 relative transition-all duration-150"
               style={{ width: `${progressPercent}%` }}
             >
-              {/* Scrubber thumb head on hover */}
-              <span className="absolute top-1/2 -translate-y-1/2 -right-1.5 w-3 h-3 rounded-full bg-amber-600 border border-white shadow-sm opacity-0 group-hover/scrubber:opacity-100 transition-opacity pointer-events-none" />
+              {/* Golden Snitch thumb head on hover */}
+              <div className="absolute top-1/2 -translate-y-1/2 -right-3 pointer-events-none opacity-0 group-hover/scrubber:opacity-100 transition-opacity">
+                <GoldenSnitchScrubber progress={progressPercent} size={14} isHovered={isPlaying} />
+              </div>
             </div>
 
             {/* Hover preview tooltip */}

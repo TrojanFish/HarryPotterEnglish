@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 
 import { printParchmentCards } from '../utils/parchmentPdfGenerator';
+import { WaxSealBadge } from './common/WaxSealBadge.jsx';
+import { OWLS_GRADES, getOwlsGrade } from '../constants/hogwartsTheme.js';
 
 /**
  * VocabularyDrawer — Comprehensive Study Notebook & Starred Sentences Workshop
@@ -136,12 +138,17 @@ export function VocabularyDrawer({
       4: { label: 'Box 4 · 长效', color: 'bg-purple-100/90 text-purple-900 border-purple-300' },
       5: { label: 'Box 5 · 永久掌握', color: 'bg-emerald-100 text-emerald-900 border-emerald-400 font-bold' }
     };
-    const config = levelConfigs[level] || levelConfigs[1];
+    const owlsGrade = getOwlsGrade(level);
+    const isMastered = level >= 5;
+    const config = levelConfigs[Math.max(1, Math.min(5, level))] || levelConfigs[1];
 
     return (
       <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+        {isMastered && (
+          <WaxSealBadge text="O" size={20} title="O.W.L.s 杰出级 (Outstanding) · 大师级无杖掌握" />
+        )}
         <span className={`text-[10px] px-2 py-0.5 rounded-md border font-semibold ${config.color}`}>
-          {config.label}
+          O.W.L.s {owlsGrade.grade} · {config.label}
         </span>
         {isDue && (
           <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold animate-pulse border border-amber-600" title="记忆封印松动，需要艾宾浩斯重铸">
@@ -200,7 +207,7 @@ export function VocabularyDrawer({
               }`}
               aria-pressed={drawerTab === 'sentences'}
             >
-              疑难句 ({bookmarkedSentences.length})
+              冥想盆疑难句 ({bookmarkedSentences.length})
             </button>
           </div>
 
@@ -236,7 +243,7 @@ export function VocabularyDrawer({
             <div className="flex items-center justify-between text-[11px] font-bold text-amber-900 mb-1.5">
               <span className="flex items-center gap-1.5">
                 <BrainCircuit size={13} className="text-amber-700" />
-                <span>艾宾浩斯 5 箱记忆曲线</span>
+                <span>O.W.L.s 巫师等级考试记忆阶梯 (Leitner 5-Box)</span>
               </span>
               {dueCount > 0 ? (
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 font-bold border border-amber-300/80">
@@ -248,17 +255,20 @@ export function VocabularyDrawer({
             </div>
             <div className="grid grid-cols-5 gap-1.5 text-center">
               {[
-                { box: 1, label: 'Box 1 · 初学', short: '初学', color: 'bg-amber-100 text-amber-900 border-amber-300' },
-                { box: 2, label: 'Box 2 · 巩固', short: '巩固', color: 'bg-amber-200/70 text-amber-950 border-amber-400' },
-                { box: 3, label: 'Box 3 · 熟记', short: '熟记', color: 'bg-blue-100 text-blue-900 border-blue-300' },
-                { box: 4, label: 'Box 4 · 长效', short: '长效', color: 'bg-purple-100 text-purple-900 border-purple-300' },
-                { box: 5, label: 'Box 5 · 永久掌握', short: '永久掌握', color: 'bg-emerald-100 text-emerald-900 border-emerald-400 font-bold' }
-              ].map(({ box, label, short, color }) => {
+                { box: 1, grade: 'T', label: 'Box 1 · T (巨怪级 · 初学)', short: 'T · 初学', color: 'bg-amber-100 text-amber-900 border-amber-300' },
+                { box: 2, grade: 'D', label: 'Box 2 · D (糟糕级 · 巩固)', short: 'D · 巩固', color: 'bg-amber-200/70 text-amber-950 border-amber-400' },
+                { box: 3, grade: 'P', label: 'Box 3 · P (勉强级 · 熟记)', short: 'P · 熟记', color: 'bg-blue-100 text-blue-900 border-blue-300' },
+                { box: 4, grade: 'A', label: 'Box 4 · A (及格级 · 长效)', short: 'A · 长效', color: 'bg-purple-100 text-purple-900 border-purple-300' },
+                { box: 5, grade: 'O', label: 'Box 5 · O (杰出级 · 永久掌握)', short: 'O · 永久掌握', color: 'bg-emerald-100 text-emerald-900 border-emerald-400 font-bold' }
+              ].map(({ box, grade, label, short, color }) => {
                 const count = boxCounts[box] || 0;
                 return (
                   <div key={box} className={`p-1 rounded-lg border text-[10px] ${color}`} title={label}>
-                    <div className="font-extrabold font-mono text-xs">{count}</div>
-                    <div className="truncate text-[9px]">{short}</div>
+                    <div className="font-extrabold font-mono text-xs flex items-center justify-center gap-0.5">
+                      <span>{count}</span>
+                      <span className="text-[9px] opacity-75 font-magical font-bold">({grade})</span>
+                    </div>
+                    <div className="truncate text-[9px] font-medium">{short}</div>
                   </div>
                 );
               })}

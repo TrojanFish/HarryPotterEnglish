@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { PodcastLyricsStream } from './PodcastLyricsStream';
 import { formatEnglishText } from '../../utils/vttParser';
+import { GoldenSnitchScrubber } from '../common/GoldenSnitchScrubber.jsx';
+import { magicalSound } from '../../utils/magicalSound.js';
 
 /**
  * PodcastPlayerView — Immersive Podcast Companion Mode (播客随行视界)
@@ -161,7 +163,7 @@ function PodcastPlayerViewComponent({
           <div className="flex flex-col gap-3 pt-4 border-t border-[#e8ddd0]/60">
             {/* Audio Scrubber */}
             <div className="w-full">
-              <div className="relative flex items-center">
+              <div className="relative flex items-center group">
                 <input
                   type="range"
                   min="0"
@@ -172,6 +174,12 @@ function PodcastPlayerViewComponent({
                   className="w-full h-2 py-2 rounded-lg appearance-none cursor-pointer bg-[#e8ddd0] accent-amber-500"
                   aria-label="音频时间进度条"
                 />
+                <div
+                  className="absolute pointer-events-none -top-2.5 -translate-x-1/2 transition-all duration-75"
+                  style={{ left: `${progressPercent}%` }}
+                >
+                  <GoldenSnitchScrubber progress={progressPercent} size={18} isHovered={isPlaying} />
+                </div>
               </div>
               <div className="flex justify-between text-[11px] font-mono text-stone-500 mt-1">
                 <span>{formatTime(currentTime)}</span>
@@ -234,7 +242,7 @@ function PodcastPlayerViewComponent({
                       ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
                       : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
                   }`}
-                  title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
+                  title={sleepTimerMode ? `安眠魔药生效中: ${sleepTimerRemaining}` : '开启安眠魔药定时'}
                   aria-label="睡眠定时"
                   aria-pressed={Boolean(sleepTimerMode)}
                 >
@@ -322,16 +330,24 @@ function PodcastPlayerViewComponent({
         {/* Scrubber Line */}
         <div className="w-full flex items-center gap-2">
           <span className="text-[10px] font-mono text-stone-500 min-w-[32px] text-right">{formatTime(currentTime)}</span>
-          <input
-            type="range"
-            min="0"
-            max={duration || 100}
-            step="0.1"
-            value={currentTime}
-            onChange={(e) => onSeek && onSeek(parseFloat(e.target.value))}
-            className="flex-1 h-2 py-2 rounded-lg appearance-none cursor-pointer bg-[#e8ddd0] accent-amber-500"
-            aria-label="音频时间进度条"
-          />
+          <div className="relative flex-1 flex items-center group">
+            <input
+              type="range"
+              min="0"
+              max={duration || 100}
+              step="0.1"
+              value={currentTime}
+              onChange={(e) => onSeek && onSeek(parseFloat(e.target.value))}
+              className="w-full h-2 py-2 rounded-lg appearance-none cursor-pointer bg-[#e8ddd0] accent-amber-500"
+              aria-label="音频时间进度条"
+            />
+            <div
+              className="absolute pointer-events-none -top-2.5 -translate-x-1/2 transition-all duration-75"
+              style={{ left: `${progressPercent}%` }}
+            >
+              <GoldenSnitchScrubber progress={progressPercent} size={16} isHovered={isPlaying} />
+            </div>
+          </div>
           <span className="text-[10px] font-mono text-stone-500 min-w-[32px]">{formatTime(duration)}</span>
         </div>
 
@@ -348,7 +364,7 @@ function PodcastPlayerViewComponent({
                     ? 'bg-amber-500 text-white border-amber-600'
                     : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
                 }`}
-                title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
+                title={sleepTimerMode ? `安眠魔药生效中: ${sleepTimerRemaining}` : '开启安眠魔药定时'}
                 aria-label="睡眠定时"
                 aria-pressed={Boolean(sleepTimerMode)}
               >

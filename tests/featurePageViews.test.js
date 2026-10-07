@@ -17,8 +17,14 @@ function compileJsx(filePath, outPath) {
   code = code
     .replace(/\.\.\/utils\//g, '../src/utils/')
     .replace(/\.\.\/data\//g, '../src/data/')
+    .replace(/\.\.\/constants\//g, '../src/constants/')
+    .replace(/\.\.\/hooks\//g, '../src/hooks/')
     .replace(/'\.\.\/utils\/([^']+)'/g, "'../src/utils/$1.js'")
-    .replace(/'\.\.\/data\/([^']+)'/g, "'../src/data/$1.js'");
+    .replace(/'\.\.\/data\/([^']+)'/g, "'../src/data/$1.js'")
+    .replace(/'\.\.\/constants\/([^']+)'/g, "'../src/constants/$1.js'")
+    .replace(/'\.\.\/hooks\/([^']+)'/g, "'../src/hooks/$1.js'")
+    .replace(/from '(\.\/|\.\.\/)common\/([^'\.]+)(\.jsx?)?'/g, "from './$2.compiled.js'")
+    .replace(/from '(\.\/|\.\.\/)analytics\/([^'\.]+)(\.jsx?)?'/g, "from './$2.compiled.js'");
   // Ensure .js extensions for node ESM
   code = code.replace(/from '(\.\.\/src\/[^']+)'/g, (match, p1) => {
     return p1.endsWith('.js') ? match : `from '${p1}.js'`;
@@ -28,6 +34,10 @@ function compileJsx(filePath, outPath) {
 }
 
 test('Feature Page Views (isPageView) Test Suite', async (t) => {
+  // 0. WaxSealBadge
+  const waxSealPath = path.resolve(projectRoot, 'src', 'components', 'common', 'WaxSealBadge.jsx');
+  compileJsx(waxSealPath, path.resolve(__dirname, 'WaxSealBadge.compiled.js'));
+
   // 1. VocabularyDrawer
   const vocabPath = path.resolve(projectRoot, 'src', 'components', 'VocabularyDrawer.jsx');
   const vocabCompiled = path.resolve(__dirname, 'VocabularyDrawer.test.compiled.js');

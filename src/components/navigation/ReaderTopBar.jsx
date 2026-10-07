@@ -57,8 +57,8 @@ function ReaderTopBarComponent({
             <button
               onClick={onBackToShelf}
               className="sm:hidden w-10 h-10 min-w-[40px] flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:border-amber-400 hover:bg-white text-stone-600 hover:text-amber-950 active:scale-95 transition-colors shrink-0 cursor-pointer"
-              title="返回书架"
-              aria-label="返回书架"
+              title="返回霍格沃茨图书馆"
+              aria-label="返回霍格沃茨图书馆"
             >
               <ArrowLeft size={18} />
             </button>
@@ -141,7 +141,7 @@ function ReaderTopBarComponent({
             <button
               onClick={onOpenShortcuts}
               className="hidden sm:flex w-10 h-10 min-w-[40px] min-h-[40px] items-center justify-center rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-300 text-stone-500 hover:text-amber-950 transition-colors cursor-pointer shrink-0"
-              title="键盘快捷键与操作指南"
+              title="魔杖快捷手势与键盘指南"
             >
               <HelpCircle size={15} />
             </button>

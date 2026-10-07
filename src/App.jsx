@@ -22,6 +22,8 @@ import { ReaderTopBar } from './components/navigation/ReaderTopBar';
 import { PodcastPlayerView } from './components/podcast/PodcastPlayerView';
 import { Loader2, Eye, WifiOff } from 'lucide-react';
 import { getNextSleepTimerOption, formatSleepTimerRemaining, calculateSleepTimerRemaining } from './utils/sleepTimer';
+import { useHogwartsHouse } from './hooks/useHogwartsHouse.js';
+import { HouseSelectorModal } from './components/common/HouseSelectorModal.jsx';
 
 // Decoupled Domain Custom Hooks
 import { useAudioPlayback } from './hooks/useAudioPlayback';
@@ -71,6 +73,10 @@ export function App() {
   } = catalog;
 
   const [, startTransition] = useTransition();
+
+  // Hogwarts Four Houses Customization
+  const { currentHouse, houseData, selectHouse } = useHogwartsHouse();
+  const [isHouseSelectorOpen, setIsHouseSelectorOpen] = useState(false);
 
   // Hogwarts Sleep Timer State & Countdown
   const [sleepTimerMode, setSleepTimerMode] = useState(null);
@@ -560,6 +566,9 @@ export function App() {
         todayListeningSeconds={analyticsSummary?.todayListeningSeconds || 0}
         vocabCount={vocabList.length}
         cachedChaptersCount={cachedChaptersCount}
+        currentHouse={currentHouse}
+        houseData={houseData}
+        onOpenHouseSelector={() => setIsHouseSelectorOpen(true)}
         onOpenVocab={() => handleSwitchCurrentView('vocab')}
         onOpenAnalytics={() => {
           refreshAnalytics();
@@ -649,6 +658,8 @@ export function App() {
               onClose={() => setCurrentView('player')}
               isParchment={isParchment}
               vocabCount={vocabList.length}
+              userHouse={currentHouse}
+              onOpenHouseSelector={() => setIsHouseSelectorOpen(true)}
             />
           ) : currentView === 'storage' ? (
             <StorageManagerModal
@@ -956,6 +967,8 @@ export function App() {
         onClose={() => setIsAnalyticsOpen(false)}
         isParchment={isParchment}
         vocabCount={vocabList.length}
+        userHouse={currentHouse}
+        onOpenHouseSelector={() => setIsHouseSelectorOpen(true)}
       />
 
       <StorageManagerModal
@@ -968,6 +981,16 @@ export function App() {
         currentBook={currentBookObj}
         currentChapter={currentChapterObj}
         onPlayChapter={handlePlayFromStorage}
+      />
+
+      <HouseSelectorModal
+        isOpen={isHouseSelectorOpen}
+        currentHouse={currentHouse}
+        onClose={() => setIsHouseSelectorOpen(false)}
+        onSelectHouse={(houseId) => {
+          selectHouse(houseId);
+          setIsHouseSelectorOpen(false);
+        }}
       />
 
       {/* Adolescent Visual Health Sentinel (20-20-20 Eye Care Standard) */}

@@ -24,21 +24,21 @@ export function MobileBottomNav({
   const tabs = [
     {
       id: 'bookshelf',
-      label: '书架',
+      label: '图书馆',
       icon: <Library size={20} />,
       isActive: currentView === 'bookshelf',
       onClick: () => onSwitchView && onSwitchView('bookshelf')
     },
     {
       id: 'player',
-      label: '精听',
+      label: '魔咒精研',
       icon: <Headphones size={20} />,
       isActive: currentView === 'player',
       onClick: () => onSwitchView && onSwitchView('player')
     },
     {
       id: 'vocab',
-      label: '生词',
+      label: '魔法宝典',
       icon: <Bookmark size={20} />,
       badge: vocabCount > 0 ? vocabCount : null,
       isActive: currentView === 'vocab',
@@ -46,7 +46,7 @@ export function MobileBottomNav({
     },
     {
       id: 'analytics',
-      label: '我的',
+      label: '巫师档案',
       icon: <BarChart2 size={20} />,
       isActive: currentView === 'analytics',
       onClick: () => onOpenAnalytics ? onOpenAnalytics() : (onSwitchView && onSwitchView('analytics'))

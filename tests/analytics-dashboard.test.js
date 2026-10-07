@@ -36,9 +36,37 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 
+// Transpile WaxSealBadge.jsx
+const waxSealPath = path.resolve(projectRoot, 'src', 'components', 'common', 'WaxSealBadge.jsx');
+const transformedWax = esbuild.transformSync(fs.readFileSync(waxSealPath, 'utf8'), { loader: 'jsx', format: 'esm' });
+fs.writeFileSync(path.resolve(__dirname, 'WaxSealBadge.compiled.js'), transformedWax.code, 'utf8');
+
+// Transpile HouseHourglasses.jsx
+const hourglassPath = path.resolve(projectRoot, 'src', 'components', 'analytics', 'HouseHourglasses.jsx');
+const transformedHourglass = esbuild.transformSync(
+  fs.readFileSync(hourglassPath, 'utf8')
+    .replace("from '../../constants/hogwartsTheme.js'", "from '../src/constants/hogwartsTheme.js'")
+    .replace("from '../common/WaxSealBadge.jsx'", "from './WaxSealBadge.compiled.js'"),
+  { loader: 'jsx', format: 'esm' }
+);
+fs.writeFileSync(path.resolve(__dirname, 'HouseHourglasses.compiled.js'), transformedHourglass.code, 'utf8');
+
+// Transpile OwlsCertificateModal.jsx
+const owlsPath = path.resolve(projectRoot, 'src', 'components', 'analytics', 'OwlsCertificateModal.jsx');
+const transformedOwls = esbuild.transformSync(
+  fs.readFileSync(owlsPath, 'utf8')
+    .replace("from '../../constants/hogwartsTheme.js'", "from '../src/constants/hogwartsTheme.js'")
+    .replace("from '../common/WaxSealBadge.jsx'", "from './WaxSealBadge.compiled.js'"),
+  { loader: 'jsx', format: 'esm' }
+);
+fs.writeFileSync(path.resolve(__dirname, 'OwlsCertificateModal.compiled.js'), transformedOwls.code, 'utf8');
+
 // Transpile AnalyticsDashboard.jsx
 const dashboardSrc = fs.readFileSync(path.resolve(projectRoot, 'src', 'components', 'AnalyticsDashboard.jsx'), 'utf8')
-  .replace(/\.\.\/utils\/(\w+)/g, '../src/utils/$1.js');
+  .replace(/\.\.\/utils\/(\w+)/g, '../src/utils/$1.js')
+  .replace("from './analytics/HouseHourglasses.jsx'", "from './HouseHourglasses.compiled.js'")
+  .replace("from './analytics/OwlsCertificateModal.jsx'", "from './OwlsCertificateModal.compiled.js'")
+  .replace("from '../constants/hogwartsTheme.js'", "from '../src/constants/hogwartsTheme.js'");
 const dashboardCompiled = esbuild.transformSync(dashboardSrc, { loader: 'jsx', format: 'esm' });
 const dashboardCompiledPath = path.resolve(__dirname, 'AnalyticsDashboard.compiled.js');
 fs.writeFileSync(dashboardCompiledPath, dashboardCompiled.code, 'utf8');

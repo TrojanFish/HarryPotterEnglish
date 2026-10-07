@@ -16,10 +16,17 @@ const drawerSrcPath = path.resolve(projectRoot, 'src', 'components', 'Vocabulary
 
 test('VocabularyDrawer Starred Sentences Workshop Test Suite', async (t) => {
   assert.ok(fs.existsSync(drawerSrcPath), 'Source file VocabularyDrawer.jsx must exist');
+  // Transpile WaxSealBadge.jsx
+  const waxSealSrcPath = path.resolve(projectRoot, 'src', 'components', 'common', 'WaxSealBadge.jsx');
+  const transformedWaxSeal = esbuild.transformSync(fs.readFileSync(waxSealSrcPath, 'utf8'), { loader: 'jsx', format: 'esm' });
+  fs.writeFileSync(path.resolve(__dirname, 'WaxSealBadge.compiled.js'), transformedWaxSeal.code, 'utf8');
+
   let drawerSrcCode = fs.readFileSync(drawerSrcPath, 'utf8');
   drawerSrcCode = drawerSrcCode
     .replace("from '../utils/parchmentPdfGenerator'", "from '../src/utils/parchmentPdfGenerator.js'")
-    .replace("from '../utils/vttParser'", "from '../src/utils/vttParser.js'");
+    .replace("from '../utils/vttParser'", "from '../src/utils/vttParser.js'")
+    .replace("from './common/WaxSealBadge.jsx'", "from './WaxSealBadge.compiled.js'")
+    .replace("from '../constants/hogwartsTheme.js'", "from '../src/constants/hogwartsTheme.js'");
 
   const transformed = esbuild.transformSync(drawerSrcCode, { loader: 'jsx', format: 'esm' });
   const compiledPath = path.resolve(__dirname, 'VocabularyDrawer.compiled.js');

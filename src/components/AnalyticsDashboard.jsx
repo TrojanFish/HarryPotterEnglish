@@ -20,19 +20,27 @@ import {
 } from 'lucide-react';
 import { getAnalyticsSummary } from '../utils/analyticsStore';
 import { syncEngine } from '../utils/syncEngine';
+import { HouseHourglasses } from './analytics/HouseHourglasses.jsx';
+import { OwlsCertificateModal } from './analytics/OwlsCertificateModal.jsx';
+import { HOUSES } from '../constants/hogwartsTheme.js';
 
 export function AnalyticsDashboard({
   isOpen,
   onClose,
   isParchment = true,
   vocabCount = 0,
-  isPageView = false
+  isPageView = false,
+  userHouse = 'gryffindor',
+  onOpenHouseSelector
 }) {
   const [summary, setSummary] = useState(null);
   const [hoveredBarIndex, setHoveredBarIndex] = useState(null);
   const [hoveredPointIndex, setHoveredPointIndex] = useState(null);
   const [showHonorScroll, setShowHonorScroll] = useState(false);
+  const [showOwlsCertificate, setShowOwlsCertificate] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+
+  const activeHouse = userHouse || (typeof window !== 'undefined' && localStorage.getItem('hp_user_house')) || 'gryffindor';
 
   // Local-First Sync State
   const [syncState, setSyncState] = useState(() => ({
@@ -248,12 +256,12 @@ export function AnalyticsDashboard({
 
         <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
           <button
-            onClick={() => setShowHonorScroll(!showHonorScroll)}
+            onClick={() => setShowOwlsCertificate(true)}
             className="duo-btn-primary min-h-[44px] flex items-center gap-1 sm:gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer whitespace-nowrap shrink-0"
-            title="生成精美羊皮纸学业喜报，便于分享给家长或班级群"
+            title="生成官方霍格沃茨 O.W.L.s 学业荣誉通报证书，支持直接打印与分享"
           >
             <Award size={14} className="shrink-0" />
-            <span>{showHonorScroll ? '返回图表' : '学业喜报'}</span>
+            <span>学业喜报 (O.W.L.s 证书)</span>
           </button>
 
           {onClose && (
@@ -355,6 +363,12 @@ export function AnalyticsDashboard({
           </div>
         ) : (
         <div className="p-5 sm:p-6 space-y-6">
+          {/* Great Hall Four Houses Gem Hourglasses */}
+          <HouseHourglasses
+            userHouse={activeHouse}
+            summary={currentSummary}
+            onOpenHouseSelector={onOpenHouseSelector}
+          />
 
           {/* 4 Habit Tracking Metric Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -882,6 +896,14 @@ export function AnalyticsDashboard({
         </div>
         )}
 
+        {/* O.W.L.s Academic Certificate Modal */}
+        <OwlsCertificateModal
+          isOpen={showOwlsCertificate}
+          onClose={() => setShowOwlsCertificate(false)}
+          userHouse={activeHouse}
+          summary={currentSummary}
+          vocabCount={vocabCount}
+        />
       </div>
   );
 
