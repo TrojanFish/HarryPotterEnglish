@@ -54,34 +54,34 @@ export function GlobalPodcastCapsule({
 
   return (
     <>
-      {/* ── 1. Mobile Version (< 768px) ─────────────────────────────── */}
-      <div className="md:hidden fixed bottom-[calc(3.4rem+max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.25rem)))] left-2.5 right-2.5 z-40 rounded-2xl bg-amber-500 text-white border border-amber-600 flex flex-col overflow-hidden select-none animate-slideUp shadow-none">
+      {/* ── 1. Mobile Version (< 768px): Harmonized Warm Parchment Capsule ── */}
+      <div className="md:hidden fixed bottom-[calc(3.4rem+max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.25rem)))] left-2.5 right-2.5 z-40 rounded-2xl bg-white/95 text-[#1e1610] border border-amber-300 backdrop-blur-md flex flex-col overflow-hidden select-none animate-slideUp shadow-sm">
         {/* Top Slim Audio Scrubber Line */}
-        <div className="h-1 bg-amber-600/40 w-full overflow-hidden">
+        <div className="h-1 bg-amber-500/15 w-full overflow-hidden">
           <div
-            className="h-full bg-white transition-all duration-200"
+            className="h-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-200"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
 
-        <div className="flex items-center justify-between p-2">
+        <div className="flex items-center justify-between p-2.5 gap-2">
           {/* Clickable Info Area -> Enter Player */}
           <div
             onClick={handleOpen}
             className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer pr-1"
             title="点击进入全功能精听教室"
           >
-            <div className="w-9 h-9 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center font-bold text-xs text-white shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-300/50 flex items-center justify-center font-bold text-xs text-amber-700 shrink-0">
               <Headphones size={16} />
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="text-xs font-bold text-white truncate leading-tight">
+              <h4 className="text-xs font-bold text-amber-950 truncate leading-tight">
                 {cleanTitle}
               </h4>
-              <p className="text-[10px] text-amber-100 font-mono font-medium truncate mt-0.5 flex items-center gap-1.5">
+              <p className="text-[10px] text-stone-500 font-mono font-medium truncate mt-0.5 flex items-center gap-1.5">
                 <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
                 {sleepTimerMode && (
-                  <span className="bg-amber-700/80 px-1 py-0.2 rounded text-[9px] flex items-center gap-0.5 text-amber-100">
+                  <span className="bg-amber-100 text-amber-900 border border-amber-200 px-1 py-0.2 rounded text-[9px] flex items-center gap-0.5">
                     <Moon size={9} /> {sleepTimerRemaining}
                   </span>
                 )}
@@ -89,7 +89,7 @@ export function GlobalPodcastCapsule({
             </div>
           </div>
 
-          {/* Quick Transport Buttons (Apple HIG >= 44x44pt touch targets) */}
+          {/* Quick Transport Buttons (Unified Parchment Buttons) */}
           <div className="flex items-center gap-1.5 shrink-0">
             {/* Prev Sentence */}
             {onPrevSentence && (
@@ -98,7 +98,7 @@ export function GlobalPodcastCapsule({
                   e.stopPropagation();
                   onPrevSentence();
                 }}
-                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl bg-white/15 hover:bg-white/25 text-white flex items-center justify-center active:scale-90 transition-transform cursor-pointer shrink-0"
+                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-700 hover:text-amber-950 flex items-center justify-center active:scale-95 transition-all cursor-pointer shrink-0"
                 title="上一句"
                 aria-label="上一句"
               >
@@ -106,13 +106,13 @@ export function GlobalPodcastCapsule({
               </button>
             )}
 
-            {/* Play / Pause */}
+            {/* Play / Pause (44x44px Amber Primary Circle) */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 if (onPlayPause) onPlayPause();
               }}
-              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-white text-amber-700 flex items-center justify-center active:scale-95 transition-transform cursor-pointer shadow-none shrink-0"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center active:scale-95 transition-all cursor-pointer shadow-none shrink-0"
               title={isPlaying ? '暂停 (Space)' : '播放 (Space)'}
               aria-label={isPlaying ? '暂停音频' : '播放音频'}
             >
@@ -130,7 +130,7 @@ export function GlobalPodcastCapsule({
                   e.stopPropagation();
                   onNextSentence();
                 }}
-                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl bg-white/15 hover:bg-white/25 text-white flex items-center justify-center active:scale-90 transition-transform cursor-pointer shrink-0"
+                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-700 hover:text-amber-950 flex items-center justify-center active:scale-95 transition-all cursor-pointer shrink-0"
                 title="下一句"
                 aria-label="下一句"
               >

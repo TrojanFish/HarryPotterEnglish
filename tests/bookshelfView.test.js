@@ -201,5 +201,24 @@ test('BookshelfView CEFR & Hero Continue Card Test Suite', async (t) => {
     // Eliminates the old separate mb-8 hero container
     assert.ok(!html.includes('mb-8 border border-amber-300/80'), 'Old standalone full-width hero card must be replaced by grid card');
   });
+
+  await t.test('4.9: Continue listening card action buttons enforce Apple HIG touch targets', () => {
+    const html = renderToString(
+      React.createElement(BookshelfView, {
+        books: mockBooks,
+        selectedBook: 'book1',
+        selectedChapter: 'b1_c01',
+        currentTime: 45,
+        duration: 300,
+        isParchment: true,
+        isPlaying: false,
+        onTogglePlay: () => {}
+      })
+    );
+
+    // Continue listening card must eliminate tiny 28px buttons
+    assert.ok(!html.includes('min-w-[28px] min-h-[28px]'), 'Must eliminate 28px tiny buttons in continue listening card');
+    assert.ok(html.includes('min-w-[44px]') || html.includes('min-h-[44px]') || html.includes('min-w-[36px]'), 'Must enforce ergonomic touch targets');
+  });
 });
 

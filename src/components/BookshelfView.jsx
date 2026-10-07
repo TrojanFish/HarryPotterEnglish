@@ -227,28 +227,28 @@ export function BookshelfView({
                 <Headphones size={12} className="text-amber-600 shrink-0" />
                 <span className="truncate">{isPlaying ? '正在精听' : '继续精听'}</span>
               </span>
-              <div className="flex items-center gap-1 shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setInspectingBook(currentBookObj);
                   }}
-                  className="w-7 h-7 min-w-[28px] min-h-[28px] rounded-lg border border-[#e8ddd0] bg-white hover:bg-amber-50 text-stone-600 hover:text-amber-950 flex items-center justify-center active:scale-90 transition-all cursor-pointer shadow-none"
+                  className="w-9 h-9 min-w-[36px] min-h-[36px] duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-amber-50 text-stone-600 hover:text-amber-950 flex items-center justify-center active:scale-90 transition-all cursor-pointer shadow-none"
                   title="查看章节目录"
                   aria-label="查看章节目录"
                 >
-                  <Layers size={12} />
+                  <Layers size={14} />
                 </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     onTogglePlay();
                   }}
-                  className="w-7 h-7 min-w-[28px] min-h-[28px] rounded-lg bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center active:scale-90 transition-all cursor-pointer shadow-none"
+                  className="w-9 h-9 min-w-[36px] min-h-[36px] duo-touch-target rounded-xl bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center active:scale-90 transition-all cursor-pointer shadow-none"
                   title={isPlaying ? '暂停播放' : '继续精听'}
                   aria-label={isPlaying ? '暂停播放' : '继续精听'}
                 >
-                  {isPlaying ? <Pause size={12} className="fill-current" /> : <Play size={12} className="fill-current ml-0.5" />}
+                  {isPlaying ? <Pause size={14} className="fill-current" /> : <Play size={14} className="fill-current ml-0.5" />}
                 </button>
               </div>
             </div>

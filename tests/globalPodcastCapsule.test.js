@@ -86,4 +86,26 @@ test('GlobalPodcastCapsule Test Suite', async (t) => {
 
     assert.ok(html.includes('14:30'), 'Must render active sleep timer countdown');
   });
+
+  await t.test('3.4: Mobile capsule adheres to warm parchment design system and harmonized transport controls', () => {
+    const html = renderToString(
+      React.createElement(GlobalPodcastCapsule, {
+        currentBook: mockBook,
+        currentChapter: mockChapter,
+        currentTime: 45,
+        duration: 300,
+        isPlaying: true,
+        isMobile: true,
+        onPlayPause: () => {},
+        onPrevSentence: () => {},
+        onNextSentence: () => {},
+        onEnterPlayer: () => {}
+      })
+    );
+
+    // Mobile capsule must avoid full-bleed high-saturation orange and use parchment palette
+    assert.ok(!html.includes('bg-amber-500 text-white border border-amber-600'), 'Must eliminate isolated high-saturation orange mobile capsule background');
+    assert.ok(html.includes('bg-white') || html.includes('bg-[#'), 'Must use warm parchment background');
+    assert.ok(html.includes('上一句') && html.includes('下一句'), 'Mobile capsule must support sentence navigation');
+  });
 });
