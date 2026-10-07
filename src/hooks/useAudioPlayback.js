@@ -20,7 +20,12 @@ export function useAudioPlayback({
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const [volume, setVolume] = useState(0.85);
   const [isLoopSentence, setIsLoopSentence] = useState(false);
-  const [stopAtCueEnd, setStopAtCueEnd] = useState(false);
+  const [stopAtCueEnd, setStopAtCueEndState] = useState(false);
+  const stopAtCueEndRef = useRef(false);
+  const setStopAtCueEnd = useCallback((val) => {
+    stopAtCueEndRef.current = Boolean(val);
+    setStopAtCueEndState(Boolean(val));
+  }, []);
   const [activeCueIndex, setActiveCueIndex] = useState(0);
   const lastTimeUpdateRef = useRef(0);
 
@@ -62,6 +67,7 @@ export function useAudioPlayback({
       setIsPlaying(false);
     } else {
       try {
+        setStopAtCueEnd(false);
         await audio.play();
         setIsPlaying(true);
       } catch (err) {
@@ -69,7 +75,7 @@ export function useAudioPlayback({
         setIsPlaying(false);
       }
     }
-  }, [isPlaying]);
+  }, [isPlaying, setStopAtCueEnd]);
 
   const seekTo = useCallback((time) => {
     const audio = audioRef.current;
@@ -142,7 +148,7 @@ export function useAudioPlayback({
       const currentCue = cues[activeCueIndex];
 
       // Single sentence stop enforcement (e.g. Dictation mode or single sentence preview)
-      if (stopAtCueEnd && currentCue) {
+      if (stopAtCueEndRef.current && currentCue) {
         if (now >= currentCue.endTime - 0.08) {
           audio.pause();
           setIsPlaying(false);
@@ -182,7 +188,7 @@ export function useAudioPlayback({
       lastTimeUpdateRef.current = perfNow;
       setCurrentTime(now);
     }
-  }, [cues, activeCueIndex, isLoopSentence, duration, currentChapterObj]);
+  }, [cues, activeCueIndex, isLoopSentence, duration, currentChapterObj, disableCueAutoAdvance, setStopAtCueEnd]);
 
   const handleLoadedMetadata = useCallback(() => {
     if (audioRef.current) {

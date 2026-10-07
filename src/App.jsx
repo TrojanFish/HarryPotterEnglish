@@ -143,7 +143,7 @@ export function App() {
     currentBookObj,
     currentChapterObj,
     onChapterAutoAdvance: handleChapterAutoAdvance,
-    disableCueAutoAdvance: studyMode === 'dictation'
+    disableCueAutoAdvance: playerMode === 'studio' && studyMode === 'dictation'
   });
   const {
     audioRef,
@@ -295,15 +295,29 @@ export function App() {
     closeAllModals
   } = modals;
 
-  // Pause continuous playback when switching to dictation mode
+  // Pause continuous playback when transitioning into dictation mode in Studio
+  const prevStudyModeRef = useRef(studyMode);
+  const prevPlayerModeRef = useRef(playerMode);
   useEffect(() => {
-    if (studyMode === 'dictation' && isPlaying) {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        setIsPlaying(false);
+    const studyModeChanged = prevStudyModeRef.current !== studyMode;
+    const playerModeChanged = prevPlayerModeRef.current !== playerMode;
+
+    if (studyModeChanged || playerModeChanged) {
+      const justEnteredStudioDictation =
+        playerMode === 'studio' &&
+        studyMode === 'dictation' &&
+        (prevStudyModeRef.current !== 'dictation' || prevPlayerModeRef.current !== 'studio');
+
+      if (justEnteredStudioDictation && isPlaying) {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          setIsPlaying(false);
+        }
       }
+      prevStudyModeRef.current = studyMode;
+      prevPlayerModeRef.current = playerMode;
     }
-  }, [studyMode, isPlaying, setIsPlaying, audioRef]);
+  }, [studyMode, playerMode, isPlaying, setIsPlaying, audioRef]);
 
   // Offline status tracking (W3C Network API)
   const [isOffline, setIsOffline] = useState(typeof navigator !== 'undefined' ? !navigator.onLine : false);
