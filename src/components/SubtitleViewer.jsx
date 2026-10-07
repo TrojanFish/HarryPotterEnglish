@@ -334,13 +334,13 @@ export const SentenceCard = React.memo(function SentenceCard({
                 if (isSpeaking) {
                   wordClasses = 'bg-amber-400/40 text-amber-950 font-bold ring-1 ring-amber-400/60 shadow-none rounded px-1 scale-[1.02] inline-block transition-all duration-150 speaking-word-glow';
                 } else if (isSpoken) {
-                  wordClasses = 'text-amber-950 font-semibold px-0.5 transition-colors';
+                  wordClasses = 'text-amber-950 font-semibold transition-colors';
                 } else if (isUpcoming) {
-                  wordClasses = 'text-stone-400/90 font-normal px-0.5 transition-colors';
+                  wordClasses = 'text-stone-400/90 font-normal transition-colors';
                 } else if (isActive) {
-                  wordClasses = 'text-amber-950 font-medium hover:bg-amber-400/25 hover:text-amber-900 px-0.5';
+                  wordClasses = 'text-amber-950 font-medium hover:bg-amber-400/25 hover:text-amber-900';
                 } else {
-                  wordClasses = 'text-[#1e1610] hover:bg-amber-400/15 hover:text-amber-900 px-0.5';
+                  wordClasses = 'text-[#1e1610] hover:bg-amber-400/15 hover:text-amber-900';
                 }
 
                 return (
@@ -478,7 +478,11 @@ export function SubtitleViewer({
       const targetRect = target.getBoundingClientRect();
       const offset = targetRect.top - containerRect.top + container.scrollTop;
       const targetScrollTop = offset - (container.clientHeight * 0.382);
-      container.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
+      if (typeof container.scrollTo === 'function') {
+        container.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
+      } else {
+        container.scrollTop = Math.max(0, targetScrollTop);
+      }
     } else if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
@@ -494,7 +498,11 @@ export function SubtitleViewer({
         const targetRect = target.getBoundingClientRect();
         const offset = targetRect.top - containerRect.top + container.scrollTop;
         const targetScrollTop = offset - (container.clientHeight * 0.382);
-        container.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
+        if (typeof container.scrollTo === 'function') {
+          container.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
+        } else {
+          container.scrollTop = Math.max(0, targetScrollTop);
+        }
       } else {
         target?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
@@ -578,6 +586,7 @@ export function SubtitleViewer({
       ref={containerRef}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      onTouchMove={() => { if (isFollowActive) setIsFollowActive(false); }}
       onWheel={() => { if (isFollowActive) setIsFollowActive(false); }}
     >
       {/* ── Subtitle Cue Count & Font Sizing Ribbon (Full-Width Sticky) ── */}
