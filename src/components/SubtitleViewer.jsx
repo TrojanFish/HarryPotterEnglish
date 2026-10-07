@@ -48,10 +48,37 @@ export const SentenceCard = React.memo(function SentenceCard({
   onToggleReveal,
   cardRef,
   onAssessSentence,
-  isPlaying = false
+  isPlaying = false,
+  currentTime = 0
 }) {
   const tokens = useMemo(() => tokenizeSentence(cue.text), [cue.text]);
   const [clickedWord, setClickedWord] = useState(null);
+
+  const wordTokens = useMemo(() => {
+    return tokens.filter(t => t.isWord).map(t => ({
+      text: t.text,
+      weight: Math.max(2, t.text.length)
+    }));
+  }, [tokens]);
+
+  const wordHighlights = useMemo(() => {
+    if (!isActive || !isPlaying || wordTokens.length === 0) return null;
+    const start = cue.startTime ?? cue.start ?? 0;
+    const end = cue.endTime ?? cue.end ?? 0;
+    const duration = Math.max(0.1, end - start);
+    const elapsed = Math.max(0, currentTime - start);
+    const progress = Math.min(1, Math.max(0, elapsed / duration));
+
+    const totalWeight = wordTokens.reduce((acc, w) => acc + w.weight, 0);
+    let accum = 0;
+    const ranges = wordTokens.map(w => {
+      const startRatio = accum / totalWeight;
+      accum += w.weight;
+      const endRatio = accum / totalWeight;
+      return { startRatio, endRatio };
+    });
+    return { ranges, progress };
+  }, [isActive, isPlaying, wordTokens, currentTime, cue.startTime, cue.endTime, cue.start, cue.end]);
 
   const handleWordClick = useCallback((e, word, cueObj) => {
     if (e && e.stopPropagation) {
@@ -281,30 +308,58 @@ export const SentenceCard = React.memo(function SentenceCard({
         <>
           {/* English Text Tokens */}
           <div className={`font-reading ${fontSizeClass} select-text leading-[1.85] transition-all duration-300`}>
-            {tokens.map((token, tokenIdx) => {
-              if (!token.isWord) return <span key={tokenIdx}>{token.text}</span>;
-              const cleanWord = token.text.toLowerCase().replace(/[^a-z]/g, '');
-              const isHpTerm = Boolean(HP_LORE_DICTIONARY[cleanWord]?.lore);
-              const isClicked = clickedWord === token.text;
-              return (
-                <span
-                  key={tokenIdx}
-                  onClick={(e) => handleWordClick(e, token.text, cue)}
-                  className={`cursor-pointer inline rounded-sm transition-colors ${
-                    isClicked ? 'word-click-flash' : ''
-                  } ${
-                    isHpTerm
-                      ? 'border-b border-amber-400 text-amber-900 font-medium hover:bg-amber-100/60 px-0.5'
-                      : isActive
-                        ? 'text-amber-950 hover:bg-amber-400/25 hover:text-amber-900 px-0.5'
-                        : 'text-[#1e1610] hover:bg-amber-400/15 hover:text-amber-900 px-0.5'
-                  }`}
-                  title={isHpTerm ? `魔法词汇: ${token.text}` : '点击查看释义'}
-                >
-                  {token.text}
-                </span>
-              );
-            })}
+            {(() => {
+              let wordCursor = 0;
+              return tokens.map((token, tokenIdx) => {
+                if (!token.isWord) return <span key={tokenIdx}>{token.text}</span>;
+                const cleanWord = token.text.toLowerCase().replace(/[^a-z]/g, '');
+                const isHpTerm = Boolean(HP_LORE_DICTIONARY[cleanWord]?.lore);
+                const isClicked = clickedWord === token.text;
+
+                const currentWordIdx = wordCursor++;
+                let isSpeaking = false;
+                let isSpoken = false;
+                let isUpcoming = false;
+
+                if (wordHighlights && wordHighlights.ranges[currentWordIdx]) {
+                  const r = wordHighlights.ranges[currentWordIdx];
+                  isSpeaking = wordHighlights.progress >= r.startRatio && wordHighlights.progress < r.endRatio;
+                  isSpoken = wordHighlights.progress >= r.endRatio;
+                  isUpcoming = wordHighlights.progress < r.startRatio;
+                }
+
+                // Apple Podcasts word illumination styling
+                let wordClasses = '';
+                if (isSpeaking) {
+                  wordClasses = 'bg-amber-400/40 text-amber-950 font-bold ring-1 ring-amber-400/60 shadow-none rounded px-1 scale-[1.02] inline-block transition-all duration-150 speaking-word-glow';
+                } else if (isSpoken) {
+                  wordClasses = 'text-amber-950 font-semibold px-0.5 transition-colors';
+                } else if (isUpcoming) {
+                  wordClasses = 'text-stone-400/90 font-normal px-0.5 transition-colors';
+                } else if (isActive) {
+                  wordClasses = 'text-amber-950 font-medium hover:bg-amber-400/25 hover:text-amber-900 px-0.5';
+                } else {
+                  wordClasses = 'text-[#1e1610] hover:bg-amber-400/15 hover:text-amber-900 px-0.5';
+                }
+
+                return (
+                  <span
+                    key={tokenIdx}
+                    onClick={(e) => handleWordClick(e, token.text, cue)}
+                    className={`cursor-pointer inline rounded-sm transition-all ${
+                      isClicked ? 'word-click-flash' : ''
+                    } ${
+                      isHpTerm
+                        ? 'border-b border-amber-400 text-amber-900 font-medium hover:bg-amber-100/60 px-0.5'
+                        : ''
+                    } ${wordClasses}`}
+                    title={isHpTerm ? `魔法词汇: ${token.text}` : '点击查看释义'}
+                  >
+                    {token.text}
+                  </span>
+                );
+              });
+            })()}
           </div>
 
           {/* Chinese Translation */}
@@ -397,7 +452,8 @@ export function SubtitleViewer({
   isPlaying = false,
   playbackRate = 1.0,
   onChangePlaybackRate,
-  onReplayCurrentSentence
+  onReplayCurrentSentence,
+  currentTime = 0
 }) {
   const activeCueRef = useRef(null);
   const containerRef = useRef(null);
@@ -607,6 +663,7 @@ export function SubtitleViewer({
                 onToggleReveal={toggleSentenceReveal}
                 onAssessSentence={handleAssessSentence}
                 isPlaying={isPlaying}
+                currentTime={isActive ? currentTime : 0}
               />
             </React.Fragment>
           );

@@ -795,6 +795,7 @@ export function App() {
                           playbackRate={playbackRate}
                           onChangePlaybackRate={setPlaybackRate}
                           onReplayCurrentSentence={handleReplayCurrentSentence}
+                          currentTime={currentTime}
                         />
                       )}
                     </div>

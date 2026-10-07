@@ -100,4 +100,28 @@ test('AudioPlayer Podcast Controls Test Suite', async (t) => {
     assert.ok(mobileClusterHtml.includes('下一句'), 'Mobile thumb cluster must include next sentence button');
     assert.ok(mobileClusterHtml.includes('播放倍速') || mobileClusterHtml.includes('1.0x'), 'Mobile thumb cluster must include speed cycle button');
   });
+
+  await t.test('2.4: Desktop transport controls are geometrically centered using absolute center anchoring', () => {
+    const html = renderToString(
+      React.createElement(AudioPlayer, {
+        currentBook: mockBook,
+        currentChapter: mockChapter,
+        currentTime: 30,
+        duration: 300,
+        isPlaying: true,
+        playbackRate: 1.0,
+        activeCueIndex: 1,
+        totalCues: 10,
+        onPrevSentence: () => {},
+        onNextSentence: () => {}
+      })
+    );
+
+    // Desktop controls row must use absolute center positioning for the transport cluster
+    assert.ok(
+      html.includes('absolute left-1/2 -translate-x-1/2'),
+      'Desktop controls cluster must be anchored with absolute left-1/2 -translate-x-1/2 to guarantee true screen centering'
+    );
+  });
 });
+

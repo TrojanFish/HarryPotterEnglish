@@ -178,6 +178,37 @@ test('SubtitleViewer Hero Unit Focus & SLA Ergonomics Test Suite', async (t) => 
     assert.ok(html.includes('cursor-pointer'), 'Sentence card container must have pointer cursor for click-to-play');
     assert.ok(html.includes('点击播放此句') || html.includes('点击重新播放此句'), 'Sentence card must provide click-to-play title tooltip');
   });
+
+  await t.test('3.8: Apple Podcasts style word illumination highlights active speaking word and distinguishes word states', () => {
+    // When playing midway through cue-0 (1.0s -> 5.5s, at 3.0s)
+    const html = renderToString(
+      React.createElement(SubtitleViewer, {
+        cues: mockCues,
+        activeCueIndex: 0,
+        studyMode: 'normal',
+        showTranslation: true,
+        isParchment: true,
+        isPlaying: true,
+        currentTime: 3.0,
+        onSeekToCue: () => {},
+        onWordClick: () => {},
+        onRecordCue: () => {},
+        onSaveToVocab: () => {}
+      })
+    );
+
+    // Active speaking word should have illumination highlight
+    assert.ok(
+      html.includes('bg-amber-400') || html.includes('ring-amber-400') || html.includes('speaking-word-glow'),
+      'Must illuminate actively spoken word in active sentence'
+    );
+    // Spoken words should have distinct font-semibold or clear text
+    assert.ok(
+      html.includes('font-semibold'),
+      'Must render already spoken words with clear emphasis'
+    );
+  });
 });
+
 
 

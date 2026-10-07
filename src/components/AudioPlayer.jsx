@@ -299,10 +299,10 @@ export function AudioPlayer({
       </div>
 
       {/* ── Desktop Controls Row (>= 640px) ───────────────────────── */}
-      <div className="hidden sm:flex items-center justify-between gap-2 px-4 pt-2 pb-3">
+      <div className="hidden sm:flex items-center justify-between gap-2 px-4 pt-2 pb-3 relative min-h-[64px]">
 
         {/* Left: Playback info with chapter title */}
-        <div className="flex items-center gap-2 min-w-0 shrink-0 flex-1 max-w-xs">
+        <div className="flex items-center gap-2 min-w-0 shrink-0 flex-1 max-w-xs z-10">
           {isPlaying && (
             <span className="flex items-center gap-0.5 text-amber-500 shrink-0">
               <span className="w-[3px] h-3 bg-amber-500 rounded-full animate-wave-1" />
@@ -321,8 +321,8 @@ export function AudioPlayer({
           </div>
         </div>
 
-        {/* Center: Transport Controls */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Center: Truly Centered Transport Controls (Absolute Center Anchor) */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-2.5 z-20">
           {/* Rewind / Prev Sentence */}
           <button
             onClick={onPrevSentence}
@@ -366,6 +366,7 @@ export function AudioPlayer({
                 : 'border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 hover:border-amber-300'
             }`}
             title={isLoopSentence ? '单句循环：开 (L)' : '单句循环：关 (L)'}
+            aria-label="单句循环"
           >
             <div className="relative">
               <Repeat size={14} />
@@ -375,7 +376,7 @@ export function AudioPlayer({
         </div>
 
         {/* Right: Sleep Timer + Speed + Record + Volume */}
-        <div className="flex items-center gap-2 justify-end flex-1 shrink-0">
+        <div className="flex items-center gap-2 justify-end flex-1 shrink-0 z-10">
           {/* Sleep Timer */}
           <button
             onClick={onToggleSleepTimer}

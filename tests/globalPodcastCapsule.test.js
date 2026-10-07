@@ -174,5 +174,27 @@ test('GlobalPodcastCapsule Test Suite', async (t) => {
       'Mobile player bar must feature full-width docking with border-t'
     );
   });
+
+  await t.test('3.8: On bookshelf homepage, play button cluster removes time indicator below play button', () => {
+    const htmlBookshelf = renderToString(
+      React.createElement(GlobalPodcastCapsule, {
+        currentBook: mockBook,
+        currentChapter: mockChapter,
+        currentTime: 45,
+        duration: 300,
+        isPlaying: true,
+        isMobile: false,
+        currentView: 'bookshelf',
+        onPlayPause: () => {}
+      })
+    );
+
+    // On bookshelf view, the sub-text time indicator below play button must be eliminated
+    assert.ok(
+      !htmlBookshelf.includes('00:45</span><span class="text-stone-300">/</span><span>05:00'),
+      'Homepage center play cluster must eliminate redundant time indicator below play button'
+    );
+  });
 });
+
 

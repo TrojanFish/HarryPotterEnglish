@@ -239,11 +239,11 @@ function GlobalPodcastCapsuleComponent({
         </div>
 
         {/* Content Container Aligned to max-w-7xl with page views */}
-        <div className="max-w-7xl mx-auto w-full h-full px-4 lg:px-8 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto w-full h-full px-4 lg:px-8 flex items-center justify-between relative">
           {/* Left: Thumbnail & Chapter Details (w-1/4 min-w-[200px]) */}
           <div
             onClick={handleOpen}
-            className="flex items-center gap-3 w-1/4 min-w-[200px] max-w-xs cursor-pointer group"
+            className="flex items-center gap-3 w-1/4 min-w-[200px] max-w-xs cursor-pointer group z-10"
             title="点击进入全功能精听教室"
           >
             <div className="w-12 h-12 rounded-xl overflow-hidden border border-amber-300/80 shrink-0 bg-stone-900 flex items-center justify-center group-hover:border-amber-500 transition-colors">
@@ -281,7 +281,7 @@ function GlobalPodcastCapsuleComponent({
           </div>
 
           {/* Center: Harmonized Ergonomic Transport Cluster without bulky range input */}
-          <div className="flex-1 max-w-md mx-auto flex flex-col items-center justify-center gap-1 py-1">
+          <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center gap-1 py-1 z-20">
             <div className="flex items-center gap-3 sm:gap-4">
               {onPrevSentence && (
                 <button
@@ -331,16 +331,18 @@ function GlobalPodcastCapsuleComponent({
               )}
             </div>
 
-            {/* Time Indicator */}
-            <div className="flex items-center gap-1.5 text-[11px] font-mono text-stone-500 font-medium select-none">
-              <span className="text-amber-900 font-semibold">{formatTime(currentTime)}</span>
-              <span className="text-stone-300">/</span>
-              <span>{formatTime(duration)}</span>
-            </div>
+            {/* Time Indicator - hidden on bookshelf homepage */}
+            {currentView !== 'bookshelf' && (
+              <div className="flex items-center gap-1.5 text-[11px] font-mono text-stone-500 font-medium select-none">
+                <span className="text-amber-900 font-semibold">{formatTime(currentTime)}</span>
+                <span className="text-stone-300">/</span>
+                <span>{formatTime(duration)}</span>
+              </div>
+            )}
           </div>
 
           {/* Right: Tools & Expand Button (w-1/4 min-w-[200px] flex justify-end) */}
-          <div className="w-1/4 min-w-[200px] max-w-xs flex items-center justify-end gap-2.5">
+          <div className="w-1/4 min-w-[200px] max-w-xs flex items-center justify-end gap-2.5 z-10">
             {onChangePlaybackRate && (
               <button
                 type="button"
