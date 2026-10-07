@@ -9,6 +9,7 @@ import {
   Copy,
   Check,
   LocateFixed,
+  Compass,
   Award,
   Bookmark,
   RotateCcw,
@@ -470,13 +471,33 @@ export function SubtitleViewer({
   const touchStartY = useRef(null);
 
   const scrollToActiveCue = useCallback(() => {
-    activeCueRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const container = containerRef.current;
+    const target = activeCueRef.current;
+    if (container && target) {
+      const containerRect = container.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const offset = targetRect.top - containerRect.top + container.scrollTop;
+      const targetScrollTop = offset - (container.clientHeight * 0.382);
+      container.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
+    } else if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
     setIsFollowActive(true);
   }, []);
 
   useEffect(() => {
     if (isFollowActive && activeCueRef.current) {
-      activeCueRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const container = containerRef.current;
+      const target = activeCueRef.current;
+      if (container && target) {
+        const containerRect = container.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const offset = targetRect.top - containerRect.top + container.scrollTop;
+        const targetScrollTop = offset - (container.clientHeight * 0.382);
+        container.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
+      } else {
+        target?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
     }
   }, [activeCueIndex, isFollowActive]);
 
@@ -670,16 +691,16 @@ export function SubtitleViewer({
         })}
       </div>
 
-      {/* Floating locate button */}
+      {/* Floating locate button with compass re-anchor */}
       {!isFollowActive && cues.length > 0 && activeCueIndex >= 0 && (
         <button
           onClick={scrollToActiveCue}
-          className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:bottom-24 right-4 sm:right-8 z-30 flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-full border border-amber-300 bg-[#fbf9f5] text-amber-950 font-bold text-xs active:scale-95 cursor-pointer shadow-none"
-          title="定位到正在朗读的句子"
-          aria-label="定位到正在朗读的句子"
+          className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:bottom-24 right-4 sm:right-8 z-30 flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-full border border-amber-300 bg-[#fbf9f4]/95 backdrop-blur-sm text-amber-950 font-bold text-xs active:scale-95 cursor-pointer shadow-md hover:bg-amber-50 transition-all select-none"
+          title="视线锁定正在朗读的句子 (一键归位)"
+          aria-label="视线锁定正在朗读的句子，一键归位"
         >
-          <LocateFixed size={14} className="text-amber-600 shrink-0" />
-          <span>定位 (第 <span className="font-mono font-bold">{activeCueIndex + 1}</span> 句)</span>
+          <Compass size={15} className="text-amber-600 shrink-0" />
+          <span>第 <span className="font-mono font-bold text-amber-800">{activeCueIndex + 1}</span> 句 · 一键归位</span>
         </button>
       )}
     </div>
