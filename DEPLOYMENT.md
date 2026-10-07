@@ -80,7 +80,29 @@ docker run -d \
    - 在 Pages 项目设置中找到 **Settings** -> **Functions** -> **R2 bucket bindings**。
    - Variable name 填入：`HP_AUDIO_BUCKET`。
    - 选择你的 R2 存储桶：`fluentfox-podcast`。
-5. 点击 Save and Deploy 即可上线！
+5. 绑定 D1 数据库（多设备增量同步）：
+   - 在 Cloudflare 控制台创建 D1 数据库 `hp-sync-db`，执行 `d1/schema.sql`；
+   - 在 Pages 项目设置中找到 **Settings** -> **Functions** -> **D1 database bindings**。
+   - Variable name 填入：`DB`。
+6. 配置 R2 存储桶跨域规则（CORS，确保 HTTP 206 Range 切片正常暴露）：
+   - 进入 R2 存储桶 -> **Settings** -> **CORS Policy**，填入以下 JSON：
+   ```json
+   [
+     {
+       "AllowedOrigins": ["*"],
+       "AllowedMethods": ["GET", "HEAD"],
+       "AllowedHeaders": ["Range", "Content-Type"],
+       "ExposeHeaders": ["Content-Range", "Accept-Ranges", "Content-Length", "ETag"],
+       "MaxAgeSeconds": 86400
+     }
+   ]
+   ```
+7. 预生成静态书目索引（建议在音频变动后执行）：
+   ```bash
+   npm run build:catalog
+   ```
+   该指令将自动生成静态 `catalog.json` 并推送到 R2，使 Cloudflare Function 耗时从 3 秒降至 20 毫秒，彻底避免 50 次子请求上限。
+8. 点击 Save and Deploy 即可上线！
 
 ---
 

@@ -14,6 +14,26 @@ const KNOWN_TITLE_MAP = {
   'tiny-tales': { cnTitle: '经典童话故事', code: 'TALES', color: '#4a7c59' },
 };
 
+// Rate limiting map for device pairing attempts (In-memory Edge mitigation)
+const pairRateLimitMap = new Map();
+
+function checkPairRateLimit(ip) {
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1 minute
+  const maxAttempts = 10;
+  
+  const record = pairRateLimitMap.get(ip);
+  if (!record || now - record.resetTime > windowMs) {
+    pairRateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+  if (record.count >= maxAttempts) {
+    return false;
+  }
+  record.count++;
+  return true;
+}
+
 export async function onRequest(context) {
   const { request, env, params } = context;
   const pathParts = params.path || [];
@@ -61,6 +81,17 @@ export async function onRequest(context) {
 
       // Pair request
       if (isPairRequest) {
+        const clientIp = request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || 'unknown';
+        if (!checkPairRateLimit(clientIp)) {
+          return new Response(JSON.stringify({
+            status: 'error',
+            message: '配对尝试频次过高，请 1 分钟后重试'
+          }), {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' }
+          });
+        }
+
         if (!db) {
           return new Response(JSON.stringify({
             status: 'ok',
@@ -135,32 +166,36 @@ export async function onRequest(context) {
           last_synced_at = excluded.last_synced_at
       `).bind(safeDeviceId, safeUserId, genCode, serverTime, serverTime).run();
 
-      // 2. Upsert vocab changes (LWW)
+      // 2. Prepare batch statements for incoming changes (LWW)
+      const batchStatements = [];
+
       let vocabPushed = 0;
       if (Array.isArray(payload.changes?.vocab)) {
         for (const v of payload.changes.vocab) {
           if (!v || !v.word) continue;
-          await db.prepare(`
-            INSERT INTO user_vocab (
-              user_id, word, phonetic, pos, translation, definition,
-              context_sentence, context_audio_key, srs_box, next_review_at,
-              review_count, correct_count, is_deleted, updated_at, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(user_id, word) DO UPDATE SET
-              srs_box = excluded.srs_box,
-              next_review_at = excluded.next_review_at,
-              review_count = excluded.review_count,
-              correct_count = excluded.correct_count,
-              is_deleted = excluded.is_deleted,
-              updated_at = excluded.updated_at
-            WHERE excluded.updated_at > user_vocab.updated_at
-          `).bind(
-            safeUserId, v.word.trim().toLowerCase(), v.phonetic || '', v.pos || '',
-            v.translation || '', v.definition || '', v.contextSentence || '',
-            v.contextAudioKey || '', v.srsBox !== undefined ? v.srsBox : 1,
-            v.nextReviewAt || 0, v.reviewCount || 0, v.correctCount || 0,
-            v.isDeleted ? 1 : 0, v.updatedAt || serverTime, v.createdAt || serverTime
-          ).run();
+          batchStatements.push(
+            db.prepare(`
+              INSERT INTO user_vocab (
+                user_id, word, phonetic, pos, translation, definition,
+                context_sentence, context_audio_key, srs_box, next_review_at,
+                review_count, correct_count, is_deleted, updated_at, created_at
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              ON CONFLICT(user_id, word) DO UPDATE SET
+                srs_box = excluded.srs_box,
+                next_review_at = excluded.next_review_at,
+                review_count = excluded.review_count,
+                correct_count = excluded.correct_count,
+                is_deleted = excluded.is_deleted,
+                updated_at = excluded.updated_at
+              WHERE excluded.updated_at > user_vocab.updated_at
+            `).bind(
+              safeUserId, v.word.trim().toLowerCase(), v.phonetic || '', v.pos || '',
+              v.translation || '', v.definition || '', v.contextSentence || '',
+              v.contextAudioKey || '', v.srsBox !== undefined ? v.srsBox : 1,
+              v.nextReviewAt || 0, v.reviewCount || 0, v.correctCount || 0,
+              v.isDeleted ? 1 : 0, v.updatedAt || serverTime, v.createdAt || serverTime
+            )
+          );
           vocabPushed++;
         }
       }
@@ -170,27 +205,34 @@ export async function onRequest(context) {
       if (Array.isArray(payload.changes?.analytics)) {
         for (const a of payload.changes.analytics) {
           if (!a || !a.dateStr) continue;
-          await db.prepare(`
-            INSERT INTO user_analytics (
-              user_id, date_str, listening_seconds, completed_goal,
-              streak_days, time_turners, day_summary_json, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(user_id, date_str) DO UPDATE SET
-              listening_seconds = excluded.listening_seconds,
-              completed_goal = excluded.completed_goal,
-              streak_days = excluded.streak_days,
-              time_turners = excluded.time_turners,
-              day_summary_json = excluded.day_summary_json,
-              updated_at = excluded.updated_at
-            WHERE excluded.updated_at > user_analytics.updated_at
-          `).bind(
-            safeUserId, a.dateStr, a.listeningSeconds || 0,
-            a.completedGoal ? 1 : 0, a.streakDays || 0,
-            a.timeTurners !== undefined ? a.timeTurners : 1,
-            a.daySummaryJson || '', a.updatedAt || serverTime
-          ).run();
+          batchStatements.push(
+            db.prepare(`
+              INSERT INTO user_analytics (
+                user_id, date_str, listening_seconds, completed_goal,
+                streak_days, time_turners, day_summary_json, updated_at
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+              ON CONFLICT(user_id, date_str) DO UPDATE SET
+                listening_seconds = excluded.listening_seconds,
+                completed_goal = excluded.completed_goal,
+                streak_days = excluded.streak_days,
+                time_turners = excluded.time_turners,
+                day_summary_json = excluded.day_summary_json,
+                updated_at = excluded.updated_at
+              WHERE excluded.updated_at > user_analytics.updated_at
+            `).bind(
+              safeUserId, a.dateStr, a.listeningSeconds || 0,
+              a.completedGoal ? 1 : 0, a.streakDays || 0,
+              a.timeTurners !== undefined ? a.timeTurners : 1,
+              a.daySummaryJson || '', a.updatedAt || serverTime
+            )
+          );
           analyticsPushed++;
         }
+      }
+
+      // Execute all pending sync writes atomically in a single D1 transaction
+      if (batchStatements.length > 0) {
+        await db.batch(batchStatements);
       }
 
       // 4. Query newer changes from server for client
@@ -284,6 +326,21 @@ export async function onRequest(context) {
     }
 
     try {
+      // 0. High-performance Fast Path: Check for prebuilt static catalog.json in R2
+      // Eliminates subrequest exhaustion and responds in <20ms
+      const prebuiltCatalogObj = (await bucket.get('podcasts/catalog.json')) || (await bucket.get('catalog.json'));
+      if (prebuiltCatalogObj) {
+        const prebuiltJson = await prebuiltCatalogObj.text();
+        return new Response(prebuiltJson, {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+            'X-Catalog-Source': 'static-index'
+          }
+        });
+      }
+
       const AUDIO_REGEX = /\.(mp3|m4a|wav|aac|ogg|flac)$/i;
       const stripEmojis = (str) => (!str ? '' : str.replace(/\p{Extended_Pictographic}/gu, '').replace(/\s+/g, ' ').trim());
 
@@ -439,6 +496,16 @@ export async function onRequest(context) {
     headers.set('Content-Type', 'audio/mpeg');
     headers.set('Accept-Ranges', 'bytes');
     headers.set('Cache-Control', 'public, max-age=2592000, immutable');
+
+    // RFC 7233 & iOS Safari: Set Content-Range and Content-Length on Range responses
+    if (object.range) {
+      const start = object.range.offset;
+      const end = object.range.offset + object.range.length - 1;
+      headers.set('Content-Range', `bytes ${start}-${end}/${object.size}`);
+      headers.set('Content-Length', String(object.range.length));
+    } else {
+      headers.set('Content-Length', String(object.size));
+    }
 
     const status = rangeHeader ? 206 : 200;
     return new Response(object.body, { headers, status });

@@ -11,7 +11,7 @@
 ![Local-First](https://img.shields.io/badge/Architecture-Local--First-10b981.svg)
 ![Docker](https://img.shields.io/badge/Docker-Supported-2496ed.svg)
 ![Vercel](https://img.shields.io/badge/Vercel-Deploy_Ready-black.svg)
-![Tests Passing](https://img.shields.io/badge/Tests-143%2F143_Passing-brightgreen.svg)
+![Tests Passing](https://img.shields.io/badge/Tests-233%2F233_Passing-brightgreen.svg)
 
 **专为英语学习者量身打造的沉浸式原版有声小说精听、艾宾浩斯背词与 A/B 影子跟读评测平台**  
 *听原版原声 — 磨纯正英音 — 艾宾浩斯复习 — A/B 影子跟读 — 智能拼写听写*
@@ -83,7 +83,8 @@
 ### 7. 本地优先增量同步（Local-First Sync + Cloudflare D1）
 - **0ms 本地瞬时响应**：学习打卡与生词操作在本地毫秒级保存，断网完全无感；
 - **时间戳 LWW 冲突仲裁**：基于毫秒级时间戳与软删除标记，多设备增量同步不冲突、不丢词；
-- **6 位免密通行码配对**：每台设备自动生成 6 位魔法通行码（如 `HP-8F29`），跨设备输入即可一秒绑定并合并数据。
+- **D1 原子批量提交**：采用 `db.batch()` 打包执行同步语句，减少 90% 网络往返并节约数据库配额；
+- **6 位免密通行码配对**：每台设备自动生成 6 位魔法通行码（如 `HP-8F29`），跨设备输入即可一秒绑定并合并数据，边缘层配备 IP 滑动窗口防暴力爆破保护。
 
 ---
 
@@ -107,6 +108,8 @@ Hogwarts Audio 3.0 采用前端 Range 解耦与网络边缘分级的流媒体协
 ```
 
 - **废弃 24MB 全量 Blob 阻塞**：废除全量下载旧逻辑，浏览器原生按需请求首包（256KB），起播耗时由 27 秒降低至 1 秒以内；
+- **严守 RFC 7233 协议**：边缘函数完整输出 `Content-Range` 与切片 `Content-Length`，保障移动端 iOS Safari 进度条拖动与秒播；
+- **预构建静态目录索引 (`catalog.json`)**：消除 Cloudflare 50 次子请求上限崩溃隐患，首屏目录发现耗时从 3 秒降至 20 毫秒；
 - **支持 Cloudflare R2 自定义域名直连**：配置 `VITE_R2_PUBLIC_DOMAIN` 后直通边缘网络，完全绕过服务器中转；
 - **持久化分片缓存**：服务端分片响应头配置 `Cache-Control: public, max-age=2592000, immutable`。
 
@@ -183,10 +186,13 @@ npm run dev
 # 3. 启动后端 R2 代理服务（http://localhost:3001）
 npm run server
 
-# 4. 运行全套 143 项自动化测试（覆盖 CEFR分级、英雄聚焦、Leitner 5箱、A/B跟读、流式Range解耦等）
+# 4. 预生成静态书目索引（扫描 R2 并生成 catalog.json 发布至 CDN）
+npm run build:catalog
+
+# 5. 运行全套 233 项自动化测试（覆盖 CEFR分级、英雄聚焦、Leitner 5箱、A/B跟读、Cloudflare边缘加速等）
 npm test
 
-# 5. 生产打包与多维合规审查
+# 6. 生产打包与多维合规审查
 npm run build
 npm run verify-security
 npm run check-emojis
