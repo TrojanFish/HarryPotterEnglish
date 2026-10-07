@@ -859,6 +859,7 @@ export function App() {
             sleepTimerRemaining={formattedSleepTime}
             onToggleSleepTimer={handleToggleSleepTimer}
             isMobile={isMobile}
+            currentView={currentView}
           />
         )}
 

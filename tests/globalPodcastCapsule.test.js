@@ -108,4 +108,71 @@ test('GlobalPodcastCapsule Test Suite', async (t) => {
     assert.ok(html.includes('bg-white') || html.includes('bg-[#'), 'Must use warm parchment background');
     assert.ok(html.includes('上一句') && html.includes('下一句'), 'Mobile capsule must support sentence navigation');
   });
+
+  await t.test('3.5: Desktop player bar renders top subtle hidden progress bar and removes center bulky input range', () => {
+    const html = renderToString(
+      React.createElement(GlobalPodcastCapsule, {
+        currentBook: mockBook,
+        currentChapter: mockChapter,
+        currentTime: 45,
+        duration: 300,
+        isPlaying: true,
+        isMobile: false,
+        onPlayPause: () => {},
+        onSeek: () => {}
+      })
+    );
+
+    // Desktop view must feature a top-flush scrubber line
+    assert.ok(
+      html.includes('capsule-top-scrubber') || html.includes('top-0 left-0 right-0') || html.includes('absolute top-0'),
+      'Must contain top-mounted progress bar along top edge'
+    );
+    // Center cluster must eliminate bulky range input
+    assert.ok(
+      !html.includes('type="range"'),
+      'Desktop center controls must eliminate bulky input[type=range] scrubber'
+    );
+  });
+
+  await t.test('3.6: Desktop player bar provides unified workspace-width docking with max-w-7xl container', () => {
+    const html = renderToString(
+      React.createElement(GlobalPodcastCapsule, {
+        currentBook: mockBook,
+        currentChapter: mockChapter,
+        currentTime: 45,
+        duration: 300,
+        isPlaying: true,
+        isMobile: false
+      })
+    );
+
+    assert.ok(
+      html.includes('max-w-7xl') && html.includes('mx-auto'),
+      'Desktop bottom bar must contain max-w-7xl mx-auto container for unified page alignment'
+    );
+    assert.ok(
+      html.includes('w-full'),
+      'Desktop bottom bar must dock across workspace width with w-full'
+    );
+  });
+
+  await t.test('3.7: Mobile player bar docks with unified full width across views', () => {
+    const html = renderToString(
+      React.createElement(GlobalPodcastCapsule, {
+        currentBook: mockBook,
+        currentChapter: mockChapter,
+        currentTime: 45,
+        duration: 300,
+        isPlaying: false,
+        isMobile: true
+      })
+    );
+
+    assert.ok(
+      html.includes('w-full') && html.includes('border-t'),
+      'Mobile player bar must feature full-width docking with border-t'
+    );
+  });
 });
+

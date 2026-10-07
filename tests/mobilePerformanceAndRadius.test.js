@@ -95,13 +95,13 @@ test('Mobile PWA Performance & Border Radius Standardization Test Suite', async 
     );
   });
 
-  await t.test('4.2: GlobalPodcastCapsule adheres to Scheme A desktop full-width docked bottom bar (Spotify pattern)', () => {
+  await t.test('4.2: GlobalPodcastCapsule adheres to unified workspace-width docked bottom bar', () => {
     const fullPath = path.resolve(projectRoot, 'src/components/navigation/GlobalPodcastCapsule.jsx');
     const content = fs.readFileSync(fullPath, 'utf8');
 
     assert.ok(
-      content.includes('fixed bottom-0 left-0 right-0') || content.includes('fixed bottom-0 inset-x-0'),
-      'Desktop capsule must dock to bottom full width across left-0 right-0'
+      content.includes('w-full') && content.includes('border-t'),
+      'Desktop capsule must dock across workspace width with border-t'
     );
     assert.ok(
       !content.includes('bottom-5 left-1/2 -translate-x-1/2'),
