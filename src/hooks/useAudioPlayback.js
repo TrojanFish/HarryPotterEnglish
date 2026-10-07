@@ -10,7 +10,8 @@ export function useAudioPlayback({
   cues = [],
   currentBookObj = null,
   currentChapterObj = null,
-  onChapterAutoAdvance = null
+  onChapterAutoAdvance = null,
+  disableCueAutoAdvance = false
 }) {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -19,6 +20,7 @@ export function useAudioPlayback({
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const [volume, setVolume] = useState(0.85);
   const [isLoopSentence, setIsLoopSentence] = useState(false);
+  const [stopAtCueEnd, setStopAtCueEnd] = useState(false);
   const [activeCueIndex, setActiveCueIndex] = useState(0);
   const lastTimeUpdateRef = useRef(0);
 
@@ -86,7 +88,7 @@ export function useAudioPlayback({
   }, [currentTime, duration, seekTo]);
 
   // 3. Sentence Navigation Controls
-  const seekToCue = useCallback((target, autoPlay = true) => {
+  const seekToCue = useCallback((target, autoPlay = true, options = {}) => {
     if (!cues || cues.length === 0) return;
 
     let targetCue = null;
@@ -102,6 +104,11 @@ export function useAudioPlayback({
 
     if (targetCue) {
       if (targetIndex !== -1) setActiveCueIndex(targetIndex);
+      if (options && options.stopAtEnd) {
+        setStopAtCueEnd(true);
+      } else {
+        setStopAtCueEnd(false);
+      }
       seekTo(targetCue.startTime);
       if (autoPlay && audioRef.current) {
         audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
@@ -121,8 +128,8 @@ export function useAudioPlayback({
     }
   }, [activeCueIndex, cues.length, seekToCue]);
 
-  const handleReplayCurrentSentence = useCallback(() => {
-    seekToCue(activeCueIndex);
+  const handleReplayCurrentSentence = useCallback((options = {}) => {
+    seekToCue(activeCueIndex, true, options);
   }, [activeCueIndex, seekToCue]);
 
   // 4. Audio Element Event Handlers
@@ -134,6 +141,17 @@ export function useAudioPlayback({
     if (cues && cues.length > 0) {
       const currentCue = cues[activeCueIndex];
 
+      // Single sentence stop enforcement (e.g. Dictation mode or single sentence preview)
+      if (stopAtCueEnd && currentCue) {
+        if (now >= currentCue.endTime - 0.08) {
+          audio.pause();
+          setIsPlaying(false);
+          setStopAtCueEnd(false);
+          audio.currentTime = currentCue.startTime;
+          return;
+        }
+      }
+
       // Sentence looping enforcement
       if (isLoopSentence && currentCue) {
         if (now >= currentCue.endTime - 0.15) {
@@ -142,11 +160,13 @@ export function useAudioPlayback({
         }
       }
 
-      // Determine current active cue
-      if (!currentCue || now < currentCue.startTime || now >= currentCue.endTime) {
-        const idx = cues.findIndex(c => now >= c.startTime && now < c.endTime);
-        if (idx !== -1 && idx !== activeCueIndex) {
-          setActiveCueIndex(idx);
+      // Determine current active cue (only if auto-advancing cues is enabled)
+      if (!disableCueAutoAdvance) {
+        if (!currentCue || now < currentCue.startTime || now >= currentCue.endTime) {
+          const idx = cues.findIndex(c => now >= c.startTime && now < c.endTime);
+          if (idx !== -1 && idx !== activeCueIndex) {
+            setActiveCueIndex(idx);
+          }
         }
       }
     }
@@ -359,6 +379,8 @@ export function useAudioPlayback({
     handlePrevSentence,
     handleNextSentence,
     handleReplayCurrentSentence,
+    stopAtCueEnd,
+    setStopAtCueEnd,
     handleTimeUpdate,
     handleLoadedMetadata,
     handleEnded,

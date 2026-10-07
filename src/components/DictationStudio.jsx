@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useTransition } from 'react';
 import { 
   Play, 
   Pause, 
@@ -71,6 +71,8 @@ export function DictationStudio({
   const advanceNext = onNextSentence || onNextCue;
   const advancePrev = onPrevSentence || onPrevCue;
 
+  const [, startTransition] = useTransition();
+
   // 1. Difficulty Mode Selector ('accio' | 'lumos' | 'auror' | 'dueling')
   const [difficultyMode, setDifficultyMode] = useState(() => {
     try {
@@ -81,7 +83,9 @@ export function DictationStudio({
   });
 
   const handleDifficultyChange = (mode) => {
-    setDifficultyMode(mode);
+    startTransition(() => {
+      setDifficultyMode(mode);
+    });
     try {
       localStorage.setItem('hp_dictation_mode', mode);
     } catch {}
@@ -130,6 +134,13 @@ export function DictationStudio({
     setFeedbackState(null);
     setShowTranslationClue(false);
   }, [activeCueIndex]);
+
+  // Pause continuous playback on entry so student starts undisturbed
+  useEffect(() => {
+    if (isPlaying && onPlayPause) {
+      onPlayPause();
+    }
+  }, []);
 
   // Handle advancing from feedback sheet
   const handleFeedbackContinue = () => {
@@ -182,7 +193,7 @@ export function DictationStudio({
     .filter(t => t.isWord)
     .map(t => cleanWord(t.text));
 
-  // Audio replay handlers
+  // Audio replay handlers (strictly confined to current sentence)
   const handleReplayCurrent = (slow = false) => {
     if (slow && onChangePlaybackRate) {
       onChangePlaybackRate(0.8);
@@ -190,9 +201,9 @@ export function DictationStudio({
       onChangePlaybackRate(1.0);
     }
     if (onReplayCurrentSentence && currentCue) {
-      onReplayCurrentSentence(currentCue);
+      onReplayCurrentSentence(currentCue, { stopAtEnd: true });
     } else if (onSeekToCue && currentCue) {
-      onSeekToCue(currentCue);
+      onSeekToCue(currentCue, true, { stopAtEnd: true });
     }
   };
 
@@ -371,7 +382,7 @@ export function DictationStudio({
                   key={tier.key}
                   type="button"
                   onClick={() => handleDifficultyChange(tier.key)}
-                  className={`flex-1 h-7 sm:h-7.5 px-1 sm:px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer select-none ${
+                  className={`flex-1 h-7 sm:h-7.5 px-1 sm:px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
                     isActive
                       ? 'bg-amber-500 text-white shadow-sm'
                       : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'

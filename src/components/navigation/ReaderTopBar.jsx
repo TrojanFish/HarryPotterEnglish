@@ -89,7 +89,7 @@ export function ReaderTopBar({
             <button
               type="button"
               onClick={() => onSwitchPlayerMode && onSwitchPlayerMode('podcast')}
-              className={`h-8 min-h-[32px] flex items-center justify-center gap-1.5 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
+              className={`h-8 min-h-[32px] flex items-center justify-center gap-1.5 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
                 playerMode === 'podcast'
                   ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                   : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
@@ -104,7 +104,7 @@ export function ReaderTopBar({
             <button
               type="button"
               onClick={() => onSwitchPlayerMode && onSwitchPlayerMode('studio')}
-              className={`h-8 min-h-[32px] flex items-center justify-center gap-1.5 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
+              className={`h-8 min-h-[32px] flex items-center justify-center gap-1.5 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
                 playerMode === 'studio'
                   ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                   : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
@@ -127,7 +127,7 @@ export function ReaderTopBar({
                     key={key}
                     type="button"
                     onClick={() => setStudyMode(key)}
-                    className={`h-8 min-h-[32px] flex items-center justify-center gap-1.5 px-3 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
+                    className={`h-8 min-h-[32px] flex items-center justify-center gap-1.5 px-3 rounded-xl text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
                       isActive
                         ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                         : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
@@ -186,7 +186,7 @@ export function ReaderTopBar({
                   key={key}
                   type="button"
                   onClick={() => setStudyMode(key)}
-                  className={`h-8 min-h-[32px] flex items-center justify-center gap-1 px-1 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
+                  className={`h-8 min-h-[32px] flex items-center justify-center gap-1 px-1 rounded-xl text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
                     isActive
                       ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                       : 'text-stone-600 hover:text-amber-950 active:bg-stone-200'

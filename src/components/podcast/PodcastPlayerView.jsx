@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useTransition } from 'react';
 import {
   Play,
   Pause,
@@ -50,7 +50,14 @@ export function PodcastPlayerView({
   onSwitchToStudio,
   className = ''
 }) {
+  const [, startTransition] = useTransition();
   const [mobileTab, setMobileTab] = useState('lyrics'); // 'lyrics' | 'cover'
+
+  const handleSwitchMobileTab = (tab) => {
+    startTransition(() => {
+      setMobileTab(tab);
+    });
+  };
 
   const formatTime = (seconds) => {
     if (isNaN(seconds) || seconds < 0) return '00:00';
@@ -83,10 +90,10 @@ export function PodcastPlayerView({
         {/* Mobile Tab Toggle (Apple HIG Touch Target & Dual-Channel Status) */}
         <div className="flex items-center p-1 rounded-xl bg-stone-100 border border-[#e8ddd0] gap-1">
           <button
-            onClick={() => setMobileTab('lyrics')}
-            className={`min-h-[38px] px-3.5 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
+            onClick={() => handleSwitchMobileTab('lyrics')}
+            className={`min-h-[38px] px-3.5 rounded-lg text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
               mobileTab === 'lyrics'
-                ? 'bg-amber-500 text-white shadow-sm'
+                ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                 : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
             }`}
             aria-pressed={mobileTab === 'lyrics'}
@@ -94,10 +101,10 @@ export function PodcastPlayerView({
             歌词流
           </button>
           <button
-            onClick={() => setMobileTab('cover')}
-            className={`min-h-[38px] px-3.5 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
+            onClick={() => handleSwitchMobileTab('cover')}
+            className={`min-h-[38px] px-3.5 rounded-lg text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
               mobileTab === 'cover'
-                ? 'bg-amber-500 text-white shadow-sm'
+                ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                 : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
             }`}
             aria-pressed={mobileTab === 'cover'}

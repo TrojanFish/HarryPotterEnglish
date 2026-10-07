@@ -70,6 +70,8 @@ export function App() {
     refreshOfflineCount
   } = catalog;
 
+  const [, startTransition] = useTransition();
+
   // Hogwarts Sleep Timer State & Countdown
   const [sleepTimerMode, setSleepTimerMode] = useState(null);
   const [sleepTimerRemaining, setSleepTimerRemaining] = useState(null);
@@ -84,11 +86,44 @@ export function App() {
   });
 
   const handleSwitchPlayerMode = useCallback((newMode) => {
-    setPlayerMode(newMode);
+    startTransition(() => {
+      setPlayerMode(newMode);
+    });
     try {
       localStorage.setItem('hp_player_mode', newMode);
     } catch {}
-  }, []);
+  }, [startTransition]);
+
+  // View Mode & Study Mode State
+  const [currentView, setCurrentView] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hp_current_view');
+      return saved === 'player' ? 'player' : 'bookshelf';
+    } catch {
+      return 'bookshelf';
+    }
+  });
+
+  const handleSwitchCurrentView = useCallback((newView) => {
+    startTransition(() => {
+      setCurrentView(newView);
+    });
+  }, [startTransition]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('hp_current_view', currentView);
+    } catch {}
+  }, [currentView]);
+
+  const [studyMode, setStudyMode] = useState('normal'); // 'normal' | 'blind' | 'dictation'
+  const handleSwitchStudyMode = useCallback((newStudyMode) => {
+    startTransition(() => {
+      setStudyMode(newStudyMode);
+    });
+  }, [startTransition]);
+
+  const [showTranslation, setShowTranslation] = useState(true);
 
   // Chapter auto advance callback
   const handleChapterAutoAdvance = useCallback(() => {
@@ -107,7 +142,8 @@ export function App() {
     cues,
     currentBookObj,
     currentChapterObj,
-    onChapterAutoAdvance: handleChapterAutoAdvance
+    onChapterAutoAdvance: handleChapterAutoAdvance,
+    disableCueAutoAdvance: studyMode === 'dictation'
   });
   const {
     audioRef,
@@ -259,24 +295,15 @@ export function App() {
     closeAllModals
   } = modals;
 
-  // 2. View Mode & Study Mode State
-  const [currentView, setCurrentView] = useState(() => {
-    try {
-      const saved = localStorage.getItem('hp_current_view');
-      return saved === 'player' ? 'player' : 'bookshelf';
-    } catch {
-      return 'bookshelf';
-    }
-  });
-
+  // Pause continuous playback when switching to dictation mode
   useEffect(() => {
-    try {
-      localStorage.setItem('hp_current_view', currentView);
-    } catch {}
-  }, [currentView]);
-
-  const [studyMode, setStudyMode] = useState('normal'); // 'normal' | 'blind' | 'dictation'
-  const [showTranslation, setShowTranslation] = useState(true);
+    if (studyMode === 'dictation' && isPlaying) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+    }
+  }, [studyMode, isPlaying, setIsPlaying, audioRef]);
 
   // Offline status tracking (W3C Network API)
   const [isOffline, setIsOffline] = useState(typeof navigator !== 'undefined' ? !navigator.onLine : false);
@@ -510,23 +537,23 @@ export function App() {
       {/* ── 1. Desktop Left Permanent Sidebar (>= 1024px) ───────────── */}
       <DesktopSidebar
         currentView={currentView}
-        onSwitchView={setCurrentView}
+        onSwitchView={handleSwitchCurrentView}
         playerMode={playerMode}
         onSwitchPlayerMode={handleSwitchPlayerMode}
         studyMode={studyMode}
-        setStudyMode={setStudyMode}
+        setStudyMode={handleSwitchStudyMode}
         streakDays={analyticsSummary?.streakDays || 0}
         todayListeningSeconds={analyticsSummary?.todayListeningSeconds || 0}
         vocabCount={vocabList.length}
         cachedChaptersCount={cachedChaptersCount}
-        onOpenVocab={() => setCurrentView('vocab')}
+        onOpenVocab={() => handleSwitchCurrentView('vocab')}
         onOpenAnalytics={() => {
           refreshAnalytics();
-          setCurrentView('analytics');
+          handleSwitchCurrentView('analytics');
         }}
         onOpenStorage={() => {
           refreshOfflineCount();
-          setCurrentView('storage');
+          handleSwitchCurrentView('storage');
         }}
         canInstallPwa={canInstallPwa}
         onInstallPwa={handleInstallPwa}
@@ -537,22 +564,22 @@ export function App() {
       {/* ── 2. Tablet Compact Icon Rail (768px - 1023px) ────────────── */}
       <TabletRail
         currentView={currentView}
-        onSwitchView={setCurrentView}
+        onSwitchView={handleSwitchCurrentView}
         playerMode={playerMode}
         onSwitchPlayerMode={handleSwitchPlayerMode}
         studyMode={studyMode}
-        setStudyMode={setStudyMode}
+        setStudyMode={handleSwitchStudyMode}
         streakDays={analyticsSummary?.streakDays || 0}
         vocabCount={vocabList.length}
         cachedChaptersCount={cachedChaptersCount}
-        onOpenVocab={() => setCurrentView('vocab')}
+        onOpenVocab={() => handleSwitchCurrentView('vocab')}
         onOpenAnalytics={() => {
           refreshAnalytics();
-          setCurrentView('analytics');
+          handleSwitchCurrentView('analytics');
         }}
         onOpenStorage={() => {
           refreshOfflineCount();
-          setCurrentView('storage');
+          handleSwitchCurrentView('storage');
         }}
       />
 
@@ -562,12 +589,12 @@ export function App() {
         {currentView === 'bookshelf' && (
           <MobileTopBar
             currentView={currentView}
-            onSwitchView={setCurrentView}
+            onSwitchView={handleSwitchCurrentView}
             currentBook={currentBookObj}
             currentChapter={currentChapterObj}
             onOpenShelf={() => setIsShelfOpen(true)}
             studyMode={studyMode}
-            setStudyMode={setStudyMode}
+            setStudyMode={handleSwitchStudyMode}
             streakDays={analyticsSummary?.streakDays || 0}
             onOpenAnalytics={() => {
               refreshAnalytics();
@@ -665,11 +692,11 @@ export function App() {
                 playerMode={playerMode}
                 onSwitchPlayerMode={handleSwitchPlayerMode}
                 studyMode={studyMode}
-                setStudyMode={setStudyMode}
+                setStudyMode={handleSwitchStudyMode}
                 showTranslation={showTranslation}
                 onToggleTranslation={() => setShowTranslation(prev => !prev)}
                 onOpenShortcuts={() => setIsShortcutsOpen(true)}
-                onBackToShelf={() => setCurrentView('bookshelf')}
+                onBackToShelf={() => handleSwitchCurrentView('bookshelf')}
                 isOfflinePlaying={isOfflinePlaying}
               />
 
@@ -712,17 +739,17 @@ export function App() {
                         <DictationStudio
                           cues={cues}
                           activeCueIndex={activeCueIndex}
-                          onSeekToCue={seekToCue}
+                          onSeekToCue={(cue, autoPlay, opts) => seekToCue(cue, autoPlay, { stopAtEnd: true, ...opts })}
                           onPlayPause={togglePlayPause}
                           isPlaying={isPlaying}
                           playbackRate={playbackRate}
                           onChangePlaybackRate={setPlaybackRate}
                           onPrevSentence={handlePrevSentence}
                           onNextSentence={handleNextSentence}
-                          onReplayCurrentSentence={handleReplayCurrentSentence}
+                          onReplayCurrentSentence={(cue, opts) => handleReplayCurrentSentence({ stopAtEnd: true, ...opts })}
                           chapterId={selectedChapter}
                           chapterTitle={currentChapterObj?.cnTitle || currentChapterObj?.title || ''}
-                          onCloseStudio={() => setStudyMode('normal')}
+                          onCloseStudio={() => handleSwitchStudyMode('normal')}
                           isParchment={isParchment}
                           onSaveErrorWordsToVocab={(errorWords) => {
                             errorWords.forEach(w => {

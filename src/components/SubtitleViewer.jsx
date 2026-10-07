@@ -519,7 +519,7 @@ export function SubtitleViewer({
                   <span>魔法磨耳朵</span>
                 </span>
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 border border-indigo-200 shrink-0">
-                  脱字幕听力自测
+                  迷雾盲听自测
                 </span>
               </>
             ) : (
