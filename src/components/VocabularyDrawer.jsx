@@ -106,6 +106,25 @@ export function VocabularyDrawer({
     showToast('已成功导出 CSV 单词表格！');
   };
 
+  const handleExportSentencesCSV = () => {
+    if (bookmarkedSentences.length === 0) return;
+    const header = 'Sentence,Translation,Chapter,RecordedAt\n';
+    const rows = bookmarkedSentences.map(s => 
+      `"${(s.text || '').replace(/"/g, '""')}","${(s.translation || '').replace(/"/g, '""')}","${s.chapterId || ''}","${s.createdAt || ''}"`
+    ).join('\n');
+
+    const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `hogwarts_sentences_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast('已成功导出疑难句集表格！');
+  };
+
   const handlePrintParchmentPdf = () => {
     if (vocabList.length === 0) return;
     printParchmentCards(vocabList, {
@@ -173,9 +192,18 @@ export function VocabularyDrawer({
       {/* Drawer Header */}
         <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0">
           <div className="flex items-center space-x-2 min-w-0">
-            <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
+            {drawerTab === 'words' ? (
+              <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
+            ) : (
+              <Bookmark className="w-5 h-5 text-amber-600 shrink-0" />
+            )}
             <h2 className="font-bold text-base sm:text-lg text-amber-950 truncate whitespace-nowrap">
-              <span className="font-magical">魔法生词本 ({vocabList.length})</span>
+              <span className="font-magical">
+                {drawerTab === 'words' ? '魔法生词本' : '冥想盆疑难句'}
+              </span>
+              <span className="text-xs font-mono font-normal text-stone-500 ml-1.5">
+                ({drawerTab === 'words' ? vocabList.length : bookmarkedSentences.length})
+              </span>
             </h2>
           </div>
 
@@ -517,9 +545,20 @@ export function VocabularyDrawer({
               </div>
             ) : (
               <div className="flex items-center justify-between gap-2 text-xs">
-                <span className="text-xs text-stone-500 font-reading">
-                  共收录 <span className="font-mono font-bold text-amber-900">{bookmarkedSentences.length}</span> 句重点长难句
-                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleExportSentencesCSV}
+                    className="duo-btn-primary min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs whitespace-nowrap active:scale-95 font-bold cursor-pointer"
+                    title="导出所有星标疑难句为 CSV 表格"
+                    aria-label="导出疑难句表格"
+                  >
+                    <Download size={14} className="shrink-0" />
+                    <span>导出疑难句 (CSV)</span>
+                  </button>
+                  <span className="text-xs text-stone-500 font-reading hidden sm:inline ml-1">
+                    共收录 <span className="font-mono font-bold text-amber-900">{bookmarkedSentences.length}</span> 句重点长难句
+                  </span>
+                </div>
                 {onClearAllBookmarks && (
                   <button
                     onClick={() => setShowClearSentencesConfirm(true)}
@@ -536,7 +575,7 @@ export function VocabularyDrawer({
         )}
 
         {/* ── Bottom Actions (When in words tab) ───────────────────────── */}
-        {drawerTab === 'words' && (
+        {drawerTab === 'words' && vocabList.length > 0 && (
           <div className="p-3.5 sm:p-4 border-t border-[#e8ddd0] bg-white flex flex-col gap-2 shrink-0">
             {showClearConfirm ? (
               <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-2.5 p-3 rounded-2xl bg-rose-50 border border-rose-200 animate-fadeIn">

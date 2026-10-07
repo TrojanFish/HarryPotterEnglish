@@ -160,10 +160,28 @@ function PodcastPlayerViewComponent({
           </div>
 
           {/* Desktop Left Bottom: Unified Player Console */}
-          <div className="flex flex-col gap-3 pt-4 border-t border-[#e8ddd0]/60">
+          <div className="flex flex-col gap-3 pt-5 border-t border-[#e8ddd0]/60">
             {/* Audio Scrubber */}
-            <div className="w-full">
-              <div className="relative flex items-center group">
+            <div className="w-full select-none">
+              <div className="relative flex items-center h-6 group cursor-pointer">
+                {/* Custom Background Track */}
+                <div className="w-full h-1.5 sm:h-2 bg-[#e8ddd0] rounded-full overflow-hidden relative">
+                  {/* Active Progress Fill */}
+                  <div
+                    className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full transition-all duration-75"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+
+                {/* Golden Snitch Thumb — Perfectly Centered on Track */}
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 pointer-events-none transition-all duration-75 z-10"
+                  style={{ left: `${progressPercent}%` }}
+                >
+                  <GoldenSnitchScrubber progress={progressPercent} size={18} isHovered={isPlaying} />
+                </div>
+
+                {/* Invisible Accessible Range Input Overlaid Over Track */}
                 <input
                   type="range"
                   min="0"
@@ -171,17 +189,13 @@ function PodcastPlayerViewComponent({
                   step="0.1"
                   value={currentTime}
                   onChange={(e) => onSeek && onSeek(parseFloat(e.target.value))}
-                  className="w-full h-2 py-2 rounded-lg appearance-none cursor-pointer bg-[#e8ddd0] accent-amber-500"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20 m-0 p-0"
                   aria-label="音频时间进度条"
                 />
-                <div
-                  className="absolute pointer-events-none -top-2.5 -translate-x-1/2 transition-all duration-75"
-                  style={{ left: `${progressPercent}%` }}
-                >
-                  <GoldenSnitchScrubber progress={progressPercent} size={18} isHovered={isPlaying} />
-                </div>
               </div>
-              <div className="flex justify-between text-[11px] font-mono text-stone-500 mt-1">
+
+              {/* Time Labels Aligned Flush with Track */}
+              <div className="flex justify-between text-[11px] font-mono text-stone-500 mt-0.5 px-0.5 select-none">
                 <span>{formatTime(currentTime)}</span>
                 <span>{formatTime(duration)}</span>
               </div>
@@ -328,9 +342,24 @@ function PodcastPlayerViewComponent({
       {/* ── Stationary Anchored Bottom Player Console (Mobile < 1024px) ── */}
       <div className="lg:hidden podcast-anchored-console border-t border-[#e8ddd0] bg-[#fbf9f5] px-3 sm:px-4 pt-2.5 pb-safe pb-3 flex flex-col gap-2 shrink-0 select-none">
         {/* Scrubber Line */}
-        <div className="w-full flex items-center gap-2">
-          <span className="text-[10px] font-mono text-stone-500 min-w-[32px] text-right">{formatTime(currentTime)}</span>
-          <div className="relative flex-1 flex items-center group">
+        <div className="w-full flex items-center gap-2.5 select-none">
+          <span className="text-[10px] font-mono text-stone-500 min-w-[34px] text-right shrink-0">{formatTime(currentTime)}</span>
+          <div className="relative flex-1 flex items-center h-6 group cursor-pointer">
+            {/* Custom Background Track */}
+            <div className="w-full h-1.5 bg-[#e8ddd0] rounded-full overflow-hidden relative">
+              <div
+                className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full transition-all duration-75"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            {/* Golden Snitch Thumb */}
+            <div
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 pointer-events-none transition-all duration-75 z-10"
+              style={{ left: `${progressPercent}%` }}
+            >
+              <GoldenSnitchScrubber progress={progressPercent} size={16} isHovered={isPlaying} />
+            </div>
+            {/* Invisible Range Input */}
             <input
               type="range"
               min="0"
@@ -338,17 +367,11 @@ function PodcastPlayerViewComponent({
               step="0.1"
               value={currentTime}
               onChange={(e) => onSeek && onSeek(parseFloat(e.target.value))}
-              className="w-full h-2 py-2 rounded-lg appearance-none cursor-pointer bg-[#e8ddd0] accent-amber-500"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20 m-0 p-0"
               aria-label="音频时间进度条"
             />
-            <div
-              className="absolute pointer-events-none -top-2.5 -translate-x-1/2 transition-all duration-75"
-              style={{ left: `${progressPercent}%` }}
-            >
-              <GoldenSnitchScrubber progress={progressPercent} size={16} isHovered={isPlaying} />
-            </div>
           </div>
-          <span className="text-[10px] font-mono text-stone-500 min-w-[32px]">{formatTime(duration)}</span>
+          <span className="text-[10px] font-mono text-stone-500 min-w-[34px] shrink-0">{formatTime(duration)}</span>
         </div>
 
         {/* Controls Row: Balanced layout with absolute center play anchor */}

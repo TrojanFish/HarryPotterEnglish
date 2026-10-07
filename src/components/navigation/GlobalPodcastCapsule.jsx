@@ -280,8 +280,10 @@ function GlobalPodcastCapsuleComponent({
                   {cleanTitle}
                 </h4>
               </div>
-              <p className="text-xs text-stone-500 font-reading truncate mt-0.5">
-                {bookTitle}
+              <p className="text-xs text-stone-500 font-reading truncate mt-0.5 flex items-center gap-2">
+                <span>{bookTitle}</span>
+                <span className="text-stone-300">·</span>
+                <span className="font-mono text-[11px] text-amber-900/80">{formatTime(currentTime)} / {formatTime(duration)}</span>
               </p>
             </div>
           </div>
@@ -336,15 +338,6 @@ function GlobalPodcastCapsuleComponent({
                 </button>
               )}
             </div>
-
-            {/* Time Indicator - hidden on bookshelf homepage */}
-            {currentView !== 'bookshelf' && (
-              <div className="flex items-center gap-1.5 text-[11px] font-mono text-stone-500 font-medium select-none">
-                <span className="text-amber-900 font-semibold">{formatTime(currentTime)}</span>
-                <span className="text-stone-300">/</span>
-                <span>{formatTime(duration)}</span>
-              </div>
-            )}
           </div>
 
           {/* Right: Tools & Expand Button (w-1/4 min-w-[200px] flex justify-end) */}

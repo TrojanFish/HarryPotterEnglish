@@ -99,5 +99,7 @@ test('VocabularyDrawer Starred Sentences Workshop Test Suite', async (t) => {
 
     assert.ok(html.includes('回听原著原声') || html.includes('定位播放') || html.includes('原声'), 'Must provide jump to original audio affordance');
     assert.ok(html.includes('清空所有疑难句') || html.includes('清空全部'), 'Must provide clear all bookmarks affordance');
+    assert.ok(html.includes('导出疑难句 (CSV)') || html.includes('导出'), 'Must provide export sentences CSV button');
+    assert.ok(html.includes('冥想盆疑难句'), 'Header title must dynamically reflect active tab');
   });
 });

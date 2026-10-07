@@ -61,23 +61,45 @@ export function OwlsCertificateModal({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-2xl max-h-[92dvh] sm:max-h-[88dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border-2 border-[#dec9a5] bg-[#fbf9f5] text-[#1e1610] shadow-2xl p-4 sm:p-8 flex flex-col no-scrollbar pb-safe"
+        className="relative w-full max-w-2xl max-h-[92dvh] sm:max-h-[88dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] shadow-xl p-5 sm:p-7 flex flex-col no-scrollbar pb-safe"
       >
         {/* Mobile Pull Handle Indicator (Apple HIG standard) */}
-        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-1.5 shrink-0" />
+        <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto mb-3 shrink-0" />
 
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="duo-touch-target absolute top-3 sm:top-4 right-3 sm:right-4 rounded-xl border border-[#e8ddd0] bg-white/90 hover:bg-stone-100 text-stone-600 hover:text-amber-950 transition-all active:scale-90 cursor-pointer z-10"
-          title="关闭证书 (ESC)"
-          aria-label="关闭证书"
-        >
-          <X size={18} />
-        </button>
+        {/* Standard Modal Header Bar */}
+        <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-[#e8ddd0] shrink-0">
+          <div className="flex items-center space-x-2.5 min-w-0">
+            <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shrink-0">
+              <Award size={20} className="text-amber-700" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-magical font-bold text-lg sm:text-xl text-amber-950 flex items-center gap-2 truncate">
+                <span>学业荣誉通报</span>
+                <span className="text-[11px] font-sans px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 font-bold shrink-0">
+                  O.W.L.s 证书
+                </span>
+              </h3>
+              <p className="text-xs text-stone-500 mt-0.5 truncate">
+                普通巫师等级考试研学鉴定 · 支持分享与官方打印存档
+              </p>
+            </div>
+          </div>
+
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 flex items-center justify-center text-stone-500 hover:text-stone-800 transition-colors cursor-pointer shrink-0"
+              title="关闭 (ESC)"
+              aria-label="关闭"
+            >
+              <X size={18} />
+            </button>
+          )}
+        </div>
 
         {/* Certificate Parchment Inner Frame */}
-        <div className="p-4 sm:p-8 rounded-2xl border-2 border-dashed border-amber-600/40 bg-gradient-to-b from-[#fffefc] via-[#fdfaf3] to-amber-50/40 relative text-center shrink-0">
+        <div className="p-4 sm:p-7 rounded-2xl border-2 border-dashed border-amber-600/40 bg-gradient-to-b from-[#fffefc] via-[#fdfaf3] to-amber-50/40 relative text-center shrink-0">
           {/* Top Crest & Monogram */}
           <div className="flex flex-col items-center mb-3 sm:mb-4">
             <WaxSealBadge text="H" size={44} title="Hogwarts Seal of Approval" />
