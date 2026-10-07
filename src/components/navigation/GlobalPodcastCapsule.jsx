@@ -2,8 +2,7 @@ import React from 'react';
 import {
   Play,
   Pause,
-  RotateCcw,
-  RotateCw,
+  SkipBack,
   SkipForward,
   Headphones,
   Moon,
@@ -15,7 +14,7 @@ import { formatEnglishText } from '../../utils/vttParser';
 /**
  * GlobalPodcastCapsule — Universal Persistent Podcast Audio Controller
  * Floats at the bottom across all views (Bookshelf, Vocab, Analytics, Storage):
- * - Desktop (>= 768px): Centered floating parchment glass capsule with 15s transport & sleep timer
+ * - Desktop (>= 768px): Centered floating parchment glass capsule with sentence transport & sleep timer
  * - Mobile (< 768px): Compact bottom-docked capsule with Apple HIG 44px touch targets
  * - Strictly 100% Lucide React SVG, zero Unicode emojis
  */
@@ -24,8 +23,9 @@ export function GlobalPodcastCapsule({
   currentChapter,
   isPlaying = false,
   onPlayPause,
-  onSeekRelative,
+  onPrevSentence,
   onNextSentence,
+  onSeekRelative,
   onEnterPlayer,
   onOpenPlayer,
   currentTime = 0,
@@ -90,20 +90,21 @@ export function GlobalPodcastCapsule({
           </div>
 
           {/* Quick Transport Buttons (Apple HIG >= 44x44pt touch targets) */}
-          <div className="flex items-center gap-1 shrink-0">
-            {/* Seek -15s */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (onSeekRelative) onSeekRelative(-15);
-              }}
-              className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl bg-white/15 hover:bg-white/25 text-white flex flex-col items-center justify-center active:scale-90 transition-transform cursor-pointer shrink-0"
-              title="快退 15 秒"
-              aria-label="快退 15 秒"
-            >
-              <RotateCcw size={14} />
-              <span className="text-[7px] font-mono font-bold leading-none mt-0.5">15s</span>
-            </button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Prev Sentence */}
+            {onPrevSentence && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPrevSentence();
+                }}
+                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl bg-white/15 hover:bg-white/25 text-white flex items-center justify-center active:scale-90 transition-transform cursor-pointer shrink-0"
+                title="上一句"
+                aria-label="上一句"
+              >
+                <SkipBack size={16} />
+              </button>
+            )}
 
             {/* Play / Pause */}
             <button
@@ -122,19 +123,20 @@ export function GlobalPodcastCapsule({
               )}
             </button>
 
-            {/* Seek +15s */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (onSeekRelative) onSeekRelative(15);
-              }}
-              className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl bg-white/15 hover:bg-white/25 text-white flex flex-col items-center justify-center active:scale-90 transition-transform cursor-pointer shrink-0"
-              title="快进 15 秒"
-              aria-label="快进 15 秒"
-            >
-              <RotateCw size={14} />
-              <span className="text-[7px] font-mono font-bold leading-none mt-0.5">15s</span>
-            </button>
+            {/* Next Sentence */}
+            {onNextSentence && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNextSentence();
+                }}
+                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl bg-white/15 hover:bg-white/25 text-white flex items-center justify-center active:scale-90 transition-transform cursor-pointer shrink-0"
+                title="下一句"
+                aria-label="下一句"
+              >
+                <SkipForward size={16} />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -191,17 +193,18 @@ export function GlobalPodcastCapsule({
             </div>
           </div>
 
-          {/* Center: Transport Controls (15s Seek, Play/Pause, 15s Forward) */}
+          {/* Center: Transport Controls (Prev, Play/Pause, Next) */}
           <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={() => onSeekRelative && onSeekRelative(-15)}
-              className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex flex-col items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
-              title="快退 15 秒 (←15s)"
-              aria-label="快退 15 秒"
-            >
-              <RotateCcw size={14} />
-              <span className="text-[8px] font-mono font-bold leading-none mt-0.5">15s</span>
-            </button>
+            {onPrevSentence && (
+              <button
+                onClick={onPrevSentence}
+                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
+                title="上一句 (←)"
+                aria-label="上一句"
+              >
+                <SkipBack size={16} />
+              </button>
+            )}
 
             <button
               onClick={onPlayPause}
@@ -216,15 +219,16 @@ export function GlobalPodcastCapsule({
               )}
             </button>
 
-            <button
-              onClick={() => onSeekRelative && onSeekRelative(15)}
-              className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex flex-col items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
-              title="快进 15 秒 (→15s)"
-              aria-label="快进 15 秒"
-            >
-              <RotateCw size={14} />
-              <span className="text-[8px] font-mono font-bold leading-none mt-0.5">15s</span>
-            </button>
+            {onNextSentence && (
+              <button
+                onClick={onNextSentence}
+                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer"
+                title="下一句 (→)"
+                aria-label="下一句"
+              >
+                <SkipForward size={16} />
+              </button>
+            )}
           </div>
 
           {/* Right: Sleep Timer, Speed & Expand CTA */}

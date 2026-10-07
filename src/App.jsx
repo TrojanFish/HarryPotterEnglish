@@ -806,7 +806,7 @@ export function App() {
             currentChapter={currentChapterObj}
             isPlaying={isPlaying}
             onPlayPause={togglePlayPause}
-            onSeekRelative={seekRelative}
+            onPrevSentence={handlePrevSentence}
             onNextSentence={handleNextSentence}
             onEnterPlayer={() => setCurrentView('player')}
             currentTime={currentTime}

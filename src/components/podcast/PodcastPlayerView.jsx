@@ -2,8 +2,6 @@ import React, { useState, useMemo } from 'react';
 import {
   Play,
   Pause,
-  RotateCcw,
-  RotateCw,
   SkipBack,
   SkipForward,
   Moon,
@@ -179,43 +177,32 @@ export function PodcastPlayerView({
               </div>
             </div>
 
-            {/* Transport Controls Row (15s Seek, Prev/Next, Play/Pause) */}
-            <div className="flex items-center justify-center gap-3">
-              {/* Seek -15s */}
-              <button
-                onClick={() => onSeekRelative && onSeekRelative(-15)}
-                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border border-[#e8ddd0] bg-white flex flex-col items-center justify-center text-stone-700 hover:text-amber-950 hover:border-amber-300 active:scale-90 transition-all cursor-pointer"
-                title="快退 15 秒 (←15s)"
-                aria-label="快退 15 秒"
-              >
-                <RotateCcw size={16} />
-                <span className="text-[8px] font-mono font-bold leading-none mt-0.5">15s</span>
-              </button>
-
+            {/* Transport Controls Row (Prev/Next Sentence & Play/Pause) */}
+            <div className="flex items-center justify-center gap-4">
               {/* Prev Sentence */}
               {onPrevSentence && (
                 <button
                   onClick={onPrevSentence}
                   disabled={activeCueIndex <= 0}
-                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
-                  title="上一句"
+                  className="w-12 h-12 min-w-[48px] min-h-[48px] rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
+                  title="上一句 (←)"
                   aria-label="上一句"
                 >
-                  <SkipBack size={18} />
+                  <SkipBack size={20} />
                 </button>
               )}
 
               {/* Primary Play/Pause CTA */}
               <button
                 onClick={onPlayPause}
-                className="w-14 h-14 min-w-[56px] min-h-[56px] rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border-2 border-amber-600 active:scale-95 transition-transform cursor-pointer shadow-none"
+                className="w-16 h-16 min-w-[64px] min-h-[64px] rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border-2 border-amber-600 active:scale-95 transition-transform cursor-pointer shadow-none"
                 title={isPlaying ? '暂停 (Space)' : '播放 (Space)'}
                 aria-label={isPlaying ? '暂停' : '播放'}
               >
                 {isPlaying ? (
-                  <Pause size={24} className="fill-current" />
+                  <Pause size={28} className="fill-current" />
                 ) : (
-                  <Play size={24} className="fill-current translate-x-0.5" />
+                  <Play size={28} className="fill-current translate-x-0.5" />
                 )}
               </button>
 
@@ -224,24 +211,13 @@ export function PodcastPlayerView({
                 <button
                   onClick={onNextSentence}
                   disabled={activeCueIndex >= cues.length - 1}
-                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
-                  title="下一句"
+                  className="w-12 h-12 min-w-[48px] min-h-[48px] rounded-2xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-600 hover:text-amber-950 hover:border-amber-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
+                  title="下一句 (→)"
                   aria-label="下一句"
                 >
-                  <SkipForward size={18} />
+                  <SkipForward size={20} />
                 </button>
               )}
-
-              {/* Seek +15s */}
-              <button
-                onClick={() => onSeekRelative && onSeekRelative(15)}
-                className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl border border-[#e8ddd0] bg-white flex flex-col items-center justify-center text-stone-700 hover:text-amber-950 hover:border-amber-300 active:scale-90 transition-all cursor-pointer"
-                title="快进 15 秒 (→15s)"
-                aria-label="快进 15 秒"
-              >
-                <RotateCw size={16} />
-                <span className="text-[8px] font-mono font-bold leading-none mt-0.5">15s</span>
-              </button>
             </div>
 
             {/* Sub-controls: Sleep Timer, Speed, Translation */}
@@ -337,19 +313,23 @@ export function PodcastPlayerView({
 
             {/* Quick Transport Controls */}
             <div className="flex items-center justify-between px-2">
-              <button
-                onClick={() => onSeekRelative && onSeekRelative(-15)}
-                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex flex-col items-center justify-center text-stone-700 active:scale-90 cursor-pointer"
-                title="快退 15 秒"
-              >
-                <RotateCcw size={14} />
-                <span className="text-[7px] font-mono font-bold leading-none mt-0.5">15s</span>
-              </button>
+              {onPrevSentence && (
+                <button
+                  onClick={onPrevSentence}
+                  disabled={activeCueIndex <= 0}
+                  className="w-10 h-10 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
+                  title="上一句"
+                  aria-label="上一句"
+                >
+                  <SkipBack size={16} />
+                </button>
+              )}
 
               <button
                 onClick={onPlayPause}
                 className="w-12 h-12 min-w-[48px] min-h-[48px] rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border-2 border-amber-600 active:scale-95 cursor-pointer shadow-none"
                 title="播放/暂停"
+                aria-label="播放或暂停"
               >
                 {isPlaying ? (
                   <Pause size={20} className="fill-current" />
@@ -358,14 +338,17 @@ export function PodcastPlayerView({
                 )}
               </button>
 
-              <button
-                onClick={() => onSeekRelative && onSeekRelative(15)}
-                className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-[#e8ddd0] bg-white flex flex-col items-center justify-center text-stone-700 active:scale-90 cursor-pointer"
-                title="快进 15 秒"
-              >
-                <RotateCw size={14} />
-                <span className="text-[7px] font-mono font-bold leading-none mt-0.5">15s</span>
-              </button>
+              {onNextSentence && (
+                <button
+                  onClick={onNextSentence}
+                  disabled={activeCueIndex >= cues.length - 1}
+                  className="w-10 h-10 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 hover:text-amber-950 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-colors cursor-pointer"
+                  title="下一句"
+                  aria-label="下一句"
+                >
+                  <SkipForward size={16} />
+                </button>
+              )}
 
               {(onToggleSleepTimer || sleepTimerMode) && (
                 <button

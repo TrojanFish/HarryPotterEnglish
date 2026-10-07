@@ -56,7 +56,7 @@ test('PodcastPlayerView Test Suite', async (t) => {
     assert.ok(html.includes('cover.jpg') || html.includes('Cover'), 'Must render album cover art container');
   });
 
-  await t.test('2.2: Renders transport controls (15s Seek, Play/Pause, Sleep Timer)', () => {
+  await t.test('2.2: Renders transport controls (Sentence Nav, Play/Pause, Sleep Timer)', () => {
     const html = renderToString(
       React.createElement(PodcastPlayerView, {
         currentBook: mockBook,
@@ -70,13 +70,16 @@ test('PodcastPlayerView Test Suite', async (t) => {
         sleepTimerMode: 15,
         sleepTimerRemaining: '14:20',
         onPlayPause: () => {},
-        onSeekRelative: () => {},
+        onPrevSentence: () => {},
+        onNextSentence: () => {},
         onSwitchToStudio: () => {}
       })
     );
 
-    assert.ok(html.includes('快退 15 秒') || html.includes('15s'), 'Must have 15s skip backward');
-    assert.ok(html.includes('快进 15 秒') || html.includes('15s'), 'Must have 15s skip forward');
+    assert.ok(html.includes('上一句'), 'Must have 上一句 button');
+    assert.ok(html.includes('下一句'), 'Must have 下一句 button');
+    assert.ok(!html.includes('快退 15 秒'), 'Must not have 15s skip backward');
+    assert.ok(!html.includes('快进 15 秒'), 'Must not have 15s skip forward');
     assert.ok(html.includes('14:20') || html.includes('定时'), 'Must display active sleep timer indicator');
     assert.ok(html.includes('1.25x') || html.includes('1.25'), 'Must display current playback speed');
   });

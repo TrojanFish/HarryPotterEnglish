@@ -32,7 +32,7 @@ test('AudioPlayer Podcast Controls Test Suite', async (t) => {
   const mockBook = { id: 'book1', title: 'HP 1', cnTitle: '哈利·波特' };
   const mockChapter = { id: 'c1', title: 'Ch 1', cnTitle: '大难不死的男孩' };
 
-  await t.test('2.1: Renders 15-second skip backward and forward buttons', () => {
+  await t.test('2.1: Renders sentence navigation buttons (上一句 / 下一句) with streamlined transport', () => {
     const html = renderToString(
       React.createElement(AudioPlayer, {
         currentBook: mockBook,
@@ -41,12 +41,17 @@ test('AudioPlayer Podcast Controls Test Suite', async (t) => {
         duration: 300,
         isPlaying: true,
         playbackRate: 1.0,
-        onSeekRelative: () => {}
+        activeCueIndex: 1,
+        totalCues: 10,
+        onPrevSentence: () => {},
+        onNextSentence: () => {}
       })
     );
 
-    assert.ok(html.includes('快退 15 秒') || html.includes('15秒'), 'Must contain 15s skip backward button');
-    assert.ok(html.includes('快进 15 秒') || html.includes('15秒'), 'Must contain 15s skip forward button');
+    assert.ok(html.includes('上一句'), 'Must contain 上一句 navigation button');
+    assert.ok(html.includes('下一句'), 'Must contain 下一句 navigation button');
+    assert.ok(!html.includes('快退 15 秒'), 'Must not contain 15s skip backward button');
+    assert.ok(!html.includes('快进 15 秒'), 'Must not contain 15s skip forward button');
   });
 
   await t.test('2.2: Renders Sleep Timer button', () => {

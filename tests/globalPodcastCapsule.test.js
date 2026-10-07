@@ -28,7 +28,7 @@ test('GlobalPodcastCapsule Test Suite', async (t) => {
   const mockBook = { id: 'book1', title: 'Philosopher Stone', cnTitle: '哈利·波特与魔法石' };
   const mockChapter = { id: 'c1', title: 'The Boy Who Lived', cnTitle: '大难不死的男孩' };
 
-  await t.test('3.1: Desktop view renders floating capsule with chapter title and 15s transport', () => {
+  await t.test('3.1: Desktop view renders floating capsule with chapter title and sentence transport', () => {
     const html = renderToString(
       React.createElement(GlobalPodcastCapsule, {
         currentBook: mockBook,
@@ -38,14 +38,17 @@ test('GlobalPodcastCapsule Test Suite', async (t) => {
         isPlaying: true,
         isMobile: false,
         onPlayPause: () => {},
-        onSeekRelative: () => {},
+        onPrevSentence: () => {},
+        onNextSentence: () => {},
         onEnterPlayer: () => {}
       })
     );
 
     assert.ok(html.includes('大难不死的男孩'), 'Must render chapter title');
-    assert.ok(html.includes('快退 15 秒') || html.includes('15s'), 'Must contain 15s skip backward');
-    assert.ok(html.includes('快进 15 秒') || html.includes('15s'), 'Must contain 15s skip forward');
+    assert.ok(html.includes('上一句'), 'Must contain 上一句');
+    assert.ok(html.includes('下一句'), 'Must contain 下一句');
+    assert.ok(!html.includes('快退 15 秒'), 'Must not contain 15s skip backward');
+    assert.ok(!html.includes('快进 15 秒'), 'Must not contain 15s skip forward');
     assert.ok(html.includes('进入精听') || html.includes('教室'), 'Must include enter player CTA');
   });
 
