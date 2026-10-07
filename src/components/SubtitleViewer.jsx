@@ -346,11 +346,11 @@ export const SentenceCard = React.memo(function SentenceCard({
                   <span
                     key={tokenIdx}
                     onClick={(e) => handleWordClick(e, token.text, cue)}
-                    className={`cursor-pointer inline rounded-sm transition-all ${
+                    className={`cursor-pointer inline rounded-sm touch-manipulation select-text py-0.5 px-1 -my-0.5 -mx-0.5 active:scale-95 transition-transform ${
                       isClicked ? 'word-click-flash' : ''
                     } ${
                       isHpTerm
-                        ? 'border-b border-amber-400 text-amber-900 font-medium hover:bg-amber-100/60 px-0.5'
+                        ? 'border-b border-amber-400 text-amber-900 font-medium hover:bg-amber-100/60'
                         : ''
                     } ${wordClasses}`}
                     title={isHpTerm ? `魔法词汇: ${token.text}` : '点击查看释义'}
