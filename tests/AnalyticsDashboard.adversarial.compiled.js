@@ -24,7 +24,8 @@ function AnalyticsDashboard({
   isOpen,
   onClose,
   isParchment = true,
-  vocabCount = 0
+  vocabCount = 0,
+  isPageView = false
 }) {
   const [summary, setSummary] = useState(null);
   const [hoveredBarIndex, setHoveredBarIndex] = useState(null);
@@ -80,22 +81,22 @@ function AnalyticsDashboard({
     }
   };
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen || isPageView) {
       const data = getAnalyticsSummary();
       setSummary(data);
     }
-  }, [isOpen]);
+  }, [isOpen, isPageView]);
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen && !isPageView) return;
     const handleKeyDown = (e) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && onClose) {
         onClose();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
-  if (!isOpen) return null;
+  }, [isOpen, isPageView, onClose]);
+  if (!isOpen && !isPageView) return null;
   const currentSummary = summary || {
     totalListeningSeconds: 0,
     weeklyListeningMinutes: [
@@ -180,7 +181,7 @@ function AnalyticsDashboard({
     axisFill: "#64748b",
     headerBg: "bg-[#0e1422]/95"
   };
-  return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn" }, /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0", onClick: onClose, "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("div", { className: `relative w-full max-w-4xl max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border ${theme.modalBorder} ${theme.modalBg} ${theme.primaryText} transition-all z-10 pb-safe flex flex-col no-scrollbar` }, /* @__PURE__ */ React.createElement("div", { className: "sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" }), /* @__PURE__ */ React.createElement("div", { className: "sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[#e8ddd0] bg-white/95 backdrop-blur-md gap-2" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1" }, /* @__PURE__ */ React.createElement("div", { className: "p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shrink-0" }, /* @__PURE__ */ React.createElement(BarChart2, { size: 18, className: "text-amber-600 sm:w-5 sm:h-5" })), /* @__PURE__ */ React.createElement("div", { className: "min-w-0 flex-1" }, /* @__PURE__ */ React.createElement("h2", { className: "text-sm sm:text-xl font-bold font-magical tracking-wide text-amber-950 truncate flex items-center gap-1.5 sm:gap-2" }, /* @__PURE__ */ React.createElement("span", null, "\u970D\u683C\u6C83\u8328\u5B66\u4E1A\u6570\u636E\u7F57\u76D8"), /* @__PURE__ */ React.createElement("span", { className: "hidden sm:inline-flex text-[11px] font-sans px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-300/80 font-bold shrink-0" }, "\u5B66\u60C5\u8FFD\u8E2A")), /* @__PURE__ */ React.createElement("p", { className: "text-[10px] sm:text-xs text-stone-500 truncate" }, /* @__PURE__ */ React.createElement("span", { className: "sm:hidden" }, "\u5B66\u60C5\u4E60\u60EF\u4E0E\u4E13\u6CE8\u8FFD\u8E2A"), /* @__PURE__ */ React.createElement("span", { className: "hidden sm:inline" }, "\u5B66\u4E60\u4E60\u60EF\u8FFD\u8E2A \xB7 \u542C\u529B\u4E13\u6CE8\u65F6\u957F \xB7 \u542C\u5199\u51C6\u786E\u5EA6")))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-1.5 sm:space-x-2 shrink-0" }, /* @__PURE__ */ React.createElement(
+  const dashboardContent = /* @__PURE__ */ React.createElement("div", { className: isPageView ? `w-full h-full overflow-y-auto ${theme.modalBg} ${theme.primaryText} transition-all pb-safe flex flex-col no-scrollbar` : `relative w-full max-w-4xl max-h-[88dvh] sm:max-h-[85dvh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t sm:border ${theme.modalBorder} ${theme.modalBg} ${theme.primaryText} transition-all z-10 pb-safe flex flex-col no-scrollbar` }, !isPageView && /* @__PURE__ */ React.createElement("div", { className: "sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" }), /* @__PURE__ */ React.createElement("div", { className: "sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[#e8ddd0] bg-white/95 backdrop-blur-md gap-2" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1" }, /* @__PURE__ */ React.createElement("div", { className: "p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shrink-0" }, /* @__PURE__ */ React.createElement(BarChart2, { size: 18, className: "text-amber-600 sm:w-5 sm:h-5" })), /* @__PURE__ */ React.createElement("div", { className: "min-w-0 flex-1" }, /* @__PURE__ */ React.createElement("h2", { className: "text-sm sm:text-xl font-bold font-magical tracking-wide text-amber-950 truncate flex items-center gap-1.5 sm:gap-2" }, /* @__PURE__ */ React.createElement("span", null, "\u970D\u683C\u6C83\u8328\u5B66\u4E1A\u6570\u636E\u7F57\u76D8"), /* @__PURE__ */ React.createElement("span", { className: "hidden sm:inline-flex text-[11px] font-sans px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-300/80 font-bold shrink-0" }, "\u5B66\u60C5\u8FFD\u8E2A")), /* @__PURE__ */ React.createElement("p", { className: "text-[10px] sm:text-xs text-stone-500 truncate" }, /* @__PURE__ */ React.createElement("span", { className: "sm:hidden" }, "\u5B66\u60C5\u4E60\u60EF\u4E0E\u4E13\u6CE8\u8FFD\u8E2A"), /* @__PURE__ */ React.createElement("span", { className: "hidden sm:inline" }, "\u5B66\u4E60\u4E60\u60EF\u8FFD\u8E2A \xB7 \u542C\u529B\u4E13\u6CE8\u65F6\u957F \xB7 \u542C\u5199\u51C6\u786E\u5EA6")))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-1.5 sm:space-x-2 shrink-0" }, /* @__PURE__ */ React.createElement(
     "button",
     {
       onClick: () => setShowHonorScroll(!showHonorScroll),
@@ -189,12 +190,13 @@ function AnalyticsDashboard({
     },
     /* @__PURE__ */ React.createElement(Award, { size: 14, className: "shrink-0" }),
     /* @__PURE__ */ React.createElement("span", null, showHonorScroll ? "\u8FD4\u56DE\u56FE\u8868" : "\u5B66\u4E1A\u559C\u62A5")
-  ), /* @__PURE__ */ React.createElement(
+  ), onClose && /* @__PURE__ */ React.createElement(
     "button",
     {
       onClick: onClose,
       className: "duo-touch-target rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-100 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-all active:scale-90 cursor-pointer shrink-0",
-      title: "\u5173\u95ED\u7F57\u76D8 (ESC)"
+      title: isPageView ? "\u8FD4\u56DE" : "\u5173\u95ED\u7F57\u76D8 (ESC)",
+      "aria-label": isPageView ? "\u8FD4\u56DE" : "\u5173\u95ED\u7F57\u76D8"
     },
     /* @__PURE__ */ React.createElement(X, { size: 18 })
   ))), showHonorScroll ? /* @__PURE__ */ React.createElement("div", { className: "p-6 sm:p-8 space-y-6 animate-fadeIn" }, /* @__PURE__ */ React.createElement("div", { className: "p-6 sm:p-8 rounded-3xl border border-amber-400/80 bg-gradient-to-br from-white via-[#fbf9f5] to-amber-500/5 text-center relative overflow-hidden" }, /* @__PURE__ */ React.createElement("div", { className: "absolute right-3 -bottom-6 pointer-events-none opacity-5 text-amber-700" }, /* @__PURE__ */ React.createElement(Award, { size: 200 })), /* @__PURE__ */ React.createElement("div", { className: "inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-400/50 text-xs font-bold mb-3" }, /* @__PURE__ */ React.createElement(Sparkles, { size: 13, className: "text-amber-700" }), /* @__PURE__ */ React.createElement("span", null, "\u970D\u683C\u6C83\u8328\u5B66\u4E1A\u559C\u62A5 \xB7 \u9B54\u6CD5\u4E4B\u661F\u8363\u8A89\u5377\u8F74")), /* @__PURE__ */ React.createElement("h3", { className: "text-2xl sm:text-3xl font-bold font-magical text-amber-950 mb-2" }, "\u5B66\u6D77\u63A2\u79D8 \xB7 \u89C1\u8BC1\u5353\u8D8A\u6210\u957F"), /* @__PURE__ */ React.createElement("p", { className: "text-xs sm:text-sm text-stone-600 font-reading max-w-lg mx-auto mb-7 leading-relaxed" }, "\u201C\u4EE5\u597D\u5947\u4E3A\u9B54\u6756\uFF0C\u4EE5\u575A\u6301\u4E3A\u9B54\u836F\u3002\u6BCF\u4E00\u4E2A\u4E13\u6CE8\u8046\u542C\u7684\u6E05\u6668\u4E0E\u591C\u665A\uFF0C\u90FD\u5728\u6784\u7B51\u4F60\u7684\u7EAF\u6B63\u82F1\u8BED\u8BED\u611F\uFF01\u201D"), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-7" }, /* @__PURE__ */ React.createElement("div", { className: "p-4 rounded-2xl border border-[#e8ddd0] bg-white" }, /* @__PURE__ */ React.createElement("div", { className: "text-amber-700 flex items-center justify-center mb-1" }, /* @__PURE__ */ React.createElement(Flame, { size: 20, className: "text-orange-500" })), /* @__PURE__ */ React.createElement("div", { className: "font-sans font-bold text-2xl text-amber-950" }, currentSummary.streakDays, " ", /* @__PURE__ */ React.createElement("span", { className: "text-xs text-stone-400 font-normal" }, "\u5929")), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-stone-500 font-bold mt-0.5" }, "\u8FDE\u7EED\u575A\u6301\u7814\u8BFB")), /* @__PURE__ */ React.createElement("div", { className: "p-4 rounded-2xl border border-[#e8ddd0] bg-white" }, /* @__PURE__ */ React.createElement("div", { className: "text-amber-700 flex items-center justify-center mb-1" }, /* @__PURE__ */ React.createElement(Clock, { size: 20, className: "text-amber-600" })), /* @__PURE__ */ React.createElement("div", { className: "font-sans font-bold text-2xl text-amber-950" }, weeklyMinutesTotal, " ", /* @__PURE__ */ React.createElement("span", { className: "text-xs text-stone-400 font-normal" }, "\u5206")), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-stone-500 font-bold mt-0.5" }, "\u672C\u5468\u4E13\u6CE8\u7CBE\u542C")), /* @__PURE__ */ React.createElement("div", { className: "p-4 rounded-2xl border border-[#e8ddd0] bg-white" }, /* @__PURE__ */ React.createElement("div", { className: "text-amber-700 flex items-center justify-center mb-1" }, /* @__PURE__ */ React.createElement(BookOpen, { size: 20, className: "text-emerald-600" })), /* @__PURE__ */ React.createElement("div", { className: "font-sans font-bold text-2xl text-amber-950" }, currentSummary.completedChaptersCount, " ", /* @__PURE__ */ React.createElement("span", { className: "text-xs text-stone-400 font-normal" }, "\u7AE0")), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-stone-500 font-bold mt-0.5" }, "\u653B\u514B\u539F\u58F0\u7AE0\u8282")), /* @__PURE__ */ React.createElement("div", { className: "p-4 rounded-2xl border border-[#e8ddd0] bg-white" }, /* @__PURE__ */ React.createElement("div", { className: "text-amber-700 flex items-center justify-center mb-1" }, /* @__PURE__ */ React.createElement(Bookmark, { size: 20, className: "text-blue-600" })), /* @__PURE__ */ React.createElement("div", { className: "font-sans font-bold text-2xl text-amber-950" }, vocabCount, " ", /* @__PURE__ */ React.createElement("span", { className: "text-xs text-stone-400 font-normal" }, "\u8BCD")), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-stone-500 font-bold mt-0.5" }, "\u9B54\u6CD5\u751F\u8BCD\u6536\u5F55"))), /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap items-center justify-center gap-3 pt-2" }, /* @__PURE__ */ React.createElement(
@@ -485,7 +487,11 @@ function AnalyticsDashboard({
     },
     isPairing ? /* @__PURE__ */ React.createElement(RefreshCw, { size: 13, className: "animate-spin shrink-0" }) : /* @__PURE__ */ React.createElement(Smartphone, { size: 13, className: "shrink-0" }),
     /* @__PURE__ */ React.createElement("span", { className: "whitespace-nowrap" }, "\u914D\u5BF9\u5408\u5E76")
-  ))), pairMessage && /* @__PURE__ */ React.createElement("p", { className: `text-[11px] font-bold mt-2 ${pairMessage.type === "success" ? "text-emerald-700" : "text-rose-600"}` }, pairMessage.text)))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-center gap-1.5 text-[11px] text-stone-400 pt-3 select-none" }, /* @__PURE__ */ React.createElement(Info, { size: 12, className: "text-amber-600/70 shrink-0" }), /* @__PURE__ */ React.createElement("span", null, "\u5B66\u60C5\u4E0E\u751F\u8BCD\u6570\u636E\u672C\u5730\u6BEB\u79D2\u8BFB\u53D6\uFF0C\u5DF2\u8FDE\u63A5 Cloudflare D1 \u8FB9\u7F18\u589E\u91CF\u540C\u6B65"))))));
+  ))), pairMessage && /* @__PURE__ */ React.createElement("p", { className: `text-[11px] font-bold mt-2 ${pairMessage.type === "success" ? "text-emerald-700" : "text-rose-600"}` }, pairMessage.text)))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-center gap-1.5 text-[11px] text-stone-400 pt-3 select-none" }, /* @__PURE__ */ React.createElement(Info, { size: 12, className: "text-amber-600/70 shrink-0" }), /* @__PURE__ */ React.createElement("span", null, "\u5B66\u60C5\u4E0E\u751F\u8BCD\u6570\u636E\u672C\u5730\u6BEB\u79D2\u8BFB\u53D6\uFF0C\u5DF2\u8FDE\u63A5 Cloudflare D1 \u8FB9\u7F18\u589E\u91CF\u540C\u6B65")))));
+  if (isPageView) {
+    return dashboardContent;
+  }
+  return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn" }, /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0", onClick: onClose, "aria-hidden": "true" }), dashboardContent);
 }
 var stdin_default = AnalyticsDashboard;
 export {

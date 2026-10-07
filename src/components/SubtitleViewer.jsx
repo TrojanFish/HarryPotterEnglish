@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import {
-  Play,
   Mic,
   Eye,
   EyeOff,
@@ -54,11 +53,23 @@ export const SentenceCard = React.memo(function SentenceCard({
   const tokens = useMemo(() => tokenizeSentence(cue.text), [cue.text]);
   const [clickedWord, setClickedWord] = useState(null);
 
-  const handleWordClick = useCallback((word, cueObj) => {
+  const handleWordClick = useCallback((e, word, cueObj) => {
+    if (e && e.stopPropagation) {
+      e.stopPropagation();
+    }
     setClickedWord(word);
     setTimeout(() => setClickedWord(null), 500);
     onWordClick(word, cueObj);
   }, [onWordClick]);
+
+  const handleCardClick = useCallback((e) => {
+    // Guard 1: ignore clicks originating from interactive buttons
+    if (e.target && e.target.closest && e.target.closest('button')) return;
+    // Guard 2: ignore when user is selecting/highlighting text
+    const selection = window.getSelection ? window.getSelection().toString() : '';
+    if (selection && selection.trim().length > 0) return;
+    onSeekToCue(cue);
+  }, [cue, onSeekToCue]);
 
   const isBlind = studyMode === 'blind';
   const isVeiled = isBlind && !isRevealed;
@@ -68,11 +79,13 @@ export const SentenceCard = React.memo(function SentenceCard({
   return (
     <div
       ref={cardRef}
-      className={`group relative rounded-2xl transition-all duration-200 subtitle-item-render ${
+      onClick={handleCardClick}
+      title={isActive ? '点击重新播放此句' : '点击播放此句'}
+      className={`group relative rounded-2xl transition-all duration-200 subtitle-item-render cursor-pointer active:scale-[0.995] ${
         isActive
           ? isBlind
-            ? 'reading-hero-sentence border-l-4 border-l-indigo-600 bg-indigo-50/50 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4 shadow-sm'
-            : 'reading-hero-sentence border-l-4 border-l-amber-500 bg-amber-50/60 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4 shadow-sm'
+            ? 'reading-hero-sentence border-l-4 border-l-indigo-600 bg-indigo-50/50 hover:bg-indigo-100/40 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4 shadow-sm'
+            : 'reading-hero-sentence border-l-4 border-l-amber-500 bg-amber-50/60 hover:bg-amber-100/40 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4 shadow-sm'
           : 'reading-inactive-sentence border-l-4 border-l-transparent bg-white hover:bg-stone-50/80 pl-3 pr-4 pt-3.5 pb-3.5 sm:pl-4 sm:pr-5 sm:pt-4 sm:pb-4'
       }`}
     >
@@ -110,7 +123,10 @@ export const SentenceCard = React.memo(function SentenceCard({
           {onToggleBookmarkCue && (
             <button
               type="button"
-              onClick={() => onToggleBookmarkCue(cue)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleBookmarkCue(cue);
+              }}
               className={`min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
                 isBookmarked
                   ? 'bg-amber-100 text-amber-800 border-amber-300'
@@ -123,20 +139,13 @@ export const SentenceCard = React.memo(function SentenceCard({
             </button>
           )}
 
-          <button
-            type="button"
-            onClick={() => onSeekToCue(cue)}
-            className="min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 text-stone-600 hover:text-amber-950 hover:border-amber-300 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
-            title="从此句播放"
-            aria-label="从此句播放"
-          >
-            <Play size={13} className="fill-current translate-x-0.5" />
-          </button>
-
           {isActive && !isBlind && (
             <button
               type="button"
-              onClick={() => onCopySentence(cue)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onCopySentence(cue);
+              }}
               className="hidden sm:inline-flex min-w-[44px] min-h-[44px] items-center justify-center rounded-xl border border-[#e8ddd0] bg-white text-stone-500 hover:text-amber-950 transition-colors active:scale-95 cursor-pointer"
               title={copiedCueId === cue.id ? '已复制' : '复制本句'}
               aria-label="复制本句"
@@ -150,7 +159,10 @@ export const SentenceCard = React.memo(function SentenceCard({
           {(!isBlind || isRevealed) && (
             <button
               type="button"
-              onClick={() => onRecordCue(cue)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onRecordCue(cue);
+              }}
               className="min-h-[44px] min-w-[44px] rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
               title="跟读施咒（AI评分）"
               aria-label="跟读施咒AI评分"
@@ -162,7 +174,10 @@ export const SentenceCard = React.memo(function SentenceCard({
           {isBlind && (
             <button
               type="button"
-              onClick={() => onToggleReveal(cue.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleReveal(cue.id);
+              }}
               className="min-w-[44px] min-h-[44px] rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 transition-colors active:scale-95 cursor-pointer flex items-center justify-center"
               title={isRevealed ? '重新遮罩' : '揭示本句'}
               aria-label={isRevealed ? '重新遮罩' : '揭示本句'}
@@ -227,7 +242,10 @@ export const SentenceCard = React.memo(function SentenceCard({
           <div>
             <button
               type="button"
-              onClick={() => onToggleReveal(cue.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleReveal(cue.id);
+              }}
               className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 rounded-xl bg-indigo-900 hover:bg-indigo-950 text-amber-100 border border-indigo-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer shadow-none"
               title="揭示英文原文及译文 (空格键)"
               aria-label="揭示英文原文及译文"
@@ -243,7 +261,10 @@ export const SentenceCard = React.memo(function SentenceCard({
       ) : isBlind && !isActive && isVeiled ? (
         /* Inactive Veiled Placeholder */
         <div
-          onClick={() => onSeekToCue(cue)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSeekToCue(cue);
+          }}
           className="py-2 px-1 text-stone-400 text-xs italic cursor-pointer hover:text-stone-600 transition-colors flex items-center gap-2 select-none"
           title="点击从此句播放"
         >
@@ -268,7 +289,7 @@ export const SentenceCard = React.memo(function SentenceCard({
               return (
                 <span
                   key={tokenIdx}
-                  onClick={() => handleWordClick(token.text, cue)}
+                  onClick={(e) => handleWordClick(e, token.text, cue)}
                   className={`cursor-pointer inline rounded-sm transition-colors ${
                     isClicked ? 'word-click-flash' : ''
                   } ${
@@ -301,7 +322,10 @@ export const SentenceCard = React.memo(function SentenceCard({
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => onAssessSentence?.(cue.id, false)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAssessSentence?.(cue.id, false);
+                  }}
                   className="min-h-[44px] px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300 active:scale-95 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                   title="降速至 0.8x 慢速重听本句"
                   aria-label="没听清，0.8x 慢速重听"
@@ -312,7 +336,10 @@ export const SentenceCard = React.memo(function SentenceCard({
 
                 <button
                   type="button"
-                  onClick={() => onAssessSentence?.(cue.id, true)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAssessSentence?.(cue.id, true);
+                  }}
                   className="min-h-[44px] px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white border border-emerald-600 active:scale-95 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-none"
                   title="标记听懂并进入下一句"
                   aria-label="听懂了，下一句"
@@ -324,7 +351,10 @@ export const SentenceCard = React.memo(function SentenceCard({
 
               <button
                 type="button"
-                onClick={() => onToggleReveal(cue.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleReveal(cue.id);
+                }}
                 className="min-h-[44px] px-2.5 py-1.5 text-stone-500 hover:text-stone-700 text-xs flex items-center gap-1 rounded-xl transition-colors cursor-pointer"
                 title="重新隐藏文字"
                 aria-label="重新隐藏文字"

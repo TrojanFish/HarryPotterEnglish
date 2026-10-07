@@ -230,8 +230,25 @@ export function AudioPlayer({
         </div>
       </div>
 
-      {/* Mobile Layer 2: Thumb Zone Control Cluster */}
-      <div className="flex sm:hidden items-center justify-center gap-3 px-3 pt-1 pb-3">
+      {/* Mobile Layer 2: Symmetrical 5-Button Thumb Zone Control Cluster (2 + 1 + 2) */}
+      <div className="flex sm:hidden items-center justify-center gap-2.5 sm:gap-3 px-3 pt-1 pb-3">
+        {/* Loop Toggle */}
+        <button
+          onClick={onToggleLoopSentence}
+          className={`w-11 h-11 shrink-0 rounded-2xl border flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+            isLoopSentence
+              ? 'bg-amber-500 text-white border-amber-600'
+              : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
+          }`}
+          title={isLoopSentence ? '单句循环：开' : '单句循环：关'}
+          aria-label="单句循环"
+        >
+          <div className="relative">
+            <Repeat size={17} />
+            <span className="absolute -bottom-1 -right-1 text-[8px] font-bold leading-none">1</span>
+          </div>
+        </button>
+
         {/* Prev Sentence */}
         <button
           onClick={onPrevSentence}
@@ -243,7 +260,7 @@ export function AudioPlayer({
           <SkipBack size={18} />
         </button>
 
-        {/* Main Play / Pause CTA (56×56px — Primary Focus CTA) */}
+        {/* Main Play / Pause CTA (56×56px — Primary Focus Anchor) */}
         <button
           onClick={onPlayPause}
           className="w-14 h-14 min-w-[56px] min-h-[56px] shrink-0 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center border-2 border-amber-600 active:scale-95 transition-all cursor-pointer shadow-none"

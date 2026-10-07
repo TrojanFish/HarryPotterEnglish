@@ -156,6 +156,28 @@ test('SubtitleViewer Hero Unit Focus & SLA Ergonomics Test Suite', async (t) => 
     // Sentence row buttons must be icon-only (e.g. no >跟读< text)
     assert.ok(!html.includes('>跟读<'), 'Sentence action buttons must be pure SVG icons without redundant text');
   });
+
+  await t.test('3.7: Subtitle card supports direct click-to-play while eliminating mini play button', () => {
+    const html = renderToString(
+      React.createElement(SubtitleViewer, {
+        cues: mockCues,
+        activeCueIndex: 0,
+        studyMode: 'normal',
+        showTranslation: true,
+        isParchment: true,
+        onSeekToCue: () => {},
+        onWordClick: () => {},
+        onRecordCue: () => {},
+        onSaveToVocab: () => {}
+      })
+    );
+
+    // Mini play button in header action toolbar must be eliminated
+    assert.ok(!html.includes('从此句播放'), 'Sentence card toolbar must eliminate redundant mini play button');
+    // Card root must offer cursor-pointer feedback and click-to-play affordance
+    assert.ok(html.includes('cursor-pointer'), 'Sentence card container must have pointer cursor for click-to-play');
+    assert.ok(html.includes('点击播放此句') || html.includes('点击重新播放此句'), 'Sentence card must provide click-to-play title tooltip');
+  });
 });
 
 

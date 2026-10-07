@@ -69,4 +69,35 @@ test('AudioPlayer Podcast Controls Test Suite', async (t) => {
 
     assert.ok(html.includes('睡眠定时') || html.includes('定时'), 'Must contain sleep timer button');
   });
+
+  await t.test('2.3: Mobile controls layer renders symmetrical 5-button cluster (Loop, Prev, Play, Next, Speed)', () => {
+    const html = renderToString(
+      React.createElement(AudioPlayer, {
+        currentBook: mockBook,
+        currentChapter: mockChapter,
+        currentTime: 30,
+        duration: 300,
+        isPlaying: true,
+        playbackRate: 1.0,
+        activeCueIndex: 1,
+        totalCues: 10,
+        isLoopSentence: true,
+        onPrevSentence: () => {},
+        onNextSentence: () => {},
+        onToggleLoopSentence: () => {},
+        onPlayPause: () => {},
+        onChangePlaybackRate: () => {}
+      })
+    );
+
+    // Mobile layer should contain single-sentence loop, prev, play/pause, next, and speed controls
+    const mobileClusterMatch = html.match(/<div class="[^"]*flex sm:hidden items-center justify-center[^"]*"[^>]*>([\s\S]*?)<div class="[^"]*hidden sm:flex/);
+    assert.ok(mobileClusterMatch, 'Must find mobile thumb zone cluster');
+    const mobileClusterHtml = mobileClusterMatch[1];
+    assert.ok(mobileClusterHtml.includes('单句循环'), 'Mobile thumb cluster must include single-sentence loop button');
+    assert.ok(mobileClusterHtml.includes('上一句'), 'Mobile thumb cluster must include previous sentence button');
+    assert.ok(mobileClusterHtml.includes('播放或暂停'), 'Mobile thumb cluster must include play/pause CTA');
+    assert.ok(mobileClusterHtml.includes('下一句'), 'Mobile thumb cluster must include next sentence button');
+    assert.ok(mobileClusterHtml.includes('播放倍速') || mobileClusterHtml.includes('1.0x'), 'Mobile thumb cluster must include speed cycle button');
+  });
 });
