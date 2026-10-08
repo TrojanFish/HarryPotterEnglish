@@ -20,9 +20,7 @@ import {
 } from 'lucide-react';
 import { getAnalyticsSummary } from '../utils/analyticsStore';
 import { syncEngine } from '../utils/syncEngine';
-import { HouseHourglasses } from './analytics/HouseHourglasses.jsx';
 import { OwlsCertificateModal } from './analytics/OwlsCertificateModal.jsx';
-import { HOUSES } from '../constants/hogwartsTheme.js';
 
 export function AnalyticsDashboard({
   isOpen,
@@ -361,11 +359,6 @@ export function AnalyticsDashboard({
           </div>
         ) : (
         <div className="px-4 py-5 sm:p-6 max-w-6xl mx-auto w-full space-y-6">
-          {/* Great Hall Four Houses Gem Hourglasses */}
-          <HouseHourglasses
-            summary={currentSummary}
-          />
-
           {/* 4 Habit Tracking Metric Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             

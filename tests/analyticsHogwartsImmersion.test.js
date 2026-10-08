@@ -28,10 +28,6 @@ test('Hogwarts Immersion: House Hourglasses & O.W.L.s Certificate Test Suite', a
   // 1. WaxSealBadge needed by components
   compileJsx('src/components/common/WaxSealBadge.jsx', 'WaxSealBadge.compiled.js');
 
-  // 2. Compile HouseHourglasses
-  compileJsx('src/components/analytics/HouseHourglasses.jsx', 'HouseHourglasses.compiled.js');
-  const { HouseHourglasses } = await import('./HouseHourglasses.compiled.js');
-
   const mockSummary = {
     totalListeningSeconds: 7200, // 120 mins = 120 pts
     completedChaptersCount: 3,   // 3 * 50 = 150 pts
@@ -39,28 +35,7 @@ test('Hogwarts Immersion: House Hourglasses & O.W.L.s Certificate Test Suite', a
     dictationAvgAccuracy: 95
   };
 
-  await t.test('5.1: HouseHourglasses renders 4 Great Hall house hourglasses with points', () => {
-    const html = renderToString(
-      React.createElement(HouseHourglasses, {
-        userHouse: 'gryffindor',
-        summary: mockSummary
-      })
-    );
-
-    // Four houses must be displayed
-    assert.ok(html.includes('格兰芬多') || html.includes('Gryffindor'), 'Must render Gryffindor');
-    assert.ok(html.includes('斯莱特林') || html.includes('Slytherin'), 'Must render Slytherin');
-    assert.ok(html.includes('拉文克劳') || html.includes('Ravenclaw'), 'Must render Ravenclaw');
-    assert.ok(html.includes('赫奇帕奇') || html.includes('Hufflepuff'), 'Must render Hufflepuff');
-
-    // Hourglass visual elements
-    assert.ok(html.includes('学院沙漏') || html.includes('礼堂沙漏') || html.includes('House Points'), 'Must mention House hourglass points');
-    assert.ok(html.includes('分') || html.includes('pts') || html.includes('宝石'), 'Must display house points or gems');
-    assert.ok(html.includes('whitespace-nowrap'), 'House Points badge must have whitespace-nowrap');
-    assert.ok(html.includes('rounded-b-full rounded-t-sm'), 'Gem fill must have rounded-b-full rounded-t-sm for natural accumulation');
-  });
-
-  // 3. Compile OwlsCertificateModal
+  // 2. Compile OwlsCertificateModal
   compileJsx('src/components/analytics/OwlsCertificateModal.jsx', 'OwlsCertificateModal.compiled.js');
   const { OwlsCertificateModal } = await import('./OwlsCertificateModal.compiled.js');
 
@@ -116,7 +91,7 @@ test('Hogwarts Immersion: House Hourglasses & O.W.L.s Certificate Test Suite', a
 
   t.after(() => {
     try {
-      ['WaxSealBadge.compiled.js', 'HouseHourglasses.compiled.js', 'OwlsCertificateModal.compiled.js', 'AnalyticsDashboard.compiled.js'].forEach(f => {
+      ['WaxSealBadge.compiled.js', 'OwlsCertificateModal.compiled.js', 'AnalyticsDashboard.compiled.js'].forEach(f => {
         const full = path.resolve(__dirname, f);
         if (fs.existsSync(full)) fs.unlinkSync(full);
       });
