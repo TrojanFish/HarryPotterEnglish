@@ -378,13 +378,13 @@ function GlobalPodcastCapsuleComponent({
               >
                 {sleepTimerMode ? (
                   <>
-                    <Moon size={11} className="shrink-0 -mb-0.5" />
+                    <Moon size={11} className="shrink-0 -mb-0.5 fill-current" />
                     <span className="text-[9px] font-bold font-mono leading-tight tracking-tight truncate max-w-[38px] text-center">
                       {sleepTimerRemaining}
                     </span>
                   </>
                 ) : (
-                  <Moon size={16} />
+                  <Moon size={18} />
                 )}
               </button>
             )}

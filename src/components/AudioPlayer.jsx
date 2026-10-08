@@ -10,7 +10,8 @@ import {
   Mic,
   ChevronDown,
   Sparkles,
-  Moon
+  Moon,
+  Languages
 } from 'lucide-react';
 import { formatTime } from '../utils/vttParser';
 import { playCorrectChime } from '../utils/spellAudioSynthesizer';
@@ -50,7 +51,9 @@ export function AudioPlayer({
   isRecordingActive,
   sleepTimerMode,
   sleepTimerRemaining,
-  onToggleSleepTimer
+  onToggleSleepTimer,
+  showTranslation = true,
+  onToggleTranslation
 }) {
   const [isMuted, setIsMuted] = useState(false);
   const [showVolume, setShowVolume] = useState(false);
@@ -178,62 +181,87 @@ export function AudioPlayer({
       </div>
 
       {/* ── Mobile Layout (< 640px): Ergonomic Two-Layer System ─── */}
-      {/* Mobile Layer 1: Timeline Info & Mic Shortcut */}
-      <div className="flex sm:hidden items-center justify-between px-4 pt-2 pb-1 text-xs select-none">
-        {/* Left: Current Time & Wave */}
-        <div className="flex items-center gap-1.5 font-mono text-stone-600 font-medium">
-          {isPlaying && (
-            <span className="flex items-center gap-0.5 text-amber-500 shrink-0">
-              <span className="w-[2.5px] h-2.5 bg-amber-500 rounded-full animate-wave-1" />
-              <span className="w-[2.5px] h-3.5 bg-amber-600 rounded-full animate-wave-2" />
-              <span className="w-[2.5px] h-2 bg-amber-400 rounded-full animate-wave-3" />
-            </span>
+      {/* Mobile Layer 1: Timeline Info, Translation, Sleep Timer & Mic Shortcuts */}
+      <div className="flex sm:hidden items-center justify-between px-3 pt-2 pb-1 text-xs select-none min-h-[44px]">
+        {/* Left: Combined Time & Wave + Bilingual Translation Toggle */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex flex-col justify-center font-mono leading-none text-stone-600">
+            <div className="flex items-center gap-1">
+              {isPlaying && (
+                <span className="flex items-center gap-0.5 text-amber-500 shrink-0">
+                  <span className="w-[2px] h-2 bg-amber-500 rounded-full animate-wave-1" />
+                  <span className="w-[2px] h-3 bg-amber-600 rounded-full animate-wave-2" />
+                  <span className="w-[2px] h-1.5 bg-amber-400 rounded-full animate-wave-3" />
+                </span>
+              )}
+              <span className="text-[11px] font-bold text-amber-950">{formatTime(currentTime)}</span>
+            </div>
+            <span className="text-[9px] text-stone-400 pt-0.5">{formatTime(duration)}</span>
+          </div>
+
+          {onToggleTranslation && (
+            <button
+              type="button"
+              onClick={onToggleTranslation}
+              className={`w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none active:scale-95 ${
+                showTranslation
+                  ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                  : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
+              }`}
+              title={showTranslation ? '双语译文：开 (点击关闭)' : '双语译文：关 (点击开启)'}
+              aria-label="中英双语切换"
+              aria-pressed={Boolean(showTranslation)}
+            >
+              <Languages size={17} className={showTranslation ? 'text-white' : 'text-stone-600'} />
+            </button>
           )}
-          <span>{formatTime(currentTime)}</span>
         </div>
 
         {/* Center: Sentence Progress Pill */}
         {totalCues > 0 && (
-          <div className="text-[11px] font-medium text-stone-500 bg-amber-50/80 px-2 py-0.5 rounded-md border border-amber-200/60">
-            第 <span className="font-bold text-amber-900">{activeCueIndex + 1}</span> / {totalCues} 句
+          <div className="text-[11px] font-medium text-stone-600 bg-amber-50/90 px-2.5 py-1 rounded-lg border border-amber-200/70 whitespace-nowrap shadow-none">
+            第 <span className="font-bold text-amber-950">{activeCueIndex + 1}</span> / {totalCues} 句
           </div>
         )}
 
-        {/* Right: Duration & Quick Shadowing Mic & Sleep Timer */}
-        <div className="flex items-center gap-1.5">
-          <span className="font-mono text-[11px] text-stone-400">{formatTime(duration)}</span>
+        {/* Right: Sleep Timer & Quick Shadowing Mic */}
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
+            type="button"
             onClick={onToggleSleepTimer}
-            className={`w-11 h-11 min-w-[44px] min-h-[44px] -my-2 shrink-0 rounded-xl border flex flex-col items-center justify-center transition-colors cursor-pointer select-none overflow-hidden ${
+            className={`w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border flex flex-col items-center justify-center transition-colors cursor-pointer select-none active:scale-95 overflow-hidden ${
               sleepTimerMode
                 ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
-                : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
+                : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
             }`}
             title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
             aria-label="睡眠定时"
+            aria-pressed={Boolean(sleepTimerMode)}
           >
             {sleepTimerMode ? (
               <>
-                <Moon size={11} className="shrink-0 -mb-0.5" />
+                <Moon size={11} className="shrink-0 -mb-0.5 fill-current" />
                 <span className="text-[9px] font-bold font-mono leading-tight tracking-tight truncate max-w-[38px] text-center">
                   {sleepTimerRemaining}
                 </span>
               </>
             ) : (
-              <Moon size={16} />
+              <Moon size={18} />
             )}
           </button>
+
           <button
+            type="button"
             onClick={onToggleRecorder}
-            className={`min-h-[44px] min-w-[44px] -my-2 flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+            className={`w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 flex items-center justify-center rounded-xl border transition-colors active:scale-95 cursor-pointer ${
               isRecordingActive
-                ? 'text-red-600 bg-red-50'
-                : 'text-stone-500 hover:text-amber-800'
+                ? 'bg-red-50 border-red-300 text-red-600 shadow-sm'
+                : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
             }`}
             title="跟读施咒（AI发音评分）"
             aria-label="跟读施咒"
           >
-            <Mic size={16} className={isRecordingActive ? 'text-red-600 animate-pulse' : 'text-stone-600'} />
+            <Mic size={17} className={isRecordingActive ? 'text-red-600 animate-pulse' : 'text-stone-600'} />
           </button>
         </div>
       </div>
@@ -398,13 +426,13 @@ export function AudioPlayer({
           >
             {sleepTimerMode ? (
               <>
-                <Moon size={11} className="shrink-0 -mb-0.5" />
+                <Moon size={11} className="shrink-0 -mb-0.5 fill-current" />
                 <span className="text-[9px] font-bold font-mono leading-tight tracking-tight truncate max-w-[38px] text-center">
                   {sleepTimerRemaining}
                 </span>
               </>
             ) : (
-              <Moon size={16} />
+              <Moon size={18} />
             )}
           </button>
 

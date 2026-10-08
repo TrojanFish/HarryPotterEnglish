@@ -120,11 +120,11 @@ function ReaderTopBarComponent({
 
         {/* ── Right: Reading Controls ─────────────────────────────────── */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Bilingual translation toggle (consistent across all modes) */}
+          {/* Bilingual translation toggle (desktop only; on mobile it is ergonomically located in player bar row 1) */}
           <button
             type="button"
             onClick={() => (onToggleTranslation ? onToggleTranslation() : setShowTranslation && setShowTranslation(!showTranslation))}
-            className={`w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl border transition-colors cursor-pointer select-none ${
+            className={`hidden sm:flex w-10 h-10 min-w-[40px] min-h-[40px] items-center justify-center rounded-xl border transition-colors cursor-pointer select-none ${
               showTranslation
                 ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
                 : 'bg-white text-stone-600 border-[#e8ddd0] hover:border-amber-300 hover:text-amber-950'

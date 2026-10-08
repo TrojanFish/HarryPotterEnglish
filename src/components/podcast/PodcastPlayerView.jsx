@@ -11,7 +11,8 @@ import {
   ChevronRight,
   Disc3,
   RotateCcw,
-  RotateCw
+  RotateCw,
+  Languages
 } from 'lucide-react';
 import { PodcastLyricsStream } from './PodcastLyricsStream';
 import { formatEnglishText } from '../../utils/vttParser';
@@ -212,8 +213,8 @@ function PodcastPlayerViewComponent({
                 aria-label="快退 15 秒"
               >
                 <div className="relative flex items-center justify-center">
-                  <RotateCcw size={18} />
-                  <span className="absolute text-[8px] font-bold font-mono leading-none pt-0.5">15</span>
+                  <RotateCcw size={22} className="stroke-[1.8]" />
+                  <span className="absolute text-[9px] font-black font-mono leading-none tracking-tighter pt-0.5">15</span>
                 </div>
               </button>
 
@@ -265,8 +266,8 @@ function PodcastPlayerViewComponent({
                 aria-label="快进 15 秒"
               >
                 <div className="relative flex items-center justify-center">
-                  <RotateCw size={18} />
-                  <span className="absolute text-[8px] font-bold font-mono leading-none pt-0.5">15</span>
+                  <RotateCw size={22} className="stroke-[1.8]" />
+                  <span className="absolute text-[9px] font-black font-mono leading-none tracking-tighter pt-0.5">15</span>
                 </div>
               </button>
             </div>
@@ -289,13 +290,13 @@ function PodcastPlayerViewComponent({
                 >
                   {sleepTimerMode ? (
                     <>
-                      <Moon size={11} className="shrink-0 -mb-0.5" />
+                      <Moon size={11} className="shrink-0 -mb-0.5 fill-current" />
                       <span className="text-[9px] font-bold font-mono leading-tight tracking-tight truncate max-w-[38px] text-center">
                         {sleepTimerRemaining}
                       </span>
                     </>
                   ) : (
-                    <Moon size={16} />
+                    <Moon size={18} />
                   )}
                 </button>
               )}
@@ -405,8 +406,9 @@ function PodcastPlayerViewComponent({
           <span className="text-[10px] font-mono text-stone-500 min-w-[34px] shrink-0">{formatTime(duration)}</span>
         </div>
 
-        {/* Mobile Layer 1: Auxiliary Tools Row (Sleep Timer & Speed) */}
-        <div className="flex items-center justify-between px-3 pt-1 text-xs text-stone-500">
+        {/* Mobile Layer 1: Auxiliary Tools Row (Sleep Timer, Translation Toggle, Speed) */}
+        <div className="w-full max-w-sm mx-auto flex items-center justify-between px-3 pt-1 text-xs text-stone-500">
+          {/* Sleep Timer (Left) */}
           {(onToggleSleepTimer || sleepTimerMode) ? (
             <button
               type="button"
@@ -422,17 +424,36 @@ function PodcastPlayerViewComponent({
             >
               {sleepTimerMode ? (
                 <>
-                  <Moon size={11} className="shrink-0 -mb-0.5" />
+                  <Moon size={11} className="shrink-0 -mb-0.5 fill-current" />
                   <span className="text-[9px] font-bold font-mono leading-tight tracking-tight truncate max-w-[38px] text-center">
                     {sleepTimerRemaining}
                   </span>
                 </>
               ) : (
-                <Moon size={17} />
+                <Moon size={18} />
               )}
             </button>
-          ) : <div />}
+          ) : <div className="w-11 h-11" />}
 
+          {/* Bilingual Translation Toggle (Center) */}
+          {onToggleTranslation ? (
+            <button
+              type="button"
+              onClick={onToggleTranslation}
+              className={`w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none active:scale-95 ${
+                showTranslation
+                  ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                  : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
+              }`}
+              title={showTranslation ? '双语译文：开 (点击关闭)' : '双语译文：关 (点击开启)'}
+              aria-label="中英双语切换"
+              aria-pressed={Boolean(showTranslation)}
+            >
+              <Languages size={18} className={showTranslation ? 'text-white' : 'text-stone-600'} />
+            </button>
+          ) : <div className="w-11 h-11" />}
+
+          {/* Speed Cycle (Right) */}
           <button
             type="button"
             onClick={handleSpeedCycle}
@@ -459,8 +480,8 @@ function PodcastPlayerViewComponent({
             aria-label="快退 15 秒"
           >
             <div className="relative flex items-center justify-center">
-              <RotateCcw size={18} />
-              <span className="absolute text-[8px] font-bold font-mono leading-none pt-0.5">15</span>
+              <RotateCcw size={22} className="stroke-[1.8]" />
+              <span className="absolute text-[9px] font-black font-mono leading-none tracking-tighter pt-0.5">15</span>
             </div>
           </button>
 
@@ -512,8 +533,8 @@ function PodcastPlayerViewComponent({
             aria-label="快进 15 秒"
           >
             <div className="relative flex items-center justify-center">
-              <RotateCw size={18} />
-              <span className="absolute text-[8px] font-bold font-mono leading-none pt-0.5">15</span>
+              <RotateCw size={22} className="stroke-[1.8]" />
+              <span className="absolute text-[9px] font-black font-mono leading-none tracking-tighter pt-0.5">15</span>
             </div>
           </button>
         </div>

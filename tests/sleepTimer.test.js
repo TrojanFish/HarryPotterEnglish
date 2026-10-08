@@ -21,7 +21,7 @@ test('Sleep Timer Unit Tests', async (t) => {
     assert.strictEqual(formatSleepTimerRemaining(899, 15), '14:59');
     assert.strictEqual(formatSleepTimerRemaining(65, 15), '01:05');
     assert.strictEqual(formatSleepTimerRemaining(0, 15), '00:00');
-    assert.strictEqual(formatSleepTimerRemaining(null, 'end_of_chapter'), '本集结束');
+    assert.strictEqual(formatSleepTimerRemaining(null, 'end_of_chapter'), '本集');
     assert.strictEqual(formatSleepTimerRemaining(null, null), '');
   });
 

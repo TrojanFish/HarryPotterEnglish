@@ -21,7 +21,7 @@ export function getNextSleepTimerOption(currentValue) {
 
 export function formatSleepTimerRemaining(remainingSeconds, mode) {
   if (mode === 'end_of_chapter') {
-    return '本集结束';
+    return '本集';
   }
   if (remainingSeconds === null || remainingSeconds === undefined || mode === null) {
     return '';

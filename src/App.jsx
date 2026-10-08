@@ -108,16 +108,24 @@ export function App() {
     }
   });
 
+  const previousViewRef = useRef('bookshelf');
+
   const handleSwitchCurrentView = useCallback((newView) => {
+    if (currentView !== 'analytics' && currentView !== 'vocab' && currentView !== 'storage') {
+      previousViewRef.current = currentView;
+    }
     setCurrentView(newView);
     startTransition(() => {
       try {
         localStorage.setItem('hp_current_view', newView);
       } catch {}
     });
-  }, [startTransition]);
+  }, [currentView, startTransition]);
 
   useEffect(() => {
+    if (currentView !== 'analytics' && currentView !== 'vocab' && currentView !== 'storage') {
+      previousViewRef.current = currentView;
+    }
     try {
       localStorage.setItem('hp_current_view', currentView);
     } catch {}
@@ -637,7 +645,7 @@ export function App() {
             <VocabularyDrawer
               isOpen={true}
               isPageView={true}
-              onClose={() => setCurrentView('player')}
+              onClose={() => handleSwitchCurrentView(previousViewRef.current || (selectedChapter ? 'player' : 'bookshelf'))}
               vocabList={vocabList}
               onRemoveWord={removeWord}
               onClearAll={clearAllVocab}
@@ -652,7 +660,7 @@ export function App() {
             <AnalyticsDashboard
               isOpen={true}
               isPageView={true}
-              onClose={() => setCurrentView(selectedChapter ? 'player' : 'bookshelf')}
+              onClose={() => handleSwitchCurrentView(previousViewRef.current || (selectedChapter ? 'player' : 'bookshelf'))}
               isParchment={isParchment}
               vocabCount={vocabList.length}
             />
@@ -660,7 +668,7 @@ export function App() {
             <StorageManagerModal
               isOpen={true}
               isPageView={true}
-              onClose={() => setCurrentView('player')}
+              onClose={() => handleSwitchCurrentView(previousViewRef.current || (selectedChapter ? 'player' : 'bookshelf'))}
               isParchment={isParchment}
               currentBook={currentBookObj}
               currentChapter={currentChapterObj}
@@ -692,14 +700,14 @@ export function App() {
               streakDays={analyticsSummary?.streakDays || 0}
               dueReviewCount={dueWordsCount}
               onOpenSrs={() => setIsSrsOpen(true)}
-              onOpenVocab={() => setCurrentView('vocab')}
+              onOpenVocab={() => handleSwitchCurrentView('vocab')}
               onOpenAnalytics={() => {
                 refreshAnalytics();
-                setCurrentView('analytics');
+                handleSwitchCurrentView('analytics');
               }}
               onOpenStorage={() => {
                 refreshOfflineCount();
-                setCurrentView('storage');
+                handleSwitchCurrentView('storage');
               }}
             />
           ) : (
@@ -838,6 +846,8 @@ export function App() {
                         sleepTimerMode={sleepTimerMode}
                         sleepTimerRemaining={formattedSleepTime}
                         onToggleSleepTimer={handleToggleSleepTimer}
+                        showTranslation={showTranslation}
+                        onToggleTranslation={() => setShowTranslation(prev => !prev)}
                       />
                     )}
                   </div>
