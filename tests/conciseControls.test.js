@@ -14,14 +14,21 @@ const projectRoot = path.resolve(__dirname, '..');
 function compileJsx(filePath, outPath) {
   let code = fs.readFileSync(filePath, 'utf8');
   code = code
-    .replace(/from '(\.\.\/)+utils\/([^']+)'/g, "from '../src/utils/$2.js'")
-    .replace(/from '(\.\.\/)+data\/([^']+)'/g, "from '../src/data/$2.js'")
-    .replace("from './PodcastLyricsStream'", "from '../src/components/podcast/PodcastLyricsStream.jsx'");
+    .replace(/from '(\.\.\/)+utils\/([^']+)'/g, (m, p1, p2) => `from '../src/utils/${p2.replace(/\.js$/, '')}.js'`)
+    .replace(/from '(\.\.\/)+data\/([^']+)'/g, (m, p1, p2) => `from '../src/data/${p2.replace(/\.js$/, '')}.js'`)
+    .replace("from './PodcastLyricsStream'", "from './PodcastLyricsStream.concise.compiled.js'")
+    .replace("from '../common/GoldenSnitchScrubber.jsx'", "from './GoldenSnitchScrubber.concise.compiled.js'");
   const transformed = esbuild.transformSync(code, { loader: 'jsx', format: 'esm' });
   fs.writeFileSync(outPath, transformed.code, 'utf8');
 }
 
 test('Concise Controls (Sleep Timer, Translation, Font Size) Test Suite', async (t) => {
+  // Transpile GoldenSnitchScrubber.jsx
+  const snitchPath = path.resolve(projectRoot, 'src', 'components', 'common', 'GoldenSnitchScrubber.jsx');
+  const transformedSnitch = esbuild.transformSync(fs.readFileSync(snitchPath, 'utf8'), { loader: 'jsx', format: 'esm' });
+  const snitchCompiled = path.resolve(__dirname, 'GoldenSnitchScrubber.concise.compiled.js');
+  fs.writeFileSync(snitchCompiled, transformedSnitch.code, 'utf8');
+
   // Transpile PodcastLyricsStream.jsx first
   const lyricsPath = path.resolve(projectRoot, 'src', 'components', 'podcast', 'PodcastLyricsStream.jsx');
   let lyricsCode = fs.readFileSync(lyricsPath, 'utf8')
@@ -33,7 +40,9 @@ test('Concise Controls (Sleep Timer, Translation, Font Size) Test Suite', async 
   const podcastPath = path.resolve(projectRoot, 'src', 'components', 'podcast', 'PodcastPlayerView.jsx');
   let podcastCode = fs.readFileSync(podcastPath, 'utf8')
     .replace("from '../../utils/vttParser'", "from '../src/utils/vttParser.js'")
-    .replace("from './PodcastLyricsStream'", "from './PodcastLyricsStream.concise.compiled.js'");
+    .replace("from '../../utils/magicalSound.js'", "from '../src/utils/magicalSound.js'")
+    .replace("from './PodcastLyricsStream'", "from './PodcastLyricsStream.concise.compiled.js'")
+    .replace("from '../common/GoldenSnitchScrubber.jsx'", "from './GoldenSnitchScrubber.concise.compiled.js'");
   const transformedPodcast = esbuild.transformSync(podcastCode, { loader: 'jsx', format: 'esm' });
   const podcastCompiled = path.resolve(__dirname, 'PodcastPlayerView.concise.compiled.js');
   fs.writeFileSync(podcastCompiled, transformedPodcast.code, 'utf8');
@@ -130,7 +139,7 @@ test('Concise Controls (Sleep Timer, Translation, Font Size) Test Suite', async 
 
   t.after(() => {
     try {
-      [podcastCompiled, viewerCompiled, audioPlayerCompiled, capsuleCompiled].forEach((f) => {
+      [podcastCompiled, viewerCompiled, audioPlayerCompiled, capsuleCompiled, snitchCompiled].forEach((f) => {
         if (fs.existsSync(f)) fs.unlinkSync(f);
       });
       const stray = path.resolve(__dirname, 'PodcastLyricsStream.concise.compiled.js');

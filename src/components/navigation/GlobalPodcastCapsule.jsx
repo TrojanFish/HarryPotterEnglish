@@ -127,7 +127,7 @@ function GlobalPodcastCapsuleComponent({
           </div>
         </div>
 
-        <div className="w-full h-16 px-3 flex items-center justify-between gap-2">
+        <div className="w-full h-16 px-3.5 flex items-center justify-between gap-2.5">
           {/* Clickable Info Area -> Enter Player */}
           <div
             onClick={handleOpen}
@@ -368,17 +368,17 @@ function GlobalPodcastCapsuleComponent({
                   e.stopPropagation();
                   onToggleSleepTimer();
                 }}
-                className={`min-h-[44px] min-w-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${
+                className={`min-h-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer overflow-hidden ${
                   sleepTimerMode
-                    ? 'px-2.5 gap-1 bg-amber-500 text-white border-amber-600 font-bold'
-                    : 'w-11 border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
+                    ? 'w-[84px] h-11 px-2 gap-1.5 bg-amber-500 text-white border-amber-600 font-bold shrink-0'
+                    : 'w-11 h-11 border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300 shrink-0'
                 }`}
                 title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
                 aria-label="睡眠定时"
               >
-                <Moon size={16} />
+                <Moon size={16} className="shrink-0" />
                 {sleepTimerMode && (
-                  <span className="text-[11px] font-mono">{sleepTimerRemaining}</span>
+                  <span className="text-[11px] font-mono truncate text-center">{sleepTimerRemaining}</span>
                 )}
               </button>
             )}

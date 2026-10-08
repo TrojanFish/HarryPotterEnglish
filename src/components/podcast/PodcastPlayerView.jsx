@@ -408,7 +408,7 @@ function PodcastPlayerViewComponent({
             <button
               type="button"
               onClick={onToggleSleepTimer}
-              className={`min-h-[44px] px-3 rounded-xl border flex items-center gap-1.5 transition-colors cursor-pointer select-none active:scale-95 ${
+              className={`w-[88px] min-h-[44px] shrink-0 rounded-xl border flex items-center justify-center gap-1.5 px-2 transition-colors cursor-pointer select-none active:scale-95 overflow-hidden ${
                 sleepTimerMode
                   ? 'bg-amber-500 text-white border-amber-600'
                   : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
@@ -417,8 +417,8 @@ function PodcastPlayerViewComponent({
               aria-label="睡眠定时"
               aria-pressed={Boolean(sleepTimerMode)}
             >
-              <Moon size={15} />
-              <span className="text-[11px] font-bold font-mono">
+              <Moon size={15} className="shrink-0" />
+              <span className="text-[11px] font-bold font-mono truncate text-center">
                 {sleepTimerMode ? sleepTimerRemaining : '安眠定时'}
               </span>
             </button>
@@ -427,7 +427,7 @@ function PodcastPlayerViewComponent({
           <button
             type="button"
             onClick={handleSpeedCycle}
-            className={`min-h-[44px] px-3 rounded-xl border text-xs font-mono font-bold flex items-center justify-center transition-colors active:scale-95 cursor-pointer select-none ${
+            className={`w-[54px] min-h-[44px] shrink-0 rounded-xl border text-xs font-mono font-bold flex items-center justify-center transition-colors active:scale-95 cursor-pointer select-none ${
               playbackRate !== 1.0
                 ? 'bg-amber-500 text-white border-amber-600'
                 : 'border-[#e8ddd0] bg-white text-stone-700 hover:text-amber-950'
@@ -440,7 +440,7 @@ function PodcastPlayerViewComponent({
         </div>
 
         {/* Mobile Layer 2: Symmetrical 5-Button Podcast Thumb Cluster */}
-        <div className="flex items-center justify-center gap-2 sm:gap-3 px-2 pt-1 pb-2">
+        <div className="w-full max-w-sm mx-auto flex items-center justify-between px-2 sm:px-4 pt-1 pb-2">
           {/* Skip backward 15s */}
           <button
             type="button"

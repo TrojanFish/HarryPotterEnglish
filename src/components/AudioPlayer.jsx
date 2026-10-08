@@ -204,16 +204,20 @@ export function AudioPlayer({
           <span className="font-mono text-[11px] text-stone-400">{formatTime(duration)}</span>
           <button
             onClick={onToggleSleepTimer}
-            className={`min-h-[44px] min-w-[44px] -my-2 flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+            className={`-my-2 flex items-center justify-center rounded-xl transition-colors cursor-pointer overflow-hidden ${
               sleepTimerMode
-                ? 'text-amber-700 bg-amber-100/80 font-bold'
-                : 'text-stone-500 hover:text-amber-800'
+                ? 'w-[72px] min-h-[44px] px-1.5 gap-1 text-amber-700 bg-amber-100/80 font-bold shrink-0'
+                : 'w-11 min-h-[44px] text-stone-500 hover:text-amber-800 shrink-0'
             }`}
             title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
             aria-label="睡眠定时"
           >
-            <Moon size={15} />
-            {sleepTimerMode && <span className="text-[9px] font-mono ml-0.5">{sleepTimerRemaining}</span>}
+            <Moon size={15} className="shrink-0" />
+            {sleepTimerMode && (
+              <span className="text-[10px] font-mono truncate text-center">
+                {sleepTimerRemaining}
+              </span>
+            )}
           </button>
           <button
             onClick={onToggleRecorder}
@@ -231,7 +235,7 @@ export function AudioPlayer({
       </div>
 
       {/* Mobile Layer 2: Symmetrical 5-Button Thumb Zone Control Cluster (2 + 1 + 2) */}
-      <div className="flex sm:hidden items-center justify-center gap-2.5 sm:gap-3 px-4 pt-1 pb-3">
+      <div className="w-full max-w-sm mx-auto flex sm:hidden items-center justify-between px-3 sm:px-4 pt-1 pb-3">
         {/* Loop Toggle */}
         <button
           onClick={onToggleLoopSentence}
@@ -380,17 +384,17 @@ export function AudioPlayer({
           {/* Sleep Timer */}
           <button
             onClick={onToggleSleepTimer}
-            className={`min-h-[44px] shrink-0 rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none ${
+            className={`min-h-[44px] shrink-0 rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none overflow-hidden ${
               sleepTimerMode
-                ? 'px-2.5 gap-1.5 bg-amber-500 text-white border-amber-600 font-bold'
+                ? 'w-[84px] h-11 px-2 gap-1.5 bg-amber-500 text-white border-amber-600 font-bold'
                 : 'w-11 h-11 border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
             }`}
             title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
             aria-label="睡眠定时"
           >
-            <Moon size={16} />
+            <Moon size={16} className="shrink-0" />
             {sleepTimerMode && (
-              <span className="text-xs font-mono font-medium">
+              <span className="text-xs font-mono font-medium truncate text-center">
                 {sleepTimerRemaining}
               </span>
             )}

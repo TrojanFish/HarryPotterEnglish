@@ -68,6 +68,8 @@ test('AudioPlayer Podcast Controls Test Suite', async (t) => {
     );
 
     assert.ok(html.includes('睡眠定时') || html.includes('定时'), 'Must contain sleep timer button');
+    assert.ok(html.includes('w-[84px]'), 'Desktop active sleep timer must have fixed width w-[84px]');
+    assert.ok(html.includes('w-[72px]'), 'Mobile active sleep timer must have fixed width w-[72px]');
   });
 
   await t.test('2.3: Mobile controls layer renders symmetrical 5-button cluster (Loop, Prev, Play, Next, Speed)', () => {
@@ -91,8 +93,10 @@ test('AudioPlayer Podcast Controls Test Suite', async (t) => {
     );
 
     // Mobile layer should contain single-sentence loop, prev, play/pause, next, and speed controls
-    const mobileClusterMatch = html.match(/<div class="[^"]*flex sm:hidden items-center justify-center[^"]*"[^>]*>([\s\S]*?)<div class="[^"]*hidden sm:flex/);
+    const mobileClusterMatch = html.match(/<div class="[^"]*flex sm:hidden items-center[^"]*"[^>]*>([\s\S]*?)<div class="[^"]*hidden sm:flex/);
     assert.ok(mobileClusterMatch, 'Must find mobile thumb zone cluster');
+    assert.ok(mobileClusterMatch[0].includes('justify-between'), 'Mobile cluster must use justify-between for proportional thumb spacing');
+    assert.ok(mobileClusterMatch[0].includes('max-w-sm'), 'Mobile cluster must constrain max width to thumb zone');
     const mobileClusterHtml = mobileClusterMatch[1];
     assert.ok(mobileClusterHtml.includes('单句循环'), 'Mobile thumb cluster must include single-sentence loop button');
     assert.ok(mobileClusterHtml.includes('上一句'), 'Mobile thumb cluster must include previous sentence button');
