@@ -424,6 +424,32 @@ export const SentenceCard = React.memo(function SentenceCard({
       )}
     </div>
   );
+}, (prev, next) => {
+  // 1. Cue reference or identity
+  if (prev.cue?.id !== next.cue?.id || prev.cue !== next.cue) return false;
+
+  // 2. Active status transition (switching from/to active state must re-render)
+  if (prev.isActive !== next.isActive) return false;
+
+  // 3. For the active card, check audio playback & word illumination
+  if (next.isActive) {
+    if (prev.isPlaying !== next.isPlaying) return false;
+    if (prev.currentTime !== next.currentTime) return false;
+  }
+
+  // 4. Interactive and display states
+  if (prev.isRevealed !== next.isRevealed) return false;
+  if (prev.isBookmarked !== next.isBookmarked) return false;
+  if (prev.studyMode !== next.studyMode) return false;
+  if (prev.showTranslation !== next.showTranslation) return false;
+  if (prev.fontSizeClass !== next.fontSizeClass) return false;
+  if (prev.isParchment !== next.isParchment) return false;
+
+  // 5. Copy feedback check (only triggers update for the card that was copied or just reset)
+  if ((prev.copiedCueId === prev.cue?.id) !== (next.copiedCueId === next.cue?.id)) return false;
+
+  // Inactive card receiving audio ticks or stable callbacks skips re-render!
+  return true;
 });
 
 /**

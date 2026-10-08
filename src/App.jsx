@@ -309,6 +309,57 @@ export function App() {
     closeAllModals
   } = modals;
 
+  // Memoized stable callbacks to shield child components from 250ms audio ticks
+  const handleToggleBookmarkSentence = useCallback((cue) => {
+    toggleBookmarkSentence(cue, selectedBook, selectedChapter);
+  }, [toggleBookmarkSentence, selectedBook, selectedChapter]);
+
+  const handleSaveToVocab = useCallback((wordData, sentence) => {
+    toggleSaveWord(wordData, sentence, selectedBook, selectedChapter);
+  }, [toggleSaveWord, selectedBook, selectedChapter]);
+
+  const handleToggleLoopSentence = useCallback(() => {
+    setIsLoopSentence(prev => !prev);
+  }, [setIsLoopSentence]);
+
+  const handleToggleTranslation = useCallback(() => {
+    setShowTranslation(prev => !prev);
+  }, []);
+
+  const handleOpenVocab = useCallback(() => {
+    handleSwitchCurrentView('vocab');
+  }, [handleSwitchCurrentView]);
+
+  const handleOpenAnalytics = useCallback(() => {
+    refreshAnalytics();
+    handleSwitchCurrentView('analytics');
+  }, [refreshAnalytics, handleSwitchCurrentView]);
+
+  const handleOpenStorage = useCallback(() => {
+    refreshOfflineCount();
+    handleSwitchCurrentView('storage');
+  }, [refreshOfflineCount, handleSwitchCurrentView]);
+
+  const handleOpenSrs = useCallback(() => {
+    setIsSrsOpen(true);
+  }, [setIsSrsOpen]);
+
+  const handleSelectChapter = useCallback((chapterId, shouldPlay = true) => {
+    selectChapter(chapterId);
+    setCurrentView('player');
+    if (shouldPlay) {
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+        }
+      }, 150);
+    }
+  }, [selectChapter, audioRef, setIsPlaying]);
+
+  const handleEnterPlayer = useCallback(() => {
+    setCurrentView('player');
+  }, []);
+
   // Pause continuous playback when transitioning into dictation mode in Studio
   const prevStudyModeRef = useRef(studyMode);
   const prevPlayerModeRef = useRef(playerMode);
@@ -574,15 +625,9 @@ export function App() {
         todayListeningSeconds={analyticsSummary?.todayListeningSeconds || 0}
         vocabCount={vocabList.length}
         cachedChaptersCount={cachedChaptersCount}
-        onOpenVocab={() => handleSwitchCurrentView('vocab')}
-        onOpenAnalytics={() => {
-          refreshAnalytics();
-          handleSwitchCurrentView('analytics');
-        }}
-        onOpenStorage={() => {
-          refreshOfflineCount();
-          handleSwitchCurrentView('storage');
-        }}
+        onOpenVocab={handleOpenVocab}
+        onOpenAnalytics={handleOpenAnalytics}
+        onOpenStorage={handleOpenStorage}
         canInstallPwa={canInstallPwa}
         onInstallPwa={handleInstallPwa}
         isCollapsed={isSidebarCollapsed}
@@ -600,15 +645,9 @@ export function App() {
         streakDays={analyticsSummary?.streakDays || 0}
         vocabCount={vocabList.length}
         cachedChaptersCount={cachedChaptersCount}
-        onOpenVocab={() => handleSwitchCurrentView('vocab')}
-        onOpenAnalytics={() => {
-          refreshAnalytics();
-          handleSwitchCurrentView('analytics');
-        }}
-        onOpenStorage={() => {
-          refreshOfflineCount();
-          handleSwitchCurrentView('storage');
-        }}
+        onOpenVocab={handleOpenVocab}
+        onOpenAnalytics={handleOpenAnalytics}
+        onOpenStorage={handleOpenStorage}
       />
 
       {/* ── 3. Main Workspace Area ───────────────────────────────────── */}
@@ -624,14 +663,8 @@ export function App() {
             studyMode={studyMode}
             setStudyMode={handleSwitchStudyMode}
             streakDays={analyticsSummary?.streakDays || 0}
-            onOpenAnalytics={() => {
-              refreshAnalytics();
-              handleSwitchCurrentView('analytics');
-            }}
-            onOpenStorage={() => {
-              refreshOfflineCount();
-              setIsStorageOpen(true);
-            }}
+            onOpenAnalytics={handleOpenAnalytics}
+            onOpenStorage={handleOpenStorage}
             onOpenShortcuts={() => setIsShortcutsOpen(true)}
             cachedChaptersCount={cachedChaptersCount}
             canInstallPwa={canInstallPwa}
@@ -640,8 +673,8 @@ export function App() {
         )}
 
         {/* ── Content Viewport: Bookshelf, Vocab, Analytics, Storage, vs Player Studio ── */}
-        <div className="flex-1 overflow-hidden min-h-0 flex flex-col">
-          {currentView === 'vocab' ? (
+        <div className="flex-1 overflow-hidden min-h-0 flex flex-col relative">
+          {currentView === 'vocab' && (
             <VocabularyDrawer
               isOpen={true}
               isPageView={true}
@@ -650,13 +683,15 @@ export function App() {
               onRemoveWord={removeWord}
               onClearAll={clearAllVocab}
               isParchment={isParchment}
-              onOpenSrs={() => setIsSrsOpen(true)}
+              onOpenSrs={handleOpenSrs}
               bookmarkedSentences={bookmarkedSentences}
               onRemoveBookmark={removeBookmark}
               onClearAllBookmarks={clearAllBookmarks}
               onPlaySentence={handlePlayBookmarkedSentence}
             />
-          ) : currentView === 'analytics' ? (
+          )}
+
+          {currentView === 'analytics' && (
             <AnalyticsDashboard
               isOpen={true}
               isPageView={true}
@@ -664,7 +699,9 @@ export function App() {
               isParchment={isParchment}
               vocabCount={vocabList.length}
             />
-          ) : currentView === 'storage' ? (
+          )}
+
+          {currentView === 'storage' && (
             <StorageManagerModal
               isOpen={true}
               isPageView={true}
@@ -674,187 +711,180 @@ export function App() {
               currentChapter={currentChapterObj}
               onPlayChapter={handlePlayFromStorage}
             />
-          ) : currentView === 'bookshelf' ? (
+          )}
+
+          <div
+            className={currentView === 'bookshelf' ? 'flex-1 flex flex-col min-h-0 overflow-hidden' : 'hidden'}
+            aria-hidden={currentView !== 'bookshelf'}
+          >
             <BookshelfView
               books={books}
               selectedBook={selectedBook}
               selectedChapter={selectedChapter}
               onSelectBook={selectBook}
-              onEnterPlayer={() => setCurrentView('player')}
+              onEnterPlayer={handleEnterPlayer}
               isParchment={isParchment}
-              onSelectChapter={(chapterId, shouldPlay = true) => {
-                selectChapter(chapterId);
-                setCurrentView('player');
-                if (shouldPlay) {
-                  setTimeout(() => {
-                    if (audioRef.current) {
-                      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-                    }
-                  }, 150);
-                }
-              }}
+              onSelectChapter={handleSelectChapter}
               isPlaying={isPlaying}
               onTogglePlay={togglePlayPause}
-              currentTime={currentTime}
+              currentTime={currentView === 'bookshelf' ? currentTime : 0}
               duration={duration}
               streakDays={analyticsSummary?.streakDays || 0}
               dueReviewCount={dueWordsCount}
-              onOpenSrs={() => setIsSrsOpen(true)}
-              onOpenVocab={() => handleSwitchCurrentView('vocab')}
-              onOpenAnalytics={() => {
-                refreshAnalytics();
-                handleSwitchCurrentView('analytics');
-              }}
-              onOpenStorage={() => {
-                refreshOfflineCount();
-                handleSwitchCurrentView('storage');
-              }}
+              onOpenSrs={handleOpenSrs}
+              onOpenVocab={handleOpenVocab}
+              onOpenAnalytics={handleOpenAnalytics}
+              onOpenStorage={handleOpenStorage}
             />
-          ) : (
-            <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-              {/* Reading Top Bar */}
-              <ReaderTopBar
-                currentBook={currentBookObj}
-                currentChapter={currentChapterObj}
-                onOpenShelf={() => setIsShelfOpen(true)}
-                playerMode={playerMode}
-                onSwitchPlayerMode={handleSwitchPlayerMode}
-                studyMode={studyMode}
-                setStudyMode={handleSwitchStudyMode}
-                showTranslation={showTranslation}
-                onToggleTranslation={() => setShowTranslation(prev => !prev)}
-                onOpenShortcuts={() => setIsShortcutsOpen(true)}
-                onBackToShelf={() => handleSwitchCurrentView('bookshelf')}
-                isOfflinePlaying={isOfflinePlaying}
-              />
+          </div>
 
-              {/* Central Study Area: Dual-Engine Switch (Podcast Companion vs Studio Workshop) */}
-              <div className="flex-1 overflow-hidden relative flex flex-col min-h-0">
-                {isLoadingContent ? (
-                  <div className="flex-1 flex flex-col items-center justify-center gap-3 text-stone-500">
-                    <Loader2 size={32} className="animate-spin text-amber-600" />
-                    <p className="text-sm font-reading font-medium">正在开启有声原著羊皮卷...</p>
-                  </div>
-                ) : playerMode === 'podcast' ? (
-                  <PodcastPlayerView
-                    currentBook={currentBookObj}
-                    currentChapter={currentChapterObj}
-                    cues={cues}
-                    activeCueIndex={activeCueIndex}
-                    currentTime={currentTime}
-                    duration={duration}
-                    isPlaying={isPlaying}
-                    playbackRate={playbackRate}
-                    onChangePlaybackRate={setPlaybackRate}
-                    onPlayPause={togglePlayPause}
-                    onSeek={seekTo}
-                    onSeekRelative={seekRelative}
-                    onSeekToCue={seekToCue}
-                    onPrevSentence={handlePrevSentence}
-                    onNextSentence={handleNextSentence}
-                    sleepTimerMode={sleepTimerMode}
-                    sleepTimerRemaining={formattedSleepTime}
-                    onToggleSleepTimer={handleToggleSleepTimer}
-                    showTranslation={showTranslation}
-                    onToggleTranslation={() => setShowTranslation(prev => !prev)}
-                    bookmarkedCueIds={currentChapterBookmarkedCueIds}
-                    onToggleBookmarkCue={(cue) => toggleBookmarkSentence(cue, selectedBook, selectedChapter)}
-                  />
-                ) : (
-                  <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-                    <div className="flex-1 overflow-hidden relative flex flex-col min-h-0">
-                      {studyMode === 'dictation' ? (
-                        <DictationStudio
-                          cues={cues}
-                          activeCueIndex={activeCueIndex}
-                          onSeekToCue={(cue, autoPlay, opts) => seekToCue(cue, autoPlay, { stopAtEnd: true, ...opts })}
-                          onPlayPause={togglePlayPause}
-                          isPlaying={isPlaying}
-                          playbackRate={playbackRate}
-                          onChangePlaybackRate={setPlaybackRate}
-                          onPrevSentence={handlePrevSentence}
-                          onNextSentence={handleNextSentence}
-                          onReplayCurrentSentence={(cue, opts) => handleReplayCurrentSentence({ stopAtEnd: true, ...opts })}
-                          chapterId={selectedChapter}
-                          chapterTitle={currentChapterObj?.cnTitle || currentChapterObj?.title || ''}
-                          onCloseStudio={() => handleSwitchStudyMode('normal')}
-                          isParchment={isParchment}
-                          onSaveErrorWordsToVocab={(errorWords) => {
-                            errorWords.forEach(w => {
-                              toggleSaveWord({ word: w, translation: '拼写错词重炼' }, activeCue, selectedBook, selectedChapter);
-                            });
-                          }}
-                          showTranslation={showTranslation}
-                          onToggleTranslation={() => setShowTranslation(prev => !prev)}
-                        />
-                      ) : (
-                        <SubtitleViewer
-                          cues={cues}
-                          activeCueIndex={activeCueIndex}
-                          onSeekToCue={seekToCue}
-                          onWordClick={handleWordClick}
-                          studyMode={studyMode}
-                          showTranslation={showTranslation}
-                          setShowTranslation={setShowTranslation}
-                          isLoopSentence={isLoopSentence}
-                          onToggleLoopSentence={() => setIsLoopSentence(prev => !prev)}
-                          onRecordCue={openRecorder}
-                          isParchment={isParchment}
-                          onSaveToVocab={(wordData, sentence) => toggleSaveWord(wordData, sentence, selectedBook, selectedChapter)}
-                          onPrevSentence={handlePrevSentence}
-                          onNextSentence={handleNextSentence}
-                          bookmarkedCueIds={currentChapterBookmarkedCueIds}
-                          onToggleBookmarkCue={(cue) => toggleBookmarkSentence(cue, selectedBook, selectedChapter)}
-                          isPlaying={isPlaying}
-                          playbackRate={playbackRate}
-                          onChangePlaybackRate={setPlaybackRate}
-                          onReplayCurrentSentence={handleReplayCurrentSentence}
-                          currentTime={currentTime}
-                        />
-                      )}
-                    </div>
+          <div
+            className={currentView === 'player' ? 'flex-1 flex flex-col min-h-0 overflow-hidden' : 'hidden'}
+            aria-hidden={currentView !== 'player'}
+          >
+            {/* Reading Top Bar */}
+            <ReaderTopBar
+              currentBook={currentBookObj}
+              currentChapter={currentChapterObj}
+              onOpenShelf={() => setIsShelfOpen(true)}
+              playerMode={playerMode}
+              onSwitchPlayerMode={handleSwitchPlayerMode}
+              studyMode={studyMode}
+              setStudyMode={handleSwitchStudyMode}
+              showTranslation={showTranslation}
+              onToggleTranslation={handleToggleTranslation}
+              onOpenShortcuts={() => setIsShortcutsOpen(true)}
+              onBackToShelf={() => handleSwitchCurrentView('bookshelf')}
+              isOfflinePlaying={isOfflinePlaying}
+            />
 
-                    {/* Bottom Audio Controller (Active in Studio Mode when not in dictation) */}
-                    {studyMode !== 'dictation' && (
-                      <AudioPlayer
-                        currentBook={currentBookObj}
-                        currentChapter={currentChapterObj}
-                        audioSrc={audioUrl}
-                        currentTime={currentTime}
-                        duration={duration}
-                        isPlaying={isPlaying}
+            {/* Central Study Area: Dual-Engine Switch (Podcast Companion vs Studio Workshop) */}
+            <div className="flex-1 overflow-hidden relative flex flex-col min-h-0">
+              {isLoadingContent ? (
+                <div className="flex-1 flex flex-col items-center justify-center gap-3 text-stone-500">
+                  <Loader2 size={32} className="animate-spin text-amber-600" />
+                  <p className="text-sm font-reading font-medium">正在开启有声原著羊皮卷...</p>
+                </div>
+              ) : playerMode === 'podcast' ? (
+                <PodcastPlayerView
+                  currentBook={currentBookObj}
+                  currentChapter={currentChapterObj}
+                  cues={cues}
+                  activeCueIndex={activeCueIndex}
+                  currentTime={currentTime}
+                  duration={duration}
+                  isPlaying={isPlaying}
+                  playbackRate={playbackRate}
+                  onChangePlaybackRate={setPlaybackRate}
+                  onPlayPause={togglePlayPause}
+                  onSeek={seekTo}
+                  onSeekRelative={seekRelative}
+                  onSeekToCue={seekToCue}
+                  onPrevSentence={handlePrevSentence}
+                  onNextSentence={handleNextSentence}
+                  sleepTimerMode={sleepTimerMode}
+                  sleepTimerRemaining={formattedSleepTime}
+                  onToggleSleepTimer={handleToggleSleepTimer}
+                  showTranslation={showTranslation}
+                  onToggleTranslation={handleToggleTranslation}
+                  bookmarkedCueIds={currentChapterBookmarkedCueIds}
+                  onToggleBookmarkCue={handleToggleBookmarkSentence}
+                  onSwitchToStudio={() => handleSwitchPlayerMode('studio')}
+                />
+              ) : (
+                <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                  <div className="flex-1 overflow-hidden relative flex flex-col min-h-0">
+                    {studyMode === 'dictation' ? (
+                      <DictationStudio
+                        cues={cues}
+                        activeCueIndex={activeCueIndex}
+                        onSeekToCue={(cue, autoPlay, opts) => seekToCue(cue, autoPlay, { stopAtEnd: true, ...opts })}
                         onPlayPause={togglePlayPause}
-                        onSeek={seekTo}
-                        onSeekRelative={seekRelative}
-                        onPrevSentence={handlePrevSentence}
-                        onNextSentence={handleNextSentence}
-                        onReplayCurrentSentence={handleReplayCurrentSentence}
-                        isLoopSentence={isLoopSentence}
-                        onToggleLoopSentence={() => setIsLoopSentence(prev => !prev)}
+                        isPlaying={isPlaying}
                         playbackRate={playbackRate}
                         onChangePlaybackRate={setPlaybackRate}
-                        volume={volume}
-                        onChangeVolume={setVolume}
-                        activeCue={activeCue}
-                        totalCues={cues.length}
-                        activeCueIndex={activeCueIndex}
+                        onPrevSentence={handlePrevSentence}
+                        onNextSentence={handleNextSentence}
+                        onReplayCurrentSentence={(cue, opts) => handleReplayCurrentSentence({ stopAtEnd: true, ...opts })}
+                        chapterId={selectedChapter}
+                        chapterTitle={currentChapterObj?.cnTitle || currentChapterObj?.title || ''}
+                        onCloseStudio={() => handleSwitchStudyMode('normal')}
                         isParchment={isParchment}
-                        onToggleRecorder={() => {
-                          if (activeCue) openRecorder(activeCue);
+                        onSaveErrorWordsToVocab={(errorWords) => {
+                          errorWords.forEach(w => {
+                            toggleSaveWord({ word: w, translation: '拼写错词重炼' }, activeCue, selectedBook, selectedChapter);
+                          });
                         }}
-                        isRecordingActive={isRecorderOpen}
-                        sleepTimerMode={sleepTimerMode}
-                        sleepTimerRemaining={formattedSleepTime}
-                        onToggleSleepTimer={handleToggleSleepTimer}
                         showTranslation={showTranslation}
-                        onToggleTranslation={() => setShowTranslation(prev => !prev)}
+                        onToggleTranslation={handleToggleTranslation}
+                      />
+                    ) : (
+                      <SubtitleViewer
+                        cues={cues}
+                        activeCueIndex={activeCueIndex}
+                        onSeekToCue={seekToCue}
+                        onWordClick={handleWordClick}
+                        studyMode={studyMode}
+                        showTranslation={showTranslation}
+                        setShowTranslation={setShowTranslation}
+                        isLoopSentence={isLoopSentence}
+                        onToggleLoopSentence={handleToggleLoopSentence}
+                        onRecordCue={openRecorder}
+                        isParchment={isParchment}
+                        onSaveToVocab={handleSaveToVocab}
+                        onPrevSentence={handlePrevSentence}
+                        onNextSentence={handleNextSentence}
+                        bookmarkedCueIds={currentChapterBookmarkedCueIds}
+                        onToggleBookmarkCue={handleToggleBookmarkSentence}
+                        isPlaying={isPlaying}
+                        playbackRate={playbackRate}
+                        onChangePlaybackRate={setPlaybackRate}
+                        onReplayCurrentSentence={handleReplayCurrentSentence}
+                        currentTime={currentTime}
                       />
                     )}
                   </div>
-                )}
-              </div>
+
+                  {/* Bottom Audio Controller (Active in Studio Mode when not in dictation) */}
+                  {studyMode !== 'dictation' && (
+                    <AudioPlayer
+                      currentBook={currentBookObj}
+                      currentChapter={currentChapterObj}
+                      audioSrc={audioUrl}
+                      currentTime={currentTime}
+                      duration={duration}
+                      isPlaying={isPlaying}
+                      onPlayPause={togglePlayPause}
+                      onSeek={seekTo}
+                      onSeekRelative={seekRelative}
+                      onPrevSentence={handlePrevSentence}
+                      onNextSentence={handleNextSentence}
+                      onReplayCurrentSentence={handleReplayCurrentSentence}
+                      isLoopSentence={isLoopSentence}
+                      onToggleLoopSentence={handleToggleLoopSentence}
+                      playbackRate={playbackRate}
+                      onChangePlaybackRate={setPlaybackRate}
+                      volume={volume}
+                      onChangeVolume={setVolume}
+                      activeCue={activeCue}
+                      totalCues={cues.length}
+                      activeCueIndex={activeCueIndex}
+                      isParchment={isParchment}
+                      onToggleRecorder={() => {
+                        if (activeCue) openRecorder(activeCue);
+                      }}
+                      isRecordingActive={isRecorderOpen}
+                      sleepTimerMode={sleepTimerMode}
+                      sleepTimerRemaining={formattedSleepTime}
+                      onToggleSleepTimer={handleToggleSleepTimer}
+                      showTranslation={showTranslation}
+                      onToggleTranslation={handleToggleTranslation}
+                    />
+                  )}
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
         {/* Universal Persistent Podcast Capsule (Shown across non-player views whenever chapter is selected) */}
@@ -867,7 +897,7 @@ export function App() {
             onPrevSentence={handlePrevSentence}
             onNextSentence={handleNextSentence}
             onSeek={seekTo}
-            onEnterPlayer={() => setCurrentView('player')}
+            onEnterPlayer={handleEnterPlayer}
             currentTime={currentTime}
             duration={duration}
             playbackRate={playbackRate}
@@ -886,11 +916,8 @@ export function App() {
             currentView={currentView}
             onSwitchView={handleSwitchCurrentView}
             vocabCount={vocabList.length}
-            onOpenVocab={() => handleSwitchCurrentView('vocab')}
-            onOpenAnalytics={() => {
-              refreshAnalytics();
-              handleSwitchCurrentView('analytics');
-            }}
+            onOpenVocab={handleOpenVocab}
+            onOpenAnalytics={handleOpenAnalytics}
           />
         )}
       </div>

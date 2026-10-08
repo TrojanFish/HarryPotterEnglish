@@ -81,15 +81,25 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: #fbf9f4;
     color: #2d261e;
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(217, 119, 6, 0.06) 0%, transparent 70%),
-      radial-gradient(circle at 100% 100%, rgba(185, 28, 28, 0.04) 0%, transparent 60%);
-    background-attachment: fixed;
     -webkit-tap-highlight-color: transparent;
     /* W3C CLREQ: Strict Chinese & Western text line breaking, punctuation prohibition, overflow containment */
     line-break: strict;
     word-break: break-word;
     overflow-wrap: anywhere;
+  }
+
+  /* Hardware-accelerated background layer: avoids mobile scroll repaint CPU bottleneck */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(217, 119, 6, 0.06) 0%, transparent 70%),
+      radial-gradient(circle at 100% 100%, rgba(185, 28, 28, 0.04) 0%, transparent 60%);
+    transform: translateZ(0);
+    will-change: transform;
   }
 
   /* W3C Pointer Events: 0ms tap latency by removing mobile 300ms double-tap zoom delay */

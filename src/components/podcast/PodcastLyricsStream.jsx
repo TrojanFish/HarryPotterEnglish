@@ -1,6 +1,100 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Bookmark, BookmarkCheck, LocateFixed } from 'lucide-react';
 import { formatEnglishText } from '../../utils/vttParser';
+
+/**
+ * PodcastLyricRow — Memoized single sentence row
+ * Only re-renders when active state, past state, bookmark status, or translation toggle changes.
+ */
+export const PodcastLyricRow = React.memo(function PodcastLyricRow({
+  cue,
+  idx,
+  isActive,
+  isPast,
+  isBookmarked,
+  onSeekToCue,
+  onToggleBookmarkCue,
+  showTranslation,
+  rowRef
+}) {
+  const cleanText = useMemo(() => formatEnglishText(cue.text), [cue.text]);
+
+  const handleRowClick = useCallback(() => {
+    onSeekToCue?.(cue);
+  }, [onSeekToCue, cue]);
+
+  const handleBookmarkClick = useCallback((e) => {
+    e.stopPropagation();
+    onToggleBookmarkCue?.(cue);
+  }, [onToggleBookmarkCue, cue]);
+
+  return (
+    <div
+      ref={rowRef}
+      className={`group flex items-start justify-between gap-4 py-2 transition-colors duration-200 rounded-2xl cursor-pointer ${
+        isActive
+          ? 'active-lyric-cue text-amber-950 font-bold scale-[1.01]'
+          : isPast
+          ? 'inactive-lyric-cue text-stone-400 opacity-60 hover:opacity-100 hover:text-stone-700'
+          : 'inactive-lyric-cue text-stone-500 opacity-70 hover:opacity-100 hover:text-stone-800'
+      }`}
+      onClick={handleRowClick}
+    >
+      {/* Main Lyrics Text */}
+      <div className="flex-1 min-w-0">
+        <p
+          className={`font-reading leading-relaxed transition-colors duration-200 ${
+            isActive
+              ? 'text-xl sm:text-2xl text-amber-950 drop-shadow-sm font-semibold'
+              : 'text-lg sm:text-xl'
+          }`}
+        >
+          {cleanText}
+        </p>
+
+        {showTranslation && cue.translation && (
+          <p
+            className={`font-reading text-sm sm:text-base leading-relaxed mt-1.5 transition-colors duration-200 ${
+              isActive
+                ? 'text-amber-800/90 font-medium'
+                : 'text-stone-400 group-hover:text-stone-600'
+            }`}
+          >
+            {cue.translation}
+          </p>
+        )}
+      </div>
+
+      {/* Bookmark Affordance (Apple HIG >= 44x44px touch target) */}
+      {onToggleBookmarkCue && (
+        <button
+          type="button"
+          onClick={handleBookmarkClick}
+          className={`min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-colors active:scale-90 cursor-pointer ${
+            isBookmarked
+              ? 'bg-amber-100 text-amber-700 border border-amber-300'
+              : 'opacity-40 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 text-stone-400 hover:text-amber-800 hover:bg-stone-100 border border-transparent'
+          }`}
+          title={isBookmarked ? '已收录至疑难生词句' : '星标收录此句 (Accio Bookmark)'}
+          aria-label={isBookmarked ? '取消收录' : '星标收录'}
+        >
+          {isBookmarked ? (
+            <BookmarkCheck size={20} className="fill-current text-amber-600" />
+          ) : (
+            <Bookmark size={20} />
+          )}
+        </button>
+      )}
+    </div>
+  );
+}, (prev, next) => {
+  if (prev.cue?.id !== next.cue?.id) return false;
+  if (prev.isActive !== next.isActive) return false;
+  if (prev.isPast !== next.isPast) return false;
+  if (prev.isBookmarked !== next.isBookmarked) return false;
+  if (prev.showTranslation !== next.showTranslation) return false;
+  return true;
+});
 
 /**
  * PodcastLyricsStream — Apple Music & Spotify Style Flowing Lyrics Subtitle Stream
@@ -72,70 +166,20 @@ export function PodcastLyricsStream({
           const isBookmarked = bookmarkedCueIds instanceof Set
             ? bookmarkedCueIds.has(cue.id)
             : Array.isArray(bookmarkedCueIds) && bookmarkedCueIds.includes(cue.id);
-          const cleanText = formatEnglishText(cue.text);
 
           return (
-            <div
+            <PodcastLyricRow
               key={cue.id || idx}
-              ref={isActive ? activeLineRef : null}
-              className={`group flex items-start justify-between gap-4 py-2 transition-all duration-300 rounded-2xl cursor-pointer ${
-                isActive
-                  ? 'active-lyric-cue text-amber-950 font-bold scale-[1.01]'
-                  : isPast
-                  ? 'inactive-lyric-cue text-stone-400 opacity-60 hover:opacity-100 hover:text-stone-700'
-                  : 'inactive-lyric-cue text-stone-500 opacity-70 hover:opacity-100 hover:text-stone-800'
-              }`}
-              onClick={() => onSeekToCue && onSeekToCue(cue)}
-            >
-              {/* Main Lyrics Text */}
-              <div className="flex-1 min-w-0">
-                <p
-                  className={`font-reading leading-relaxed transition-colors duration-200 ${
-                    isActive
-                      ? 'text-xl sm:text-2xl text-amber-950 drop-shadow-sm font-semibold'
-                      : 'text-lg sm:text-xl'
-                  }`}
-                >
-                  {cleanText}
-                </p>
-
-                {showTranslation && cue.translation && (
-                  <p
-                    className={`font-reading text-sm sm:text-base leading-relaxed mt-1.5 transition-colors duration-200 ${
-                      isActive
-                        ? 'text-amber-800/90 font-medium'
-                        : 'text-stone-400 group-hover:text-stone-600'
-                    }`}
-                  >
-                    {cue.translation}
-                  </p>
-                )}
-              </div>
-
-              {/* Bookmark Affordance (Apple HIG >= 44x44px touch target) */}
-              {onToggleBookmarkCue && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onToggleBookmarkCue(cue);
-                  }}
-                  className={`min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all active:scale-90 cursor-pointer ${
-                    isBookmarked
-                      ? 'bg-amber-100 text-amber-700 border border-amber-300'
-                      : 'opacity-40 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 text-stone-400 hover:text-amber-800 hover:bg-stone-100 border border-transparent'
-                  }`}
-                  title={isBookmarked ? '已收录至疑难生词句' : '星标收录此句 (Accio Bookmark)'}
-                  aria-label={isBookmarked ? '取消收录' : '星标收录'}
-                >
-                  {isBookmarked ? (
-                    <BookmarkCheck size={20} className="fill-current text-amber-600" />
-                  ) : (
-                    <Bookmark size={20} />
-                  )}
-                </button>
-              )}
-            </div>
+              rowRef={isActive ? activeLineRef : null}
+              cue={cue}
+              idx={idx}
+              isActive={isActive}
+              isPast={isPast}
+              isBookmarked={isBookmarked}
+              onSeekToCue={onSeekToCue}
+              onToggleBookmarkCue={onToggleBookmarkCue}
+              showTranslation={showTranslation}
+            />
           );
         })}
       </div>
