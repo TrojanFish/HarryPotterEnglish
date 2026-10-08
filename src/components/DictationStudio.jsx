@@ -83,12 +83,12 @@ export function DictationStudio({
   });
 
   const handleDifficultyChange = (mode) => {
+    setDifficultyMode(mode);
     startTransition(() => {
-      setDifficultyMode(mode);
+      try {
+        localStorage.setItem('hp_dictation_mode', mode);
+      } catch {}
     });
-    try {
-      localStorage.setItem('hp_dictation_mode', mode);
-    } catch {}
   };
 
   // Sound effects toggle

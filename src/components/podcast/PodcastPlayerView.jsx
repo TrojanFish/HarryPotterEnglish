@@ -57,9 +57,8 @@ function PodcastPlayerViewComponent({
   const [mobileTab, setMobileTab] = useState('lyrics'); // 'lyrics' | 'cover'
 
   const handleSwitchMobileTab = (tab) => {
-    startTransition(() => {
-      setMobileTab(tab);
-    });
+    setMobileTab(tab);
+    startTransition(() => {});
   };
 
   const formatTime = (seconds) => {

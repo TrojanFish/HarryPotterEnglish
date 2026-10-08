@@ -80,8 +80,9 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
             {/* Tab switch for desktop/mobile */}
             <div className="flex rounded-xl p-1 border border-[#e8ddd0] bg-stone-100 text-xs gap-1">
               <button
+                type="button"
                 onClick={() => setActiveTab('touch')}
-                className={`min-h-[38px] sm:min-h-[36px] px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer select-none ${
+                className={`min-h-[38px] sm:min-h-[36px] px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer select-none touch-manipulation active:scale-[0.98] ${
                   activeTab === 'touch'
                     ? 'bg-amber-500 text-white shadow-sm'
                     : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
@@ -91,8 +92,9 @@ export function ShortcutsModal({ isOpen, onClose, isParchment }) {
                 触屏手势
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab('keyboard')}
-                className={`min-h-[38px] sm:min-h-[36px] px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer select-none ${
+                className={`min-h-[38px] sm:min-h-[36px] px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer select-none touch-manipulation active:scale-[0.98] ${
                   activeTab === 'keyboard'
                     ? 'bg-amber-500 text-white shadow-sm'
                     : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'

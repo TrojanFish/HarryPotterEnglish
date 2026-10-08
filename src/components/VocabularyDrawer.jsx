@@ -218,11 +218,12 @@ export function VocabularyDrawer({
           {/* Tab Switcher: 生词本 vs 疑难句 */}
           <div className="flex items-center p-1 rounded-xl bg-stone-100 border border-[#e8ddd0] gap-1 shrink-0">
             <button
+              type="button"
               onClick={() => {
                 setDrawerTab('words');
                 setSearchTerm('');
               }}
-              className={`min-h-[38px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
+              className={`min-h-[38px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer select-none touch-manipulation active:scale-[0.98] ${
                 drawerTab === 'words'
                   ? 'bg-amber-500 text-white shadow-sm'
                   : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
@@ -232,11 +233,12 @@ export function VocabularyDrawer({
               生词本 ({vocabList.length})
             </button>
             <button
+              type="button"
               onClick={() => {
                 setDrawerTab('sentences');
                 setSearchTerm('');
               }}
-              className={`min-h-[38px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer select-none ${
+              className={`min-h-[38px] px-2.5 sm:px-3 rounded-lg text-xs font-bold transition-all cursor-pointer select-none touch-manipulation active:scale-[0.98] ${
                 drawerTab === 'sentences'
                   ? 'bg-amber-500 text-white shadow-sm'
                   : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'

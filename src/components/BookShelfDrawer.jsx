@@ -112,8 +112,9 @@ export function BookShelfDrawer({
         <div className="px-4 sm:px-6 py-2.5 bg-white border-b border-[#e8ddd0] flex items-center justify-center shrink-0">
           <div className="flex rounded-xl p-1 bg-stone-100 border border-[#e8ddd0] gap-1 w-full max-w-sm">
             <button
+              type="button"
               onClick={() => setActiveTab('chapters')}
-              className={`flex-1 min-h-[38px] py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none ${
+              className={`flex-1 min-h-[38px] py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none touch-manipulation active:scale-[0.98] ${
                 activeTab === 'chapters'
                   ? 'bg-amber-500 text-white shadow-sm'
                   : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
@@ -124,8 +125,9 @@ export function BookShelfDrawer({
               <span>章节目录 ({chapters.length})</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('books')}
-              className={`flex-1 min-h-[38px] py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none ${
+              className={`flex-1 min-h-[38px] py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 select-none touch-manipulation active:scale-[0.98] ${
                 activeTab === 'books'
                   ? 'bg-amber-500 text-white shadow-sm'
                   : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'

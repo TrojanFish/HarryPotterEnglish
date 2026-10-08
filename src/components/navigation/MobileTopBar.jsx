@@ -47,7 +47,7 @@ function MobileTopBarComponent({
   }, [showTools]);
 
   return (
-    <header className="md:hidden shrink-0 z-30 pt-safe bg-[#fbf9f5] border-b border-[#e8ddd0] select-none touch-none overscroll-none">
+    <header className="md:hidden shrink-0 z-30 pt-safe bg-[#fbf9f5] border-b border-[#e8ddd0] select-none touch-manipulation">
       <div className="h-14 px-3 flex items-center justify-between gap-2">
         {/* ── Left: Brand Identity ──────────────────────────────────── */}
         <div className="flex items-center space-x-2.5 min-w-0 flex-1">

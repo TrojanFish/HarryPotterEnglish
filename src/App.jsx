@@ -90,12 +90,12 @@ export function App() {
   });
 
   const handleSwitchPlayerMode = useCallback((newMode) => {
+    setPlayerMode(newMode);
     startTransition(() => {
-      setPlayerMode(newMode);
+      try {
+        localStorage.setItem('hp_player_mode', newMode);
+      } catch {}
     });
-    try {
-      localStorage.setItem('hp_player_mode', newMode);
-    } catch {}
   }, [startTransition]);
 
   // View Mode & Study Mode State
@@ -109,8 +109,11 @@ export function App() {
   });
 
   const handleSwitchCurrentView = useCallback((newView) => {
+    setCurrentView(newView);
     startTransition(() => {
-      setCurrentView(newView);
+      try {
+        localStorage.setItem('hp_current_view', newView);
+      } catch {}
     });
   }, [startTransition]);
 
@@ -122,9 +125,8 @@ export function App() {
 
   const [studyMode, setStudyMode] = useState('normal'); // 'normal' | 'blind' | 'dictation'
   const handleSwitchStudyMode = useCallback((newStudyMode) => {
-    startTransition(() => {
-      setStudyMode(newStudyMode);
-    });
+    setStudyMode(newStudyMode);
+    startTransition(() => {});
   }, [startTransition]);
 
   const [showTranslation, setShowTranslation] = useState(true);
