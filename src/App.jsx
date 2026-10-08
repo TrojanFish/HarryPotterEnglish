@@ -531,8 +531,8 @@ export function App() {
       // If a modal or drawer is active, suppress global media/view shortcuts to prevent background hijacking
       if (isAnyModalOpen) return;
 
-      // In Bookshelf view, only handle sidebar toggling; do not hijack player controls
-      if (currentView === 'bookshelf') {
+      // In non-player views, only handle sidebar toggling; do not hijack player controls
+      if (currentView !== 'player') {
         if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
           e.preventDefault();
           toggleSidebarCollapsed();
@@ -705,7 +705,10 @@ export function App() {
             <StorageManagerModal
               isOpen={true}
               isPageView={true}
-              onClose={() => handleSwitchCurrentView(previousViewRef.current || (selectedChapter ? 'player' : 'bookshelf'))}
+              onClose={() => {
+                refreshOfflineCount();
+                handleSwitchCurrentView(previousViewRef.current || (selectedChapter ? 'player' : 'bookshelf'));
+              }}
               isParchment={isParchment}
               currentBook={currentBookObj}
               currentChapter={currentChapterObj}

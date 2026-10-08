@@ -93,8 +93,9 @@ function PodcastPlayerViewComponent({
         {/* Mobile Tab Toggle (Apple HIG Touch Target & Dual-Channel Status) */}
         <div className="flex items-center p-1 rounded-xl bg-stone-100 border border-[#e8ddd0] gap-1">
           <button
+            type="button"
             onClick={() => handleSwitchMobileTab('lyrics')}
-            className={`min-h-[38px] px-3.5 rounded-lg text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
+            className={`min-h-[40px] px-3.5 rounded-lg text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
               mobileTab === 'lyrics'
                 ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                 : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'
@@ -104,8 +105,9 @@ function PodcastPlayerViewComponent({
             歌词流
           </button>
           <button
+            type="button"
             onClick={() => handleSwitchMobileTab('cover')}
-            className={`min-h-[38px] px-3.5 rounded-lg text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
+            className={`min-h-[40px] px-3.5 rounded-lg text-xs font-bold transition-all duration-150 active:scale-[0.97] touch-manipulation transform-gpu cursor-pointer select-none ${
               mobileTab === 'cover'
                 ? 'bg-amber-500 text-white shadow-sm font-extrabold'
                 : 'text-stone-600 hover:text-amber-950 hover:bg-white/80'

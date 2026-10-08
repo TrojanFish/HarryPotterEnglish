@@ -32,7 +32,16 @@ export function useAudioPlayback({
 
   useEffect(() => {
     hasMarkedCompleteRef.current = false;
+    setActiveCueIndex(0);
+    setCurrentTime(0);
   }, [currentChapterObj?.id]);
+
+  // Safety bounds check when cue list changes
+  useEffect(() => {
+    if (cues && cues.length > 0 && activeCueIndex >= cues.length) {
+      setActiveCueIndex(0);
+    }
+  }, [cues, activeCueIndex]);
 
   // 1. Synchronize audio playback properties
   useEffect(() => {

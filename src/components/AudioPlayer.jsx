@@ -95,6 +95,7 @@ export function AudioPlayer({
   // Milestone celebration
   const celebratedRef = useRef(new Set());
   const [milestoneToast, setMilestoneToast] = useState(null);
+  const milestoneTimeoutRef = useRef(null);
 
   const waypoints = React.useMemo(() => {
     if (!duration || duration <= 0) return [];
@@ -108,21 +109,29 @@ export function AudioPlayer({
   }, [duration]);
 
   useEffect(() => {
+    return () => {
+      if (milestoneTimeoutRef.current) clearTimeout(milestoneTimeoutRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
     celebratedRef.current.clear();
     setMilestoneToast(null);
+    if (milestoneTimeoutRef.current) clearTimeout(milestoneTimeoutRef.current);
   }, [currentChapter?.id]);
 
   useEffect(() => {
     if (!isPlaying || !duration) return;
-    waypoints.forEach((wp) => {
+    for (const wp of waypoints) {
       if (currentTime >= wp.time && !celebratedRef.current.has(wp.id)) {
         celebratedRef.current.add(wp.id);
         setMilestoneToast(`${wp.label}，魔力充盈！`);
         playCorrectChime();
-        const t = setTimeout(() => setMilestoneToast(null), 4000);
-        return () => clearTimeout(t);
+        if (milestoneTimeoutRef.current) clearTimeout(milestoneTimeoutRef.current);
+        milestoneTimeoutRef.current = setTimeout(() => setMilestoneToast(null), 4000);
+        break;
       }
-    });
+    }
   }, [currentTime, isPlaying, duration, waypoints]);
 
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;

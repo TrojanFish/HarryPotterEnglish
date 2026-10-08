@@ -54,8 +54,9 @@ export function WordModal({
     if (wordData.audioUrl) {
       const audio = new Audio(wordData.audioUrl);
       setIsPlayingAudio(true);
-      audio.play().catch(() => {});
       audio.onended = () => setIsPlayingAudio(false);
+      audio.onerror = () => setIsPlayingAudio(false);
+      audio.play().catch(() => setIsPlayingAudio(false));
     } else if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utt = new SpeechSynthesisUtterance(wordData.word);
@@ -63,6 +64,7 @@ export function WordModal({
       utt.rate = 0.85;
       setIsPlayingAudio(true);
       utt.onend = () => setIsPlayingAudio(false);
+      utt.onerror = () => setIsPlayingAudio(false);
       window.speechSynthesis.speak(utt);
     }
   };
