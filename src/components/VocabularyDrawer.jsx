@@ -189,8 +189,9 @@ export function VocabularyDrawer({
       {/* Mobile Pull Handle Indicator */}
       {!isPageView && <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />}
 
-      {/* Drawer Header */}
-      <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0 select-none">
+      {/* Drawer Header — Standardized h-14 (56px) */}
+      <div className={`shrink-0 z-20 ${isPageView ? 'pt-safe' : ''} border-b border-[#e8ddd0] bg-white select-none`}>
+        <div className="h-14 px-4 sm:px-6 flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2.5 min-w-0 flex-1">
             <div className="p-2 rounded-xl bg-amber-500/15 text-amber-700 border border-amber-300/80 shrink-0">
               {drawerTab === 'words' ? (
@@ -271,6 +272,7 @@ export function VocabularyDrawer({
             </button>
           )}
         </div>
+      </div>
 
         {/* ── Sub-header: Leitner strip (when in words tab) ───────────── */}
         {drawerTab === 'words' && vocabList.length > 0 && (

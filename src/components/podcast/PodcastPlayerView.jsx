@@ -279,7 +279,7 @@ function PodcastPlayerViewComponent({
                 <button
                   type="button"
                   onClick={onToggleSleepTimer}
-                  className={`relative w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer select-none active:scale-95 ${
+                  className={`w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border flex flex-col items-center justify-center transition-colors cursor-pointer select-none active:scale-95 overflow-hidden ${
                     sleepTimerMode
                       ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
                       : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
@@ -288,11 +288,15 @@ function PodcastPlayerViewComponent({
                   aria-label="睡眠定时"
                   aria-pressed={Boolean(sleepTimerMode)}
                 >
-                  <Moon size={16} />
-                  {sleepTimerMode && (
-                    <span className="absolute -top-1 -right-1 text-[8px] font-mono font-bold bg-amber-700 text-white px-1 py-0.2 rounded-full border border-white leading-none shadow-sm">
-                      {sleepTimerRemaining}
-                    </span>
+                  {sleepTimerMode ? (
+                    <>
+                      <Moon size={11} className="shrink-0 -mb-0.5" />
+                      <span className="text-[9px] font-bold font-mono leading-tight tracking-tight truncate max-w-[38px] text-center">
+                        {sleepTimerRemaining}
+                      </span>
+                    </>
+                  ) : (
+                    <Moon size={16} />
                   )}
                 </button>
               )}
@@ -408,29 +412,35 @@ function PodcastPlayerViewComponent({
             <button
               type="button"
               onClick={onToggleSleepTimer}
-              className={`w-[88px] min-h-[44px] shrink-0 rounded-xl border flex items-center justify-center gap-1.5 px-2 transition-colors cursor-pointer select-none active:scale-95 overflow-hidden ${
+              className={`w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border flex flex-col items-center justify-center transition-colors cursor-pointer select-none active:scale-95 overflow-hidden ${
                 sleepTimerMode
-                  ? 'bg-amber-500 text-white border-amber-600'
-                  : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950'
+                  ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                  : 'border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
               }`}
               title={sleepTimerMode ? `安眠魔药生效中: ${sleepTimerRemaining}` : '开启安眠魔药定时'}
               aria-label="睡眠定时"
               aria-pressed={Boolean(sleepTimerMode)}
             >
-              <Moon size={15} className="shrink-0" />
-              <span className="text-[11px] font-bold font-mono truncate text-center">
-                {sleepTimerMode ? sleepTimerRemaining : '安眠定时'}
-              </span>
+              {sleepTimerMode ? (
+                <>
+                  <Moon size={11} className="shrink-0 -mb-0.5" />
+                  <span className="text-[9px] font-bold font-mono leading-tight tracking-tight truncate max-w-[38px] text-center">
+                    {sleepTimerRemaining}
+                  </span>
+                </>
+              ) : (
+                <Moon size={17} />
+              )}
             </button>
           ) : <div />}
 
           <button
             type="button"
             onClick={handleSpeedCycle}
-            className={`w-[54px] min-h-[44px] shrink-0 rounded-xl border text-xs font-mono font-bold flex items-center justify-center transition-colors active:scale-95 cursor-pointer select-none ${
+            className={`w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border text-xs font-mono font-bold flex items-center justify-center transition-colors active:scale-95 cursor-pointer select-none ${
               playbackRate !== 1.0
-                ? 'bg-amber-500 text-white border-amber-600'
-                : 'border-[#e8ddd0] bg-white text-stone-700 hover:text-amber-950'
+                ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                : 'border-[#e8ddd0] bg-white text-stone-700 hover:text-amber-950 hover:border-amber-300'
             }`}
             title="切换播放倍速"
             aria-label="播放倍速"

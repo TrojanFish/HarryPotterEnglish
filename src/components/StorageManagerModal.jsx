@@ -156,32 +156,34 @@ export function StorageManagerModal({
       {/* Mobile Pull Handle Indicator */}
       {!isPageView && <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />}
 
-      {/* Header */}
-      <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#e8ddd0] bg-white flex items-center justify-between gap-2 shrink-0 select-none">
-        <div className="flex items-center space-x-2.5 min-w-0 flex-1">
-          <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-300/80 text-amber-700 shrink-0">
-            <HardDrive size={18} className="sm:w-5 sm:h-5" />
+      {/* Header — Standardized h-14 (56px) */}
+      <div className={`shrink-0 z-20 ${isPageView ? 'pt-safe' : ''} border-b border-[#e8ddd0] bg-white select-none`}>
+        <div className="h-14 px-4 sm:px-6 flex items-center justify-between gap-2">
+          <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+            <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-300/80 text-amber-700 shrink-0">
+              <HardDrive size={18} className="sm:w-5 sm:h-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-magical text-base sm:text-lg font-bold text-amber-950 flex items-center gap-2 truncate">
+                魔法行囊 · 离线存储管理
+              </h2>
+              <p className="text-[11px] sm:text-xs text-stone-500 truncate">
+                原版双轨离线缓存 · 随时随地无网畅听
+              </p>
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            <h2 className="font-magical text-base sm:text-lg font-bold text-amber-950 flex items-center gap-2 truncate">
-              魔法行囊 · 离线存储管理
-            </h2>
-            <p className="text-[11px] sm:text-xs text-stone-500 truncate">
-              原版双轨离线缓存 · 随时随地无网畅听
-            </p>
-          </div>
-        </div>
 
-        {onClose && (
-          <button
-            onClick={onClose}
-            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-amber-950 transition-all active:scale-95 cursor-pointer shrink-0"
-            title={isPageView ? "返回" : "关闭魔法行囊"}
-            aria-label="关闭魔法行囊"
-          >
-            <X size={18} />
-          </button>
-        )}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-amber-950 transition-all active:scale-95 cursor-pointer shrink-0"
+              title={isPageView ? "返回" : "关闭魔法行囊"}
+              aria-label="关闭魔法行囊"
+            >
+              <X size={18} />
+            </button>
+          )}
+        </div>
       </div>
 
         {/* Storage Quota Bar */}

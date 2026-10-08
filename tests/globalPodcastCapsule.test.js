@@ -93,7 +93,7 @@ test('GlobalPodcastCapsule Test Suite', async (t) => {
     );
 
     assert.ok(html.includes('14:30'), 'Must render active sleep timer countdown');
-    assert.ok(html.includes('w-[84px]'), 'Must render fixed width w-[84px] sleep timer button when active');
+    assert.ok(html.includes('w-11 h-11') && html.includes('min-w-[44px]'), 'Must render strict 44x44px sleep timer button when active');
   });
 
   await t.test('3.4: Mobile capsule adheres to warm parchment design system and harmonized transport controls', () => {

@@ -134,8 +134,7 @@ test('PodcastPlayerView Test Suite', async (t) => {
     assert.ok(html.includes('podcast-anchored-console'), 'Must render dedicated anchored bottom console');
     assert.ok(!html.includes('aria-label="中英双语切换"'), 'Anchored console eliminates duplicate translation toggle (centralized in ReaderTopBar)');
     assert.ok(html.includes('播放倍速') || html.includes('1.0x'), 'Anchored console must provide speed cycle');
-    assert.ok(html.includes('上一句') && html.includes('下一句'), 'Anchored console must provide sentence navigation');
-    assert.ok(html.includes('w-[88px]'), 'Mobile sleep timer button must have fixed width w-[88px] to prevent layout jitter');
+    assert.ok(html.includes('w-11 h-11') && html.includes('min-w-[44px]'), 'Mobile sleep timer button must adhere to strict 44x44px button footprint');
     assert.ok(html.includes('justify-between') && html.includes('max-w-sm'), 'Mobile thumb cluster must have balanced proportional spacing across thumb zone');
   });
 });

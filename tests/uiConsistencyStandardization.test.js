@@ -61,4 +61,20 @@ test('UI Consistency & Layout Standardization Suite', async (t) => {
     assert.ok(analyticsCode.includes('max-w-6xl mx-auto'), 'AnalyticsDashboard must use max-w-6xl');
     assert.ok(dictationCode.includes('max-w-4xl mx-auto'), 'DictationStudio must use max-w-4xl');
   });
+
+  await t.test('3.3: Page and drawer top bars standardize on unified 56px (h-14) height', () => {
+    const mobileTopBarCode = fs.readFileSync(path.join(rootDir, 'src/components/navigation/MobileTopBar.jsx'), 'utf-8');
+    const readerTopBarCode = fs.readFileSync(path.join(rootDir, 'src/components/navigation/ReaderTopBar.jsx'), 'utf-8');
+    const analyticsCode = fs.readFileSync(path.join(rootDir, 'src/components/AnalyticsDashboard.jsx'), 'utf-8');
+    const vocabCode = fs.readFileSync(path.join(rootDir, 'src/components/VocabularyDrawer.jsx'), 'utf-8');
+    const storageCode = fs.readFileSync(path.join(rootDir, 'src/components/StorageManagerModal.jsx'), 'utf-8');
+    const bookshelfDrawerCode = fs.readFileSync(path.join(rootDir, 'src/components/BookShelfDrawer.jsx'), 'utf-8');
+
+    assert.ok(mobileTopBarCode.includes('h-14'), 'MobileTopBar must standardize on h-14 (56px)');
+    assert.ok(readerTopBarCode.includes('h-14'), 'ReaderTopBar must standardize on h-14 (56px)');
+    assert.ok(analyticsCode.includes('h-14'), 'AnalyticsDashboard header must standardize on h-14 (56px)');
+    assert.ok(vocabCode.includes('h-14'), 'VocabularyDrawer header must standardize on h-14 (56px)');
+    assert.ok(storageCode.includes('h-14'), 'StorageManagerModal header must standardize on h-14 (56px)');
+    assert.ok(bookshelfDrawerCode.includes('h-14'), 'BookShelfDrawer header must standardize on h-14 (56px)');
+  });
 });

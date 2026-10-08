@@ -368,17 +368,23 @@ function GlobalPodcastCapsuleComponent({
                   e.stopPropagation();
                   onToggleSleepTimer();
                 }}
-                className={`min-h-[44px] rounded-xl border flex items-center justify-center transition-colors cursor-pointer overflow-hidden ${
+                className={`w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 rounded-xl border flex flex-col items-center justify-center transition-colors cursor-pointer select-none overflow-hidden ${
                   sleepTimerMode
-                    ? 'w-[84px] h-11 px-2 gap-1.5 bg-amber-500 text-white border-amber-600 font-bold shrink-0'
-                    : 'w-11 h-11 border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300 shrink-0'
+                    ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                    : 'w-11 h-11 border-[#e8ddd0] bg-white text-stone-600 hover:text-amber-950 hover:border-amber-300'
                 }`}
                 title={sleepTimerMode ? `睡眠定时生效中: ${sleepTimerRemaining}` : '开启睡眠定时'}
                 aria-label="睡眠定时"
               >
-                <Moon size={16} className="shrink-0" />
-                {sleepTimerMode && (
-                  <span className="text-[11px] font-mono truncate text-center">{sleepTimerRemaining}</span>
+                {sleepTimerMode ? (
+                  <>
+                    <Moon size={11} className="shrink-0 -mb-0.5" />
+                    <span className="text-[9px] font-bold font-mono leading-tight tracking-tight truncate max-w-[38px] text-center">
+                      {sleepTimerRemaining}
+                    </span>
+                  </>
+                ) : (
+                  <Moon size={16} />
                 )}
               </button>
             )}

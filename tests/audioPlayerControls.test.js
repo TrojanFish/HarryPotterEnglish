@@ -68,8 +68,8 @@ test('AudioPlayer Podcast Controls Test Suite', async (t) => {
     );
 
     assert.ok(html.includes('睡眠定时') || html.includes('定时'), 'Must contain sleep timer button');
-    assert.ok(html.includes('w-[84px]'), 'Desktop active sleep timer must have fixed width w-[84px]');
-    assert.ok(html.includes('w-[72px]'), 'Mobile active sleep timer must have fixed width w-[72px]');
+    assert.ok(html.includes('w-11 h-11') && html.includes('min-w-[44px]'), 'Sleep timer must adhere to strict 44x44px button footprint');
+    assert.ok(html.includes('14:59'), 'Must render countdown string inside 44x44px button');
   });
 
   await t.test('2.3: Mobile controls layer renders symmetrical 5-button cluster (Loop, Prev, Play, Next, Speed)', () => {
