@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Library,
   Headphones,
@@ -11,6 +11,7 @@ import {
  * Duolingo & Spotify Mobile standard navigation pattern:
  * - 4 high-frequency thumb-reachable tabs
  * - Active indicator dot with 0ms optimistic highlighting
+ * - Zero desync: Synchronized with currentView on every render
  * - Fixed bottom docking
  * - Strictly 100% Lucide SVG, zero Unicode emojis
  */
@@ -21,10 +22,26 @@ export function MobileBottomNav({
   onOpenVocab,
   onOpenAnalytics
 }) {
-  const [optimisticTab, setOptimisticTab] = useState(currentView);
+  const [optimisticTab, setOptimisticTab] = useState(null);
+  const [prevView, setPrevView] = useState(currentView);
+  const clearTimerRef = useRef(null);
 
+  // Sync state during rendering: if currentView changed, clear optimisticTab immediately
+  if (prevView !== currentView) {
+    setPrevView(currentView);
+    setOptimisticTab(null);
+  }
+
+  // Clear timer on unmount
   useEffect(() => {
-    setOptimisticTab(currentView);
+    return () => {
+      if (clearTimerRef.current) clearTimeout(clearTimerRef.current);
+    };
+  }, []);
+
+  // When currentView prop changes, also guarantee optimisticTab is cleared
+  useEffect(() => {
+    setOptimisticTab(null);
   }, [currentView]);
 
   const tabs = [
@@ -57,10 +74,18 @@ export function MobileBottomNav({
 
   const handleTabClick = (tab) => {
     setOptimisticTab(tab.id);
+    if (clearTimerRef.current) clearTimeout(clearTimerRef.current);
+    // Safety fallback: if view transition doesn't update within 350ms, clear optimistic override
+    clearTimerRef.current = setTimeout(() => {
+      setOptimisticTab(null);
+    }, 350);
+
     if (tab.onClick) {
       tab.onClick();
     }
   };
+
+  const activeTabId = optimisticTab || currentView;
 
   return (
     <nav 
@@ -68,7 +93,7 @@ export function MobileBottomNav({
       className="md:hidden w-full shrink-0 z-40 bg-[#fbf9f5] border-t border-[#e8ddd0] flex items-center justify-around px-2 pt-1 pb-safe select-none touch-manipulation"
     >
       {tabs.map((tab) => {
-        const active = (optimisticTab || currentView) === tab.id;
+        const active = activeTabId === tab.id;
         return (
           <button
             key={tab.id}
