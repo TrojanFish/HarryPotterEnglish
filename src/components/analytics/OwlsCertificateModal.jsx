@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Award, Sparkles, Copy, Check, Shield, Download, RefreshCw, Share2 } from 'lucide-react';
-import { HOUSES, OWLS_GRADES } from '../../constants/hogwartsTheme.js';
+import { OWLS_GRADES } from '../../constants/hogwartsTheme.js';
 import { WaxSealBadge } from '../common/WaxSealBadge.jsx';
 
 /**
@@ -20,7 +20,7 @@ function roundRect(ctx, x, y, width, height, radius) {
   ctx.closePath();
 }
 
-export function generateOwlsCertificateImage({ userHouse = 'gryffindor', summary = {}, vocabCount = 0 } = {}) {
+export function generateOwlsCertificateImage({ summary = {}, vocabCount = 0 } = {}) {
   return new Promise((resolve) => {
     if (typeof document === 'undefined') {
       resolve({ dataUrl: '', blob: null });
@@ -28,7 +28,6 @@ export function generateOwlsCertificateImage({ userHouse = 'gryffindor', summary
     }
 
     try {
-      const house = HOUSES[userHouse] || HOUSES.gryffindor;
       const listeningHours = ((summary?.totalListeningSeconds || 0) / 3600).toFixed(1);
       const completedChapters = summary?.completedChaptersCount || 0;
       const streakDays = summary?.streakDays || 0;
@@ -118,22 +117,22 @@ export function generateOwlsCertificateImage({ userHouse = 'gryffindor', summary
       ctx.font = '14px "Cinzel", "Georgia", serif';
       ctx.fillText('ORDINARY WIZARDING LEVEL ACADEMIC RECORD', 540, 348);
 
-      // 5. House Ribbon
+      // 5. Hogwarts School Ribbon
       const ribbonW = 760;
       const ribbonH = 48;
       const ribbonX = (1080 - ribbonW) / 2;
       const ribbonY = 384;
-      ctx.fillStyle = house.bgLight || '#fef2f2';
+      ctx.fillStyle = '#fffbeb';
       roundRect(ctx, ribbonX, ribbonY, ribbonW, ribbonH, 24);
       ctx.fill();
-      ctx.strokeStyle = house.borderColor || '#dc2626';
+      ctx.strokeStyle = '#d97706';
       ctx.lineWidth = 1.5;
       roundRect(ctx, ribbonX, ribbonY, ribbonW, ribbonH, 24);
       ctx.stroke();
 
-      ctx.fillStyle = house.primaryColor || '#991b1b';
+      ctx.fillStyle = '#78350f';
       ctx.font = 'bold 18px "PingFang SC", "Microsoft YaHei", sans-serif';
-      ctx.fillText(`${house.nameZh} 学院 · ${house.nameEn}  |  ${house.mottoZh}`, 540, ribbonY + 25);
+      ctx.fillText('霍格沃茨魔法学校 · Hogwarts School  |  “眠龙勿扰” Draco Dormiens Nunquam Titillandus', 540, ribbonY + 25);
 
       // 6. 4 Pillar Statistics Cards
       const drawStatCard = (x, y, w, h, label, val, valColor, sub) => {
@@ -265,7 +264,6 @@ export function generateOwlsCertificateImage({ userHouse = 'gryffindor', summary
 export function OwlsCertificateModal({
   isOpen,
   onClose,
-  userHouse = 'gryffindor',
   summary = {},
   vocabCount = 0
 }) {
@@ -277,15 +275,13 @@ export function OwlsCertificateModal({
 
   if (!isOpen) return null;
 
-  const house = HOUSES[userHouse] || HOUSES.gryffindor;
   const listeningHours = ((summary?.totalListeningSeconds || 0) / 3600).toFixed(1);
   const completedChapters = summary?.completedChaptersCount || 0;
   const streakDays = summary?.streakDays || 0;
 
   const handleCopyReport = () => {
     const text = `【霍格沃茨魔法学校 · O.W.L.s 学业荣誉通报】\n` +
-      `所辖学院：${house.nameZh} (${house.nameEn})\n` +
-      `校训信条：“${house.mottoZh}”\n` +
+      `校训信条：“眠龙勿扰” (Draco Dormiens Nunquam Titillandus)\n` +
       `累计专注听力：${listeningHours} 小时\n` +
       `征服原著章节：${completedChapters} 篇\n` +
       `收录魔法生词：${vocabCount} 词\n` +
@@ -308,7 +304,6 @@ export function OwlsCertificateModal({
 
     try {
       const { dataUrl, blob } = await generateOwlsCertificateImage({
-        userHouse,
         summary,
         vocabCount
       });
@@ -329,7 +324,7 @@ export function OwlsCertificateModal({
       } else {
         // Direct browser file download on desktop
         const link = document.createElement('a');
-        link.download = `Hogwarts_OWLS_荣誉长图_${house.nameEn}.png`;
+        link.download = 'Hogwarts_OWLS_学业荣誉长图.png';
         link.href = dataUrl;
         document.body.appendChild(link);
         link.click();
@@ -345,7 +340,7 @@ export function OwlsCertificateModal({
   const handleNativeShare = async () => {
     if (!exportedBlob || typeof navigator === 'undefined' || !navigator.share) return;
     try {
-      const file = new File([exportedBlob], `Hogwarts_OWLS_${house.nameEn}.png`, { type: 'image/png' });
+      const file = new File([exportedBlob], 'Hogwarts_OWLS_Certificate.png', { type: 'image/png' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
@@ -361,7 +356,7 @@ export function OwlsCertificateModal({
   const handleDownloadSavedImage = () => {
     if (!exportedImageUrl) return;
     const link = document.createElement('a');
-    link.download = `Hogwarts_OWLS_荣誉长图_${house.nameEn}.png`;
+    link.download = 'Hogwarts_OWLS_学业荣誉长图.png';
     link.href = exportedImageUrl;
     document.body.appendChild(link);
     link.click();
@@ -437,18 +432,13 @@ export function OwlsCertificateModal({
               ORDINARY WIZARDING LEVEL ACADEMIC RECORD
             </p>
 
-            {/* House Ribbon */}
+            {/* Hogwarts School Ribbon */}
             <div
-              className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full border mb-4 sm:mb-6 text-[11px] sm:text-xs font-bold max-w-full flex-wrap"
-              style={{
-                backgroundColor: house.bgLight,
-                borderColor: house.borderColor,
-                color: house.primaryColor
-              }}
+              className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full border border-amber-300/80 bg-amber-50/80 text-amber-900 mb-4 sm:mb-6 text-[11px] sm:text-xs font-bold max-w-full flex-wrap"
             >
-              <Shield size={13} className="shrink-0" />
-              <span className="whitespace-nowrap">{house.nameZh} 学院 · {house.nameEn}</span>
-              <span className="opacity-75 font-normal whitespace-nowrap">| {house.mottoZh}</span>
+              <Shield size={13} className="shrink-0 text-amber-700" />
+              <span className="whitespace-nowrap">霍格沃茨魔法学校 · Hogwarts School</span>
+              <span className="opacity-75 font-normal whitespace-nowrap">| “眠龙勿扰” Draco Dormiens Nunquam Titillandus</span>
             </div>
 
             {/* 4 Pillars Stats Grid */}

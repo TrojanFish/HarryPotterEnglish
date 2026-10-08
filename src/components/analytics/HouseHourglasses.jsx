@@ -1,7 +1,6 @@
 import React from 'react';
-import { Sparkles, Trophy, Shield, RefreshCw } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { HOUSES } from '../../constants/hogwartsTheme.js';
-import { WaxSealBadge } from '../common/WaxSealBadge.jsx';
 
 /**
  * HouseHourglasses — Great Hall Four Houses Gem Hourglasses (礼堂四大学院魔法沙漏)
@@ -9,13 +8,11 @@ import { WaxSealBadge } from '../common/WaxSealBadge.jsx';
  * - Slytherin: Emerald green gems
  * - Ravenclaw: Sapphire blue gems
  * - Hufflepuff: Topaz yellow gems
- * Dynamically computes user's earned House Points from listening time and chapter conquests.
+ * Dynamically computes earned points from listening time and chapter conquests.
  * Strictly 100% Zero-Emoji Compliant.
  */
 export function HouseHourglasses({
-  userHouse = 'gryffindor',
-  summary = {},
-  onOpenHouseSelector
+  summary = {}
 }) {
   // Calculate earned points
   const listeningMins = Math.floor((summary?.totalListeningSeconds || 0) / 60);
@@ -23,12 +20,12 @@ export function HouseHourglasses({
   const streakPts = (summary?.streakDays || 0) * 20;
   const userEarnedPts = listeningMins + chapterPts + streakPts;
 
-  // Base house points baseline
+  // Great Hall Four Houses baseline + learning effort contribution
   const housePoints = {
-    gryffindor: 280 + (userHouse === 'gryffindor' ? userEarnedPts : 0),
-    slytherin: 270 + (userHouse === 'slytherin' ? userEarnedPts : 0),
-    ravenclaw: 260 + (userHouse === 'ravenclaw' ? userEarnedPts : 0),
-    hufflepuff: 250 + (userHouse === 'hufflepuff' ? userEarnedPts : 0)
+    gryffindor: 280 + userEarnedPts,
+    slytherin: 270 + Math.floor(userEarnedPts * 0.95),
+    ravenclaw: 260 + Math.floor(userEarnedPts * 0.9),
+    hufflepuff: 250 + Math.floor(userEarnedPts * 0.85)
   };
 
   const maxPoints = Math.max(...Object.values(housePoints), 400);
@@ -56,17 +53,6 @@ export function HouseHourglasses({
           </div>
         </div>
 
-        {onOpenHouseSelector && (
-          <button
-            onClick={onOpenHouseSelector}
-            className="duo-touch-target px-2.5 py-1.5 rounded-xl border border-amber-300/80 bg-white hover:bg-amber-50 text-[11px] font-bold text-amber-900 flex items-center gap-1 cursor-pointer transition-all active:scale-95"
-            title="重新挑选学院归属"
-            aria-label="切换学院"
-          >
-            <RefreshCw size={12} />
-            <span className="hidden sm:inline">重新分院</span>
-          </button>
-        )}
       </div>
 
       {/* 4 Glass Hourglasses Grid */}
@@ -75,25 +61,17 @@ export function HouseHourglasses({
           const house = HOUSES[id];
           const points = housePoints[id];
           const fillPercent = Math.min(100, Math.max(15, Math.round((points / maxPoints) * 100)));
-          const isUser = userHouse === id;
 
           return (
             <div
               key={id}
-              className={`flex flex-col items-center p-2.5 sm:p-3 rounded-xl border transition-all ${
-                isUser
-                  ? 'bg-white border-amber-400 ring-2 ring-amber-400/30 shadow-sm'
-                  : 'bg-white/60 border-stone-200/80 hover:bg-white'
-              }`}
+              className="flex flex-col items-center p-2.5 sm:p-3 rounded-xl border border-stone-200/80 bg-white/70 hover:bg-white transition-all shadow-sm"
             >
               {/* House Title */}
               <div className="flex items-center gap-1 mb-1.5 text-center">
                 <span className="text-[11px] sm:text-xs font-bold text-amber-950 truncate">
                   {house.nameZh}
                 </span>
-                {isUser && (
-                  <WaxSealBadge text="H" size={14} title="你的学籍所属学院" />
-                )}
               </div>
 
               {/* Glass Tube Container */}

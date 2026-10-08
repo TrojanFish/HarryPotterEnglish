@@ -11,7 +11,6 @@ test('UI Consistency & Layout Standardization Suite', async (t) => {
     const shortcutsModalCode = fs.readFileSync(path.join(rootDir, 'src/components/ShortcutsModal.jsx'), 'utf-8');
     const storageModalCode = fs.readFileSync(path.join(rootDir, 'src/components/StorageManagerModal.jsx'), 'utf-8');
     const srsModalCode = fs.readFileSync(path.join(rootDir, 'src/components/SrsFlashcardModal.jsx'), 'utf-8');
-    const houseModalCode = fs.readFileSync(path.join(rootDir, 'src/components/common/HouseSelectorModal.jsx'), 'utf-8');
     const owlsModalCode = fs.readFileSync(path.join(rootDir, 'src/components/analytics/OwlsCertificateModal.jsx'), 'utf-8');
 
     // Check close buttons have 44px footprint
@@ -19,7 +18,6 @@ test('UI Consistency & Layout Standardization Suite', async (t) => {
     assert.ok(shortcutsModalCode.includes('min-h-[44px]') || shortcutsModalCode.includes('w-11 h-11'), 'ShortcutsModal must have 44px close button');
     assert.ok(storageModalCode.includes('min-h-[44px]') || storageModalCode.includes('w-11 h-11'), 'StorageManagerModal must have 44px close button');
     assert.ok(srsModalCode.includes('min-h-[44px]') || srsModalCode.includes('w-11 h-11'), 'SrsFlashcardModal must have 44px close button');
-    assert.ok(houseModalCode.includes('min-h-[44px]') || houseModalCode.includes('w-11 h-11'), 'HouseSelectorModal must have 44px close button');
     assert.ok(owlsModalCode.includes('min-h-[44px]') || owlsModalCode.includes('w-11 h-11'), 'OwlsCertificateModal must have 44px close button');
 
     // Ensure OwlsCertificateModal eliminated legacy 32px w-8 h-8 close button
@@ -29,11 +27,9 @@ test('UI Consistency & Layout Standardization Suite', async (t) => {
   await t.test('1.2: Modal Dialogs have standardized backdrop and mobile drag handle', () => {
     const wordModalCode = fs.readFileSync(path.join(rootDir, 'src/components/WordModal.jsx'), 'utf-8');
     const shortcutsModalCode = fs.readFileSync(path.join(rootDir, 'src/components/ShortcutsModal.jsx'), 'utf-8');
-    const houseModalCode = fs.readFileSync(path.join(rootDir, 'src/components/common/HouseSelectorModal.jsx'), 'utf-8');
 
     assert.ok(wordModalCode.includes('p-0 sm:p-4 bg-black/60'), 'WordModal must have p-0 sm:p-4 bg-black/60 backdrop');
     assert.ok(shortcutsModalCode.includes('p-0 sm:p-4 bg-black/60'), 'ShortcutsModal must have p-0 sm:p-4 bg-black/60 backdrop');
-    assert.ok(houseModalCode.includes('p-0 sm:p-4 bg-black/60'), 'HouseSelectorModal must have p-0 sm:p-4 bg-black/60 backdrop');
 
     // Pull bar check
     assert.ok(wordModalCode.includes('w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5'), 'WordModal pull handle must be standardized');

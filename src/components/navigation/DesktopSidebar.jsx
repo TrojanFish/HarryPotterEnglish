@@ -34,9 +34,6 @@ function DesktopSidebarComponent({
   todayListeningSeconds = 0,
   vocabCount = 0,
   cachedChaptersCount = 0,
-  currentHouse = 'gryffindor',
-  houseData,
-  onOpenHouseSelector,
   onOpenVocab,
   onOpenAnalytics,
   onOpenStorage,
@@ -169,19 +166,6 @@ function DesktopSidebarComponent({
                 <PanelLeftOpen size={16} />
               </button>
             )}
-
-            {onOpenHouseSelector && (
-              <button
-                type="button"
-                onClick={onOpenHouseSelector}
-                className="w-9 h-9 rounded-xl border flex items-center justify-center cursor-pointer active:scale-95 transition-all shadow-none shrink-0"
-                style={{ borderColor: houseData?.borderColor || '#e8ddd0', backgroundColor: houseData?.bgLight || '#fff' }}
-                title={`当前学员学院：${houseData?.nameZh || '格兰芬多'} · 点击分院`}
-                aria-label="切换学院"
-              >
-                <span className="w-3 h-3 rounded-full shadow-inner" style={{ backgroundColor: houseData?.primaryColor || '#b91c1c' }} />
-              </button>
-            )}
           </div>
         ) : (
           <div className="space-y-2.5">
@@ -221,37 +205,6 @@ function DesktopSidebarComponent({
                 </button>
               )}
             </div>
-
-            {/* Four Houses Affiliation Badge */}
-            {onOpenHouseSelector && (
-              <button
-                type="button"
-                onClick={onOpenHouseSelector}
-                className="w-full flex items-center justify-between px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-none group"
-                style={{
-                  backgroundColor: houseData?.bgLight || '#fffdf8',
-                  borderColor: houseData?.borderColor || '#e8ddd0'
-                }}
-                title={`当前学员学院：${houseData?.nameZh || '格兰芬多'} · 点击进行分院典礼`}
-                aria-label="进行分院典礼"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: houseData?.primaryColor || '#b91c1c' }} />
-                  <span className="font-magical text-amber-950 font-bold truncate">
-                    {houseData?.nameZh || '格兰芬多'}
-                  </span>
-                  <span className="text-[10px] text-stone-500 font-sans font-normal shrink-0">
-                    学院
-                  </span>
-                </div>
-                <span 
-                  className="text-[10px] font-mono font-bold shrink-0 group-hover:underline"
-                  style={{ color: houseData?.primaryColor || '#b91c1c' }}
-                >
-                  分院典礼 →
-                </span>
-              </button>
-            )}
           </div>
         )}
 

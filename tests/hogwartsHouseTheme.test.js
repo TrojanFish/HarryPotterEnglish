@@ -62,32 +62,15 @@ test('Hogwarts House Theme Engine Test Suite', async (t) => {
     assert.ok(styleMap.get('--c-house-gem'), 'Must set --c-house-gem CSS variable');
   });
 
-  // 2. HouseSelectorModal
-  compileJsx('src/components/common/HouseSelectorModal.jsx', 'HouseSelectorModal.compiled.js');
-  const { HouseSelectorModal } = await import('./HouseSelectorModal.compiled.js');
-
-  await t.test('3.3: HouseSelectorModal renders all 4 Houses with traits and motto', () => {
-    const html = renderToString(
-      React.createElement(HouseSelectorModal, {
-        isOpen: true,
-        currentHouse: 'gryffindor',
-        onClose: () => {},
-        onSelectHouse: () => {}
-      })
-    );
-
-    assert.ok(html.includes('格兰芬多'), 'Must display 格兰芬多');
-    assert.ok(html.includes('斯莱特林'), 'Must display 斯莱特林');
-    assert.ok(html.includes('拉文克劳'), 'Must display 拉文克劳');
-    assert.ok(html.includes('赫奇帕奇'), 'Must display 赫奇帕奇');
-    assert.ok(html.includes('狮子') || html.includes('勇'), 'Must mention house trait or animal');
-    assert.ok(html.includes('分院') || html.includes('学院'), 'Must contain House selection title');
-  });
-
-  t.after(() => {
-    try {
-      const f = path.resolve(__dirname, 'HouseSelectorModal.compiled.js');
-      if (fs.existsSync(f)) fs.unlinkSync(f);
-    } catch {}
+  await t.test('3.3: HOUSES constants contain canonical 4 Houses with traits and colors', async () => {
+    const { HOUSES } = await import('../src/constants/hogwartsTheme.js');
+    assert.ok(HOUSES.gryffindor, 'Gryffindor must exist');
+    assert.ok(HOUSES.slytherin, 'Slytherin must exist');
+    assert.ok(HOUSES.ravenclaw, 'Ravenclaw must exist');
+    assert.ok(HOUSES.hufflepuff, 'Hufflepuff must exist');
+    assert.strictEqual(HOUSES.gryffindor.nameZh, '格兰芬多');
+    assert.strictEqual(HOUSES.slytherin.nameZh, '斯莱特林');
+    assert.strictEqual(HOUSES.ravenclaw.nameZh, '拉文克劳');
+    assert.strictEqual(HOUSES.hufflepuff.nameZh, '赫奇帕奇');
   });
 });

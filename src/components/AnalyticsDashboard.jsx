@@ -29,9 +29,7 @@ export function AnalyticsDashboard({
   onClose,
   isParchment = true,
   vocabCount = 0,
-  isPageView = false,
-  userHouse = 'gryffindor',
-  onOpenHouseSelector
+  isPageView = false
 }) {
   const [summary, setSummary] = useState(null);
   const [hoveredBarIndex, setHoveredBarIndex] = useState(null);
@@ -39,8 +37,6 @@ export function AnalyticsDashboard({
   const [showHonorScroll, setShowHonorScroll] = useState(false);
   const [showOwlsCertificate, setShowOwlsCertificate] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-
-  const activeHouse = userHouse || (typeof window !== 'undefined' && localStorage.getItem('hp_user_house')) || 'gryffindor';
 
   // Local-First Sync State
   const [syncState, setSyncState] = useState(() => ({
@@ -367,9 +363,7 @@ export function AnalyticsDashboard({
         <div className="px-4 py-5 sm:p-6 max-w-6xl mx-auto w-full space-y-6">
           {/* Great Hall Four Houses Gem Hourglasses */}
           <HouseHourglasses
-            userHouse={activeHouse}
             summary={currentSummary}
-            onOpenHouseSelector={onOpenHouseSelector}
           />
 
           {/* 4 Habit Tracking Metric Cards */}
@@ -903,7 +897,6 @@ export function AnalyticsDashboard({
         <OwlsCertificateModal
           isOpen={showOwlsCertificate}
           onClose={() => setShowOwlsCertificate(false)}
-          userHouse={activeHouse}
           summary={currentSummary}
           vocabCount={vocabCount}
         />
