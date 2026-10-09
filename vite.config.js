@@ -1,10 +1,10 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   base: mode === 'production' ? (process.env.VITE_BASE_PATH || './') : '/',
-  plugins: [react()],
+  plugins: [vue()],
   server: {
     host: '0.0.0.0',
     port: 3000,
@@ -26,8 +26,8 @@ export default defineConfig(({ mode }) => ({
       output: {
         // Split vendor libraries into separate chunks for better browser caching
         manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'lucide': ['lucide-react'],
+          'vue-vendor': ['vue', 'pinia'],
+          'lucide': ['lucide-vue-next'],
         }
       }
     },
