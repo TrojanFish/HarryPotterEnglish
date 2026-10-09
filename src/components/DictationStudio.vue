@@ -17,7 +17,7 @@
         aria-label="拼写听写工坊"
       >
         <div
-          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
+          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden"
           @click.stop
         >
           <!-- Header -->

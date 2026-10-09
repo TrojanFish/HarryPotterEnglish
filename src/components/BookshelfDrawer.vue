@@ -28,7 +28,7 @@
     >
       <aside
         v-if="player.isBookshelfOpen"
-        class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-[#fbf9f5] border-l border-[#e8ddd0] shadow-2xl flex flex-col"
+        class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-[#fbf9f5] border-l border-[#e8ddd0] flex flex-col"
         role="dialog"
         aria-modal="true"
         aria-label="霍格沃茨书架与章节目录"

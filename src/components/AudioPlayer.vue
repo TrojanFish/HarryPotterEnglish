@@ -1,6 +1,6 @@
 <template>
   <footer
-    class="fixed bottom-0 left-0 right-0 z-30 bg-[#fbf9f5]/95 backdrop-blur-md border-t border-[#e8ddd0] px-3 sm:px-4 pt-2.5 pb-2.5 pb-safe shadow-[0_-4px_16px_rgba(30,22,16,0.04)]"
+    class="fixed bottom-0 left-0 right-0 z-30 bg-[#fbf9f5]/95 backdrop-blur-md border-t border-[#e8ddd0] px-3 sm:px-4 pt-2.5 pb-2.5 pb-safe"
     role="region"
     aria-label="流媒体音频播放控制栏"
   >

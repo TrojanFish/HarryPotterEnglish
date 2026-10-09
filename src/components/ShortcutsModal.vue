@@ -17,7 +17,7 @@
         aria-label="操作快捷键与手势指南"
       >
         <div
-          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-md w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden"
+          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden"
           @click.stop
         >
           <!-- Header -->

@@ -173,7 +173,7 @@
         >
           <div
             v-if="isMobileMenuOpen"
-            class="absolute right-0 top-12 z-50 w-52 bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl shadow-xl p-2 space-y-1"
+            class="absolute right-0 top-12 z-50 w-52 bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl p-2 space-y-1"
           >
             <button
               type="button"

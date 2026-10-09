@@ -16,7 +16,7 @@
         aria-modal="true"
       >
         <div
-          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center"
+          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl p-6 max-w-sm w-full text-center"
           @click.stop
         >
           <div class="w-12 h-12 bg-amber-50 text-[#d97706] rounded-full flex items-center justify-center mx-auto mb-3 border border-amber-200">

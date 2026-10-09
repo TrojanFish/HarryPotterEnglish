@@ -18,7 +18,7 @@
       >
         <div
           @click.stop
-          class="w-full max-w-2xl max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-2xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] shadow-2xl overflow-hidden"
+          class="w-full max-w-2xl max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-2xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden"
         >
           <!-- Mobile Drag Indicator -->
           <div class="sm:hidden w-12 h-1 bg-[#d8cec2] rounded-full mx-auto my-2.5 shrink-0" />
