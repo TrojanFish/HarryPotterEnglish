@@ -17,7 +17,7 @@
         aria-label="离线行囊与存储管理"
       >
         <div
-          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden"
+          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden"
           @click.stop
         >
           <!-- Header -->
@@ -96,6 +96,72 @@
                 </div>
               </div>
             </div>
+
+            <!-- Available Downloadable Chapters List -->
+            <div class="space-y-2 pt-2 border-t border-[#e8ddd0]">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-semibold text-[#78695d] uppercase tracking-wider">
+                  可下载章节 ({{ availableChapters.length }})
+                </h3>
+                <span class="text-[11px] text-[#a89a8c] font-serif">
+                  {{ catalogStore.currentBook?.title || '当前书籍' }}
+                </span>
+              </div>
+
+              <div
+                v-if="availableChapters.length === 0"
+                class="text-center py-6 text-xs text-[#a89a8c] bg-[#f4ebe1]/40 rounded-xl border border-[#e8ddd0]"
+              >
+                暂无可下载章节。
+              </div>
+
+              <div
+                v-for="ch in availableChapters"
+                :key="ch.id"
+                class="p-3 bg-white/70 border border-[#e8ddd0] rounded-xl flex items-center justify-between gap-3"
+              >
+                <div class="min-w-0 flex-1">
+                  <h4 class="text-xs font-semibold text-[#1e1610] truncate">
+                    {{ ch.title || ch.id }}
+                  </h4>
+                  <span class="text-[10px] text-[#a89a8c] font-mono">
+                    {{ ch.duration ? `${Math.round(ch.duration / 60)} 分钟` : '标准原版' }}
+                  </span>
+                </div>
+
+                <div class="shrink-0 flex items-center">
+                  <!-- Already downloaded badge -->
+                  <div
+                    v-if="isChapterCached(ch.id)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg min-h-[44px]"
+                  >
+                    <CheckCircle2 class="w-4 h-4 text-emerald-600" />
+                    <span>已下载</span>
+                  </div>
+
+                  <!-- Downloading progress spinner -->
+                  <div
+                    v-else-if="downloadingMap[ch.id] !== undefined"
+                    class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#d97706] bg-amber-50 border border-amber-200 rounded-lg min-h-[44px]"
+                  >
+                    <Loader2 class="w-4 h-4 text-[#d97706] animate-spin" />
+                    <span class="font-mono">{{ downloadingMap[ch.id] }}%</span>
+                  </div>
+
+                  <!-- Download button -->
+                  <button
+                    v-else
+                    type="button"
+                    @click="downloadChapter(ch)"
+                    class="min-h-[44px] min-w-[44px] px-3 py-1.5 bg-[#f4ebe1] hover:bg-[#ebdccb] active:scale-95 text-xs font-medium text-[#1e1610] border border-[#e8ddd0] rounded-lg flex items-center gap-1.5 transition-all"
+                    :aria-label="`下载章节 ${ch.title || ch.id}`"
+                  >
+                    <Download class="w-4 h-4 text-[#d97706]" />
+                    <span>下载</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -105,8 +171,20 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { getOfflineStorageInfo, deleteCachedChapter } from '../utils/offlineStorage.js'
-import { HardDrive, X, Trash2 } from 'lucide-vue-next'
+import { useCatalogStore, resolveAudioStreamUrl, resolveSubtitleUrl } from '../stores/catalogStore.js'
+import {
+  getOfflineStorageInfo,
+  deleteCachedChapter,
+  saveChapterOffline
+} from '../utils/offlineStorage.js'
+import {
+  HardDrive,
+  X,
+  Trash2,
+  Download,
+  CheckCircle2,
+  Loader2
+} from 'lucide-vue-next'
 
 const props = defineProps({
   isOpen: {
@@ -117,16 +195,28 @@ const props = defineProps({
 
 defineEmits(['close'])
 
+const catalogStore = useCatalogStore()
+
 const storageInfo = ref({
   usedBytes: 0,
   quotaBytes: 2 * 1024 * 1024 * 1024,
   chapters: []
 })
 
+const downloadingMap = ref({})
+
 const quotaPercent = computed(() => {
   if (!storageInfo.value.quotaBytes) return 0
   return Math.min(100, (storageInfo.value.usedBytes / storageInfo.value.quotaBytes) * 100)
 })
+
+const availableChapters = computed(() => {
+  return catalogStore.currentBook?.chapters || []
+})
+
+function isChapterCached(id) {
+  return storageInfo.value.chapters?.some((c) => c.chapterId === id) || false
+}
 
 function formatBytes(bytes) {
   if (!bytes || bytes <= 0) return '0 B'
@@ -142,6 +232,46 @@ async function refreshStorage() {
     if (info) storageInfo.value = info
   } catch (e) {
     console.warn('[StorageManager] Query warning:', e)
+  }
+}
+
+async function downloadChapter(ch) {
+  if (downloadingMap.value[ch.id] !== undefined) return
+  downloadingMap.value[ch.id] = 0
+  try {
+    const audioUrl =
+      (ch.id === catalogStore.selectedChapterId ? catalogStore.audioUrl : '') ||
+      resolveAudioStreamUrl(
+        ch.audioKey ||
+          `podcasts/${catalogStore.currentBook?.id || 'hp-book-1'}/episodes/${ch.epId || 'ep01'}/audio.mp3`
+      ) ||
+      catalogStore.audioUrl
+
+    const vttUrl =
+      (ch.id === catalogStore.selectedChapterId ? catalogStore.subtitleUrl : '') ||
+      resolveSubtitleUrl(
+        ch.subtitleKey ||
+          `podcasts/${catalogStore.currentBook?.id || 'hp-book-1'}/episodes/${ch.epId || 'ep01'}/subtitle.vtt`
+      ) ||
+      catalogStore.subtitleUrl
+
+    await saveChapterOffline(
+      {
+        chapterId: ch.id,
+        title: ch.title,
+        audioUrl,
+        vttUrl
+      },
+      (progressInfo) => {
+        const p = typeof progressInfo === 'number' ? progressInfo : (progressInfo?.progress || 0)
+        downloadingMap.value[ch.id] = Math.round(p)
+      }
+    )
+    await refreshStorage()
+  } catch (err) {
+    console.warn('[StorageManager] Download chapter warning:', err)
+  } finally {
+    delete downloadingMap.value[ch.id]
   }
 }
 

@@ -17,7 +17,7 @@
         aria-label="魔法学业分析仪表盘"
       >
         <div
-          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
+          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden"
           @click.stop
         >
           <!-- Header -->
@@ -52,7 +52,7 @@
                   <span>连续打卡</span>
                 </div>
                 <div class="text-xl font-bold font-mono text-[#1e1610]">
-                  {{ summaryData.streakDays }} <span class="text-xs font-normal text-[#78695d]">天</span>
+                  {{ analyticsStore.streakDays }} <span class="text-xs font-normal text-[#78695d]">天</span>
                 </div>
               </div>
 
@@ -63,7 +63,7 @@
                   <span>总听时长</span>
                 </div>
                 <div class="text-xl font-bold font-mono text-[#1e1610]">
-                  {{ totalHours }} <span class="text-xs font-normal text-[#78695d]">小时</span>
+                  {{ analyticsStore.totalHours }} <span class="text-xs font-normal text-[#78695d]">小时</span>
                 </div>
               </div>
 
@@ -74,7 +74,7 @@
                   <span>通读章节</span>
                 </div>
                 <div class="text-xl font-bold font-mono text-[#1e1610]">
-                  {{ summaryData.completedChaptersCount }} <span class="text-xs font-normal text-[#78695d]">章</span>
+                  {{ analyticsStore.completedChaptersCount }} <span class="text-xs font-normal text-[#78695d]">章</span>
                 </div>
               </div>
 
@@ -85,7 +85,7 @@
                   <span>听写平均</span>
                 </div>
                 <div class="text-xl font-bold font-mono text-[#1e1610]">
-                  94 <span class="text-xs font-normal text-[#78695d]">%</span>
+                  {{ analyticsStore.accuracyScore }} <span class="text-xs font-normal text-[#78695d]">%</span>
                 </div>
               </div>
             </div>
@@ -180,6 +180,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useAnalyticsStore } from '../stores/analyticsStore.js'
 import {
   BarChart2,
   Flame,
@@ -199,35 +200,19 @@ defineProps({
 
 defineEmits(['close'])
 
-const summaryData = {
-  streakDays: 5,
-  totalListeningSeconds: 12600,
-  completedChaptersCount: 4
-}
+const analyticsStore = useAnalyticsStore()
 
-const totalHours = computed(() => {
-  return (summaryData.totalListeningSeconds / 3600).toFixed(1)
-})
-
-const weeklyDays = [
-  { name: '周一', minutes: 18 },
-  { name: '周二', minutes: 25 },
-  { name: '周三', minutes: 12 },
-  { name: '周四', minutes: 30 },
-  { name: '周五', minutes: 22 },
-  { name: '周六', minutes: 40 },
-  { name: '周日', minutes: 28, isToday: true }
-]
+const weeklyDays = computed(() => analyticsStore.weeklyDays || [])
 
 const weeklyTotalMinutes = computed(() => {
-  return weeklyDays.reduce((acc, cur) => acc + cur.minutes, 0)
+  return weeklyDays.value.reduce((acc, cur) => acc + (cur.minutes || 0), 0)
 })
 
 const weeklyData = computed(() => {
-  const maxMins = Math.max(...weeklyDays.map((d) => d.minutes), 45)
-  return weeklyDays.map((d) => ({
+  const maxMins = Math.max(...weeklyDays.value.map((d) => d.minutes || 0), 45)
+  return weeklyDays.value.map((d) => ({
     ...d,
-    height: Math.max(6, Math.round((d.minutes / maxMins) * 75))
+    height: Math.max(6, Math.round(((d.minutes || 0) / maxMins) * 75))
   }))
 })
 </script>

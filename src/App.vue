@@ -299,6 +299,7 @@ import { ref, shallowRef, computed, watch, onMounted, onUnmounted } from 'vue'
 import { usePlayerStore } from './stores/playerStore.js'
 import { useSubtitleStore } from './stores/subtitleStore.js'
 import { useCatalogStore } from './stores/catalogStore.js'
+import { useAnalyticsStore } from './stores/analyticsStore.js'
 import { parseVTT } from './utils/vttParser.js'
 import { getCachedChapter } from './utils/offlineStorage.js'
 import { SAMPLE_CHAPTER_1_VTT, SAMPLE_AUDIO_URL } from './data/chapters.js'
@@ -330,12 +331,14 @@ import {
 const player = usePlayerStore()
 const subtitleStore = useSubtitleStore()
 const catalog = useCatalogStore()
+const analyticsStore = useAnalyticsStore()
 
 // Native HTMLAudioElement held in shallowRef to avoid Proxy traps
 const audioRef = shallowRef(null)
 const activeAudioSrc = ref('')
 let currentBlobUrl = null
 let syncCounter = 0
+let lastTrackedTime = 0
 
 // Interactive modal/drawer states
 const isShadowingOpen = ref(false)
@@ -358,6 +361,7 @@ const currentChapterLabel = computed(() => {
 // Sync chapter audio and subtitle based on selection
 async function syncChapterContent() {
   const reqId = ++syncCounter
+  lastTrackedTime = 0
   player.setAudioLoading(true)
   player.setBuffering(true)
 
@@ -422,6 +426,12 @@ function onTimeUpdate() {
   if (!audioRef.value) return
   player.currentTime = audioRef.value.currentTime
   subtitleStore.updateActiveCue(audioRef.value.currentTime)
+
+  // Track elapsed listening playback in analytics store (~15s threshold)
+  if (Math.abs(audioRef.value.currentTime - lastTrackedTime) >= 15) {
+    analyticsStore.recordListening(15)
+    lastTrackedTime = audioRef.value.currentTime
+  }
 }
 
 function onDurationChange() {
@@ -444,6 +454,10 @@ function onAudioPlaying() {
 }
 
 function onAudioEnded() {
+  if (catalog.selectedChapterId) {
+    analyticsStore.markChapterComplete(catalog.selectedChapterId)
+  }
+
   // Automatically advance to next chapter if available
   const book = catalog.currentBook
   if (book && book.chapters) {
