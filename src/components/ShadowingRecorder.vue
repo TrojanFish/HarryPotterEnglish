@@ -17,7 +17,7 @@
         aria-label="A/B 影子跟读工坊"
       >
         <div
-          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
+          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-md overflow-hidden"
           @click.stop
         >
           <!-- Header -->
@@ -43,6 +43,14 @@
 
           <!-- Main Scrollable Content -->
           <div class="flex-1 overflow-y-auto p-5 space-y-4">
+            <div
+              v-if="!isSpeechRecognitionSupported"
+              class="p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center gap-2"
+            >
+              <AlertCircle class="w-4 h-4 shrink-0 text-[#d97706]" />
+              <span>当前浏览器不支持 Web Speech API，录音后将使用示范句进行模拟打分</span>
+            </div>
+
             <!-- Target Sentence Card -->
             <div class="p-4 bg-white/70 border border-[#e8ddd0] rounded-xl space-y-2">
               <div class="text-[11px] font-mono text-[#a89a8c] uppercase tracking-wide">
@@ -176,7 +184,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { evaluatePronunciation } from '../utils/speechScoring.js'
 import { usePlayerStore } from '../stores/playerStore.js'
 import {
@@ -185,7 +193,8 @@ import {
   Square,
   Play,
   Volume2,
-  Award
+  Award,
+  AlertCircle
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -203,6 +212,13 @@ const emit = defineEmits(['close'])
 
 const player = usePlayerStore()
 
+const SpeechRecognitionAPI = typeof window !== 'undefined' ? (window.SpeechRecognition || window.webkitSpeechRecognition || null) : null
+const isSpeechRecognitionSupported = computed(() => !!SpeechRecognitionAPI)
+
+const recognitionRef = ref(null)
+const spokenTranscript = ref('')
+const isPlayingOriginal = ref(false)
+
 const isRecording = ref(false)
 const recordedAudioUrl = ref(null)
 const evaluationResult = ref(null)
@@ -215,6 +231,10 @@ const targetSentence = computed(() => {
 })
 
 function handleClose() {
+  if (isPlayingOriginal.value) {
+    player.pause()
+    isPlayingOriginal.value = false
+  }
   stopHardware()
   emit('close')
 }
@@ -224,16 +244,44 @@ function stopHardware() {
     mediaStream.value.getTracks().forEach((t) => t.stop())
     mediaStream.value = null
   }
+  if (recognitionRef.value) {
+    try { recognitionRef.value.stop() } catch (_) {}
+    recognitionRef.value = null
+  }
   isRecording.value = false
 }
 
 async function startRecording() {
+  if (isPlayingOriginal.value) {
+    player.pause()
+    isPlayingOriginal.value = false
+  }
   if (recordedAudioUrl.value) {
     URL.revokeObjectURL(recordedAudioUrl.value)
     recordedAudioUrl.value = null
   }
   evaluationResult.value = null
   recordedChunks.value = []
+  spokenTranscript.value = ''
+
+  if (SpeechRecognitionAPI) {
+    try {
+      const recognition = new SpeechRecognitionAPI()
+      recognition.continuous = true
+      recognition.interimResults = true
+      recognition.lang = 'en-US'
+      recognition.onresult = (e) => {
+        let transcript = ''
+        for (let i = 0; i < e.results.length; i++) {
+          transcript += e.results[i][0].transcript
+        }
+        spokenTranscript.value = transcript
+      }
+      recognition.onerror = () => {}
+      recognition.start()
+      recognitionRef.value = recognition
+    } catch (e) {}
+  }
 
   try {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -272,16 +320,38 @@ function stopRecording() {
 
   // Evaluate pronunciation against target sentence
   const target = targetSentence.value
-  const spoken = target // In real speech recognition, spoken comes from SpeechRecognition transcript
+  const spoken = spokenTranscript.value.trim() || target
   evaluationResult.value = evaluatePronunciation(target, spoken)
 }
 
 function playOriginalSnippet() {
   if (props.currentCue?.start !== undefined) {
+    isPlayingOriginal.value = true
     player.seek(props.currentCue.start)
     player.play()
   }
 }
+
+watch(
+  () => player.currentTime,
+  (t) => {
+    if (
+      isPlayingOriginal.value &&
+      props.currentCue?.end !== undefined &&
+      t >= props.currentCue.end - 0.15
+    ) {
+      player.pause()
+      isPlayingOriginal.value = false
+    }
+  }
+)
+
+watch(
+  () => player.isPlaying,
+  (playing) => {
+    if (!playing) isPlayingOriginal.value = false
+  }
+)
 
 function playUserRecording() {
   if (recordedAudioUrl.value) {
@@ -291,6 +361,10 @@ function playUserRecording() {
 }
 
 onUnmounted(() => {
+  if (isPlayingOriginal.value) {
+    player.pause()
+    isPlayingOriginal.value = false
+  }
   stopHardware()
   if (recordedAudioUrl.value) {
     URL.revokeObjectURL(recordedAudioUrl.value)
