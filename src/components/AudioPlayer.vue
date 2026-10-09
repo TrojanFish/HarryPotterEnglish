@@ -1,24 +1,62 @@
 <template>
   <footer
-    class="fixed bottom-0 left-0 right-0 z-30 bg-[#fbf9f5]/95 backdrop-blur-md border-t border-[#e8ddd0] px-4 pt-3 pb-3 pb-safe shadow-[0_-4px_16px_rgba(30,22,16,0.04)]"
+    class="fixed bottom-0 left-0 right-0 z-30 bg-[#fbf9f5]/95 backdrop-blur-md border-t border-[#e8ddd0] px-3 sm:px-4 pt-2.5 pb-2.5 pb-safe shadow-[0_-4px_16px_rgba(30,22,16,0.04)]"
     role="region"
     aria-label="流媒体音频播放控制栏"
   >
-    <div class="max-w-4xl mx-auto flex flex-col gap-2">
+    <div class="max-w-4xl mx-auto flex flex-col gap-1.5 sm:gap-2">
+      <!-- Top Micro-status Row (R2 status / Buffering indicator) -->
+      <div class="flex items-center justify-between text-[10px] font-mono text-[#78695d] px-1 select-none">
+        <div class="flex items-center gap-1.5">
+          <span
+            v-if="player.isOfflineFallback"
+            class="px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 border border-stone-200 flex items-center gap-1"
+          >
+            <WifiOff class="w-3 h-3 text-stone-500" />
+            <span>离线备用音频通道</span>
+          </span>
+          <span
+            v-else
+            class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-300/60 flex items-center gap-1"
+          >
+            <Radio class="w-3 h-3 text-[#d97706]" />
+            <span>R2 原版母带流媒体</span>
+          </span>
+
+          <span
+            v-if="player.isBuffering || player.isAudioLoading"
+            class="px-1.5 py-0.5 rounded-full bg-amber-100/80 text-[#92400e] flex items-center gap-1 animate-pulse"
+          >
+            <Loader2 class="w-2.5 h-2.5 animate-spin text-[#d97706]" />
+            <span>缓冲装载中...</span>
+          </span>
+        </div>
+
+        <span class="text-[11px] text-[#a89a8c] hidden sm:inline">
+          Space 播放 · ←/→ 快退进
+        </span>
+      </div>
+
       <!-- Progress Track & Time indicators -->
-      <div class="flex items-center gap-3 w-full">
-        <span class="text-xs font-mono text-[#78695d] w-12 text-right tabular-nums select-none">
+      <div class="flex items-center gap-2.5 sm:gap-3 w-full">
+        <span class="text-xs font-mono text-[#78695d] w-12 text-right tabular-nums select-none shrink-0">
           {{ formatTime(displayTime) }}
         </span>
 
-        <div class="relative flex-1 flex items-center group py-2">
+        <div class="relative flex-1 flex items-center group py-2.5">
           <!-- Background Bar -->
-          <div class="w-full h-1.5 bg-[#e8ddd0] rounded-full overflow-hidden">
+          <div class="w-full h-1.5 sm:h-2 bg-[#e8ddd0] rounded-full overflow-hidden">
             <div
-              class="h-full bg-[#d97706] transition-[width] duration-75 rounded-full"
+              class="h-full bg-[#d97706] transition-[width] duration-75 rounded-full relative"
               :style="{ width: `${progressPercent}%` }"
             ></div>
           </div>
+
+          <!-- Thumb indicator that follows progress -->
+          <div
+            class="absolute w-3.5 h-3.5 sm:w-4 sm:h-4 bg-[#d97706] border-2 border-white rounded-full shadow-sm pointer-events-none -translate-x-1/2 transition-transform group-hover:scale-125"
+            :style="{ left: `${progressPercent}%` }"
+          ></div>
 
           <!-- Native Accessible Range Input for smooth touch dragging -->
           <input
@@ -34,29 +72,48 @@
           />
         </div>
 
-        <span class="text-xs font-mono text-[#78695d] w-12 tabular-nums select-none">
+        <span class="text-xs font-mono text-[#78695d] w-12 tabular-nums select-none shrink-0">
           {{ formatTime(player.duration) }}
         </span>
       </div>
 
       <!-- Action Buttons Pyramid (Apple HIG >= 44px) -->
       <div class="flex items-center justify-between">
-        <!-- Left: Blind Mode Toggle -->
-        <button
-          type="button"
-          @click="player.toggleBlindMode()"
-          :class="[
-            'min-h-[44px] min-w-[44px] px-3 rounded-lg flex items-center gap-1.5 text-xs font-medium transition-colors border',
-            player.isBlindMode
-              ? 'bg-[#d97706]/15 border-[#d97706] text-[#92400e]'
-              : 'border-[#e8ddd0] text-[#78695d] hover:bg-[#f4ebe1] hover:text-[#1e1610]'
-          ]"
-          :aria-pressed="player.isBlindMode"
-          aria-label="隐身斗篷盲听模式开关"
-        >
-          <component :is="player.isBlindMode ? EyeOff : Eye" class="w-4 h-4 shrink-0" />
-          <span class="hidden sm:inline">{{ player.isBlindMode ? '盲听中' : '盲听' }}</span>
-        </button>
+        <!-- Left: Blind Mode & Volume Control -->
+        <div class="flex items-center gap-1 sm:gap-2">
+          <!-- Blind Mode Toggle -->
+          <button
+            type="button"
+            @click="player.toggleBlindMode()"
+            :class="[
+              'min-h-[44px] min-w-[44px] px-2.5 sm:px-3 rounded-xl flex items-center gap-1.5 text-xs font-medium transition-colors border active:scale-95',
+              player.isBlindMode
+                ? 'bg-[#d97706]/15 border-[#d97706] text-[#92400e]'
+                : 'border-[#e8ddd0] text-[#78695d] hover:bg-[#f4ebe1] hover:text-[#1e1610]'
+            ]"
+            :aria-pressed="player.isBlindMode"
+            aria-label="隐身斗篷盲听模式开关"
+            title="盲听模式（模糊未播字幕，专注听力输入）"
+          >
+            <component :is="player.isBlindMode ? EyeOff : Eye" class="w-4 h-4 shrink-0" />
+            <span class="hidden sm:inline">{{ player.isBlindMode ? '盲听中' : '盲听' }}</span>
+          </button>
+
+          <!-- Volume Toggle & Mini Slider Popover -->
+          <div class="relative flex items-center">
+            <button
+              type="button"
+              @click="toggleVolumeMute"
+              class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl border border-[#e8ddd0] hover:bg-[#f4ebe1] text-[#78695d] hover:text-[#1e1610] flex items-center justify-center transition-colors active:scale-95"
+              :aria-label="player.volume === 0 ? '解除静音' : '静音调节'"
+              title="音量调节"
+            >
+              <VolumeX v-if="player.volume === 0" class="w-4 h-4 text-stone-400" />
+              <Volume1 v-else-if="player.volume < 0.5" class="w-4 h-4 text-[#d97706]" />
+              <Volume2 v-else class="w-4 h-4 text-[#d97706]" />
+            </button>
+          </div>
+        </div>
 
         <!-- Center: Primary Playback Controls -->
         <div class="flex items-center gap-2 sm:gap-4">
@@ -66,18 +123,20 @@
             @click="skip(-5)"
             class="min-h-[44px] min-w-[44px] p-2 rounded-full flex items-center justify-center text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] transition-colors active:scale-95"
             aria-label="快退 5 秒"
+            title="快退 5 秒"
           >
             <RotateCcw class="w-5 h-5" />
           </button>
 
-          <!-- Master Play / Pause Button -->
+          <!-- Master Play / Pause Button with Buffering state -->
           <button
             type="button"
             @click="player.togglePlay()"
-            class="min-h-[48px] min-w-[48px] p-3 rounded-full bg-[#d97706] hover:bg-[#b45309] text-white flex items-center justify-center shadow-sm transition-transform active:scale-95"
+            class="min-h-[48px] min-w-[48px] sm:min-h-[52px] sm:min-w-[52px] p-3 rounded-full bg-[#d97706] hover:bg-[#b45309] text-white flex items-center justify-center shadow-sm transition-transform active:scale-95"
             :aria-label="player.isPlaying ? '暂停音频' : '播放音频'"
           >
-            <component :is="player.isPlaying ? Pause : Play" class="w-6 h-6 fill-current" />
+            <Loader2 v-if="player.isBuffering || player.isAudioLoading" class="w-6 h-6 animate-spin" />
+            <component v-else :is="player.isPlaying ? Pause : Play" class="w-6 h-6 fill-current" />
           </button>
 
           <!-- Fast-forward 5s -->
@@ -86,21 +145,25 @@
             @click="skip(5)"
             class="min-h-[44px] min-w-[44px] p-2 rounded-full flex items-center justify-center text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] transition-colors active:scale-95"
             aria-label="快进 5 秒"
+            title="快进 5 秒"
           >
             <RotateCw class="w-5 h-5" />
           </button>
         </div>
 
-        <!-- Right: Playback Rate Selector -->
-        <button
-          type="button"
-          @click="cycleRate"
-          class="min-h-[44px] min-w-[44px] px-3 rounded-lg border border-[#e8ddd0] hover:bg-[#f4ebe1] text-[#78695d] hover:text-[#1e1610] flex items-center gap-1 text-xs font-mono font-medium transition-colors active:scale-95"
-          aria-label="切换播放倍速"
-        >
-          <Gauge class="w-4 h-4 shrink-0" />
-          <span>{{ player.playbackRate.toFixed(1) }}x</span>
-        </button>
+        <!-- Right: Playback Rate Selector (0.8x ~ 2.0x) -->
+        <div class="flex items-center gap-1.5">
+          <button
+            type="button"
+            @click="cycleRate"
+            class="min-h-[44px] min-w-[44px] px-2.5 sm:px-3 rounded-xl border border-[#e8ddd0] hover:bg-[#f4ebe1] text-[#78695d] hover:text-[#1e1610] flex items-center gap-1 text-xs font-mono font-medium transition-colors active:scale-95"
+            aria-label="切换播放倍速"
+            title="切换播放倍速"
+          >
+            <Gauge class="w-4 h-4 shrink-0 text-[#d97706]" />
+            <span>{{ player.playbackRate.toFixed(1) }}x</span>
+          </button>
+        </div>
       </div>
     </div>
   </footer>
@@ -117,13 +180,20 @@ import {
   RotateCw,
   Gauge,
   Eye,
-  EyeOff
+  EyeOff,
+  Volume2,
+  Volume1,
+  VolumeX,
+  Radio,
+  WifiOff,
+  Loader2
 } from 'lucide-vue-next'
 
 const player = usePlayerStore()
 
 const isDragging = ref(false)
 const dragTime = ref(0)
+const lastNonZeroVolume = ref(1.0)
 
 const displayTime = computed(() => {
   return isDragging.value ? dragTime.value : player.currentTime
@@ -131,7 +201,7 @@ const displayTime = computed(() => {
 
 const progressPercent = computed(() => {
   if (!player.duration || player.duration <= 0) return 0
-  return Math.min(100, (displayTime.value / player.duration) * 100)
+  return Math.min(100, Math.max(0, (displayTime.value / player.duration) * 100))
 })
 
 function onSliderInput(e) {
@@ -149,7 +219,16 @@ function skip(seconds) {
   player.seek(player.currentTime + seconds)
 }
 
-const rates = [0.8, 1.0, 1.2, 1.5]
+function toggleVolumeMute() {
+  if (player.volume > 0) {
+    lastNonZeroVolume.value = player.volume
+    player.setVolume(0)
+  } else {
+    player.setVolume(lastNonZeroVolume.value || 1.0)
+  }
+}
+
+const rates = [0.8, 1.0, 1.2, 1.5, 2.0]
 function cycleRate() {
   const idx = rates.indexOf(player.playbackRate)
   const nextIdx = (idx + 1) % rates.length

@@ -3,12 +3,15 @@
     <!-- Hidden native audio element managed via shallowRef -->
     <audio
       ref="audioRef"
-      :src="audioSource"
+      :src="activeAudioSrc"
       preload="metadata"
       @timeupdate="onTimeUpdate"
       @durationchange="onDurationChange"
       @play="player.play()"
       @pause="player.pause()"
+      @waiting="onAudioWaiting"
+      @canplay="onAudioCanPlay"
+      @playing="onAudioPlaying"
       @ended="onAudioEnded"
       @error="onAudioError"
       class="hidden"
@@ -38,7 +41,7 @@
       <button
         type="button"
         @click="player.toggleBookshelf(true)"
-        class="min-h-[44px] max-w-[120px] sm:max-w-[200px] px-2.5 sm:px-3.5 py-1.5 bg-[#f4ebe1] hover:bg-[#ebdccb] border border-[#e8ddd0] rounded-full flex items-center gap-1.5 sm:gap-2 text-xs font-serif font-medium text-[#1e1610] transition-colors active:scale-95 truncate shrink"
+        class="min-h-[44px] max-w-[140px] sm:max-w-[260px] px-2.5 sm:px-3.5 py-1.5 bg-[#f4ebe1] hover:bg-[#ebdccb] border border-[#e8ddd0] rounded-full flex items-center gap-1.5 sm:gap-2 text-xs font-serif font-medium text-[#1e1610] transition-colors active:scale-95 truncate shrink"
         aria-label="打开书架选择章节"
       >
         <BookOpen class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#d97706] shrink-0" />
@@ -217,6 +220,26 @@
       </div>
     </header>
 
+    <!-- Global Notice Banner (e.g. Offline fallback notice) -->
+    <div
+      v-if="player.audioError"
+      class="mx-3 sm:mx-4 mt-2 px-3 py-1.5 bg-amber-50/95 border border-amber-300/80 rounded-xl flex items-center justify-between text-xs text-[#92400e] shadow-sm shrink-0 transition-all z-10"
+      role="alert"
+    >
+      <div class="flex items-center gap-2 min-w-0">
+        <AlertCircle class="w-4 h-4 text-[#d97706] shrink-0" />
+        <span class="truncate">{{ player.audioError }}</span>
+      </div>
+      <button
+        type="button"
+        @click="player.setAudioError(null)"
+        class="p-1 rounded-lg text-[#92400e] hover:bg-amber-100/80 min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
+        aria-label="关闭提示"
+      >
+        <X class="w-4 h-4" />
+      </button>
+    </div>
+
     <!-- Main Content Area: Subtitle Viewer protected by Error Boundary -->
     <main class="flex-1 flex flex-col overflow-hidden relative" role="main">
       <MagicErrorBoundary>
@@ -274,7 +297,9 @@
 import { ref, shallowRef, computed, watch, onMounted, onUnmounted } from 'vue'
 import { usePlayerStore } from './stores/playerStore.js'
 import { useSubtitleStore } from './stores/subtitleStore.js'
+import { useCatalogStore } from './stores/catalogStore.js'
 import { parseVTT } from './utils/vttParser.js'
+import { getCachedChapter } from './utils/offlineStorage.js'
 import { SAMPLE_CHAPTER_1_VTT, SAMPLE_AUDIO_URL } from './data/chapters.js'
 import AudioPlayer from './components/AudioPlayer.vue'
 import SubtitleViewer from './components/SubtitleViewer.vue'
@@ -296,14 +321,20 @@ import {
   HardDrive,
   HelpCircle,
   Library,
-  MoreVertical
+  MoreVertical,
+  AlertCircle,
+  X
 } from 'lucide-vue-next'
 
 const player = usePlayerStore()
 const subtitleStore = useSubtitleStore()
+const catalog = useCatalogStore()
 
 // Native HTMLAudioElement held in shallowRef to avoid Proxy traps
 const audioRef = shallowRef(null)
+const activeAudioSrc = ref('')
+let currentBlobUrl = null
+let syncCounter = 0
 
 // Interactive modal/drawer states
 const isShadowingOpen = ref(false)
@@ -316,14 +347,74 @@ const isMobileMenuOpen = ref(false)
 
 // Current Chapter Display Label
 const currentChapterLabel = computed(() => {
-  const ch = player.currentChapterId || 'hp1-01'
-  return `HP1 · ${ch}`
+  const book = catalog.currentBook
+  const ch = catalog.currentChapter
+  const code = book?.code || 'HP1'
+  const title = ch?.title || `Chapter ${ch?.number || 1}`
+  return `${code} · ${title}`
 })
 
-// Audio streaming source (uses local sample audio or R2 stream)
-const audioSource = computed(() => {
-  return SAMPLE_AUDIO_URL
-})
+// Sync chapter audio and subtitle based on selection
+async function syncChapterContent() {
+  const reqId = ++syncCounter
+  player.setAudioLoading(true)
+  player.setBuffering(true)
+
+  const ch = catalog.currentChapter
+  if (!ch) {
+    player.setAudioLoading(false)
+    player.setBuffering(false)
+    return
+  }
+
+  // 1. Check IndexedDB offline cache first
+  try {
+    const cached = await getCachedChapter(ch.id)
+    if (reqId !== syncCounter) return
+    if (cached && cached.audioBlob && cached.audioBlob.size > 0) {
+      if (currentBlobUrl) {
+        URL.revokeObjectURL(currentBlobUrl)
+      }
+      currentBlobUrl = URL.createObjectURL(cached.audioBlob)
+      activeAudioSrc.value = currentBlobUrl
+      player.setOfflineFallback(false)
+      player.setAudioError(null)
+
+      if (cached.vttText) {
+        subtitleStore.setCues(parseVTT(cached.vttText))
+      } else {
+        subtitleStore.loadVtt(catalog.subtitleUrl)
+      }
+      player.setAudioLoading(false)
+      player.setBuffering(false)
+      return
+    }
+  } catch (err) {
+    console.warn('[Offline] Cache lookup skipped:', err)
+  }
+
+  // 2. Stream online via catalog audioUrl
+  if (currentBlobUrl) {
+    URL.revokeObjectURL(currentBlobUrl)
+    currentBlobUrl = null
+  }
+  activeAudioSrc.value = catalog.audioUrl
+  player.setOfflineFallback(false)
+
+  // Concurrently load WebVTT subtitles
+  subtitleStore.loadVtt(catalog.subtitleUrl).catch(() => {
+    // Subtitle store handles fallback internally
+  })
+}
+
+// React to chapter changes
+watch(
+  () => [catalog.selectedBookId, catalog.selectedChapterId],
+  () => {
+    syncChapterContent()
+  },
+  { immediate: true }
+)
 
 // Audio event handlers
 function onTimeUpdate() {
@@ -337,13 +428,48 @@ function onDurationChange() {
   player.duration = audioRef.value.duration || 0
 }
 
+function onAudioWaiting() {
+  player.setBuffering(true)
+}
+
+function onAudioCanPlay() {
+  player.setBuffering(false)
+  player.setAudioLoading(false)
+}
+
+function onAudioPlaying() {
+  player.setBuffering(false)
+  player.setAudioLoading(false)
+}
+
 function onAudioEnded() {
+  // Automatically advance to next chapter if available
+  const book = catalog.currentBook
+  if (book && book.chapters) {
+    const curIdx = book.chapters.findIndex((c) => c.id === catalog.selectedChapterId)
+    if (curIdx >= 0 && curIdx + 1 < book.chapters.length) {
+      const nextCh = book.chapters[curIdx + 1]
+      catalog.selectChapter(nextCh.id)
+      player.switchChapter(book.id, nextCh.id)
+      player.play()
+      return
+    }
+  }
   player.pause()
 }
 
 function onAudioError(e) {
-  console.warn('[App Audio] Audio loading warning, audio element triggered error:', e)
-  player.pause()
+  console.warn('[App Audio] Stream loading notice, triggering fallback:', e)
+  player.setBuffering(false)
+  player.setAudioLoading(false)
+
+  if (activeAudioSrc.value !== SAMPLE_AUDIO_URL) {
+    player.setOfflineFallback(true)
+    player.setAudioError('原版音频流加载受阻，已启用纯享磨耳朵备用音频通道')
+    activeAudioSrc.value = SAMPLE_AUDIO_URL
+  } else {
+    player.pause()
+  }
 }
 
 // Reactivity watchers linking Pinia state to HTMLAudioElement
@@ -406,8 +532,8 @@ function setupMediaSession() {
     if (window.MediaMetadata) {
       navigator.mediaSession.metadata = new window.MediaMetadata({
         title: currentChapterLabel.value,
-        artist: 'J.K. Rowling · 霍格沃茨魔法学院',
-        album: 'Harry Potter · 原版沉浸精听',
+        artist: `${catalog.currentBook?.title || 'Harry Potter'} · J.K. Rowling`,
+        album: 'Hogwarts Audio · 原版沉浸精听',
         artwork: [
           { src: '/icon.svg', sizes: '192x192', type: 'image/svg+xml' }
         ]
@@ -459,17 +585,15 @@ function onKeyDown(e) {
 }
 
 onMounted(() => {
-  // Load sample VTT on start
-  if (SAMPLE_CHAPTER_1_VTT) {
-    const parsed = parseVTT(SAMPLE_CHAPTER_1_VTT)
-    subtitleStore.setCues(parsed)
-  }
-
   setupMediaSession()
   window.addEventListener('keydown', onKeyDown)
 })
 
 onUnmounted(() => {
   window.removeEventListener('keydown', onKeyDown)
+  if (currentBlobUrl) {
+    URL.revokeObjectURL(currentBlobUrl)
+    currentBlobUrl = null
+  }
 })
 </script>

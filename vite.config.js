@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { r2DevPlugin } from './server/viteR2Plugin.js'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   base: mode === 'production' ? (process.env.VITE_BASE_PATH || './') : '/',
-  plugins: [vue()],
+  plugins: [vue(), r2DevPlugin()],
   server: {
     host: '0.0.0.0',
     port: 3000,

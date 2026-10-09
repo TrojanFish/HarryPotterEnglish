@@ -27,11 +27,33 @@ export const usePlayerStore = defineStore('player', {
       isBlindMode: false,
       isBookshelfOpen: false,
       isBuffering: false,
+      isAudioLoading: false,
+      audioError: null,
+      isOfflineFallback: false,
       audioSrc: ''
     }
   },
 
   actions: {
+    setBuffering(val) {
+      this.isBuffering = Boolean(val)
+    },
+
+    setAudioLoading(val) {
+      this.isAudioLoading = Boolean(val)
+    },
+
+    setAudioError(err) {
+      this.audioError = err || null
+    },
+
+    setOfflineFallback(val) {
+      this.isOfflineFallback = Boolean(val)
+    },
+
+    setAudioSrc(src) {
+      this.audioSrc = src || ''
+    },
     play() {
       this.isPlaying = true
     },

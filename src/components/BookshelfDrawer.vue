@@ -58,7 +58,7 @@
             v-for="book in BOOKS"
             :key="book.id"
             type="button"
-            @click="activeBookId = book.id"
+            @click="onSelectBook(book.id)"
             :class="[
               'min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all flex flex-col items-start gap-0.5 border',
               activeBookId === book.id
@@ -79,28 +79,63 @@
           </button>
         </div>
 
-        <!-- Book Info Header -->
-        <div v-if="currentBookData" class="px-4 py-3 bg-[#f4ebe1]/40 border-b border-[#e8ddd0] shrink-0">
-          <h3 class="font-serif text-sm font-semibold text-[#1e1610] leading-snug">
-            {{ currentBookData.titleZh }}
-          </h3>
-          <p class="text-[11px] text-[#78695d] font-serif italic mt-0.5">
+        <!-- Book Info Header & Chapter Search -->
+        <div v-if="currentBookData" class="px-4 py-3 bg-[#f4ebe1]/40 border-b border-[#e8ddd0] shrink-0 space-y-2">
+          <div class="flex items-baseline justify-between">
+            <h3 class="font-serif text-sm font-semibold text-[#1e1610] leading-snug">
+              {{ currentBookData.titleZh }}
+            </h3>
+            <span class="text-[11px] text-[#78695d] font-mono">
+              共 {{ filteredChapters.length }} 章节
+            </span>
+          </div>
+          <p class="text-[11px] text-[#78695d] font-serif italic truncate">
             {{ currentBookData.title }}
           </p>
+
+          <!-- Search Filter -->
+          <div class="relative flex items-center">
+            <Search class="w-4 h-4 text-[#78695d] absolute left-3 pointer-events-none" />
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="搜索章节标题或序号..."
+              class="w-full min-h-[44px] pl-9 pr-8 text-xs bg-white border border-[#e8ddd0] rounded-xl text-[#1e1610] placeholder-[#a89a8c] focus:outline-none focus:border-[#d97706]"
+              autoCapitalize="none"
+              autoCorrect="off"
+              :spellcheck="false"
+            />
+            <button
+              v-if="searchQuery"
+              type="button"
+              @click="searchQuery = ''"
+              class="absolute right-2 min-h-[44px] min-w-[36px] flex items-center justify-center text-[#78695d] hover:text-[#1e1610]"
+              aria-label="清空搜索"
+            >
+              <X class="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
 
         <!-- Chapter List -->
         <div class="flex-1 overflow-y-auto p-4 space-y-2">
+          <div
+            v-if="filteredChapters.length === 0"
+            class="text-center py-12 px-4 text-xs text-[#78695d] font-serif"
+          >
+            未找到与 "{{ searchQuery }}" 匹配的章节
+          </div>
+
           <button
-            v-for="(chapter, idx) in bookChapters"
+            v-for="(chapter, idx) in filteredChapters"
             :key="chapter.id || idx"
             type="button"
             @click="onSelectChapter(chapter)"
             :class="[
               'w-full min-h-[48px] p-3 rounded-xl border text-left transition-all flex items-center justify-between gap-3 group',
               isCurrentActive(chapter)
-                ? 'bg-[#d97706]/10 border-[#d97706] text-[#1e1610] shadow-sm'
-                : 'border-[#e8ddd0] bg-white/60 hover:bg-[#f4ebe1]/70 text-[#4a3b32]'
+                ? 'bg-[#d97706]/10 border-[#d97706] border-l-4 border-l-[#d97706] text-[#1e1610] shadow-sm'
+                : 'border-[#e8ddd0] bg-white/70 hover:bg-[#f4ebe1]/70 text-[#4a3b32]'
             ]"
           >
             <div class="flex items-center gap-3 min-w-0">
@@ -112,26 +147,40 @@
                     : 'bg-[#e8ddd0] text-[#78695d]'
                 ]"
               >
-                {{ chapter.number || idx + 1 }}
+                <Volume2 v-if="isCurrentActive(chapter) && player.isPlaying" class="w-3.5 h-3.5 animate-pulse" />
+                <span v-else>{{ chapter.number || idx + 1 }}</span>
               </span>
 
               <div class="truncate">
-                <p class="text-sm font-medium truncate">
-                  {{ chapter.title || `Chapter ${idx + 1}` }}
+                <p class="text-xs sm:text-sm font-medium truncate font-serif">
+                  {{ chapter.title || `Chapter ${chapter.number || idx + 1}` }}
                 </p>
-                <p v-if="chapter.duration" class="text-[11px] text-[#a89a8c] flex items-center gap-1 font-mono mt-0.5">
-                  <Clock class="w-3 h-3" />
-                  <span>{{ chapter.duration }}</span>
-                </p>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span v-if="chapter.cnTitle" class="text-[11px] text-[#78695d] truncate">
+                    {{ chapter.cnTitle }}
+                  </span>
+                  <span v-if="chapter.duration" class="text-[10px] text-[#a89a8c] flex items-center gap-1 font-mono shrink-0">
+                    <Clock class="w-3 h-3" />
+                    <span>{{ chapter.duration }}</span>
+                  </span>
+                </div>
               </div>
             </div>
 
-            <ChevronRight
-              :class="[
-                'w-4 h-4 shrink-0 transition-transform group-hover:translate-x-0.5',
-                isCurrentActive(chapter) ? 'text-[#d97706]' : 'text-[#a89a8c]'
-              ]"
-            />
+            <div class="flex items-center gap-1.5 shrink-0">
+              <span
+                v-if="isCurrentActive(chapter)"
+                class="text-[10px] px-2 py-0.5 rounded-full font-mono bg-[#d97706]/15 text-[#92400e] border border-[#d97706]/30 hidden sm:inline"
+              >
+                当前播放
+              </span>
+              <ChevronRight
+                :class="[
+                  'w-4 h-4 shrink-0 transition-transform group-hover:translate-x-0.5',
+                  isCurrentActive(chapter) ? 'text-[#d97706]' : 'text-[#a89a8c]'
+                ]"
+              />
+            </div>
           </button>
         </div>
 
@@ -162,13 +211,16 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { usePlayerStore } from '../stores/playerStore.js'
+import { useCatalogStore } from '../stores/catalogStore.js'
 import { BOOKS, CEFR_LEVELS } from '../utils/booksData.js'
-import { BookMarked, X, Clock, ChevronRight, Scale } from 'lucide-vue-next'
+import { BookMarked, X, Clock, ChevronRight, Scale, Volume2, Search } from 'lucide-vue-next'
 import LegalDisclaimerModal from './LegalDisclaimerModal.vue'
 
 const player = usePlayerStore()
+const catalog = useCatalogStore()
 
 const isLegalOpen = ref(false)
+const searchQuery = ref('')
 const activeBookId = ref(player.currentBookId || 'book1')
 
 const currentBookData = computed(() => {
@@ -179,8 +231,29 @@ const currentBookData = computed(() => {
   )
 })
 
-// Generate simulated or catalog-based chapter list
+const currentCatBook = computed(() => {
+  return (
+    catalog.books.find(
+      (cb) => cb.id === activeBookId.value || currentBookData.value?.altIds?.includes(cb.id)
+    ) || catalog.currentBook
+  )
+})
+
+// Real chapters derived from catalog with fallback
 const bookChapters = computed(() => {
+  if (currentCatBook.value?.chapters && currentCatBook.value.chapters.length > 0) {
+    return currentCatBook.value.chapters.map((ch, idx) => ({
+      id: ch.id,
+      number: ch.number || idx + 1,
+      title: ch.title || `Chapter ${ch.number || idx + 1}`,
+      cnTitle: ch.cnTitle || '',
+      duration: ch.duration || '20:00',
+      durationSeconds: ch.durationSeconds || 1200,
+      audioKey: ch.audioKey,
+      subtitleKey: ch.subtitleKey
+    }))
+  }
+
   const count = currentBookData.value?.chaptersCount || 17
   const bookCode = currentBookData.value?.code?.toLowerCase() || 'hp1'
   return Array.from({ length: count }, (_, i) => {
@@ -190,17 +263,48 @@ const bookChapters = computed(() => {
       id: `${bookCode}_ep${epId}`,
       number: num,
       title: `Chapter ${num}`,
-      duration: '15:00'
+      cnTitle: '',
+      duration: '15:00',
+      durationSeconds: 900
     }
   })
 })
 
+const filteredChapters = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return bookChapters.value
+  return bookChapters.value.filter(
+    (ch) =>
+      ch.title.toLowerCase().includes(q) ||
+      (ch.cnTitle && ch.cnTitle.toLowerCase().includes(q)) ||
+      String(ch.number).includes(q)
+  )
+})
+
 function isCurrentActive(chapter) {
-  return player.currentChapterId === chapter.id
+  return (
+    catalog.selectedChapterId === chapter.id ||
+    player.currentChapterId === chapter.id
+  )
+}
+
+function onSelectBook(bookId) {
+  activeBookId.value = bookId
+  const catBook = catalog.books.find(
+    (cb) => cb.id === bookId || BOOKS.find((b) => b.id === bookId)?.altIds?.includes(cb.id)
+  )
+  if (catBook) {
+    catalog.selectBook(catBook.id)
+  }
 }
 
 function onSelectChapter(chapter) {
   const bookId = currentBookData.value?.id || 'book1'
+  const catBook = currentCatBook.value || catalog.currentBook
+  if (catBook) {
+    catalog.selectBook(catBook.id)
+    catalog.selectChapter(chapter.id)
+  }
   player.switchChapter(bookId, chapter.id)
   player.toggleBookshelf(false)
 }
