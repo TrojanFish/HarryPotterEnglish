@@ -66,7 +66,7 @@
           </span>
         </div>
 
-        <!-- English Text with Blind Mode blur option -->
+        <!-- English Text with Blind Mode blur option & word-tap -->
         <p
           :class="[
             'text-base sm:text-lg leading-[1.8] font-serif transition-all',
@@ -78,7 +78,12 @@
               : ''
           ]"
         >
-          {{ cue.text }}
+          <span
+            v-for="(token, tokenIdx) in tokenizeText(cue.text)"
+            :key="tokenIdx"
+            @click.stop="handleWordClick(token, cue.text)"
+            class="hover:text-[#d97706] hover:underline hover:decoration-dotted cursor-pointer transition-colors"
+          >{{ token }} </span>
         </p>
 
         <!-- Chinese translation if available -->
@@ -95,18 +100,41 @@
         </p>
       </div>
     </div>
+
+    <!-- Word added toast notification -->
+    <Transition
+      enter-active-class="transition duration-150 ease-out"
+      enter-from-class="opacity-0 translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-2"
+    >
+      <div
+        v-if="toastWord"
+        class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-[#1e1610] text-[#fbf9f5] text-xs font-mono rounded-full border border-[#d97706]/40 flex items-center gap-2 pointer-events-none"
+      >
+        <Sparkles class="w-3.5 h-3.5 text-[#d97706]" />
+        <span>{{ toastWord }}</span>
+      </div>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import { useSubtitleStore } from '../stores/subtitleStore.js'
 import { usePlayerStore } from '../stores/playerStore.js'
+import { useVocabStore } from '../stores/vocabStore.js'
 import { formatTime } from '../utils/formatTime.js'
-import { BookOpen, Volume2, Sparkles, Headphones } from 'lucide-vue-next'
+import { BookOpen, Volume2, Sparkles, Headphones, Check } from 'lucide-vue-next'
 
 const subtitleStore = useSubtitleStore()
 const player = usePlayerStore()
+const vocabStore = useVocabStore()
+
+const toastWord = ref('')
+let toastTimer = null
 
 const cueRefs = ref([])
 
@@ -120,6 +148,30 @@ function onCueClick(cue) {
   player.seek(cue.start)
   player.play()
 }
+
+function tokenizeText(text) {
+  if (!text) return []
+  return text.trim().split(/\s+/)
+}
+
+function handleWordClick(token, fullSentence) {
+  const clean = token.toLowerCase().replace(/^[^\w]+|[^\w]+$/g, '')
+  if (!clean || clean.length < 2) return
+  const added = vocabStore.addWord(clean, fullSentence)
+  showToast(clean, added ? '已收录至生词本' : '已在生词本中')
+}
+
+function showToast(word, msg) {
+  if (toastTimer) clearTimeout(toastTimer)
+  toastWord.value = `${word} · ${msg}`
+  toastTimer = setTimeout(() => {
+    toastWord.value = ''
+  }, 1800)
+}
+
+onBeforeUnmount(() => {
+  if (toastTimer) clearTimeout(toastTimer)
+})
 
 // Auto-scroll when active cue index changes
 watch(

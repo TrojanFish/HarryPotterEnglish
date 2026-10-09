@@ -28,7 +28,7 @@
     >
       <aside
         v-if="isOpen"
-        class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-lg bg-[#fbf9f5] border-l border-[#e8ddd0] shadow-2xl flex flex-col"
+        class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-lg bg-[#fbf9f5] border-l border-[#e8ddd0] flex flex-col"
         role="dialog"
         aria-modal="true"
         aria-label="艾宾浩斯生词本"
@@ -38,7 +38,7 @@
           <div class="flex items-center gap-2">
             <BookMarked class="w-5 h-5 text-[#d97706]" />
             <h2 class="font-serif text-base font-semibold text-[#1e1610]">
-              艾宾浩斯生词本 ({{ vocabList.length }})
+              艾宾浩斯生词本 ({{ vocabStore.vocabList.length }})
             </h2>
           </div>
 
@@ -98,7 +98,7 @@
                 : 'border-transparent text-[#78695d] hover:bg-[#f4ebe1]'
             ]"
           >
-            全部 ({{ vocabList.length }})
+            全部 ({{ vocabStore.vocabList.length }})
           </button>
 
           <button
@@ -192,6 +192,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useVocabStore } from '../stores/vocabStore.js'
 import { generateAnkiTSV, downloadAnkiFile } from '../utils/ankiExport.js'
 import { generatePrintableParchmentHTML } from '../utils/parchmentPdfGenerator.js'
 import {
@@ -211,62 +212,16 @@ defineProps({
 
 defineEmits(['close'])
 
-const STORAGE_KEY = 'hp_vocab_list'
-
-// Initial Seed Words for Harry Potter study
-const initialSeeds = [
-  {
-    id: 1,
-    word: 'cloak',
-    phonetic: '/kləʊk/',
-    definition: 'n. 斗篷，披风',
-    contextQuote: 'He was wearing an emerald-green cloak.',
-    box: 1
-  },
-  {
-    id: 2,
-    word: 'peculiar',
-    phonetic: '/pɪˈkjuːliə(r)/',
-    definition: 'adj. 奇怪的，古怪的',
-    contextQuote: 'It was on the corner that he noticed something peculiar.',
-    box: 2
-  },
-  {
-    id: 3,
-    word: 'quill',
-    phonetic: '/kwɪl/',
-    definition: 'n. 羽毛笔',
-    contextQuote: 'He took out a long quill and a roll of parchment.',
-    box: 3
-  }
-]
-
-function loadVocab() {
-  if (typeof localStorage === 'undefined') return initialSeeds
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : initialSeeds
-  } catch (e) {
-    return initialSeeds
-  }
-}
-
-const vocabList = ref(loadVocab())
+const vocabStore = useVocabStore()
 const activeBox = ref(null)
 
-function saveVocab() {
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(vocabList.value))
-  }
-}
-
 const filteredList = computed(() => {
-  if (activeBox.value === null) return vocabList.value
-  return vocabList.value.filter((item) => (item.box || 1) === activeBox.value)
+  if (activeBox.value === null) return vocabStore.vocabList
+  return vocabStore.vocabList.filter((item) => (item.box || 1) === activeBox.value)
 })
 
 function getBoxCount(boxNum) {
-  return vocabList.value.filter((item) => (item.box || 1) === boxNum).length
+  return vocabStore.vocabList.filter((item) => (item.box || 1) === boxNum).length
 }
 
 function getBoxInterval(box) {
@@ -275,32 +230,26 @@ function getBoxInterval(box) {
 }
 
 function promoteBox(item) {
-  if (!item.box) item.box = 1
-  if (item.box < 5) {
-    item.box += 1
-    saveVocab()
-  }
+  vocabStore.promoteBox(item)
 }
 
 function deleteWord(item) {
-  vocabList.value = vocabList.value.filter((w) => w.word !== item.word)
-  saveVocab()
+  vocabStore.deleteWord(item)
 }
 
 function handleClearVocab() {
   if (window.confirm('确认清空生词本中的所有单词吗？此操作无法撤销。')) {
-    vocabList.value = []
-    saveVocab()
+    vocabStore.clearAll()
   }
 }
 
 function handleExportAnki() {
-  const tsv = generateAnkiTSV(vocabList.value, { deckName: 'Hogwarts Magic English' })
+  const tsv = generateAnkiTSV(vocabStore.vocabList, { deckName: 'Hogwarts Magic English' })
   downloadAnkiFile(tsv, 'hogwarts_anki_deck.tsv')
 }
 
 function handlePrintCards() {
-  const html = generatePrintableParchmentHTML(vocabList.value, {
+  const html = generatePrintableParchmentHTML(vocabStore.vocabList, {
     title: '霍格沃茨魔法生词卡 (A4 可剪裁打印版)'
   })
   const printWindow = window.open('', '_blank')
