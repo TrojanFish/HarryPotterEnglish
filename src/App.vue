@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex flex-col bg-[#fbf9f5] text-[#1e1610] overflow-hidden select-none">
+  <div class="h-full w-full flex flex-col bg-[#fbf9f5] text-[#1e1610] overflow-hidden select-none">
     <!-- Hidden native audio element managed via shallowRef -->
     <audio
       ref="audioRef"
@@ -14,21 +14,21 @@
       class="hidden"
     ></audio>
 
-    <!-- Top Navigation Bar -->
+    <!-- Top Navigation Bar (Responsive & Apple HIG Ergonomics) -->
     <header
-      class="h-16 shrink-0 bg-[#fbf9f5]/90 backdrop-blur-md border-b border-[#e8ddd0] px-4 flex items-center justify-between z-20"
+      class="h-16 shrink-0 bg-[#fbf9f5]/90 backdrop-blur-md border-b border-[#e8ddd0] px-3 sm:px-4 flex items-center justify-between z-20 gap-1.5 sm:gap-2"
       role="banner"
     >
       <!-- Brand & Title -->
-      <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-[#d97706]/15 border border-[#d97706]/30 flex items-center justify-center text-[#d97706]">
-          <Sparkles class="w-5 h-5" />
+      <div class="flex items-center gap-2 sm:gap-2.5 shrink-0 min-w-0">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#d97706]/15 border border-[#d97706]/30 flex items-center justify-center text-[#d97706] shrink-0">
+          <Sparkles class="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
-        <div>
-          <h1 class="font-serif text-sm sm:text-base font-bold text-[#1e1610] leading-none">
+        <div class="min-w-0">
+          <h1 class="font-serif text-xs sm:text-base font-bold text-[#1e1610] leading-none truncate">
             Hogwarts Audio
           </h1>
-          <p class="text-[10px] text-[#78695d] font-mono mt-0.5">
+          <p class="text-[9px] sm:text-[10px] text-[#78695d] font-mono mt-0.5 hidden sm:block truncate">
             Vue 3 · 原版沉浸精听
           </p>
         </div>
@@ -38,15 +38,15 @@
       <button
         type="button"
         @click="player.toggleBookshelf(true)"
-        class="min-h-[44px] px-3.5 py-1.5 bg-[#f4ebe1] hover:bg-[#ebdccb] border border-[#e8ddd0] rounded-full flex items-center gap-2 text-xs font-serif font-medium text-[#1e1610] transition-colors active:scale-95"
+        class="min-h-[44px] max-w-[120px] sm:max-w-[200px] px-2.5 sm:px-3.5 py-1.5 bg-[#f4ebe1] hover:bg-[#ebdccb] border border-[#e8ddd0] rounded-full flex items-center gap-1.5 sm:gap-2 text-xs font-serif font-medium text-[#1e1610] transition-colors active:scale-95 truncate shrink"
         aria-label="打开书架选择章节"
       >
-        <BookOpen class="w-4 h-4 text-[#d97706]" />
-        <span>{{ currentChapterLabel }}</span>
+        <BookOpen class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#d97706] shrink-0" />
+        <span class="truncate">{{ currentChapterLabel }}</span>
       </button>
 
-      <!-- Right: Navigation Action Buttons (>= 44px) -->
-      <div class="flex items-center gap-1 sm:gap-2">
+      <!-- Right Desktop (md:flex): Full 7 Action Buttons -->
+      <div class="hidden md:flex items-center gap-1 sm:gap-2 shrink-0">
         <!-- 1. A/B Shadowing Recorder -->
         <button
           type="button"
@@ -122,6 +122,98 @@
         >
           <Library class="w-5 h-5" />
         </button>
+      </div>
+
+      <!-- Right Mobile (md:hidden): Compact Ergonomic Tools + More Menu -->
+      <div class="flex md:hidden items-center gap-1 shrink-0 relative">
+        <!-- 1. A/B Shadowing Recorder -->
+        <button
+          type="button"
+          @click="isShadowingOpen = true"
+          class="min-h-[44px] min-w-[44px] p-2 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors active:scale-95"
+          title="A/B 影子跟读工坊"
+          aria-label="影子跟读工坊"
+        >
+          <Mic class="w-5 h-5" />
+        </button>
+
+        <!-- 2. Vocabulary Drawer -->
+        <button
+          type="button"
+          @click="isVocabOpen = true"
+          class="min-h-[44px] min-w-[44px] p-2 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors active:scale-95"
+          title="艾宾浩斯生词本"
+          aria-label="艾宾浩斯生词本"
+        >
+          <BookMarked class="w-5 h-5" />
+        </button>
+
+        <!-- 3. More Tools Menu -->
+        <button
+          type="button"
+          @click="isMobileMenuOpen = !isMobileMenuOpen"
+          class="min-h-[44px] min-w-[44px] p-2 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors active:scale-95"
+          title="更多魔法工具"
+          aria-label="更多魔法工具"
+        >
+          <MoreVertical class="w-5 h-5" />
+        </button>
+
+        <!-- Mobile More Menu Dropdown -->
+        <Transition
+          enter-active-class="transition duration-150 ease-out"
+          enter-from-class="opacity-0 scale-95 -translate-y-1"
+          enter-to-class="opacity-100 scale-100 translate-y-0"
+          leave-active-class="transition duration-100 ease-in"
+          leave-from-class="opacity-100 scale-100 translate-y-0"
+          leave-to-class="opacity-0 scale-95 -translate-y-1"
+        >
+          <div
+            v-if="isMobileMenuOpen"
+            class="absolute right-0 top-12 z-50 w-52 bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl shadow-xl p-2 space-y-1"
+          >
+            <button
+              type="button"
+              @click="isDictationOpen = true; isMobileMenuOpen = false"
+              class="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2.5 text-xs text-[#1e1610] hover:bg-[#f4ebe1] transition-colors"
+            >
+              <PenTool class="w-4 h-4 text-[#d97706]" />
+              <span>拼写听写工坊</span>
+            </button>
+            <button
+              type="button"
+              @click="isAnalyticsOpen = true; isMobileMenuOpen = false"
+              class="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2.5 text-xs text-[#1e1610] hover:bg-[#f4ebe1] transition-colors"
+            >
+              <BarChart2 class="w-4 h-4 text-[#d97706]" />
+              <span>学业分析仪表盘</span>
+            </button>
+            <button
+              type="button"
+              @click="isStorageOpen = true; isMobileMenuOpen = false"
+              class="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2.5 text-xs text-[#1e1610] hover:bg-[#f4ebe1] transition-colors"
+            >
+              <HardDrive class="w-4 h-4 text-[#d97706]" />
+              <span>离线魔法行囊</span>
+            </button>
+            <button
+              type="button"
+              @click="isShortcutsOpen = true; isMobileMenuOpen = false"
+              class="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2.5 text-xs text-[#1e1610] hover:bg-[#f4ebe1] transition-colors"
+            >
+              <HelpCircle class="w-4 h-4 text-[#d97706]" />
+              <span>快捷手势指南</span>
+            </button>
+            <button
+              type="button"
+              @click="player.toggleBookshelf(true); isMobileMenuOpen = false"
+              class="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2.5 text-xs text-[#1e1610] hover:bg-[#f4ebe1] transition-colors border-t border-[#e8ddd0] pt-1"
+            >
+              <Library class="w-4 h-4 text-[#d97706]" />
+              <span>打开魔法书架</span>
+            </button>
+          </div>
+        </Transition>
       </div>
     </header>
 
@@ -203,7 +295,8 @@ import {
   BarChart2,
   HardDrive,
   HelpCircle,
-  Library
+  Library,
+  MoreVertical
 } from 'lucide-vue-next'
 
 const player = usePlayerStore()
@@ -219,6 +312,7 @@ const isVocabOpen = ref(false)
 const isAnalyticsOpen = ref(false)
 const isStorageOpen = ref(false)
 const isShortcutsOpen = ref(false)
+const isMobileMenuOpen = ref(false)
 
 // Current Chapter Display Label
 const currentChapterLabel = computed(() => {

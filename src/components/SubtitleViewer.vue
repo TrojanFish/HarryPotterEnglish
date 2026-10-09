@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex-1 w-full max-w-3xl mx-auto px-4 py-6 overflow-y-auto pb-32 focus:outline-none"
+    class="flex-1 w-full max-w-3xl mx-auto px-4 py-6 overflow-y-auto pb-36 sm:pb-40 pb-safe focus:outline-none"
     tabindex="0"
     role="region"
     aria-label="WebVTT 精听字幕多模态区"
