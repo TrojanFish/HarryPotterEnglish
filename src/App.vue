@@ -265,6 +265,7 @@
       :is-open="isDictationOpen"
       :current-cue="subtitleStore.currentCue"
       @close="isDictationOpen = false"
+      @next="onDictationNext"
     />
 
     <!-- Ebbinghaus 5-Box Vocabulary Drawer -->
@@ -469,6 +470,14 @@ function onAudioError(e) {
     activeAudioSrc.value = SAMPLE_AUDIO_URL
   } else {
     player.pause()
+  }
+}
+
+function onDictationNext() {
+  subtitleStore.jumpToNextCue()
+  const next = subtitleStore.currentCue
+  if (next) {
+    player.seek(next.start)
   }
 }
 

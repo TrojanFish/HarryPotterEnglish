@@ -103,6 +103,18 @@ export const useSubtitleStore = defineStore('subtitle', {
       } finally {
         this.isLoading = false
       }
+    },
+
+    jumpToNextCue() {
+      if (this.activeCueIndex < this.cues.length - 1) {
+        this.activeCueIndex++
+      }
+    },
+
+    jumpToPrevCue() {
+      if (this.activeCueIndex > 0) {
+        this.activeCueIndex--
+      }
     }
   }
 })
