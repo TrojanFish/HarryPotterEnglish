@@ -47,12 +47,12 @@
 
       <!-- Right: Navigation Action Buttons (>= 44px) -->
       <div class="flex items-center gap-1 sm:gap-2">
-        <!-- Workshop Shortcuts (Phase 2/3) -->
+        <!-- Workshop Interactive Buttons -->
         <button
           type="button"
-          @click="openPlaceholder('A/B 影子跟读工坊')"
+          @click="isShadowingOpen = true"
           class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
-          title="影子跟读"
+          title="A/B 影子跟读工坊"
           aria-label="影子跟读工坊"
         >
           <Mic class="w-5 h-5" />
@@ -60,9 +60,9 @@
 
         <button
           type="button"
-          @click="openPlaceholder('拼写听写工坊')"
+          @click="isDictationOpen = true"
           class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
-          title="拼写听写"
+          title="拼写听写工坊"
           aria-label="拼写听写工坊"
         >
           <PenTool class="w-5 h-5" />
@@ -103,6 +103,20 @@
     <!-- Bookshelf Drawer -->
     <BookshelfDrawer />
 
+    <!-- A/B Shadowing Recorder Modal -->
+    <ShadowingRecorder
+      :is-open="isShadowingOpen"
+      :current-cue="subtitleStore.currentCue"
+      @close="isShadowingOpen = false"
+    />
+
+    <!-- Dictation Studio Modal -->
+    <DictationStudio
+      :is-open="isDictationOpen"
+      :current-cue="subtitleStore.currentCue"
+      @close="isDictationOpen = false"
+    />
+
     <!-- Workshop Future Phases Placeholder Modal -->
     <WorkshopPlaceholder
       :is-open="placeholderTitle !== ''"
@@ -121,6 +135,8 @@ import { SAMPLE_CHAPTER_1_VTT, SAMPLE_AUDIO_URL } from './data/chapters.js'
 import AudioPlayer from './components/AudioPlayer.vue'
 import SubtitleViewer from './components/SubtitleViewer.vue'
 import BookshelfDrawer from './components/BookshelfDrawer.vue'
+import ShadowingRecorder from './components/ShadowingRecorder.vue'
+import DictationStudio from './components/DictationStudio.vue'
 import MagicErrorBoundary from './components/common/MagicErrorBoundary.vue'
 import WorkshopPlaceholder from './components/common/WorkshopPlaceholder.vue'
 import {
@@ -138,7 +154,11 @@ const subtitleStore = useSubtitleStore()
 // Native HTMLAudioElement held in shallowRef to avoid Proxy traps
 const audioRef = shallowRef(null)
 
+// Workshop interactive states
+const isShadowingOpen = ref(false)
+const isDictationOpen = ref(false)
 const placeholderTitle = ref('')
+
 function openPlaceholder(title) {
   placeholderTitle.value = title
 }
