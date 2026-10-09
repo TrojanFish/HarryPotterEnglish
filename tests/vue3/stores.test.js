@@ -44,6 +44,15 @@ test('usePlayerStore initial state and playback actions', () => {
   assert.strictEqual(player.isBlindMode, true)
 })
 
+test('playerStore initializes currentBookId to hp-book-1', () => {
+  localStorage.clear()
+  setActivePinia(createPinia())
+  const player = usePlayerStore()
+
+  assert.strictEqual(player.currentBookId, 'hp-book-1')
+  assert.strictEqual(player.currentChapterId, 'hp-book-1_ep01')
+})
+
 test('usePlayerStore persists last position to localStorage', () => {
   setActivePinia(createPinia())
   const player = usePlayerStore()

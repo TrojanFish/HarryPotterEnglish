@@ -525,6 +525,15 @@ watch(
   }
 )
 
+watch(
+  () => player.volume,
+  (vol) => {
+    if (!audioRef.value) return
+    audioRef.value.volume = Math.max(0, Math.min(1, vol))
+  },
+  { immediate: true }
+)
+
 // W3C MediaSession setup for lock screen & headphones controls
 function setupMediaSession() {
   if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return

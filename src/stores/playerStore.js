@@ -17,8 +17,8 @@ export const usePlayerStore = defineStore('player', {
   state: () => {
     const saved = loadSavedPosition()
     return {
-      currentBookId: saved?.bookId || 'hp1',
-      currentChapterId: saved?.chapterId || 'hp1-01',
+      currentBookId: saved?.bookId || 'hp-book-1',
+      currentChapterId: saved?.chapterId || 'hp-book-1_ep01',
       isPlaying: false,
       currentTime: 0,
       duration: 0,
