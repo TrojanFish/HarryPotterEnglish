@@ -91,7 +91,29 @@
           <BarChart2 class="w-5 h-5" />
         </button>
 
-        <!-- 5. Bookshelf Drawer Toggle Button -->
+        <!-- 5. Offline Storage Bag -->
+        <button
+          type="button"
+          @click="isStorageOpen = true"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+          title="离线行囊"
+          aria-label="离线行囊"
+        >
+          <HardDrive class="w-5 h-5" />
+        </button>
+
+        <!-- 6. Shortcuts Help -->
+        <button
+          type="button"
+          @click="isShortcutsOpen = true"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+          title="快捷键与指南"
+          aria-label="快捷键指南"
+        >
+          <HelpCircle class="w-5 h-5" />
+        </button>
+
+        <!-- 7. Bookshelf Drawer Toggle Button -->
         <button
           type="button"
           @click="player.toggleBookshelf(true)"
@@ -141,6 +163,18 @@
       :is-open="isAnalyticsOpen"
       @close="isAnalyticsOpen = false"
     />
+
+    <!-- Offline Storage Modal -->
+    <StorageManagerModal
+      :is-open="isStorageOpen"
+      @close="isStorageOpen = false"
+    />
+
+    <!-- Shortcuts Guide Modal -->
+    <ShortcutsModal
+      :is-open="isShortcutsOpen"
+      @close="isShortcutsOpen = false"
+    />
   </div>
 </template>
 
@@ -157,6 +191,8 @@ import ShadowingRecorder from './components/ShadowingRecorder.vue'
 import DictationStudio from './components/DictationStudio.vue'
 import VocabularyDrawer from './components/VocabularyDrawer.vue'
 import AnalyticsDashboard from './components/AnalyticsDashboard.vue'
+import StorageManagerModal from './components/StorageManagerModal.vue'
+import ShortcutsModal from './components/ShortcutsModal.vue'
 import MagicErrorBoundary from './components/common/MagicErrorBoundary.vue'
 import {
   Sparkles,
@@ -165,6 +201,8 @@ import {
   PenTool,
   BookMarked,
   BarChart2,
+  HardDrive,
+  HelpCircle,
   Library
 } from 'lucide-vue-next'
 
@@ -174,11 +212,13 @@ const subtitleStore = useSubtitleStore()
 // Native HTMLAudioElement held in shallowRef to avoid Proxy traps
 const audioRef = shallowRef(null)
 
-// Workshop interactive modal/drawer states
+// Interactive modal/drawer states
 const isShadowingOpen = ref(false)
 const isDictationOpen = ref(false)
 const isVocabOpen = ref(false)
 const isAnalyticsOpen = ref(false)
+const isStorageOpen = ref(false)
+const isShortcutsOpen = ref(false)
 
 // Current Chapter Display Label
 const currentChapterLabel = computed(() => {
@@ -260,6 +300,8 @@ function onKeyDown(e) {
   } else if (e.code === 'ArrowRight') {
     e.preventDefault()
     player.seek(player.currentTime + 5)
+  } else if (e.key === '?') {
+    isShortcutsOpen.value = true
   }
 }
 
