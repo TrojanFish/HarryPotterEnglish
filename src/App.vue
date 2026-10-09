@@ -265,6 +265,9 @@ watch(
     } else {
       audioRef.value.pause()
     }
+    if (typeof navigator !== 'undefined' && 'mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = shouldPlay ? 'playing' : 'paused'
+    }
   }
 )
 
@@ -274,6 +277,22 @@ watch(
     if (!audioRef.value) return
     if (Math.abs(audioRef.value.currentTime - newTime) > 0.6) {
       audioRef.value.currentTime = newTime
+    }
+    if (
+      typeof navigator !== 'undefined' &&
+      'mediaSession' in navigator &&
+      'setPositionState' in navigator.mediaSession &&
+      player.duration > 0 &&
+      Number.isFinite(player.duration) &&
+      Number.isFinite(newTime)
+    ) {
+      try {
+        navigator.mediaSession.setPositionState({
+          duration: Math.max(player.duration, 0),
+          playbackRate: player.playbackRate || 1.0,
+          position: Math.min(Math.max(newTime, 0), player.duration)
+        })
+      } catch (_) {}
     }
   }
 )
@@ -285,6 +304,46 @@ watch(
     audioRef.value.playbackRate = newRate
   }
 )
+
+// W3C MediaSession setup for lock screen & headphones controls
+function setupMediaSession() {
+  if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return
+  try {
+    if (window.MediaMetadata) {
+      navigator.mediaSession.metadata = new window.MediaMetadata({
+        title: currentChapterLabel.value,
+        artist: 'J.K. Rowling · 霍格沃茨魔法学院',
+        album: 'Harry Potter · 原版沉浸精听',
+        artwork: [
+          { src: '/icon.svg', sizes: '192x192', type: 'image/svg+xml' }
+        ]
+      })
+    }
+    navigator.mediaSession.setActionHandler('play', () => player.play())
+    navigator.mediaSession.setActionHandler('pause', () => player.pause())
+    navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+      const offset = details.seekOffset || 5
+      player.seek(player.currentTime - offset)
+    })
+    navigator.mediaSession.setActionHandler('seekforward', (details) => {
+      const offset = details.seekOffset || 5
+      player.seek(player.currentTime + offset)
+    })
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+      subtitleStore.jumpToPrevCue()
+      if (subtitleStore.currentCue) player.seek(subtitleStore.currentCue.start)
+    })
+    navigator.mediaSession.setActionHandler('nexttrack', () => {
+      subtitleStore.jumpToNextCue()
+      if (subtitleStore.currentCue) player.seek(subtitleStore.currentCue.start)
+    })
+    navigator.mediaSession.setActionHandler('seekto', (details) => {
+      if (details.seekTime !== undefined) player.seek(details.seekTime)
+    })
+  } catch (err) {
+    console.warn('[MediaSession] Setup error:', err)
+  }
+}
 
 // Keyboard shortcuts (Space: Play/Pause, ArrowLeft/Right: Seek 5s)
 function onKeyDown(e) {
@@ -312,6 +371,7 @@ onMounted(() => {
     subtitleStore.setCues(parsed)
   }
 
+  setupMediaSession()
   window.addEventListener('keydown', onKeyDown)
 })
 

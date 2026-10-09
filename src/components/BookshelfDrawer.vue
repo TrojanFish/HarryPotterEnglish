@@ -134,8 +134,28 @@
             />
           </button>
         </div>
+
+        <!-- Footer: Academic Fair Use & DMCA Notice -->
+        <div class="px-4 py-3 border-t border-[#e8ddd0] bg-[#f4ebe1]/50 flex items-center justify-between text-xs shrink-0">
+          <button
+            type="button"
+            @click="isLegalOpen = true"
+            class="min-h-[44px] flex items-center gap-1.5 text-[#78695d] hover:text-[#1e1610] transition-colors group cursor-pointer"
+            aria-label="查看研学公约与法律声明"
+          >
+            <Scale class="w-3.5 h-3.5 text-[#d97706] group-hover:scale-110 transition-transform" />
+            <span class="text-[11px] underline">研学公约与版权声明 (Fair Use / DMCA)</span>
+          </button>
+          <span class="text-[10px] text-[#a89a8c] font-mono">v1.0.0-prod</span>
+        </div>
       </aside>
     </Transition>
+
+    <!-- Legal Disclaimer Modal -->
+    <LegalDisclaimerModal
+      :is-open="isLegalOpen"
+      @close="isLegalOpen = false"
+    />
   </Teleport>
 </template>
 
@@ -143,10 +163,12 @@
 import { ref, computed } from 'vue'
 import { usePlayerStore } from '../stores/playerStore.js'
 import { BOOKS, CEFR_LEVELS } from '../utils/booksData.js'
-import { BookMarked, X, Clock, ChevronRight } from 'lucide-vue-next'
+import { BookMarked, X, Clock, ChevronRight, Scale } from 'lucide-vue-next'
+import LegalDisclaimerModal from './LegalDisclaimerModal.vue'
 
 const player = usePlayerStore()
 
+const isLegalOpen = ref(false)
 const activeBookId = ref(player.currentBookId || 'book1')
 
 const currentBookData = computed(() => {

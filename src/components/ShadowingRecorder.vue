@@ -228,6 +228,10 @@ function stopHardware() {
 }
 
 async function startRecording() {
+  if (recordedAudioUrl.value) {
+    URL.revokeObjectURL(recordedAudioUrl.value)
+    recordedAudioUrl.value = null
+  }
   evaluationResult.value = null
   recordedChunks.value = []
 
@@ -288,5 +292,9 @@ function playUserRecording() {
 
 onUnmounted(() => {
   stopHardware()
+  if (recordedAudioUrl.value) {
+    URL.revokeObjectURL(recordedAudioUrl.value)
+    recordedAudioUrl.value = null
+  }
 })
 </script>

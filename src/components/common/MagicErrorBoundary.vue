@@ -9,13 +9,22 @@
     <p class="text-sm text-[#78695d] mb-4">
       界面组件遇到了一些异常波动：{{ errorMsg || '未知异常' }}
     </p>
-    <button
-      type="button"
-      @click="resetError"
-      class="min-h-[44px] px-6 py-2 bg-[#d97706] hover:bg-[#b45309] text-white text-sm font-medium rounded-xl transition-colors active:scale-95 shadow-sm"
-    >
-      重试复原
-    </button>
+    <div class="flex items-center justify-center gap-3">
+      <button
+        type="button"
+        @click="resetError"
+        class="min-h-[44px] px-5 py-2 bg-[#d97706] hover:bg-[#b45309] text-white text-sm font-medium rounded-xl transition-colors active:scale-95 shadow-sm"
+      >
+        重试复原
+      </button>
+      <button
+        type="button"
+        @click="reloadPage"
+        class="min-h-[44px] px-5 py-2 bg-white hover:bg-[#fbf9f5] border border-[#e8ddd0] text-[#1e1610] text-sm font-medium rounded-xl transition-colors active:scale-95 shadow-sm"
+      >
+        重载刷新
+      </button>
+    </div>
   </div>
   <slot v-else></slot>
 </template>
@@ -37,5 +46,11 @@ onErrorCaptured((err) => {
 function resetError() {
   hasError.value = false
   errorMsg.value = ''
+}
+
+function reloadPage() {
+  if (typeof window !== 'undefined') {
+    window.location.reload()
+  }
 }
 </script>

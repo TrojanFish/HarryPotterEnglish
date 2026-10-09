@@ -12,7 +12,8 @@
     "test": "node --test tests/vue3/smoke.test.js tests/vue3/stores.test.js tests/vue3/audioPlayer.test.js tests/vue3/subtitleViewer.test.js tests/vue3/bookshelf.test.js tests/vue3/shadowingRecorder.test.js tests/vue3/dictationStudio.test.js tests/vue3/vocabularyDrawer.test.js tests/vue3/analyticsDashboard.test.js tests/vue3/storageManager.test.js tests/vue3/shortcuts.test.js",
     "check-emojis": "node scripts/scan_emojis.js",
     "verify-security": "node scripts/verify-security.js",
-    "test:simulation": "node scripts/comprehensive_local_simulation.js"
+    "test:simulation": "node scripts/comprehensive_local_simulation.js",
+    "audit:production": "node scripts/production_launch_audit.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.670.0",
