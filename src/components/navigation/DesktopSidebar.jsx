@@ -12,7 +12,8 @@ import {
   GraduationCap,
   Download,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  Scale
 } from 'lucide-react';
 
 /**
@@ -40,7 +41,8 @@ function DesktopSidebarComponent({
   canInstallPwa = false,
   onInstallPwa,
   isCollapsed = false,
-  onToggleCollapse
+  onToggleCollapse,
+  onOpenLegal
 }) {
   const targetSeconds = 300; // 5-minute Duolingo-style daily habit
   const goalPercent = Math.min(100, Math.round((todayListeningSeconds / targetSeconds) * 100));
@@ -355,6 +357,19 @@ function DesktopSidebarComponent({
             >
               <Download size={13} className="text-amber-700" />
               <span>安装桌面快捷应用</span>
+            </button>
+          )}
+
+          {/* Legal Disclaimers & Academic Charter Entry */}
+          {onOpenLegal && (
+            <button
+              type="button"
+              onClick={onOpenLegal}
+              className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] text-stone-400 hover:text-amber-800 transition-colors cursor-pointer"
+              title="研学公约、版权致谢与 COPPA 隐私保护声明"
+            >
+              <Scale size={12} className="shrink-0" />
+              <span>研学公约与法律声明</span>
             </button>
           )}
         </div>

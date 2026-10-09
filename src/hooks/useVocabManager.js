@@ -55,7 +55,7 @@ export function useVocabManager() {
     setVocabList(prev => {
       const exists = prev.some(v => (v.word || v.front || '').toLowerCase().trim() === targetWord);
       if (exists) {
-        syncEngine.markVocabDirty(targetWord);
+        syncEngine.markVocabDeleted(targetWord);
         return prev.filter(v => (v.word || v.front || '').toLowerCase().trim() !== targetWord);
       } else {
         const newEntry = ensureSrsMetadata({
@@ -86,12 +86,12 @@ export function useVocabManager() {
     if (!word) return;
     const target = String(word).toLowerCase().trim();
     setVocabList(prev => prev.filter(v => (v.word || v.front || '').toLowerCase().trim() !== target));
-    syncEngine.markVocabDirty(target);
+    syncEngine.markVocabDeleted(target);
   }, []);
 
   const clearAllVocab = useCallback(() => {
     vocabList.forEach(v => {
-      if (v.word) syncEngine.markVocabDirty(v.word);
+      if (v.word) syncEngine.markVocabDeleted(v.word);
     });
     setVocabList([]);
   }, [vocabList]);

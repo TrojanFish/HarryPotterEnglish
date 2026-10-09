@@ -12,6 +12,7 @@ export function useModalManager() {
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isStorageOpen, setIsStorageOpen] = useState(false);
   const [isSrsOpen, setIsSrsOpen] = useState(false);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
 
   // Active modal payloads
   const [selectedWordData, setSelectedWordData] = useState(null);
@@ -46,6 +47,7 @@ export function useModalManager() {
     setIsAnalyticsOpen(false);
     setIsStorageOpen(false);
     setIsSrsOpen(false);
+    setIsLegalModalOpen(false);
     setSelectedWordData(null);
   }, []);
 
@@ -64,6 +66,8 @@ export function useModalManager() {
     setIsStorageOpen,
     isSrsOpen,
     setIsSrsOpen,
+    isLegalModalOpen,
+    setIsLegalModalOpen,
     selectedWordData,
     activeWordSentence,
     currentRecordCue,

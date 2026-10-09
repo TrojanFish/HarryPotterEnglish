@@ -64,7 +64,7 @@ test('Concise Controls (Sleep Timer, Translation, Font Size) Test Suite', async 
     assert.ok(htmlInactive.includes('aria-label="睡眠定时"'), 'Must have aria-label for accessibility');
   });
 
-  await t.test('1.2: PodcastPlayerView eliminates duplicate translation button while avoiding 译文开/译文关 text clutter', () => {
+  await t.test('1.2: PodcastPlayerView avoids 译文开/译文关 text clutter with concise icon presentation', () => {
     const htmlWithTrans = renderToString(
       React.createElement(PodcastPlayerView, {
         currentBook: mockBook,
@@ -73,9 +73,9 @@ test('Concise Controls (Sleep Timer, Translation, Font Size) Test Suite', async 
         onToggleTranslation: () => {}
       })
     );
-    assert.ok(!htmlWithTrans.includes('译文开'), 'Must not render 译文开');
-    assert.ok(!htmlWithTrans.includes('译文关'), 'Must not render 译文关');
-    assert.ok(!htmlWithTrans.includes('中英双语切换'), 'PodcastPlayerView must eliminate duplicate translation button (centralized in ReaderTopBar)');
+    assert.ok(!htmlWithTrans.includes('>译文开<'), 'Must not render >译文开< text clutter');
+    assert.ok(!htmlWithTrans.includes('>译文关<'), 'Must not render >译文关< text clutter');
+    assert.ok(htmlWithTrans.includes('aria-label="中英双语切换"'), 'PodcastPlayerView renders accessible translation toggle');
   });
 
   // 2. SubtitleViewer single cycle font size button

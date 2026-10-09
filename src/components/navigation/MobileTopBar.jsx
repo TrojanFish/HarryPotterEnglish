@@ -6,7 +6,8 @@ import {
   HardDrive,
   HelpCircle,
   Download,
-  Library
+  Library,
+  Scale
 } from 'lucide-react';
 
 /**
@@ -30,7 +31,8 @@ function MobileTopBarComponent({
   onOpenShortcuts,
   cachedChaptersCount = 0,
   canInstallPwa = false,
-  onInstallPwa
+  onInstallPwa,
+  onOpenLegal
 }) {
   const [showTools, setShowTools] = useState(false);
   const toolsRef = useRef(null);
@@ -116,6 +118,19 @@ function MobileTopBarComponent({
                 <HelpCircle size={14} className="text-amber-700" />
                 <span>快捷键指南</span>
               </button>
+
+              {onOpenLegal && (
+                <button
+                  onClick={() => {
+                    setShowTools(false);
+                    onOpenLegal();
+                  }}
+                  className="w-full flex items-center gap-2 p-2 rounded-xl text-xs font-bold text-stone-700 hover:bg-amber-50 hover:text-amber-950 transition-colors"
+                >
+                  <Scale size={14} className="text-amber-700" />
+                  <span>研学公约与法律声明</span>
+                </button>
+              )}
 
               {canInstallPwa && onInstallPwa && (
                 <button

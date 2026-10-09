@@ -46,7 +46,8 @@ function BookshelfViewComponent({
   onOpenVocab,
   onOpenAnalytics,
   onOpenStorage,
-  onOpenSrs
+  onOpenSrs,
+  onOpenLegal
 }) {
   const [inspectingBook, setInspectingBook] = useState(null);
   const [chapterSearch, setChapterSearch] = useState('');
@@ -545,6 +546,26 @@ function BookshelfViewComponent({
           </div>
         </div>
       )}
+
+      {/* ── 6. Educational Charter & Legal Disclaimers Footer ───── */}
+      <footer className="mt-12 py-6 border-t border-[#e8ddd0]/80 text-center text-xs text-stone-400 space-y-1.5 shrink-0">
+        <p className="font-reading text-[11px] sm:text-xs">
+          霍格沃茨魔法英语听说研学平台 · 学术研究与非商业学习专用 (SLA Fair Use)
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-[11px]">
+          <span>J.K. Rowling & Warner Bros. 版权所有</span>
+          <span className="hidden sm:inline">·</span>
+          <span>COPPA 青少年零隐私收集</span>
+          <span>·</span>
+          <button
+            type="button"
+            onClick={onOpenLegal}
+            className="underline hover:text-amber-800 transition-colors cursor-pointer text-amber-700/80 font-bold"
+          >
+            研学公约与法律声明
+          </button>
+        </div>
+      </footer>
     </div>
   );
 }

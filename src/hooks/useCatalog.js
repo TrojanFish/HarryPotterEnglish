@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { HP_BOOKS, SAMPLE_CHAPTER_1_VTT } from '../data/chapters';
-import { parseVTT } from '../utils/vttParser';
-import { getCachedChapter, getOfflineStorageInfo } from '../utils/offlineStorage';
+import { HP_BOOKS, SAMPLE_CHAPTER_1_VTT } from '../data/chapters.js';
+import { parseVTT } from '../utils/vttParser.js';
+import { getCachedChapter, getOfflineStorageInfo } from '../utils/offlineStorage.js';
 
-const API_BASE = import.meta.env.VITE_API_BASE || '';
+const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE) || '';
 
 /**
  * Resolves the optimal streaming URL for a given chapter audio key.

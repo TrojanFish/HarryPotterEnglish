@@ -152,12 +152,14 @@ export async function onRequest(context) {
         }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
-      // 1. Device registration / lookup
+      // 1. Device registration / lookup with high-entropy Crockford Base32 (1,048,576 combinations)
       const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-      let hash = 0;
-      for (let i = 0; i < safeUserId.length; i++) hash = (hash * 31 + safeUserId.charCodeAt(i)) >>> 0;
+      const userHashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(safeUserId));
+      const hashBytes = new Uint8Array(userHashBuffer);
       let genCode = 'HP-';
-      for (let i = 0; i < 4; i++) genCode += chars[(hash + i * 7) % chars.length];
+      for (let i = 0; i < 4; i++) {
+        genCode += chars[hashBytes[i] % chars.length];
+      }
 
       await db.prepare(`
         INSERT INTO user_devices (device_id, user_id, sync_code, last_synced_at, created_at)

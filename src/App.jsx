@@ -11,6 +11,7 @@ import { ShadowingRecorder } from './components/ShadowingRecorder';
 import { ShortcutsModal } from './components/ShortcutsModal';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
 import { StorageManagerModal } from './components/StorageManagerModal';
+import { LegalDisclaimerModal } from './components/LegalDisclaimerModal';
 import { lookupWord } from './data/hpDictionary';
 import { useBreakpoint } from './utils/useBreakpoint';
 import { DesktopSidebar } from './components/navigation/DesktopSidebar';
@@ -299,6 +300,8 @@ export function App() {
     setIsStorageOpen,
     isSrsOpen,
     setIsSrsOpen,
+    isLegalModalOpen,
+    setIsLegalModalOpen,
     selectedWordData,
     activeWordSentence,
     currentRecordCue,
@@ -519,7 +522,7 @@ export function App() {
       // Ignore if user is typing in an input or textarea
       if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
-      const isAnyModalOpen = isShelfOpen || isVocabOpen || isShortcutsOpen || isRecorderOpen || isAnalyticsOpen || isStorageOpen || isSrsOpen || Boolean(selectedWordData);
+      const isAnyModalOpen = isShelfOpen || isVocabOpen || isShortcutsOpen || isRecorderOpen || isAnalyticsOpen || isStorageOpen || isSrsOpen || isLegalModalOpen || Boolean(selectedWordData);
 
       if (e.key === 'Escape') {
         if (isAnyModalOpen) {
@@ -632,6 +635,7 @@ export function App() {
         onInstallPwa={handleInstallPwa}
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={toggleSidebarCollapsed}
+        onOpenLegal={() => setIsLegalModalOpen(true)}
       />
 
       {/* ── 2. Tablet Compact Icon Rail (768px - 1023px) ────────────── */}
@@ -669,6 +673,7 @@ export function App() {
             cachedChaptersCount={cachedChaptersCount}
             canInstallPwa={canInstallPwa}
             onInstallPwa={handleInstallPwa}
+            onOpenLegal={() => setIsLegalModalOpen(true)}
           />
         )}
 
@@ -738,6 +743,7 @@ export function App() {
               onOpenVocab={handleOpenVocab}
               onOpenAnalytics={handleOpenAnalytics}
               onOpenStorage={handleOpenStorage}
+              onOpenLegal={() => setIsLegalModalOpen(true)}
             />
           </div>
 
@@ -1014,6 +1020,12 @@ export function App() {
         currentBook={currentBookObj}
         currentChapter={currentChapterObj}
         onPlayChapter={handlePlayFromStorage}
+      />
+
+      <LegalDisclaimerModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+        isParchment={isParchment}
       />
 
       {/* Adolescent Visual Health Sentinel (20-20-20 Eye Care Standard) */}

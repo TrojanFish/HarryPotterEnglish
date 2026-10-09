@@ -9,6 +9,7 @@
 
 const SYNC_META_KEY = 'hp_sync_meta';
 const DIRTY_VOCAB_KEY = 'hp_dirty_vocab_keys';
+const DELETED_VOCAB_KEY = 'hp_deleted_vocab';
 const DIRTY_ANALYTICS_KEY = 'hp_dirty_analytics_dates';
 const VOCAB_STORAGE_KEY = 'hp_vocab_list';
 const ANALYTICS_STORAGE_KEY = 'hp_study_analytics';
@@ -99,6 +100,26 @@ class SyncEngine {
   }
 
   /**
+   * Mark a word as deleted (soft delete tombstone) for cloud sync
+   */
+  markVocabDeleted(word) {
+    if (!word) return;
+    const clean = String(word).trim().toLowerCase();
+    try {
+      const deleted = JSON.parse(localStorage.getItem(DELETED_VOCAB_KEY) || '[]');
+      const filtered = deleted.filter(d => (d.word || '').toLowerCase() !== clean);
+      filtered.push({ word: clean, isDeleted: true, updatedAt: Date.now() });
+      localStorage.setItem(DELETED_VOCAB_KEY, JSON.stringify(filtered));
+
+      // Remove from dirty additions if present
+      const set = new Set(JSON.parse(localStorage.getItem(DIRTY_VOCAB_KEY) || '[]'));
+      set.delete(clean);
+      localStorage.setItem(DIRTY_VOCAB_KEY, JSON.stringify([...set]));
+    } catch {}
+    this.scheduleSync(2000);
+  }
+
+  /**
    * Mark a learning date as dirty for background sync
    */
   markAnalyticsDirty(dateStr) {
@@ -155,10 +176,17 @@ class SyncEngine {
         dirtyVocabKeys = new Set(JSON.parse(localStorage.getItem(DIRTY_VOCAB_KEY) || '[]'));
       } catch {}
 
+      // Read deleted tombstones
+      let deletedVocab = [];
+      try {
+        deletedVocab = JSON.parse(localStorage.getItem(DELETED_VOCAB_KEY) || '[]');
+      } catch {}
+
       // If initial sync (lastSyncedAt === 0), push all local items
-      const vocabChanges = meta.lastSyncedAt === 0
+      const activeChanges = meta.lastSyncedAt === 0
         ? localVocab
         : localVocab.filter(v => dirtyVocabKeys.has((v.word || '').toLowerCase()));
+      const vocabChanges = [...activeChanges, ...deletedVocab];
 
       const analyticsChanges = [];
       if (localAnalytics) {
@@ -230,6 +258,7 @@ class SyncEngine {
       try {
         localStorage.removeItem(DIRTY_VOCAB_KEY);
         localStorage.removeItem(DIRTY_ANALYTICS_KEY);
+        localStorage.removeItem(DELETED_VOCAB_KEY);
       } catch {}
 
       // 4. Update sync timestamp and syncCode

@@ -4,22 +4,24 @@
  * Provides zero-configuration local development and test environment support.
  */
 
+import crypto from 'node:crypto';
+
 // In-memory data tables (keyed for instant lookup)
 const userVocabStore = new Map();     // key: `${userId}:${word.toLowerCase()}` -> vocabRecord
 const userAnalyticsStore = new Map(); // key: `${userId}:${dateStr}` -> analyticsRecord
 const userDevicesStore = new Map();   // key: deviceId -> { userId, syncCode, platform, lastSyncedAt }
 const syncCodeIndex = new Map();      // key: syncCode -> userId
+const userToCodeIndex = new Map();    // key: userId -> syncCode (stable unique binding)
 
-// Generate human-friendly 6-character sync code (e.g., 'HP-8F29')
-export function generateSyncCode(userId) {
+// Generate human-friendly, high-entropy 7-character sync code (e.g., 'HP-8F29')
+// Crockford Base32 alphabet (32 chars) across 4 independent hash bytes yields 32^4 = 1,048,576 combinations
+export function generateSyncCode(userId = '', attempt = 0) {
   const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-  let hash = 0;
-  for (let i = 0; i < userId.length; i++) {
-    hash = (hash * 31 + userId.charCodeAt(i)) >>> 0;
-  }
+  const seed = `${userId || 'guest'}:${attempt}`;
+  const hash = crypto.createHash('sha256').update(seed).digest();
   let code = 'HP-';
   for (let i = 0; i < 4; i++) {
-    code += chars[(hash + i * 7) % chars.length];
+    code += chars[hash[i] % chars.length];
   }
   return code;
 }
@@ -39,24 +41,36 @@ export function processSync({ userId, deviceId, lastSyncedAt = 0, changes = {} }
   const safeUserId = userId || 'usr_guest';
   const safeDeviceId = deviceId || 'dev_unknown';
 
-  // 1. Register or retrieve device pairing code
+  // 1. Register or retrieve device pairing code with collision reservation
+  let userSyncCode = userToCodeIndex.get(safeUserId);
+  if (!userSyncCode) {
+    let attempt = 0;
+    do {
+      userSyncCode = generateSyncCode(safeUserId, attempt);
+      const existingOwner = syncCodeIndex.get(userSyncCode);
+      if (!existingOwner || existingOwner === safeUserId) {
+        break;
+      }
+      attempt++;
+    } while (attempt < 100);
+    userToCodeIndex.set(safeUserId, userSyncCode);
+    syncCodeIndex.set(userSyncCode, safeUserId);
+  }
+
   let deviceRecord = userDevicesStore.get(safeDeviceId);
   if (!deviceRecord) {
-    const syncCode = generateSyncCode(safeUserId);
     deviceRecord = {
       deviceId: safeDeviceId,
       userId: safeUserId,
-      syncCode,
+      syncCode: userSyncCode,
       lastSyncedAt: serverTime,
       createdAt: serverTime
     };
     userDevicesStore.set(safeDeviceId, deviceRecord);
-    syncCodeIndex.set(syncCode, safeUserId);
   } else if (deviceRecord.userId !== safeUserId) {
     // Device migrated or paired to new userId
     deviceRecord.userId = safeUserId;
-    deviceRecord.syncCode = generateSyncCode(safeUserId);
-    syncCodeIndex.set(deviceRecord.syncCode, safeUserId);
+    deviceRecord.syncCode = userSyncCode;
   }
 
   const effectiveUserId = deviceRecord.userId;

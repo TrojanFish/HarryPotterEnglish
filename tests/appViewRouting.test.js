@@ -25,8 +25,8 @@ test('App View Routing Spec and Source Integrity Test', async (t) => {
   });
 
   await t.test('4.3: DesktopSidebar & TabletRail wire onOpen props to currentView switching', () => {
-    assert.ok(appCode.includes("setCurrentView('vocab')"), 'Must wire vocab to setCurrentView');
-    assert.ok(appCode.includes("setCurrentView('analytics')"), 'Must wire analytics to setCurrentView');
-    assert.ok(appCode.includes("setCurrentView('storage')"), 'Must wire storage to setCurrentView');
+    assert.ok(appCode.includes("handleSwitchCurrentView('vocab')") || appCode.includes("setCurrentView('vocab')"), 'Must wire vocab to currentView switching');
+    assert.ok(appCode.includes("handleSwitchCurrentView('analytics')") || appCode.includes("setCurrentView('analytics')"), 'Must wire analytics to currentView switching');
+    assert.ok(appCode.includes("handleSwitchCurrentView('storage')") || appCode.includes("setCurrentView('storage')"), 'Must wire storage to currentView switching');
   });
 });
