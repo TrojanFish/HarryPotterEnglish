@@ -47,7 +47,7 @@
 
       <!-- Right: Navigation Action Buttons (>= 44px) -->
       <div class="flex items-center gap-1 sm:gap-2">
-        <!-- Workshop Interactive Buttons -->
+        <!-- 1. A/B Shadowing Recorder -->
         <button
           type="button"
           @click="isShadowingOpen = true"
@@ -58,6 +58,7 @@
           <Mic class="w-5 h-5" />
         </button>
 
+        <!-- 2. Dictation Studio -->
         <button
           type="button"
           @click="isDictationOpen = true"
@@ -68,17 +69,29 @@
           <PenTool class="w-5 h-5" />
         </button>
 
+        <!-- 3. Vocabulary Drawer (Leitner 5-box & Anki/PDF) -->
         <button
           type="button"
-          @click="openPlaceholder('艾宾浩斯生词本')"
+          @click="isVocabOpen = true"
           class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
-          title="生词本"
+          title="艾宾浩斯生词本"
           aria-label="艾宾浩斯生词本"
         >
           <BookMarked class="w-5 h-5" />
         </button>
 
-        <!-- Bookshelf Drawer Toggle Button -->
+        <!-- 4. Analytics Dashboard -->
+        <button
+          type="button"
+          @click="isAnalyticsOpen = true"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+          title="学业分析仪表盘"
+          aria-label="学业分析仪表盘"
+        >
+          <BarChart2 class="w-5 h-5" />
+        </button>
+
+        <!-- 5. Bookshelf Drawer Toggle Button -->
         <button
           type="button"
           @click="player.toggleBookshelf(true)"
@@ -117,11 +130,16 @@
       @close="isDictationOpen = false"
     />
 
-    <!-- Workshop Future Phases Placeholder Modal -->
-    <WorkshopPlaceholder
-      :is-open="placeholderTitle !== ''"
-      :title="placeholderTitle"
-      @close="placeholderTitle = ''"
+    <!-- Ebbinghaus 5-Box Vocabulary Drawer -->
+    <VocabularyDrawer
+      :is-open="isVocabOpen"
+      @close="isVocabOpen = false"
+    />
+
+    <!-- Magic Analytics Dashboard Modal -->
+    <AnalyticsDashboard
+      :is-open="isAnalyticsOpen"
+      @close="isAnalyticsOpen = false"
     />
   </div>
 </template>
@@ -137,14 +155,16 @@ import SubtitleViewer from './components/SubtitleViewer.vue'
 import BookshelfDrawer from './components/BookshelfDrawer.vue'
 import ShadowingRecorder from './components/ShadowingRecorder.vue'
 import DictationStudio from './components/DictationStudio.vue'
+import VocabularyDrawer from './components/VocabularyDrawer.vue'
+import AnalyticsDashboard from './components/AnalyticsDashboard.vue'
 import MagicErrorBoundary from './components/common/MagicErrorBoundary.vue'
-import WorkshopPlaceholder from './components/common/WorkshopPlaceholder.vue'
 import {
   Sparkles,
   BookOpen,
   Mic,
   PenTool,
   BookMarked,
+  BarChart2,
   Library
 } from 'lucide-vue-next'
 
@@ -154,14 +174,11 @@ const subtitleStore = useSubtitleStore()
 // Native HTMLAudioElement held in shallowRef to avoid Proxy traps
 const audioRef = shallowRef(null)
 
-// Workshop interactive states
+// Workshop interactive modal/drawer states
 const isShadowingOpen = ref(false)
 const isDictationOpen = ref(false)
-const placeholderTitle = ref('')
-
-function openPlaceholder(title) {
-  placeholderTitle.value = title
-}
+const isVocabOpen = ref(false)
+const isAnalyticsOpen = ref(false)
 
 // Current Chapter Display Label
 const currentChapterLabel = computed(() => {
