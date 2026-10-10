@@ -1,11 +1,11 @@
 <template>
-  <div class="h-full w-full flex flex-col items-center justify-center p-4 sm:p-8 bg-white overflow-y-auto">
-    <div class="max-w-2xl w-full space-y-6 my-auto">
+  <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-8 pb-32 sm:pb-36 bg-white overflow-y-auto">
+    <div class="max-w-2xl w-full space-y-6 my-auto py-2">
       <!-- Target Sentence Card -->
       <div class="p-6 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl text-center space-y-3">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#e4e4e7] text-[11px] font-mono text-[#71717a]">
           <Mic class="w-3.5 h-3.5 text-[#2563eb]" />
-          <span>跟读挑战 · 第 {{ subtitleStore.activeCueIndex + 1 }} / {{ subtitleStore.cues.length || 1 }} 句</span>
+          <span>跟读挑战 · 第 {{ cueNumber }} / {{ subtitleStore.cues.length || 1 }} 句</span>
         </div>
         <h2 class="font-serif text-xl sm:text-2xl leading-[1.8] text-[#18181b] font-semibold select-text">
           "{{ currentCue?.text || '正在准备跟读示范句...' }}"
@@ -124,7 +124,8 @@ const subtitleStore = useSubtitleStore()
 const player = usePlayerStore()
 const sessionStore = useSessionStore()
 
-const currentCue = computed(() => subtitleStore.currentCue)
+const currentCue = computed(() => subtitleStore.effectiveCue)
+const cueNumber = computed(() => subtitleStore.effectiveCueIndex + 1)
 
 // Track A: Original snippet playback
 const isPlayingSnippet = ref(false)

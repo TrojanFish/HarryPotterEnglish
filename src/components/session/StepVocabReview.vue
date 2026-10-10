@@ -1,25 +1,32 @@
 <template>
-  <div class="h-full w-full flex flex-col items-center justify-center p-4 sm:p-8 bg-white overflow-y-auto">
-    <div class="max-w-xl w-full space-y-6 my-auto">
+  <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-8 pb-36 sm:pb-40 bg-white overflow-y-auto">
+    <div class="max-w-xl w-full space-y-6 my-auto py-2">
       <!-- Leitner 5-box Level Indicators -->
-      <div class="flex items-center justify-between p-3.5 bg-[#f8f8f6] border border-[#e4e4e7] rounded-xl text-xs">
-        <div class="font-medium text-[#18181b] flex items-center gap-1.5">
-          <BookMarked class="w-4 h-4 text-[#2563eb]" />
-          <span>艾宾浩斯 5 盒认知系统</span>
+      <div class="p-4 bg-[#f8f8f6] border border-[#e4e4e7] rounded-xl space-y-2.5">
+        <div class="flex items-center justify-between text-xs">
+          <div class="font-medium text-[#18181b] flex items-center gap-1.5">
+            <BookMarked class="w-4 h-4 text-[#2563eb]" />
+            <span>艾宾浩斯 5 盒认知系统</span>
+          </div>
+          <span class="text-[11px] font-mono text-[#71717a]">共 {{ activeList.length }} 词</span>
         </div>
-        <div class="flex items-center gap-1.5 font-mono text-[11px]">
-          <span
+
+        <div class="grid grid-cols-5 gap-1.5 font-mono text-xs">
+          <button
             v-for="boxNum in 5"
             :key="boxNum"
+            type="button"
+            @click="currentBox = boxNum"
             :class="[
-              'px-2 py-0.5 rounded',
+              'py-1.5 px-1 rounded-lg text-center transition-colors touch-manipulation cursor-pointer',
               currentBox === boxNum
-                ? 'bg-blue-100 text-[#2563eb] font-bold'
-                : 'bg-stone-100 text-[#71717a]'
+                ? 'bg-[#18181b] text-white font-medium'
+                : 'bg-white border border-[#e4e4e7] text-[#71717a] hover:bg-[#f4f4f5]'
             ]"
+            :title="`切换查看 Box ${boxNum}`"
           >
             B{{ boxNum }}: {{ getBoxCount(boxNum) }}
-          </span>
+          </button>
         </div>
       </div>
 

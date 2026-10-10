@@ -1,6 +1,6 @@
 <template>
   <footer
-    class="h-16 sm:h-20 shrink-0 w-full bg-white border-t border-[#e4e4e7] px-3 sm:px-6 flex flex-col justify-center z-20"
+    class="shrink-0 w-full bg-white border-t border-[#e4e4e7] px-3 sm:px-6 pt-2 pb-[calc(env(safe-area-inset-bottom,0px)+8px)] flex flex-col justify-center z-20"
     role="region"
     aria-label="音频智能控制台"
   >
@@ -30,14 +30,14 @@
     </div>
 
     <!-- Controls Row -->
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between gap-1 sm:gap-4">
       <!-- Left: Auxiliary controls (Loop & Speed) -->
-      <div class="flex items-center gap-1 sm:gap-2">
+      <div class="flex items-center gap-1 sm:gap-2 shrink-0">
         <button
           type="button"
           @click="toggleLoop"
           :class="[
-            'min-h-[44px] px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 touch-manipulation active:scale-95',
+            'min-h-[44px] px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 touch-manipulation active:scale-95 cursor-pointer',
             isLooping
               ? 'bg-blue-100 text-[#2563eb] font-semibold'
               : 'text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5]'
@@ -52,7 +52,7 @@
         <button
           type="button"
           @click="cycleRate"
-          class="min-h-[44px] px-2.5 py-1 text-xs font-mono font-medium text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-lg transition-colors touch-manipulation active:scale-95"
+          class="min-h-[44px] px-2.5 py-1 text-xs font-mono font-medium text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-lg transition-colors touch-manipulation active:scale-95 cursor-pointer"
           title="切换播放倍速"
           aria-label="切换播放倍速"
         >
@@ -61,23 +61,23 @@
       </div>
 
       <!-- Center: Core Playback cluster -->
-      <div class="flex items-center gap-1.5 sm:gap-3">
+      <div class="flex items-center gap-1 sm:gap-3">
         <!-- Prev Cue -->
         <button
           type="button"
           @click="jumpToPrevCue"
-          class="min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-full transition-colors flex items-center justify-center active:scale-95 touch-manipulation"
+          class="min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-full transition-colors flex items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
           title="上一句"
           aria-label="上一句"
         >
           <SkipBack class="w-5 h-5" />
         </button>
 
-        <!-- Seek -10s -->
+        <!-- Seek -10s (Hidden on small mobile to give breathing room to CTA button) -->
         <button
           type="button"
           @click="player.seekRel(-10)"
-          class="min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-full transition-colors flex items-center justify-center active:scale-95 touch-manipulation"
+          class="hidden sm:flex min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-full transition-colors items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
           title="快退 10 秒"
           aria-label="快退 10 秒"
         >
@@ -88,7 +88,7 @@
         <button
           type="button"
           @click="player.togglePlay()"
-          class="w-11 h-11 rounded-full bg-[#18181b] hover:bg-[#27272a] text-white flex items-center justify-center transition-all active:scale-95 touch-manipulation"
+          class="w-11 h-11 rounded-full bg-[#18181b] hover:bg-[#27272a] text-white flex items-center justify-center transition-all active:scale-95 touch-manipulation cursor-pointer shadow-sm"
           :title="player.isPlaying ? '暂停' : '播放'"
           :aria-label="player.isPlaying ? '暂停' : '播放'"
         >
@@ -96,11 +96,11 @@
           <Play v-else class="w-5 h-5 fill-current ml-0.5" />
         </button>
 
-        <!-- Seek +10s -->
+        <!-- Seek +10s (Hidden on small mobile to give breathing room to CTA button) -->
         <button
           type="button"
           @click="player.seekRel(10)"
-          class="min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-full transition-colors flex items-center justify-center active:scale-95 touch-manipulation"
+          class="hidden sm:flex min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-full transition-colors items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
           title="快进 10 秒"
           aria-label="快进 10 秒"
         >
@@ -111,7 +111,7 @@
         <button
           type="button"
           @click="jumpToNextCue"
-          class="min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-full transition-colors flex items-center justify-center active:scale-95 touch-manipulation"
+          class="min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-full transition-colors flex items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
           title="下一句"
           aria-label="下一句"
         >
@@ -119,16 +119,16 @@
         </button>
       </div>
 
-      <!-- Right: Next Step Flow Button -->
-      <div class="flex items-center gap-2">
+      <!-- Right: Next Step Flow Button (Guaranteed non-wrapping single line) -->
+      <div class="flex items-center shrink-0">
         <button
           type="button"
           @click="advanceStep"
-          class="min-h-[44px] px-3.5 py-1.5 bg-[#2563eb] hover:bg-blue-700 text-white rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all active:scale-95 touch-manipulation"
+          class="min-h-[44px] px-3.5 py-1.5 bg-[#2563eb] hover:bg-blue-700 text-white rounded-xl text-xs font-medium whitespace-nowrap shrink-0 flex items-center gap-1 transition-all active:scale-95 touch-manipulation cursor-pointer"
           aria-label="进入下一步骤"
         >
-          <span>{{ nextStepButtonLabel }}</span>
-          <ChevronRight class="w-3.5 h-3.5" />
+          <span class="whitespace-nowrap">{{ nextStepButtonLabel }}</span>
+          <ChevronRight class="w-3.5 h-3.5 shrink-0" />
         </button>
       </div>
     </div>
@@ -214,15 +214,15 @@ watch(
 const nextStepButtonLabel = computed(() => {
   switch (sessionStore.currentStep) {
     case 1:
-      return '跟读 →'
+      return '跟读'
     case 2:
-      return '听写 →'
+      return '听写'
     case 3:
-      return '词汇 →'
+      return '词汇'
     case 4:
       return '完成课时'
     default:
-      return '下一步 →'
+      return '下一步'
   }
 })
 

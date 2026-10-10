@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-6 bg-white overflow-y-auto">
+  <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-6 pb-32 sm:pb-36 bg-white overflow-y-auto">
     <div class="max-w-2xl w-full space-y-5 my-auto py-4">
 
       <!-- Header & Game Mode Switcher -->
@@ -8,7 +8,7 @@
         <div class="flex items-center justify-between">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#e4e4e7] text-[11px] font-mono text-[#71717a]">
             <Gamepad2 class="w-3.5 h-3.5 text-[#2563eb]" />
-            <span>听力工坊 · 第 {{ subtitleStore.activeCueIndex + 1 }} / {{ subtitleStore.cues.length || 1 }} 句</span>
+            <span>听力工坊 · 第 {{ cueNumber }} / {{ subtitleStore.cues.length || 1 }} 句</span>
           </div>
 
           <!-- Combo Badge -->
@@ -67,18 +67,18 @@
         </div>
 
         <!-- Audio Snippet Controller (Single sentence loop guard) -->
-        <div class="flex items-center justify-between gap-3 pt-1">
-          <p class="text-xs text-[#71717a] truncate">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+          <p class="text-xs text-[#71717a] leading-relaxed">
             {{ modeDescription }}
           </p>
 
-          <div class="flex items-center gap-2 shrink-0">
+          <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto">
             <!-- Normal 1.0x Snippet -->
             <button
               type="button"
               @click="togglePlaySnippet(1.0)"
               :class="[
-                'min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-medium border flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer',
+                'flex-1 sm:flex-initial min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-medium border flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer',
                 isPlayingSnippet && currentSnippetRate === 1.0
                   ? 'bg-blue-50 border-[#2563eb] text-[#2563eb]'
                   : 'bg-white border-[#e4e4e7] hover:bg-[#f4f4f5] text-[#18181b]'
@@ -94,7 +94,7 @@
               type="button"
               @click="togglePlaySnippet(0.8)"
               :class="[
-                'min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-medium border flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer',
+                'flex-1 sm:flex-initial min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-medium border flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer',
                 isPlayingSnippet && currentSnippetRate === 0.8
                   ? 'bg-blue-50 border-[#2563eb] text-[#2563eb]'
                   : 'bg-white border-[#e4e4e7] hover:bg-[#f4f4f5] text-[#18181b]'
@@ -314,8 +314,8 @@
           <p class="font-serif text-sm text-[#18181b] italic">
             "{{ targetSentence }}"
           </p>
-          <p v-if="subtitleStore.currentCue?.translation" class="text-xs text-[#71717a]">
-            {{ subtitleStore.currentCue.translation }}
+          <p v-if="subtitleStore.effectiveCue?.translation" class="text-xs text-[#71717a]">
+            {{ subtitleStore.effectiveCue.translation }}
           </p>
         </div>
 
@@ -409,7 +409,8 @@ const inputRef = ref(null)
 const userInput = ref('')
 const diffTokens = ref([])
 
-const targetSentence = computed(() => subtitleStore.currentCue?.text || '')
+const cueNumber = computed(() => subtitleStore.effectiveCueIndex + 1)
+const targetSentence = computed(() => subtitleStore.effectiveCue?.text || '')
 
 const modeDescription = computed(() => {
   switch (activeMode.value) {
@@ -437,7 +438,7 @@ function cleanWord(str) {
 
 // Single-sentence audio toggle
 function togglePlaySnippet(rate = 1.0) {
-  const cue = subtitleStore.currentCue
+  const cue = subtitleStore.effectiveCue
   if (!cue || cue.start === undefined) return
 
   if (isPlayingSnippet.value && currentSnippetRate.value === rate) {
@@ -457,7 +458,7 @@ function togglePlaySnippet(rate = 1.0) {
 watch(
   () => player.currentTime,
   (t) => {
-    const cue = subtitleStore.currentCue
+    const cue = subtitleStore.effectiveCue
     if (
       isPlayingSnippet.value &&
       cue?.end !== undefined &&
@@ -705,9 +706,9 @@ function nextSentence() {
   togglePlaySnippet(1.0)
 }
 
-// Watch cue change to reinitialize active mode
+// Watch cue index or sentence text to reinitialize active mode
 watch(
-  () => subtitleStore.activeCueIndex,
+  [() => subtitleStore.effectiveCueIndex, () => targetSentence.value],
   () => {
     resetCurrentGameState()
   },

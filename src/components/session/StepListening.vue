@@ -3,7 +3,7 @@
     <!-- Left Column: Reading Subtitle Stream (Full width on mobile, 65% on desktop) -->
     <div
       ref="scrollContainerRef"
-      class="flex-1 md:flex-[1.2] flex flex-col min-w-0 border-r border-[#e4e4e7] overflow-y-auto p-4 sm:p-8 space-y-4"
+      class="flex-1 md:flex-[1.2] flex flex-col min-w-0 border-r border-[#e4e4e7] overflow-y-auto p-4 sm:p-8 pb-32 sm:pb-36 space-y-4"
     >
       <!-- Subtitle Control Strip -->
       <div class="flex items-center justify-between pb-3 border-b border-[#e4e4e7] text-xs text-[#71717a] shrink-0">

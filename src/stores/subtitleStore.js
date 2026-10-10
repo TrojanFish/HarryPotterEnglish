@@ -15,6 +15,16 @@ export const useSubtitleStore = defineStore('subtitle', {
         return state.cues[state.activeCueIndex]
       }
       return null
+    },
+    effectiveCue: (state) => {
+      if (state.activeCueIndex >= 0 && state.activeCueIndex < state.cues.length) {
+        return state.cues[state.activeCueIndex]
+      }
+      return state.cues[0] || null
+    },
+    effectiveCueIndex: (state) => {
+      if (state.cues.length === 0) return 0
+      return state.activeCueIndex >= 0 ? state.activeCueIndex : 0
     }
   },
 
