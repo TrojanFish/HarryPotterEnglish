@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full flex flex-col bg-[#fbf9f5] text-[#1e1610] overflow-hidden select-none">
+  <div class="h-full w-full flex flex-col bg-[#f8f8f6] text-[#18181b] overflow-hidden select-none font-sans">
     <!-- Hidden native audio element managed via shallowRef -->
     <audio
       ref="audioRef"
@@ -17,22 +17,22 @@
       class="hidden"
     ></audio>
 
-    <!-- Top Navigation Bar (Responsive & Apple HIG Ergonomics) -->
+    <!-- Top Navigation Bar (03 极简书房) -->
     <header
-      class="h-16 shrink-0 bg-[#fbf9f5]/90 backdrop-blur-md border-b border-[#e8ddd0] px-3 sm:px-4 flex items-center justify-between z-20 gap-1.5 sm:gap-2"
+      class="h-14 shrink-0 bg-white border-b border-[#e4e4e7] px-4 sm:px-6 flex items-center justify-between z-20 gap-2"
       role="banner"
     >
       <!-- Brand & Title -->
-      <div class="flex items-center gap-2 sm:gap-2.5 shrink-0 min-w-0">
-        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#d97706]/15 border border-[#d97706]/30 flex items-center justify-center text-[#d97706] shrink-0">
-          <Sparkles class="w-4 h-4 sm:w-5 sm:h-5" />
+      <div class="flex items-center gap-2.5 shrink-0 min-w-0">
+        <div class="w-8 h-8 rounded-lg bg-[#18181b] text-white flex items-center justify-center shrink-0">
+          <Sparkles class="w-4 h-4 text-white" />
         </div>
         <div class="min-w-0">
-          <h1 class="font-serif text-xs sm:text-base font-bold text-[#1e1610] leading-none truncate">
+          <h1 class="font-serif text-sm sm:text-base font-bold text-[#18181b] leading-none truncate">
             Hogwarts Audio
           </h1>
-          <p class="text-[9px] sm:text-[10px] text-[#78695d] font-mono mt-0.5 hidden sm:block truncate">
-            Vue 3 · 原版沉浸精听
+          <p class="text-[10px] text-[#71717a] font-mono mt-0.5 hidden sm:block truncate">
+            03 极简书房 · 原版沉浸精听
           </p>
         </div>
       </div>
@@ -41,20 +41,20 @@
       <button
         type="button"
         @click="player.toggleBookshelf(true)"
-        class="min-h-[44px] max-w-[140px] sm:max-w-[260px] px-2.5 sm:px-3.5 py-1.5 bg-[#f4ebe1] hover:bg-[#ebdccb] border border-[#e8ddd0] rounded-full flex items-center gap-1.5 sm:gap-2 text-xs font-serif font-medium text-[#1e1610] transition-colors active:scale-95 truncate shrink"
+        class="min-h-[44px] max-w-[160px] sm:max-w-[280px] px-3 py-1.5 bg-[#f8f8f6] hover:bg-[#f4f4f5] border border-[#e4e4e7] rounded-full flex items-center gap-2 text-xs font-serif font-medium text-[#18181b] transition-colors active:scale-95 truncate shrink"
         aria-label="打开书架选择章节"
       >
-        <BookOpen class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#d97706] shrink-0" />
+        <BookOpen class="w-4 h-4 text-[#2563eb] shrink-0" />
         <span class="truncate">{{ currentChapterLabel }}</span>
       </button>
 
       <!-- Right Desktop (md:flex): Full 7 Action Buttons -->
-      <div class="hidden md:flex items-center gap-1 sm:gap-2 shrink-0">
+      <div class="hidden md:flex items-center gap-1 sm:gap-1.5 shrink-0">
         <!-- 1. A/B Shadowing Recorder -->
         <button
           type="button"
           @click="isShadowingOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
           title="A/B 影子跟读工坊"
           aria-label="影子跟读工坊"
         >
@@ -65,7 +65,7 @@
         <button
           type="button"
           @click="isDictationOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
           title="拼写听写工坊"
           aria-label="拼写听写工坊"
         >
@@ -76,7 +76,7 @@
         <button
           type="button"
           @click="isVocabOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
           title="艾宾浩斯生词本"
           aria-label="艾宾浩斯生词本"
         >
@@ -87,7 +87,7 @@
         <button
           type="button"
           @click="isAnalyticsOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
           title="学业分析仪表盘"
           aria-label="学业分析仪表盘"
         >
@@ -98,7 +98,7 @@
         <button
           type="button"
           @click="isStorageOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
           title="离线行囊"
           aria-label="离线行囊"
         >
@@ -109,7 +109,7 @@
         <button
           type="button"
           @click="isShortcutsOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
           title="快捷键与指南"
           aria-label="快捷键指南"
         >
@@ -120,10 +120,11 @@
         <button
           type="button"
           @click="player.toggleBookshelf(true)"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl bg-[#d97706]/10 hover:bg-[#d97706]/20 text-[#d97706] border border-[#d97706]/30 flex items-center justify-center transition-colors active:scale-95"
+          class="min-h-[44px] px-3 rounded-lg bg-[#18181b] hover:bg-[#27272a] text-white border border-[#18181b] flex items-center gap-1.5 text-xs font-medium transition-colors active:scale-95"
           aria-label="打开书架抽屉"
         >
-          <Library class="w-5 h-5" />
+          <Library class="w-4 h-4" />
+          <span class="hidden lg:inline">书架</span>
         </button>
       </div>
 
@@ -133,7 +134,7 @@
         <button
           type="button"
           @click="isShadowingOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors active:scale-95"
+          class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors active:scale-95"
           title="A/B 影子跟读工坊"
           aria-label="影子跟读工坊"
         >
@@ -144,7 +145,7 @@
         <button
           type="button"
           @click="isVocabOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors active:scale-95"
+          class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors active:scale-95"
           title="艾宾浩斯生词本"
           aria-label="艾宾浩斯生词本"
         >
@@ -155,7 +156,7 @@
         <button
           type="button"
           @click="isMobileMenuOpen = !isMobileMenuOpen"
-          class="min-h-[44px] min-w-[44px] p-2 rounded-xl text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors active:scale-95"
+          class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors active:scale-95"
           title="更多魔法工具"
           aria-label="更多魔法工具"
         >
@@ -173,46 +174,46 @@
         >
           <div
             v-if="isMobileMenuOpen"
-            class="absolute right-0 top-12 z-50 w-52 bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl p-2 space-y-1"
+            class="absolute right-0 top-12 z-50 w-52 bg-white border border-[#e4e4e7] rounded-xl p-2 space-y-1 shadow-sm"
           >
             <button
               type="button"
               @click="isDictationOpen = true; isMobileMenuOpen = false"
-              class="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2.5 text-xs text-[#1e1610] hover:bg-[#f4ebe1] transition-colors"
+              class="w-full min-h-[44px] px-3 rounded-lg flex items-center gap-2.5 text-xs text-[#18181b] hover:bg-[#f4f4f5] transition-colors"
             >
-              <PenTool class="w-4 h-4 text-[#d97706]" />
+              <PenTool class="w-4 h-4 text-[#2563eb]" />
               <span>拼写听写工坊</span>
             </button>
             <button
               type="button"
               @click="isAnalyticsOpen = true; isMobileMenuOpen = false"
-              class="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2.5 text-xs text-[#1e1610] hover:bg-[#f4ebe1] transition-colors"
+              class="w-full min-h-[44px] px-3 rounded-lg flex items-center gap-2.5 text-xs text-[#18181b] hover:bg-[#f4f4f5] transition-colors"
             >
-              <BarChart2 class="w-4 h-4 text-[#d97706]" />
+              <BarChart2 class="w-4 h-4 text-[#2563eb]" />
               <span>学业分析仪表盘</span>
             </button>
             <button
               type="button"
               @click="isStorageOpen = true; isMobileMenuOpen = false"
-              class="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2.5 text-xs text-[#1e1610] hover:bg-[#f4ebe1] transition-colors"
+              class="w-full min-h-[44px] px-3 rounded-lg flex items-center gap-2.5 text-xs text-[#18181b] hover:bg-[#f4f4f5] transition-colors"
             >
-              <HardDrive class="w-4 h-4 text-[#d97706]" />
+              <HardDrive class="w-4 h-4 text-[#2563eb]" />
               <span>离线魔法行囊</span>
             </button>
             <button
               type="button"
               @click="isShortcutsOpen = true; isMobileMenuOpen = false"
-              class="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2.5 text-xs text-[#1e1610] hover:bg-[#f4ebe1] transition-colors"
+              class="w-full min-h-[44px] px-3 rounded-lg flex items-center gap-2.5 text-xs text-[#18181b] hover:bg-[#f4f4f5] transition-colors"
             >
-              <HelpCircle class="w-4 h-4 text-[#d97706]" />
+              <HelpCircle class="w-4 h-4 text-[#2563eb]" />
               <span>快捷手势指南</span>
             </button>
             <button
               type="button"
               @click="player.toggleBookshelf(true); isMobileMenuOpen = false"
-              class="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2.5 text-xs text-[#1e1610] hover:bg-[#f4ebe1] transition-colors border-t border-[#e8ddd0] pt-1"
+              class="w-full min-h-[44px] px-3 rounded-lg flex items-center gap-2.5 text-xs text-[#18181b] hover:bg-[#f4f4f5] transition-colors border-t border-[#e4e4e7] pt-1"
             >
-              <Library class="w-4 h-4 text-[#d97706]" />
+              <Library class="w-4 h-4 text-[#2563eb]" />
               <span>打开魔法书架</span>
             </button>
           </div>
@@ -223,17 +224,17 @@
     <!-- Global Notice Banner (e.g. Offline fallback notice) -->
     <div
       v-if="player.audioError"
-      class="mx-3 sm:mx-4 mt-2 px-3 py-1.5 bg-amber-50/95 border border-amber-300/80 rounded-xl flex items-center justify-between text-xs text-[#92400e] shadow-sm shrink-0 transition-all z-10"
+      class="mx-3 sm:mx-4 mt-2 px-3 py-1.5 bg-rose-50 border border-rose-200 rounded-lg flex items-center justify-between text-xs text-rose-800 shrink-0 transition-all z-10"
       role="alert"
     >
       <div class="flex items-center gap-2 min-w-0">
-        <AlertCircle class="w-4 h-4 text-[#d97706] shrink-0" />
+        <AlertCircle class="w-4 h-4 text-rose-600 shrink-0" />
         <span class="truncate">{{ player.audioError }}</span>
       </div>
       <button
         type="button"
         @click="player.setAudioError(null)"
-        class="p-1 rounded-lg text-[#92400e] hover:bg-amber-100/80 min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
+        class="p-1 rounded-lg text-rose-800 hover:bg-rose-100 min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
         aria-label="关闭提示"
       >
         <X class="w-4 h-4" />
@@ -241,16 +242,16 @@
     </div>
 
     <!-- Main Content Area: Split-Pane Workbench (方案 B: 55% 字幕流 + 45% 交互工作台) -->
-    <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative" role="main">
+    <main class="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden relative" role="main">
       <!-- Left Column: Full Chapter Subtitle Stream (55%) -->
-      <section class="flex-1 md:flex-[1.15] flex flex-col overflow-hidden min-w-0">
+      <section class="flex-1 md:flex-[1.15] flex flex-col overflow-hidden min-w-0 bg-white">
         <MagicErrorBoundary>
           <SubtitleViewer />
         </MagicErrorBoundary>
       </section>
 
       <!-- Right Column: Permanent Interactive Training Studio Workbench (45%) -->
-      <section class="hidden md:flex md:flex-[0.85] overflow-hidden bg-[#f8f8f6]/60 border-l border-[#e4e4e7]">
+      <section class="hidden md:flex md:flex-[0.85] overflow-hidden bg-[#f8f8f6] border-l border-[#e4e4e7]">
         <StudioWorkbench />
       </section>
     </main>

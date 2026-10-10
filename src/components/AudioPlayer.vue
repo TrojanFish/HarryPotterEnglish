@@ -1,60 +1,60 @@
 <template>
   <footer
-    class="fixed bottom-0 left-0 right-0 z-30 bg-[#fbf9f5]/95 backdrop-blur-md border-t border-[#e8ddd0] px-3 sm:px-4 pt-2.5 pb-2.5 pb-safe"
+    class="shrink-0 w-full bg-white border-t border-[#e4e4e7] px-4 sm:px-8 py-2.5 pb-safe z-20 select-none"
     role="region"
     aria-label="流媒体音频播放控制栏"
   >
     <div class="max-w-4xl mx-auto flex flex-col gap-1.5 sm:gap-2">
       <!-- Top Micro-status Row (R2 status / Buffering indicator) -->
-      <div class="flex items-center justify-between text-[10px] font-mono text-[#78695d] px-1 select-none">
+      <div class="flex items-center justify-between text-[10px] font-mono text-[#71717a] px-1 select-none">
         <div class="flex items-center gap-1.5">
           <span
             v-if="player.isOfflineFallback"
-            class="px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 border border-stone-200 flex items-center gap-1"
+            class="px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600 border border-zinc-200 flex items-center gap-1"
           >
-            <WifiOff class="w-3 h-3 text-stone-500" />
+            <WifiOff class="w-3 h-3 text-zinc-500" />
             <span>离线备用音频通道</span>
           </span>
           <span
             v-else
-            class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-300/60 flex items-center gap-1"
+            class="px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-700 border border-zinc-200 flex items-center gap-1"
           >
-            <Radio class="w-3 h-3 text-[#d97706]" />
+            <Radio class="w-3 h-3 text-[#2563eb]" />
             <span>R2 原版母带流媒体</span>
           </span>
 
           <span
             v-if="player.isBuffering || player.isAudioLoading"
-            class="px-1.5 py-0.5 rounded-full bg-amber-100/80 text-[#92400e] flex items-center gap-1 animate-pulse"
+            class="px-1.5 py-0.5 rounded-full bg-blue-50 text-[#1d4ed8] border border-blue-200 flex items-center gap-1 animate-pulse"
           >
-            <Loader2 class="w-2.5 h-2.5 animate-spin text-[#d97706]" />
+            <Loader2 class="w-2.5 h-2.5 animate-spin text-[#2563eb]" />
             <span>缓冲装载中...</span>
           </span>
         </div>
 
-        <span class="text-[11px] text-[#a89a8c] hidden sm:inline">
+        <span class="text-[11px] text-[#71717a] hidden sm:inline">
           Space 播放 · ←/→ 快退进
         </span>
       </div>
 
       <!-- Progress Track & Time indicators -->
       <div class="flex items-center gap-2.5 sm:gap-3 w-full">
-        <span class="text-xs font-mono text-[#78695d] w-12 text-right tabular-nums select-none shrink-0">
+        <span class="text-xs font-mono text-[#71717a] w-12 text-right tabular-nums select-none shrink-0">
           {{ formatTime(displayTime) }}
         </span>
 
         <div class="relative flex-1 flex items-center group py-2.5">
           <!-- Background Bar -->
-          <div class="w-full h-1.5 sm:h-2 bg-[#e8ddd0] rounded-full overflow-hidden">
+          <div class="w-full h-1.5 sm:h-2 bg-[#e4e4e7] rounded-full overflow-hidden">
             <div
-              class="h-full bg-[#d97706] transition-[width] duration-75 rounded-full relative"
+              class="h-full bg-[#18181b] transition-[width] duration-75 rounded-full relative"
               :style="{ width: `${progressPercent}%` }"
             ></div>
           </div>
 
           <!-- Thumb indicator that follows progress -->
           <div
-            class="absolute w-3.5 h-3.5 sm:w-4 sm:h-4 bg-[#d97706] border-2 border-white rounded-full shadow-sm pointer-events-none -translate-x-1/2 transition-transform group-hover:scale-125"
+            class="absolute w-3.5 h-3.5 sm:w-4 sm:h-4 bg-[#18181b] border-2 border-white rounded-full shadow-sm pointer-events-none -translate-x-1/2 transition-transform group-hover:scale-125"
             :style="{ left: `${progressPercent}%` }"
           ></div>
 
@@ -72,7 +72,7 @@
           />
         </div>
 
-        <span class="text-xs font-mono text-[#78695d] w-12 tabular-nums select-none shrink-0">
+        <span class="text-xs font-mono text-[#71717a] w-12 tabular-nums select-none shrink-0">
           {{ formatTime(player.duration) }}
         </span>
       </div>
@@ -88,8 +88,8 @@
             :class="[
               'min-h-[44px] min-w-[44px] px-2.5 sm:px-3 rounded-xl flex items-center gap-1.5 text-xs font-medium transition-colors border active:scale-95',
               player.isBlindMode
-                ? 'bg-[#d97706]/15 border-[#d97706] text-[#92400e]'
-                : 'border-[#e8ddd0] text-[#78695d] hover:bg-[#f4ebe1] hover:text-[#1e1610]'
+                ? 'bg-blue-50 border-[#2563eb] text-[#2563eb]'
+                : 'border-[#e4e4e7] text-[#71717a] hover:bg-[#f4f4f5] hover:text-[#18181b]'
             ]"
             :aria-pressed="player.isBlindMode"
             aria-label="隐身斗篷盲听模式开关"
@@ -104,13 +104,13 @@
             <button
               type="button"
               @click="toggleVolumeMute"
-              class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl border border-[#e8ddd0] hover:bg-[#f4ebe1] text-[#78695d] hover:text-[#1e1610] flex items-center justify-center transition-colors active:scale-95"
+              class="min-h-[44px] min-w-[44px] p-2.5 rounded-xl border border-[#e4e4e7] hover:bg-[#f4f4f5] text-[#71717a] hover:text-[#18181b] flex items-center justify-center transition-colors active:scale-95"
               :aria-label="player.volume === 0 ? '解除静音' : '静音调节'"
               title="音量调节"
             >
               <VolumeX v-if="player.volume === 0" class="w-4 h-4 text-stone-400" />
-              <Volume1 v-else-if="player.volume < 0.5" class="w-4 h-4 text-[#d97706]" />
-              <Volume2 v-else class="w-4 h-4 text-[#d97706]" />
+              <Volume1 v-else-if="player.volume < 0.5" class="w-4 h-4 text-[#18181b]" />
+              <Volume2 v-else class="w-4 h-4 text-[#18181b]" />
             </button>
           </div>
         </div>
@@ -121,7 +121,7 @@
           <button
             type="button"
             @click="skip(-5)"
-            class="min-h-[44px] min-w-[44px] p-2 rounded-full flex items-center justify-center text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] transition-colors active:scale-95"
+            class="min-h-[44px] min-w-[44px] p-2 rounded-full flex items-center justify-center text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] transition-colors active:scale-95"
             aria-label="快退 5 秒"
             title="快退 5 秒"
           >
@@ -132,7 +132,7 @@
           <button
             type="button"
             @click="player.togglePlay()"
-            class="min-h-[48px] min-w-[48px] sm:min-h-[52px] sm:min-w-[52px] p-3 rounded-full bg-[#d97706] hover:bg-[#b45309] text-white flex items-center justify-center shadow-sm transition-transform active:scale-95"
+            class="min-h-[48px] min-w-[48px] sm:min-h-[50px] sm:min-w-[50px] p-3 rounded-full bg-[#18181b] hover:bg-[#27272a] text-white flex items-center justify-center shadow-sm transition-transform active:scale-95"
             :aria-label="player.isPlaying ? '暂停音频' : '播放音频'"
           >
             <Loader2 v-if="player.isBuffering || player.isAudioLoading" class="w-6 h-6 animate-spin" />
@@ -143,7 +143,7 @@
           <button
             type="button"
             @click="skip(5)"
-            class="min-h-[44px] min-w-[44px] p-2 rounded-full flex items-center justify-center text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] transition-colors active:scale-95"
+            class="min-h-[44px] min-w-[44px] p-2 rounded-full flex items-center justify-center text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] transition-colors active:scale-95"
             aria-label="快进 5 秒"
             title="快进 5 秒"
           >
@@ -156,11 +156,11 @@
           <button
             type="button"
             @click="cycleRate"
-            class="min-h-[44px] min-w-[44px] px-2.5 sm:px-3 rounded-xl border border-[#e8ddd0] hover:bg-[#f4ebe1] text-[#78695d] hover:text-[#1e1610] flex items-center gap-1 text-xs font-mono font-medium transition-colors active:scale-95"
+            class="min-h-[44px] min-w-[44px] px-2.5 sm:px-3 rounded-xl border border-[#e4e4e7] hover:bg-[#f4f4f5] text-[#18181b] flex items-center gap-1 text-xs font-mono font-medium transition-colors active:scale-95"
             aria-label="切换播放倍速"
             title="切换播放倍速"
           >
-            <Gauge class="w-4 h-4 shrink-0 text-[#d97706]" />
+            <Gauge class="w-4 h-4 shrink-0 text-[#2563eb]" />
             <span>{{ player.playbackRate.toFixed(1) }}x</span>
           </button>
         </div>

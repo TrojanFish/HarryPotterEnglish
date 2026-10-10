@@ -111,7 +111,7 @@
             <div class="flex items-center gap-2">
               <span class="font-serif font-semibold text-xs text-[#18181b] truncate">{{ item.word }}</span>
               <span v-if="item.phonetic" class="text-[10px] text-[#71717a] font-mono">{{ item.phonetic }}</span>
-              <span class="text-[9px] px-1 py-0.2 rounded bg-amber-50 text-[#b45309] font-mono border border-amber-200">
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-[#2563eb] font-mono border border-blue-100">
                 Box {{ item.box || 1 }}
               </span>
             </div>
@@ -121,7 +121,7 @@
           <button
             type="button"
             @click="vocabStore.promoteBox(item)"
-            class="min-h-[32px] px-2.5 py-1 text-[11px] border border-[#e4e4e7] hover:border-[#18181b] rounded text-[#18181b] hover:bg-[#f8f8f6] shrink-0 transition-colors"
+            class="min-h-[44px] px-3 py-1.5 text-xs border border-[#e4e4e7] hover:border-[#18181b] rounded text-[#18181b] hover:bg-[#f8f8f6] shrink-0 transition-colors flex items-center justify-center"
             title="熟记并推进至下一个艾宾浩斯复习周期"
           >
             熟记 +1
