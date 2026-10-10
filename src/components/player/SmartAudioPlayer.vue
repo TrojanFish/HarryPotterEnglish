@@ -29,10 +29,10 @@
       </span>
     </div>
 
-    <!-- Controls Row -->
-    <div class="flex items-center justify-between gap-1 sm:gap-4">
+    <!-- Controls Row: Symmetrical 3-column Grid (1fr auto 1fr) ensures Play button is DEAD-CENTER -->
+    <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-1 sm:gap-4 w-full">
       <!-- Left: Auxiliary controls (Loop & Speed) -->
-      <div class="flex items-center gap-1 sm:gap-2 shrink-0">
+      <div class="flex items-center justify-start gap-1 sm:gap-2 min-w-0">
         <button
           type="button"
           @click="toggleLoop"
@@ -45,7 +45,7 @@
           :title="isLooping ? '单句循环锁定已开启' : '开启单句循环锁定'"
           aria-label="单句循环"
         >
-          <Repeat1 class="w-4 h-4" />
+          <Repeat1 class="w-4 h-4 shrink-0" />
           <span class="hidden md:inline">单句循环</span>
         </button>
 
@@ -60,8 +60,8 @@
         </button>
       </div>
 
-      <!-- Center: Core Playback cluster -->
-      <div class="flex items-center gap-1 sm:gap-3">
+      <!-- Center: Core Playback cluster (Pure Mathematical & Visual Center) -->
+      <div class="flex items-center justify-center gap-1 sm:gap-3 shrink-0">
         <!-- Prev Cue -->
         <button
           type="button"
@@ -88,7 +88,7 @@
         <button
           type="button"
           @click="player.togglePlay()"
-          class="w-11 h-11 rounded-full bg-[#18181b] hover:bg-[#27272a] text-white flex items-center justify-center transition-all active:scale-95 touch-manipulation cursor-pointer shadow-sm"
+          class="w-11 h-11 rounded-full bg-[#18181b] hover:bg-[#27272a] text-white flex items-center justify-center transition-all active:scale-95 touch-manipulation cursor-pointer shadow-sm shrink-0"
           :title="player.isPlaying ? '暂停' : '播放'"
           :aria-label="player.isPlaying ? '暂停' : '播放'"
         >
@@ -119,23 +119,42 @@
         </button>
       </div>
 
-      <!-- Right: Sleep Timer Button (Borderless matching other auxiliary controls) -->
-      <div class="flex items-center shrink-0">
+      <!-- Right: Auxiliary controls (Blind Mode & Sleep Timer, Symmetrical to Left) -->
+      <div class="flex items-center justify-end gap-1 sm:gap-2 min-w-0">
+        <!-- Blind Mode Toggle -->
+        <button
+          type="button"
+          @click="player.toggleBlindMode()"
+          :class="[
+            'min-h-[44px] px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 touch-manipulation active:scale-95 cursor-pointer',
+            player.isBlindMode
+              ? 'bg-blue-100 text-[#2563eb] font-semibold'
+              : 'text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5]'
+          ]"
+          :title="player.isBlindMode ? '盲听模式开启中（点击取消模糊）' : '开启盲听模式（专注听力输入）'"
+          :aria-label="player.isBlindMode ? '取消盲听模式' : '开启盲听模式'"
+        >
+          <EyeOff v-if="player.isBlindMode" class="w-4 h-4 shrink-0 text-[#2563eb]" />
+          <Eye v-else class="w-4 h-4 shrink-0" />
+          <span class="hidden md:inline">{{ player.isBlindMode ? '盲听中' : '盲听' }}</span>
+        </button>
+
+        <!-- Sleep Timer -->
         <button
           type="button"
           @click="isSleepMenuOpen = true"
           :class="[
-            'min-h-[44px] min-w-[44px] px-2.5 py-1 text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 touch-manipulation active:scale-95 cursor-pointer',
+            'min-h-[44px] min-w-[44px] px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center justify-center gap-1.5 touch-manipulation active:scale-95 cursor-pointer',
             player.sleepTimerMode
-              ? 'text-[#2563eb] font-semibold bg-blue-50/80'
+              ? 'bg-blue-100 text-[#2563eb] font-semibold'
               : 'text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5]'
           ]"
           :title="player.sleepTimerMode ? `睡眠定时进行中: ${sleepTimerDisplay}` : '设置睡眠定时'"
           aria-label="设置睡眠定时"
         >
-          <Moon class="w-4 h-4" />
+          <Moon class="w-4 h-4 shrink-0" />
           <span v-if="player.sleepTimerMode" class="font-mono text-xs">{{ sleepTimerDisplay }}</span>
-          <span v-else class="hidden md:inline">睡眠定时</span>
+          <span v-else class="hidden md:inline">睡眠</span>
         </button>
       </div>
     </div>
@@ -252,6 +271,8 @@ import {
   RotateCw,
   Repeat1,
   Moon,
+  Eye,
+  EyeOff,
   X,
   Check
 } from 'lucide-vue-next'

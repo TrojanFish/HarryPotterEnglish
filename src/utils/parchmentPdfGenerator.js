@@ -119,26 +119,44 @@ export function generatePrintableParchmentHTML(vocabList, options = {}) {
       z-index: 100;
       background: #1e1610;
       color: white;
-      padding: 12px 24px;
+      padding: 10px 16px;
       display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .toolbar-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .screen-toolbar button {
       background: #f59e0b;
       color: #1e1610;
       border: none;
-      padding: 8px 18px;
+      padding: 8px 16px;
+      min-height: 44px;
       border-radius: 8px;
       font-weight: bold;
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
       transition: background 0.15s ease;
+      touch-action: manipulation;
     }
 
     .screen-toolbar button:hover {
@@ -149,7 +167,8 @@ export function generatePrintableParchmentHTML(vocabList, options = {}) {
     .screen-toolbar .secondary-btn {
       background: #382c23;
       color: #e8ddd0;
-      margin-left: 8px;
+      min-height: 44px;
+      padding: 8px 14px;
     }
 
     .screen-toolbar .secondary-btn:hover {
@@ -157,12 +176,23 @@ export function generatePrintableParchmentHTML(vocabList, options = {}) {
       color: white;
     }
 
-    /* ── A4 Page Container ───────────────────────────────────── */
+    /* ── Mobile Notice Bar ───────────────────────────────────── */
+    .mobile-tip-bar {
+      display: none;
+      background: #fef3c7;
+      border-bottom: 1px solid #fde68a;
+      color: #92400e;
+      padding: 8px 16px;
+      font-size: 12px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* ── Desktop Default A4 Page Container ───────────────────── */
     .a4-page {
       width: 210mm;
       min-height: 297mm;
-      height: 297mm;
-      margin: 15px auto;
+      margin: 18px auto;
       padding: 10mm;
       background: #fbf9f4;
       border: 1px solid #d4c4a8;
@@ -173,13 +203,61 @@ export function generatePrintableParchmentHTML(vocabList, options = {}) {
       justify-content: space-between;
       page-break-after: always;
       break-after: page;
+      box-sizing: border-box;
+    }
+
+    /* ── Responsive Screen Rules for Mobile Viewports ────────── */
+    @media screen and (max-width: 820px) {
+      body {
+        background-color: #fbf9f4;
+        padding-bottom: 24px;
+      }
+      .mobile-tip-bar {
+        display: block;
+      }
+      .screen-toolbar {
+        padding: 8px 12px;
+      }
+      .toolbar-title {
+        font-size: 13px;
+      }
+      .a4-page {
+        width: calc(100% - 20px) !important;
+        max-width: 640px !important;
+        height: auto !important;
+        min-height: auto !important;
+        margin: 12px auto !important;
+        padding: 12px !important;
+        border-radius: 14px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+      }
+      .card-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+      }
+      .parchment-card {
+        width: 100% !important;
+        min-height: 140px !important;
+      }
+      .ebbinghaus-track {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+      }
+      .page-footer {
+        flex-direction: column !important;
+        gap: 4px !important;
+        align-items: flex-start !important;
+      }
     }
 
     @media print {
       body {
-        background: transparent;
+        background: transparent !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
-      .screen-toolbar {
+      .screen-toolbar, .mobile-tip-bar {
         display: none !important;
       }
       .a4-page {
@@ -188,8 +266,17 @@ export function generatePrintableParchmentHTML(vocabList, options = {}) {
         border: none !important;
         width: 100% !important;
         height: 100% !important;
-        min-height: 100% !important;
+        min-height: 277mm !important;
         padding: 0 !important;
+        page-break-after: always !important;
+        break-after: page !important;
+      }
+      .card-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-rows: repeat(3, 1fr) !important;
+        gap: 7mm !important;
+        height: 100% !important;
       }
     }
 
@@ -391,17 +478,21 @@ export function generatePrintableParchmentHTML(vocabList, options = {}) {
 
   <!-- Screen Toolbar for Direct Print & PDF Save -->
   <div class="screen-toolbar">
-    <div>
+    <div class="toolbar-title">
       <strong>${escapeHtml(title)}</strong>
-      <span style="font-size: 12px; color: #d4c4a8; margin-left: 8px;">共 ${safeList.length} 词 · ${pages.length} 页 A4</span>
+      <span style="font-size: 11px; color: #d4c4a8;">共 ${safeList.length} 词 · ${pages.length} 页 A4</span>
     </div>
-    <div>
+    <div class="toolbar-actions">
       <button onclick="window.print()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
         立即打印 / 存为 PDF
       </button>
       <button class="secondary-btn" onclick="window.close()">关闭窗口</button>
     </div>
+  </div>
+
+  <div class="mobile-tip-bar">
+    提示：当前为手机端生词卡自适应预览。点击上方【立即打印 / 存为 PDF】即可自动生成标准 A4 双列剪裁版。
   </div>
 
   <!-- A4 Sheets -->
@@ -415,10 +506,10 @@ export function generatePrintableParchmentHTML(vocabList, options = {}) {
       <div class="card-grid">
         ${pageItems.map((item) => {
           const word = item.word || '';
-          const phonetic = item.phonetic || '';
+          const phonetic = item.phonetic || item.ipa || '';
           const pos = item.pos || '';
-          const translation = item.translation || '';
-          const context = item.context || '';
+          const translation = item.definition || item.translation || item.meaning || '';
+          const context = item.contextQuote || item.context || '';
           const source = item.bookTitle || item.chapterTitle
             ? `${item.bookTitle ? item.bookTitle : ''} ${item.chapterTitle ? '· ' + item.chapterTitle : ''}`
             : 'Hogwarts Original Audio';

@@ -24,4 +24,15 @@ describe('SmartAudioPlayer component', () => {
     assert.ok(content.includes('useBottomSheet'), 'Sleep timer modal must use bottom sheet gesture composable')
     assert.ok(content.includes('translate-y-full'), 'Sleep timer modal must slide up/down from bottom')
   })
+
+  test('SmartAudioPlayer enforces centered symmetry layout and balanced auxiliary controls', () => {
+    const filePath = path.resolve('src/components/player/SmartAudioPlayer.vue')
+    const content = fs.readFileSync(filePath, 'utf-8')
+    assert.ok(
+      content.includes('grid-cols-[1fr_auto_1fr]') || content.includes('grid-cols-3') || (content.includes('justify-start') && content.includes('justify-end')),
+      'Must use 3-column grid or equal flex-1 ends to ensure play button is dead-center'
+    )
+    assert.ok(content.includes('toggleBlindMode') || content.includes('isBlindMode'), 'Right auxiliary cluster must include blind mode toggle')
+    assert.ok(content.includes('EyeOff') || content.includes('Eye'), 'Must import Eye / EyeOff icon for blind mode toggle')
+  })
 })

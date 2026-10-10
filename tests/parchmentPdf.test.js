@@ -114,4 +114,24 @@ test('Parchment PDF Generator - Unit & Edge Case Test Suite', async (t) => {
     assert.ok(html.length > 5000);
     assert.ok(duration < 500, `Large-scale generation took ${duration.toFixed(2)}ms (must be < 500ms)`);
   });
+
+  await t.test('1.7: Mobile responsiveness and definition/contextQuote field compatibility', () => {
+    const vocabStoreItems = [{
+      word: 'Cloak',
+      phonetic: '/kləʊk/',
+      pos: 'n.',
+      definition: '斗篷，披风',
+      contextQuote: 'He wore an emerald cloak.'
+    }];
+
+    const html = generatePrintableParchmentHTML(vocabStoreItems);
+
+    // Must map vocabStore fields definition and contextQuote
+    assert.ok(html.includes('斗篷，披风'), 'Must map item.definition as translation fallback');
+    assert.ok(html.includes('He wore an emerald'), 'Must map item.contextQuote as context fallback');
+
+    // Must include responsive media query for mobile screens
+    assert.ok(html.includes('@media screen and (max-width:'), 'Must include mobile responsive media query');
+  });
 });
+
