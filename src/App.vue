@@ -37,24 +37,25 @@
         </div>
       </div>
 
-      <!-- Center: Current Chapter Capsule (Click to open Bookshelf) -->
+      <!-- Center: Current Chapter Selector (Opens Bookshelf Drawer) -->
       <button
         type="button"
         @click="player.toggleBookshelf(true)"
-        class="min-h-[44px] max-w-[160px] sm:max-w-[280px] px-3 py-1.5 bg-[#f8f8f6] hover:bg-[#f4f4f5] border border-[#e4e4e7] rounded-full flex items-center gap-2 text-xs font-serif font-medium text-[#18181b] transition-colors active:scale-95 truncate shrink"
+        class="min-h-[44px] max-w-[200px] sm:max-w-[320px] px-3.5 py-1.5 bg-[#f8f8f6] hover:bg-[#f4f4f5] border border-[#e4e4e7] rounded-full flex items-center gap-2 text-xs font-serif font-medium text-[#18181b] transition-colors active:scale-95 truncate shrink cursor-pointer"
         aria-label="打开书架选择章节"
       >
         <BookOpen class="w-4 h-4 text-[#2563eb] shrink-0" />
         <span class="truncate">{{ currentChapterLabel }}</span>
+        <ChevronDown class="w-3.5 h-3.5 text-[#71717a] shrink-0" />
       </button>
 
-      <!-- Right: Utility Tools & Bookshelf -->
+      <!-- Right: Utility Tools -->
       <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
         <!-- Analytics Dashboard -->
         <button
           type="button"
           @click="isAnalyticsOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
           title="学业分析仪表盘"
           aria-label="学业分析仪表盘"
         >
@@ -65,7 +66,7 @@
         <button
           type="button"
           @click="isStorageOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
           title="离线行囊"
           aria-label="离线行囊"
         >
@@ -76,22 +77,11 @@
         <button
           type="button"
           @click="isShortcutsOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors hidden sm:flex"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors hidden sm:flex cursor-pointer"
           title="快捷键与指南"
           aria-label="快捷键指南"
         >
           <HelpCircle class="w-5 h-5" />
-        </button>
-
-        <!-- Bookshelf Drawer Toggle Button -->
-        <button
-          type="button"
-          @click="player.toggleBookshelf(true)"
-          class="min-h-[44px] px-3 rounded-lg bg-[#18181b] hover:bg-[#27272a] text-white border border-[#18181b] flex items-center gap-1.5 text-xs font-medium transition-colors active:scale-95"
-          aria-label="打开书架抽屉"
-        >
-          <Library class="w-4 h-4" />
-          <span class="hidden md:inline">书架</span>
         </button>
       </div>
     </header>
@@ -212,7 +202,7 @@ import {
   BarChart2,
   HardDrive,
   HelpCircle,
-  Library,
+  ChevronDown,
   MoreVertical,
   AlertCircle,
   X

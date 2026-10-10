@@ -3,25 +3,27 @@
     <!-- Left Column: Reading Subtitle Stream (Full width on mobile, 65% on desktop) -->
     <div
       ref="scrollContainerRef"
-      class="flex-1 md:flex-[1.2] flex flex-col min-w-0 border-r border-[#e4e4e7] overflow-y-auto p-4 sm:p-8 pb-32 sm:pb-36 space-y-4"
+      class="flex-1 md:flex-[1.2] flex flex-col min-w-0 border-r border-[#e4e4e7] overflow-y-auto p-4 sm:p-6 pb-32 sm:pb-36 space-y-3 sm:space-y-3.5"
     >
       <!-- Subtitle Control Strip -->
       <div class="flex items-center justify-between pb-3 border-b border-[#e4e4e7] text-xs text-[#71717a] shrink-0">
-        <div class="flex items-center gap-2">
-          <span class="px-2 py-0.5 bg-[#f4f4f5] rounded border border-[#e4e4e7] font-mono">
-            共 {{ subtitleStore.cues.length }} 句
-          </span>
-          <span class="hidden sm:inline">点击任意单词加入生词本 · 点击卡片跳转播放</span>
-        </div>
+        <span class="px-2 py-0.5 bg-[#f4f4f5] rounded border border-[#e4e4e7] font-mono text-[11px]">
+          共 {{ subtitleStore.cues.length }} 句
+        </span>
         <button
           type="button"
           @click="toggleBlindMode"
-          class="min-h-[44px] px-3 py-1.5 text-xs border border-[#e4e4e7] rounded-lg hover:bg-[#f4f4f5] flex items-center gap-1.5 text-[#18181b] transition-colors active:scale-95 touch-manipulation"
+          :class="[
+            'min-h-[44px] px-3 py-1.5 text-xs border rounded-lg flex items-center gap-1.5 transition-colors active:scale-95 touch-manipulation cursor-pointer',
+            player.isBlindMode
+              ? 'bg-blue-50 border-[#2563eb] text-[#2563eb] font-medium'
+              : 'border-[#e4e4e7] hover:bg-[#f4f4f5] text-[#71717a]'
+          ]"
           aria-label="切换盲听模式"
         >
           <EyeOff v-if="player.isBlindMode" class="w-3.5 h-3.5 text-[#2563eb]" />
-          <Eye v-else class="w-3.5 h-3.5 text-[#71717a]" />
-          <span>盲听模式: {{ player.isBlindMode ? '开' : '关' }}</span>
+          <Eye v-else class="w-3.5 h-3.5" />
+          <span>盲听</span>
         </button>
       </div>
 
@@ -48,16 +50,10 @@
             : 'border-[#e4e4e7] hover:border-[#a1a1aa] bg-white'
         ]"
       >
-        <!-- Time and Badge -->
+        <!-- Time and Index -->
         <div class="flex items-center justify-between text-[11px] font-mono mb-2">
           <span :class="idx === subtitleStore.activeCueIndex ? 'text-[#2563eb] font-semibold' : 'text-[#71717a]'">
             {{ formatTime(cue.start) }} - {{ formatTime(cue.end) }} · #{{ String(idx + 1).padStart(2, '0') }}
-          </span>
-          <span
-            v-if="idx === subtitleStore.activeCueIndex"
-            class="px-1.5 py-0.5 rounded bg-blue-100 text-[#2563eb] text-[10px] font-medium"
-          >
-            正在精听
           </span>
         </div>
 
@@ -126,9 +122,9 @@
           <button
             type="button"
             @click="sessionStore.setStep(2)"
-            class="w-full min-h-[44px] px-4 py-2 bg-[#18181b] hover:bg-[#27272a] text-white rounded-lg text-xs font-medium flex items-center justify-center gap-2 transition-colors active:scale-95"
+            class="w-full min-h-[44px] px-4 py-2 bg-[#18181b] hover:bg-[#27272a] text-white rounded-lg text-xs font-medium flex items-center justify-center gap-2 transition-colors active:scale-95 cursor-pointer"
           >
-            <span>立即开始本句跟读</span>
+            <span>跟读本句</span>
             <ChevronRight class="w-3.5 h-3.5" />
           </button>
         </div>

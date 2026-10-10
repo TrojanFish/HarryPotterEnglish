@@ -1,14 +1,14 @@
 <template>
   <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-6 pb-32 sm:pb-36 bg-white overflow-y-auto">
-    <div class="max-w-2xl w-full space-y-5 my-auto py-4">
+    <div class="max-w-2xl w-full space-y-4 sm:space-y-5 my-auto py-2">
 
       <!-- Header & Game Mode Switcher -->
-      <div class="p-5 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl space-y-4">
+      <div class="p-5 sm:p-6 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl space-y-3.5">
         <!-- Top bar: sentence index & game badge -->
         <div class="flex items-center justify-between">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#e4e4e7] text-[11px] font-mono text-[#71717a]">
             <Gamepad2 class="w-3.5 h-3.5 text-[#2563eb]" />
-            <span>听力工坊 · 第 {{ cueNumber }} / {{ subtitleStore.cues.length || 1 }} 句</span>
+            <span>{{ cueNumber }} / {{ subtitleStore.cues.length || 1 }} 句</span>
           </div>
 
           <!-- Combo Badge -->
@@ -122,7 +122,7 @@
               @click="resetScramble"
               class="text-xs text-[#71717a] hover:text-[#18181b] underline cursor-pointer"
             >
-              清空重置
+              清空
             </button>
           </div>
 
@@ -132,7 +132,7 @@
               v-if="scramblePlaced.length === 0"
               class="text-xs text-[#a1a1aa] italic"
             >
-              从下方候选词库中点选单词...
+              点选下方词块...
             </span>
             <button
               v-for="(tok, idx) in scramblePlaced"
@@ -151,7 +151,7 @@
         <!-- Available Token Bank -->
         <div class="p-4 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl space-y-2">
           <div class="text-[11px] font-mono text-[#71717a]">
-            候选词库 (点击添加):
+            候选词块：
           </div>
 
           <div class="flex flex-wrap gap-2 min-h-[44px]">
@@ -169,15 +169,14 @@
         </div>
 
         <!-- Action Bar -->
-        <div class="flex items-center justify-between text-xs">
-          <span class="text-[#71717a]">按原声顺序组词</span>
+        <div class="flex items-center justify-end">
           <button
             type="button"
             @click="checkScramble"
             :disabled="scramblePlaced.length === 0 || hasChecked"
             class="min-h-[44px] px-6 py-2.5 bg-[#2563eb] hover:bg-blue-700 disabled:opacity-40 text-white rounded-xl font-medium transition-all active:scale-95 cursor-pointer"
           >
-            验证答案
+            提交
           </button>
         </div>
       </div>
@@ -188,14 +187,14 @@
       <div v-if="activeMode === 'cloze'" class="space-y-4">
         <div class="p-5 bg-white border border-[#e4e4e7] rounded-2xl space-y-4">
           <div class="text-[11px] font-mono text-[#a1a1aa] flex items-center justify-between">
-            <span>根据原声补齐空缺关键词：</span>
+            <span>补全生词：</span>
             <button
               type="button"
               @click="showClozeHint = !showClozeHint"
               class="text-xs text-[#2563eb] hover:underline flex items-center gap-1 cursor-pointer"
             >
               <HelpCircle class="w-3.5 h-3.5" />
-              <span>{{ showClozeHint ? '隐藏提示' : '首字母提示' }}</span>
+              <span>{{ showClozeHint ? '隐藏' : '提示' }}</span>
             </button>
           </div>
 
@@ -221,15 +220,14 @@
         </div>
 
         <!-- Action Bar -->
-        <div class="flex items-center justify-between text-xs">
-          <span class="text-[#71717a]">填入听到的核心单词后提交</span>
+        <div class="flex items-center justify-end">
           <button
             type="button"
             @click="checkCloze"
             :disabled="hasChecked"
             class="min-h-[44px] px-6 py-2.5 bg-[#2563eb] hover:bg-blue-700 disabled:opacity-40 text-white rounded-xl font-medium transition-all active:scale-95 cursor-pointer"
           >
-            提交校对
+            提交
           </button>
         </div>
       </div>
@@ -251,15 +249,14 @@
           spellcheck="false"
         ></textarea>
 
-        <div class="flex items-center justify-between text-xs">
-          <span class="text-[#71717a]">回车 (Enter) 快速校对</span>
+        <div class="flex items-center justify-end">
           <button
             type="button"
             @click="checkFullDictation"
             :disabled="!userInput.trim() || hasChecked"
             class="min-h-[44px] px-6 py-2.5 bg-[#2563eb] hover:bg-blue-700 disabled:opacity-40 text-white rounded-xl font-medium transition-all active:scale-95 cursor-pointer"
           >
-            提交校对
+            提交
           </button>
         </div>
       </div>
@@ -310,7 +307,6 @@
 
         <!-- Target Standard Sentence -->
         <div class="text-xs text-[#52525b] space-y-1">
-          <p class="font-mono text-[11px] text-[#71717a]">原著示范标音：</p>
           <p class="font-serif text-sm text-[#18181b] italic">
             "{{ targetSentence }}"
           </p>
@@ -327,7 +323,7 @@
             class="min-h-[44px] px-3.5 py-1.5 border border-[#e4e4e7] rounded-lg text-xs text-[#71717a] hover:text-[#18181b] hover:bg-white flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <RotateCcw class="w-3.5 h-3.5" />
-            <span>再练一次</span>
+            <span>重练</span>
           </button>
 
           <div class="flex items-center gap-2">
@@ -337,7 +333,7 @@
               @click="nextSentence"
               class="min-h-[44px] px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer"
             >
-              <span>挑战下一句</span>
+              <span>下一句</span>
               <ChevronRight class="w-3.5 h-3.5" />
             </button>
             <button
@@ -345,7 +341,7 @@
               @click="sessionStore.setStep(4)"
               class="min-h-[44px] px-4 py-2 bg-[#18181b] hover:bg-[#27272a] text-white rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <span>前往词汇复习</span>
+              <span>词汇复习</span>
               <ChevronRight class="w-3.5 h-3.5" />
             </button>
           </div>

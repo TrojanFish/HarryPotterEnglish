@@ -1,11 +1,11 @@
 <template>
-  <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-8 pb-32 sm:pb-36 bg-white overflow-y-auto">
-    <div class="max-w-2xl w-full space-y-6 my-auto py-2">
+  <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-6 pb-32 sm:pb-36 bg-white overflow-y-auto">
+    <div class="max-w-2xl w-full space-y-4 sm:space-y-5 my-auto py-2">
       <!-- Target Sentence Card -->
-      <div class="p-6 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl text-center space-y-3">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#e4e4e7] text-[11px] font-mono text-[#71717a]">
+      <div class="p-5 sm:p-6 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl text-center space-y-2.5">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#e4e4e7] text-[11px] font-mono text-[#71717a]">
           <Mic class="w-3.5 h-3.5 text-[#2563eb]" />
-          <span>跟读挑战 · 第 {{ cueNumber }} / {{ subtitleStore.cues.length || 1 }} 句</span>
+          <span>{{ cueNumber }} / {{ subtitleStore.cues.length || 1 }} 句</span>
         </div>
         <h2 class="font-serif text-xl sm:text-2xl leading-[1.8] text-[#18181b] font-semibold select-text">
           "{{ currentCue?.text || '正在准备跟读示范句...' }}"
@@ -15,14 +15,14 @@
         </p>
       </div>
 
-      <!-- Dual Track Comparison Controls (Track A & Track B) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <!-- Dual Track Comparison Controls (原声示范 & 我的录音) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <!-- Track A: 原声示范 -->
-        <div class="p-5 border border-[#e4e4e7] rounded-2xl bg-white space-y-3">
+        <div class="p-4 sm:p-5 border border-[#e4e4e7] rounded-2xl bg-white space-y-3">
           <div class="flex items-center justify-between text-xs">
             <span class="font-medium text-[#18181b] flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-[#2563eb]"></span>
-              <span>Track A · 原声示范</span>
+              <span>原声示范</span>
             </span>
             <span class="text-[#71717a] font-mono">
               {{ snippetDuration }}
@@ -31,20 +31,20 @@
           <button
             type="button"
             @click="playOriginalSnippet"
-            class="w-full min-h-[44px] px-4 py-2.5 bg-[#f8f8f6] hover:bg-[#f4f4f5] border border-[#e4e4e7] rounded-xl text-xs font-medium text-[#18181b] flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation"
+            class="w-full min-h-[44px] px-4 py-2.5 bg-[#f8f8f6] hover:bg-[#f4f4f5] border border-[#e4e4e7] rounded-xl text-xs font-medium text-[#18181b] flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation cursor-pointer"
           >
             <Play v-if="!isPlayingSnippet" class="w-4 h-4 text-[#2563eb]" />
             <Pause v-else class="w-4 h-4 text-[#2563eb]" />
-            <span>{{ isPlayingSnippet ? '正在播放示范原声' : '播放示范原声' }}</span>
+            <span>{{ isPlayingSnippet ? '暂停' : '播放原声' }}</span>
           </button>
         </div>
 
         <!-- Track B: 我的录音 -->
-        <div class="p-5 border border-[#e4e4e7] rounded-2xl bg-white space-y-3">
+        <div class="p-4 sm:p-5 border border-[#e4e4e7] rounded-2xl bg-white space-y-3">
           <div class="flex items-center justify-between text-xs">
             <span class="font-medium text-[#18181b] flex items-center gap-1.5">
               <span :class="['w-2 h-2 rounded-full bg-[#dc2626]', isRecording ? 'animate-ping' : '']"></span>
-              <span>Track B · 我的录音</span>
+              <span>我的录音</span>
             </span>
             <span class="text-[#71717a] font-mono">{{ formatTimer(recordingSeconds) }}</span>
           </div>
@@ -53,20 +53,20 @@
               type="button"
               @click="toggleRecording"
               :class="[
-                'flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-medium flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation',
+                'flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-medium flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation cursor-pointer',
                 isRecording
                   ? 'bg-[#dc2626] hover:bg-red-700 text-white'
                   : 'bg-[#18181b] hover:bg-[#27272a] text-white'
               ]"
             >
               <Mic class="w-4 h-4" />
-              <span>{{ isRecording ? '停止录音并评测' : '开始跟读录音' }}</span>
+              <span>{{ isRecording ? '停止录音' : '开始录音' }}</span>
             </button>
             <button
               v-if="hasRecordingAudio"
               type="button"
               @click="playUserRecording"
-              class="min-h-[44px] px-3.5 py-2.5 border border-[#e4e4e7] rounded-xl hover:bg-[#f4f4f5] text-xs text-[#71717a] flex items-center justify-center transition-colors active:scale-95"
+              class="min-h-[44px] px-3.5 py-2.5 border border-[#e4e4e7] rounded-xl hover:bg-[#f4f4f5] text-xs text-[#71717a] flex items-center justify-center transition-colors active:scale-95 cursor-pointer"
               title="回放我的录音"
             >
               <Play class="w-4 h-4 text-[#2563eb]" />
@@ -78,7 +78,7 @@
       <!-- AI Evaluation Result -->
       <div
         v-if="evalResult"
-        class="p-5 border border-emerald-200 bg-emerald-50/60 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        class="p-4 sm:p-5 border border-emerald-200 bg-emerald-50/60 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 rounded-xl bg-[#059669] text-white flex items-center justify-center font-mono font-bold text-lg shrink-0">
@@ -94,9 +94,9 @@
         <button
           type="button"
           @click="sessionStore.setStep(3)"
-          class="min-h-[44px] px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors shrink-0 active:scale-95"
+          class="min-h-[44px] px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors shrink-0 active:scale-95 cursor-pointer"
         >
-          <span>前往听写工坊</span>
+          <span>进入听写</span>
           <ChevronRight class="w-3.5 h-3.5" />
         </button>
       </div>
