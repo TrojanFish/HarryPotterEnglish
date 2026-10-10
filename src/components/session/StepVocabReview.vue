@@ -2,7 +2,7 @@
   <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-6 pb-32 sm:pb-36 bg-white overflow-y-auto">
     <div class="max-w-2xl w-full space-y-4 sm:space-y-5 my-auto py-2">
       <!-- Leitner 5-box Level Indicators -->
-      <div class="p-4 sm:p-5 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl space-y-2.5">
+      <div class="p-5 sm:p-6 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl space-y-2.5">
         <div class="flex items-center justify-between text-xs">
           <div class="font-medium text-[#18181b] flex items-center gap-1.5">
             <BookMarked class="w-4 h-4 text-[#2563eb]" />
@@ -45,7 +45,7 @@
           >
             <!-- Front of Card -->
             <div
-              class="absolute inset-0 p-6 sm:p-8 bg-white border border-[#e4e4e7] rounded-2xl flex flex-col items-center justify-center text-center space-y-2 backface-hidden"
+              class="absolute inset-0 p-5 sm:p-6 bg-white border border-[#e4e4e7] rounded-2xl flex flex-col items-center justify-center text-center space-y-2 backface-hidden"
             >
               <h3 class="font-serif font-bold text-3xl sm:text-4xl text-[#18181b]">
                 {{ currentCard.word }}
@@ -60,7 +60,7 @@
 
             <!-- Back of Card -->
             <div
-              class="absolute inset-0 p-6 sm:p-8 bg-[#f8f8f6] border border-[#2563eb] rounded-2xl flex flex-col items-center justify-center text-center space-y-2 backface-hidden rotate-y-180"
+              class="absolute inset-0 p-5 sm:p-6 bg-[#f8f8f6] border border-[#2563eb] rounded-2xl flex flex-col items-center justify-center text-center space-y-2 backface-hidden rotate-y-180"
             >
               <span class="px-2 py-0.5 rounded bg-blue-100 text-[#2563eb] text-[10px] font-mono font-medium">
                 Box {{ currentCard.box || 1 }}
@@ -117,7 +117,7 @@
       </div>
 
       <!-- Empty state when no words collected -->
-      <div v-else class="p-8 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl text-center space-y-3">
+      <div v-else class="p-5 sm:p-6 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl text-center space-y-3">
         <BookMarked class="w-8 h-8 text-[#a1a1aa] mx-auto" />
         <h3 class="font-bold text-sm text-[#18181b]">生词本暂无待复习单词</h3>
         <p class="text-xs text-[#52525b] max-w-sm mx-auto">

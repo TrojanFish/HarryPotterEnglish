@@ -18,7 +18,7 @@
       <!-- Dual Track Comparison Controls (原声示范 & 我的录音) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <!-- Track A: 原声示范 -->
-        <div class="p-4 sm:p-5 border border-[#e4e4e7] rounded-2xl bg-white space-y-3">
+        <div class="p-5 sm:p-6 border border-[#e4e4e7] rounded-2xl bg-white space-y-3">
           <div class="flex items-center justify-between text-xs">
             <span class="font-medium text-[#18181b] flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-[#2563eb]"></span>
@@ -40,7 +40,7 @@
         </div>
 
         <!-- Track B: 我的录音 -->
-        <div class="p-4 sm:p-5 border border-[#e4e4e7] rounded-2xl bg-white space-y-3">
+        <div class="p-5 sm:p-6 border border-[#e4e4e7] rounded-2xl bg-white space-y-3">
           <div class="flex items-center justify-between text-xs">
             <span class="font-medium text-[#18181b] flex items-center gap-1.5">
               <span :class="['w-2 h-2 rounded-full bg-[#dc2626]', isRecording ? 'animate-ping' : '']"></span>
@@ -85,7 +85,7 @@
       <!-- AI Evaluation Result -->
       <div
         v-if="evalResult"
-        class="p-4 sm:p-5 border border-emerald-200 bg-emerald-50/60 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        class="p-5 sm:p-6 border border-emerald-200 bg-emerald-50/60 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 rounded-xl bg-[#059669] text-white flex items-center justify-center font-mono font-bold text-lg shrink-0">

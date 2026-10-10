@@ -113,7 +113,7 @@
       <!-- ========================================================= -->
       <div v-if="activeMode === 'scramble'" class="space-y-4">
         <!-- Answer Construction Area -->
-        <div class="p-4 bg-white border border-[#e4e4e7] rounded-2xl min-h-[96px] space-y-2">
+        <div class="p-5 sm:p-6 bg-white border border-[#e4e4e7] rounded-2xl min-h-[96px] space-y-2">
           <div class="text-[11px] font-mono text-[#a1a1aa] flex items-center justify-between">
             <span>点击词块组装句子：</span>
             <button
@@ -149,7 +149,7 @@
         </div>
 
         <!-- Available Token Bank -->
-        <div class="p-4 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl space-y-2">
+        <div class="p-5 sm:p-6 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl space-y-2">
           <div class="text-[11px] font-mono text-[#71717a]">
             候选词块：
           </div>
@@ -185,7 +185,7 @@
       <!-- GAME 2: CLOZE KEY WORDS (进阶难度: 重点词挖空)            -->
       <!-- ========================================================= -->
       <div v-if="activeMode === 'cloze'" class="space-y-4">
-        <div class="p-5 bg-white border border-[#e4e4e7] rounded-2xl space-y-4">
+        <div class="p-5 sm:p-6 bg-white border border-[#e4e4e7] rounded-2xl space-y-4">
           <div class="text-[11px] font-mono text-[#a1a1aa] flex items-center justify-between">
             <span>补全生词：</span>
             <button
@@ -266,7 +266,7 @@
       <!-- ========================================================= -->
       <div
         v-if="hasChecked"
-        class="p-5 border border-[#e4e4e7] rounded-2xl bg-[#f8f8f6] space-y-4"
+        class="p-5 sm:p-6 border border-[#e4e4e7] rounded-2xl bg-[#f8f8f6] space-y-4"
       >
         <!-- Result Header with Stars -->
         <div class="flex items-center justify-between text-xs">
