@@ -5,7 +5,9 @@
  * Tuple format: [phonetic, pos, definition, examTag]
  */
 
-export const GRADED_DICTIONARY = {
+import { GRADED_VOCAB_DB } from './gradedVocabDb.js'
+
+const CURATED_GRADED_DICTIONARY = {
   // ==========================================
   // 1. 小学基础 (Primary School Vocabulary)
   // ==========================================
@@ -667,5 +669,10 @@ export const GRADED_DICTIONARY = {
   willing: ['/ˈwɪlɪŋ/', 'adj.', '乐意的，心甘情愿的', '中考核心'],
   wound: ['/wuːnd/', 'n./v.', '伤口；使受伤', '中考核心'],
   youth: ['/juːθ/', 'n.', '青春，青年', '中考核心']
+}
+
+export const GRADED_DICTIONARY = {
+  ...GRADED_VOCAB_DB,
+  ...CURATED_GRADED_DICTIONARY
 }
 
