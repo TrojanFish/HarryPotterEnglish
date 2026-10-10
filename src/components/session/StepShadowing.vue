@@ -66,10 +66,17 @@
               v-if="hasRecordingAudio"
               type="button"
               @click="playUserRecording"
-              class="min-h-[44px] px-3.5 py-2.5 border border-[#e4e4e7] rounded-xl hover:bg-[#f4f4f5] text-xs text-[#71717a] flex items-center justify-center transition-colors active:scale-95 cursor-pointer"
-              title="回放我的录音"
+              :class="[
+                'min-h-[44px] px-3.5 py-2.5 border rounded-xl text-xs flex items-center justify-center transition-colors active:scale-95 cursor-pointer',
+                isPlayingUserRecording
+                  ? 'border-blue-300 bg-blue-50 text-[#2563eb]'
+                  : 'border-[#e4e4e7] hover:bg-[#f4f4f5] text-[#71717a]'
+              ]"
+              :title="isPlayingUserRecording ? '暂停回放' : '回放我的录音'"
+              aria-label="回放我的录音"
             >
-              <Play class="w-4 h-4 text-[#2563eb]" />
+              <Pause v-if="isPlayingUserRecording" class="w-4 h-4 text-[#2563eb]" />
+              <Play v-else class="w-4 h-4 text-[#2563eb]" />
             </button>
           </div>
         </div>
@@ -177,6 +184,11 @@ const recordingSeconds = ref(0)
 let timerInterval = null
 const hasRecordingAudio = ref(false)
 let userAudioBlobUrl = null
+const isPlayingUserRecording = ref(false)
+let userAudioPlayer = null
+const mediaStreamRef = ref(null)
+const mediaRecorderRef = ref(null)
+const recordedChunks = ref([])
 const evalResult = ref(null)
 
 const SpeechRecognitionAPI = typeof window !== 'undefined'
@@ -200,7 +212,21 @@ function toggleRecording() {
   }
 }
 
-function startRecording() {
+async function startRecording() {
+  if (isPlayingSnippet.value) {
+    player.pause()
+    isPlayingSnippet.value = false
+  }
+  if (isPlayingUserRecording.value && userAudioPlayer) {
+    userAudioPlayer.pause()
+    isPlayingUserRecording.value = false
+  }
+  if (userAudioBlobUrl) {
+    URL.revokeObjectURL(userAudioBlobUrl)
+    userAudioBlobUrl = null
+  }
+  hasRecordingAudio.value = false
+  recordedChunks.value = []
   isRecording.value = true
   recordingSeconds.value = 0
   spokenText = ''
@@ -210,6 +236,7 @@ function startRecording() {
     recordingSeconds.value += 1
   }, 1000)
 
+  // 1. Web Speech API for transcription & evaluation
   if (SpeechRecognitionAPI) {
     try {
       recognitionInstance = new SpeechRecognitionAPI()
@@ -226,6 +253,49 @@ function startRecording() {
       recognitionInstance.start()
     } catch (_) {}
   }
+
+  // 2. Real MediaRecorder microphone audio capture
+  try {
+    if (typeof navigator !== 'undefined' && navigator.mediaDevices?.getUserMedia) {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      mediaStreamRef.value = stream
+
+      let mimeType = ''
+      if (typeof MediaRecorder !== 'undefined') {
+        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+          mimeType = 'audio/webm;codecs=opus'
+        } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+          mimeType = 'audio/webm'
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          mimeType = 'audio/mp4'
+        }
+
+        const options = mimeType ? { mimeType } : undefined
+        const recorder = new MediaRecorder(stream, options)
+        mediaRecorderRef.value = recorder
+
+        recorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) {
+            recordedChunks.value.push(e.data)
+          }
+        }
+
+        recorder.onstop = () => {
+          if (recordedChunks.value.length > 0) {
+            const blob = new Blob(recordedChunks.value, {
+              type: mimeType || 'audio/webm'
+            })
+            userAudioBlobUrl = URL.createObjectURL(blob)
+            hasRecordingAudio.value = true
+          }
+        }
+
+        recorder.start(100)
+      }
+    }
+  } catch (err) {
+    console.warn('[StepShadowing] Microphone access error:', err)
+  }
 }
 
 function stopRecording() {
@@ -235,6 +305,15 @@ function stopRecording() {
   if (recognitionInstance) {
     try { recognitionInstance.stop() } catch (_) {}
     recognitionInstance = null
+  }
+
+  if (mediaRecorderRef.value && mediaRecorderRef.value.state !== 'inactive') {
+    try { mediaRecorderRef.value.stop() } catch (_) {}
+  }
+
+  if (mediaStreamRef.value) {
+    mediaStreamRef.value.getTracks().forEach((t) => t.stop())
+    mediaStreamRef.value = null
   }
 
   hasRecordingAudio.value = true
@@ -268,12 +347,33 @@ function evaluateScore() {
 }
 
 function playUserRecording() {
+  if (isPlayingUserRecording.value && userAudioPlayer) {
+    userAudioPlayer.pause()
+    isPlayingUserRecording.value = false
+    return
+  }
+
+  if (isPlayingSnippet.value) {
+    player.pause()
+    isPlayingSnippet.value = false
+  }
+
   if (userAudioBlobUrl) {
-    const audio = new Audio(userAudioBlobUrl)
-    audio.play()
-  } else {
-    // If synthetic/mock, play original snippet as reference
-    playOriginalSnippet()
+    if (userAudioPlayer) {
+      userAudioPlayer.pause()
+    }
+    userAudioPlayer = new Audio(userAudioBlobUrl)
+    userAudioPlayer.onended = () => {
+      isPlayingUserRecording.value = false
+    }
+    userAudioPlayer.onerror = () => {
+      isPlayingUserRecording.value = false
+    }
+    isPlayingUserRecording.value = true
+    userAudioPlayer.play().catch((err) => {
+      console.warn('[StepShadowing] User playback error:', err)
+      isPlayingUserRecording.value = false
+    })
   }
 }
 
@@ -281,6 +381,20 @@ onUnmounted(() => {
   if (timerInterval) clearInterval(timerInterval)
   if (recognitionInstance) {
     try { recognitionInstance.stop() } catch (_) {}
+  }
+  if (mediaRecorderRef.value && mediaRecorderRef.value.state !== 'inactive') {
+    try { mediaRecorderRef.value.stop() } catch (_) {}
+  }
+  if (mediaStreamRef.value) {
+    mediaStreamRef.value.getTracks().forEach((t) => t.stop())
+  }
+  if (userAudioPlayer) {
+    userAudioPlayer.pause()
+    userAudioPlayer = null
+  }
+  if (userAudioBlobUrl) {
+    URL.revokeObjectURL(userAudioBlobUrl)
+    userAudioBlobUrl = null
   }
 })
 </script>

@@ -11,14 +11,14 @@ describe('SmartAudioPlayer component', () => {
     assert.ok(content.includes('min-h-[44px]') || content.includes('touch-target') || content.includes('w-11 h-11'), 'Must have 44px touch targets')
     assert.ok(!/[\u{1F300}-\u{1F9FF}]/u.test(content), 'Must contain zero unicode emoji')
     assert.ok(content.includes('playerStore'), 'Must integrate with playerStore')
-    assert.ok(content.includes('sessionStore'), 'Must integrate with sessionStore')
   })
 
-  test('SmartAudioPlayer includes single sentence loop, speed cycle, and next-step actions', () => {
+  test('SmartAudioPlayer includes single sentence loop, speed cycle, and sleep timer actions', () => {
     const filePath = path.resolve('src/components/player/SmartAudioPlayer.vue')
     const content = fs.readFileSync(filePath, 'utf-8')
     assert.ok(content.includes('toggleLoop') || content.includes('isLooping'), 'Must support loop toggle')
     assert.ok(content.includes('cycleRate') || content.includes('playbackRate'), 'Must support playback rate cycling')
-    assert.ok(content.includes('advanceStep') || content.includes('nextStep'), 'Must support step advancement')
+    assert.ok(content.includes('sleepTimer') || content.includes('isSleepMenuOpen'), 'Must support sleep timer actions')
+    assert.ok(content.includes('Moon'), 'Must feature Moon icon for sleep timer')
   })
 })

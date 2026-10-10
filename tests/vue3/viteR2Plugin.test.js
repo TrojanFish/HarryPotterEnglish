@@ -6,4 +6,5 @@ test('r2DevPlugin returns a valid Vite plugin object', () => {
   const plugin = r2DevPlugin()
   assert.strictEqual(plugin.name, 'vite-plugin-r2-stream')
   assert.strictEqual(typeof plugin.configureServer, 'function')
+  assert.strictEqual(typeof plugin.configurePreviewServer, 'function')
 })

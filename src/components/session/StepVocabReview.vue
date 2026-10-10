@@ -124,45 +124,16 @@
           在【步骤 1 精听】中点击任意英文生词，即可自动收录至此进行艾宾浩斯复习。
         </p>
       </div>
-
-      <!-- Export Actions & Session Complete Banner -->
-      <div class="p-4 sm:p-5 bg-blue-50/60 border border-blue-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-        <div>
-          <span class="font-bold text-blue-950">今日学习达成</span>
-          <p class="text-[11px] text-blue-800 mt-0.5">
-            已收录 {{ vocabStore.vocabList.length }} 词
-          </p>
-        </div>
-        <div class="flex items-center gap-2">
-          <button
-            type="button"
-            @click="exportAnkiTSV"
-            class="min-h-[44px] px-3.5 py-1.5 border border-blue-200 bg-white hover:bg-blue-50 text-blue-900 rounded-lg font-medium flex items-center gap-1 transition-colors cursor-pointer"
-          >
-            <Download class="w-3.5 h-3.5 text-[#2563eb]" />
-            <span>导出 Anki</span>
-          </button>
-          <button
-            type="button"
-            @click="sessionStore.setStep(1)"
-            class="min-h-[44px] px-4 py-1.5 bg-[#2563eb] text-white rounded-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer"
-          >
-            完成课时
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { BookMarked, Download, Check, X } from 'lucide-vue-next'
+import { BookMarked, Check, X } from 'lucide-vue-next'
 import { useVocabStore } from '../../stores/vocabStore.js'
-import { useSessionStore } from '../../stores/sessionStore.js'
 
 const vocabStore = useVocabStore()
-const sessionStore = useSessionStore()
 
 const currentBox = ref(1)
 const currentIndex = ref(0)
@@ -212,18 +183,6 @@ function prevCard() {
   }
 }
 
-function exportAnkiTSV() {
-  const list = vocabStore.vocabList || []
-  if (list.length === 0) return
-  const tsv = list.map(item => `${item.word}\t${item.phonetic || ''}\t${item.definition}\t${item.contextQuote || ''}`).join('\n')
-  const blob = new Blob([tsv], { type: 'text/tab-separated-values;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `hogwarts-vocab-anki-${Date.now()}.tsv`
-  a.click()
-  URL.revokeObjectURL(url)
-}
 </script>
 
 <style scoped>

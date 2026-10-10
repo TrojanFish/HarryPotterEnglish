@@ -339,6 +339,11 @@ function onAudioEnded() {
     analyticsStore.markChapterComplete(catalog.selectedChapterId)
   }
 
+  // If Sleep Timer is set to "end_of_chapter", stop here
+  if (player.handleChapterEndSleepTimer()) {
+    return
+  }
+
   // Automatically advance to next chapter if available
   const book = catalog.currentBook
   if (book && book.chapters) {

@@ -66,6 +66,24 @@ test('usePlayerStore persists last position to localStorage', () => {
   assert.strictEqual(stored.chapterId, 'hp1-02')
 })
 
+test('usePlayerStore supports sleep timer presets and chapter-end mode', () => {
+  setActivePinia(createPinia())
+  const player = usePlayerStore()
+
+  player.setSleepTimer(15)
+  assert.strictEqual(player.sleepTimerMode, 15)
+  assert.strictEqual(player.sleepTimerRemaining, 15 * 60)
+
+  player.setSleepTimer('end_of_chapter')
+  assert.strictEqual(player.sleepTimerMode, 'end_of_chapter')
+  assert.strictEqual(player.handleChapterEndSleepTimer(), true)
+  assert.strictEqual(player.sleepTimerMode, null)
+  assert.strictEqual(player.isPlaying, false)
+
+  player.setSleepTimer('off')
+  assert.strictEqual(player.sleepTimerMode, null)
+})
+
 test('useSubtitleStore binary search matching active cue', () => {
   setActivePinia(createPinia())
   const subStore = useSubtitleStore()

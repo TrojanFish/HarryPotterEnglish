@@ -119,37 +119,148 @@
         </button>
       </div>
 
-      <!-- Right: Next Step Flow Button (Guaranteed non-wrapping single line) -->
+      <!-- Right: Sleep Timer Button -->
       <div class="flex items-center shrink-0">
         <button
           type="button"
-          @click="advanceStep"
-          class="min-h-[44px] px-3.5 py-1.5 bg-[#2563eb] hover:bg-blue-700 text-white rounded-xl text-xs font-medium whitespace-nowrap shrink-0 flex items-center gap-1 transition-all active:scale-95 touch-manipulation cursor-pointer"
-          aria-label="进入下一步骤"
+          @click="isSleepMenuOpen = true"
+          :class="[
+            'min-h-[44px] px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap flex items-center gap-1.5 transition-all active:scale-95 touch-manipulation cursor-pointer border',
+            player.sleepTimerMode
+              ? 'bg-blue-50 border-blue-200 text-[#2563eb] font-semibold'
+              : 'bg-[#f8f8f6] hover:bg-[#f4f4f5] border-[#e4e4e7] text-[#71717a] hover:text-[#18181b]'
+          ]"
+          :title="player.sleepTimerMode ? `睡眠定时进行中: ${sleepTimerDisplay}` : '设置睡眠定时'"
+          aria-label="设置睡眠定时"
         >
-          <span class="whitespace-nowrap">{{ nextStepButtonLabel }}</span>
-          <ChevronRight class="w-3.5 h-3.5 shrink-0" />
+          <Moon class="w-4 h-4 text-[#2563eb]" />
+          <span v-if="player.sleepTimerMode" class="font-mono text-xs">{{ sleepTimerDisplay }}</span>
+          <span v-else class="hidden md:inline">睡眠定时</span>
         </button>
       </div>
     </div>
+
+    <!-- Sleep Timer Modal Sheet -->
+    <Teleport to="body">
+      <div v-if="isSleepMenuOpen" class="fixed inset-0 z-50 overflow-hidden">
+        <div
+          class="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+          @click="isSleepMenuOpen = false"
+        ></div>
+
+        <div class="fixed inset-0 pointer-events-none flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div
+            class="pointer-events-auto bg-[#f8f8f6] border-t border-x sm:border border-[#e4e4e7] rounded-t-2xl sm:rounded-2xl max-w-sm w-full p-5 space-y-4 pb-[calc(env(safe-area-inset-bottom,0px)+16px)] sm:pb-5"
+            @click.stop
+            role="dialog"
+            aria-modal="true"
+            aria-label="睡眠定时选择"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#2563eb]">
+                  <Moon class="w-4 h-4" />
+                </div>
+                <h3 class="font-serif text-sm font-semibold text-[#18181b]">睡眠定时</h3>
+              </div>
+              <button
+                type="button"
+                @click="isSleepMenuOpen = false"
+                class="min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] flex items-center justify-center rounded-lg cursor-pointer"
+                aria-label="关闭定时器选择"
+              >
+                <X class="w-4 h-4" />
+              </button>
+            </div>
+
+            <div class="space-y-1.5">
+              <button
+                v-for="opt in sleepOptions"
+                :key="opt.label"
+                type="button"
+                @click="selectSleepTimer(opt.value)"
+                :class="[
+                  'w-full min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-medium flex items-center justify-between border transition-all cursor-pointer',
+                  isOptionActive(opt.value)
+                    ? 'bg-blue-50 border-blue-300 text-[#2563eb]'
+                    : 'bg-white hover:bg-[#f4f4f5] border-[#e4e4e7] text-[#18181b]'
+                ]"
+              >
+                <span>{{ opt.label }}</span>
+                <Check v-if="isOptionActive(opt.value)" class="w-4 h-4 text-[#2563eb]" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </footer>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { Play, Pause, SkipBack, SkipForward, RotateCcw, RotateCw, Repeat1, ChevronRight } from 'lucide-vue-next'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import {
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  RotateCcw,
+  RotateCw,
+  Repeat1,
+  Moon,
+  X,
+  Check
+} from 'lucide-vue-next'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useSubtitleStore } from '../../stores/subtitleStore.js'
-import { useSessionStore } from '../../stores/sessionStore.js'
 
 const player = usePlayerStore()
 const subtitleStore = useSubtitleStore()
-const sessionStore = useSessionStore()
 
 const progressBarRef = ref(null)
 const isLooping = ref(false)
+const isSleepMenuOpen = ref(false)
 
-const rates = [0.75, 1.0, 1.25, 1.5]
+const sleepOptions = [
+  { label: '关闭定时', value: null },
+  { label: '15 分钟', value: 15 },
+  { label: '30 分钟', value: 30 },
+  { label: '45 分钟', value: 45 },
+  { label: '60 分钟', value: 60 },
+  { label: '本章节播完', value: 'end_of_chapter' }
+]
+
+function isOptionActive(val) {
+  return player.sleepTimerMode === val
+}
+
+function selectSleepTimer(val) {
+  player.setSleepTimer(val)
+  isSleepMenuOpen.value = false
+}
+
+const sleepTimerDisplay = computed(() => {
+  if (player.sleepTimerMode === 'end_of_chapter') {
+    return '本集'
+  }
+  if (!player.sleepTimerRemaining) return ''
+  const m = Math.floor(player.sleepTimerRemaining / 60)
+  const s = player.sleepTimerRemaining % 60
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+})
+
+let timerTickInterval = null
+onMounted(() => {
+  timerTickInterval = setInterval(() => {
+    player.tickSleepTimer()
+  }, 1000)
+})
+
+onUnmounted(() => {
+  if (timerTickInterval) clearInterval(timerTickInterval)
+})
+
+const rates = [0.8, 1.0, 1.25, 1.5, 2.0]
 
 function formatTime(seconds) {
   if (isNaN(seconds) || seconds === null) return '00:00'
@@ -210,23 +321,4 @@ watch(
     }
   }
 )
-
-const nextStepButtonLabel = computed(() => {
-  switch (sessionStore.currentStep) {
-    case 1:
-      return '跟读'
-    case 2:
-      return '听写'
-    case 3:
-      return '词汇'
-    case 4:
-      return '完成课时'
-    default:
-      return '下一步'
-  }
-})
-
-function advanceStep() {
-  sessionStore.advanceStep()
-}
 </script>

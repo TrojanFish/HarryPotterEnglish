@@ -19,4 +19,12 @@ describe('StepShadowing component', () => {
     const content = fs.readFileSync(filePath, 'utf-8')
     assert.ok(content.includes('0.15'), 'Must enforce 0.15s cutoff threshold before cue end')
   })
+
+  test('StepShadowing captures microphone audio via MediaRecorder and plays user recording', () => {
+    const filePath = path.resolve('src/components/session/StepShadowing.vue')
+    const content = fs.readFileSync(filePath, 'utf-8')
+    assert.ok(content.includes('MediaRecorder'), 'Must instantiate MediaRecorder for real audio capture')
+    assert.ok(content.includes('userAudioBlobUrl'), 'Must store user recording blob URL')
+    assert.ok(!content.includes('playUserRecording() {\n  if (userAudioBlobUrl) {\n    const audio = new Audio(userAudioBlobUrl)\n    audio.play()\n  } else {\n    playOriginalSnippet()'), 'Must not fallback to original snippet on user playback')
+  })
 })

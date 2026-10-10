@@ -30,7 +30,10 @@ export const usePlayerStore = defineStore('player', {
       isAudioLoading: false,
       audioError: null,
       isOfflineFallback: false,
-      audioSrc: ''
+      audioSrc: '',
+      sleepTimerMode: null,
+      sleepTimerRemaining: null,
+      sleepTimerTargetTimestamp: null
     }
   },
 
@@ -98,6 +101,47 @@ export const usePlayerStore = defineStore('player', {
       this.currentTime = 0
       this.duration = 0
       this.persistPosition()
+    },
+
+    setSleepTimer(mode) {
+      if (!mode || mode === 'off') {
+        this.sleepTimerMode = null
+        this.sleepTimerRemaining = null
+        this.sleepTimerTargetTimestamp = null
+        return
+      }
+      if (mode === 'end_of_chapter') {
+        this.sleepTimerMode = 'end_of_chapter'
+        this.sleepTimerRemaining = null
+        this.sleepTimerTargetTimestamp = null
+        return
+      }
+      const mins = Number(mode)
+      if (mins > 0) {
+        this.sleepTimerMode = mins
+        this.sleepTimerRemaining = mins * 60
+        this.sleepTimerTargetTimestamp = Date.now() + mins * 60 * 1000
+      }
+    },
+
+    tickSleepTimer() {
+      if (typeof this.sleepTimerMode === 'number' && this.sleepTimerTargetTimestamp) {
+        const rem = Math.max(0, Math.ceil((this.sleepTimerTargetTimestamp - Date.now()) / 1000))
+        this.sleepTimerRemaining = rem
+        if (rem <= 0) {
+          this.pause()
+          this.setSleepTimer(null)
+        }
+      }
+    },
+
+    handleChapterEndSleepTimer() {
+      if (this.sleepTimerMode === 'end_of_chapter') {
+        this.setSleepTimer(null)
+        this.pause()
+        return true
+      }
+      return false
     },
 
     persistPosition() {
