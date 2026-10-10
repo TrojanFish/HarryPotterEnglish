@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { cleanWordToken as cleanWord } from '../data/dictionaryData.js'
+import { cleanWordToken as cleanWord, lookupWord } from '../data/dictionaryData.js'
 
 const STORAGE_KEY = 'hp_vocab_list'
 
@@ -10,7 +10,7 @@ const initialSeeds = [
     phonetic: '/kləʊk/',
     definition: 'n. 斗篷，披风',
     pos: 'n.',
-    tag: '服饰魔法',
+    tag: '中考核心',
     contextQuote: 'He was wearing an emerald-green cloak.',
     box: 1
   },
@@ -20,7 +20,7 @@ const initialSeeds = [
     phonetic: '/pɪˈkjuːliə(r)/',
     definition: 'adj. 奇怪的，古怪的',
     pos: 'adj.',
-    tag: '核心生词',
+    tag: '高考重点',
     contextQuote: 'It was on the corner that he noticed something peculiar.',
     box: 2
   },
@@ -30,7 +30,7 @@ const initialSeeds = [
     phonetic: '/kwɪl/',
     definition: 'n. 羽毛笔',
     pos: 'n.',
-    tag: '书写文具',
+    tag: '高考重点',
     contextQuote: 'He took out a long quill and a roll of parchment.',
     box: 3
   }
@@ -75,13 +75,14 @@ export const useVocabStore = defineStore('vocab', {
       if (this.hasWord(clean)) return false
 
       const quote = (contextQuote || (isObj ? wordOrData.contextQuote : '') || '').trim()
+      const dictInfo = lookupWord(clean)
       const newEntry = {
         id: Date.now() + Math.floor(Math.random() * 1000),
         word: clean,
-        phonetic: isObj && wordOrData.phonetic ? wordOrData.phonetic : '',
-        definition: isObj && wordOrData.definition ? wordOrData.definition : '生词本收录',
-        pos: isObj && wordOrData.pos ? wordOrData.pos : '',
-        tag: isObj && wordOrData.tag ? wordOrData.tag : '拓展生词',
+        phonetic: isObj && wordOrData.phonetic ? wordOrData.phonetic : (dictInfo?.phonetic || ''),
+        definition: isObj && wordOrData.definition ? wordOrData.definition : (dictInfo?.definition || '生词本收录'),
+        pos: isObj && wordOrData.pos ? wordOrData.pos : (dictInfo?.pos || ''),
+        tag: isObj && wordOrData.tag ? wordOrData.tag : (dictInfo?.tag || '拓展生词'),
         contextQuote: quote,
         box: isObj && typeof wordOrData.box === 'number' ? wordOrData.box : 1,
         addedAt: Date.now()

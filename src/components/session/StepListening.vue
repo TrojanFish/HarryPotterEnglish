@@ -158,7 +158,7 @@
               <p class="text-xs text-[#52525b] leading-relaxed line-clamp-2">
                 {{ word.definition }}
               </p>
-              <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-[#2563eb] border border-blue-200/60 font-mono shrink-0">
+              <span :class="['text-[10px] px-1.5 py-0.5 rounded border font-mono shrink-0', getTagBadgeClass(word.tag)]">
                 {{ word.tag }}
               </span>
             </div>
@@ -270,6 +270,7 @@ import { usePlayerStore } from '../../stores/playerStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
 import { extractSentenceKeywords, STOP_WORDS, cleanWordToken } from '../../data/dictionaryData.js'
+import { getTagBadgeClass } from '../../utils/tagTheme.js'
 import WordLookupModal from '../common/WordLookupModal.vue'
 
 const subtitleStore = useSubtitleStore()

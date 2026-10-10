@@ -91,6 +91,7 @@ describe('WordLookupModal Component and Specifications', () => {
 
     // Core services and stores
     assert.ok(content.includes('lookupWord'), 'Must import lookupWord from dictionaryData')
+    assert.ok(content.includes('getTagBadgeClass'), 'Must import getTagBadgeClass for curriculum badges')
     assert.ok(content.includes('useVocabStore'), 'Must import useVocabStore')
 
     // Props and emits

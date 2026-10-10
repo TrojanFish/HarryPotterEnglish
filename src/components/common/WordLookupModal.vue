@@ -84,7 +84,7 @@
                   <!-- Exam tag badge -->
                   <span
                     v-if="wordData?.tag"
-                    class="px-2 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200"
+                    :class="['px-2 py-0.5 rounded text-xs font-medium border', getTagBadgeClass(wordData.tag)]"
                   >
                     {{ wordData.tag }}
                   </span>
@@ -174,6 +174,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { Volume2, BookMarked, Check, X } from 'lucide-vue-next'
 import { lookupWord } from '../../data/dictionaryData.js'
+import { getTagBadgeClass } from '../../utils/tagTheme.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useBottomSheet } from '../../composables/useBottomSheet.js'
 

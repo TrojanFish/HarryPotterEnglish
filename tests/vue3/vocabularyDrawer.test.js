@@ -41,6 +41,9 @@ test('VocabularyDrawer.vue file exists and meets standards', () => {
   // Mobile swipe-down close gesture support
   assert.ok(content.includes('useBottomSheet'), 'Must support mobile swipe-down close via useBottomSheet')
 
+  // Graded curriculum badge support
+  assert.ok(content.includes('getTagBadgeClass'), 'Must support curriculum grade badge using getTagBadgeClass')
+
   // Design constraints
   const emojiMatches = content.match(/\p{Extended_Pictographic}/gu)
   assert.strictEqual(emojiMatches, null, 'Must contain zero Unicode emoji characters')

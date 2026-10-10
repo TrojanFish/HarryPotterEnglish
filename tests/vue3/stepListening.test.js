@@ -56,6 +56,9 @@ describe('StepListening component', () => {
 
     // Must include word chips cloud for sentence tokens
     assert.ok(content.includes('sentenceContentTokens') || content.includes('sentenceChips') || content.includes('本句单词速查') || content.includes('全句单词速查'), 'Must provide sentence word chips cloud')
+
+    // Must use getTagBadgeClass for curriculum badges
+    assert.ok(content.includes('getTagBadgeClass'), 'Must import and use getTagBadgeClass for curriculum badges')
   })
 })
 

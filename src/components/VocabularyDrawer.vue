@@ -192,10 +192,18 @@
                 </span>
               </div>
 
-              <!-- Box Pill -->
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#2563eb] shrink-0">
-                Box {{ item.box || 1 }}
-              </span>
+              <!-- Tag and Box Pills -->
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span
+                  v-if="resolveTag(item)"
+                  :class="['text-[10px] font-mono px-1.5 py-0.5 rounded border shrink-0', getTagBadgeClass(resolveTag(item))]"
+                >
+                  {{ resolveTag(item) }}
+                </span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#2563eb] shrink-0">
+                  Box {{ item.box || 1 }}
+                </span>
+              </div>
             </div>
 
             <!-- Meaning -->
@@ -243,6 +251,8 @@
 <script setup>
 import { ref, computed, onBeforeUnmount } from 'vue'
 import { useVocabStore } from '../stores/vocabStore.js'
+import { lookupWord } from '../data/dictionaryData.js'
+import { getTagBadgeClass } from '../utils/tagTheme.js'
 import { generateAnkiTSV, downloadAnkiFile } from '../utils/ankiExport.js'
 import { generatePrintableParchmentHTML } from '../utils/parchmentPdfGenerator.js'
 import { useBottomSheet } from '../composables/useBottomSheet.js'
@@ -269,6 +279,12 @@ const vocabStore = useVocabStore()
 const activeBox = ref(null)
 const searchQuery = ref('')
 const scrollContainerRef = ref(null)
+
+function resolveTag(item) {
+  if (item.tag) return item.tag
+  const lookedUp = lookupWord(item.word)
+  return lookedUp?.tag || '拓展生词'
+}
 
 function handleClose() {
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
