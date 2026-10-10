@@ -39,6 +39,97 @@ export const DICTIONARY = {
     definition: '麻瓜（不会魔法的普通人）',
     tag: '专有名词'
   },
+  fantasy: {
+    word: 'fantasy',
+    phonetic: '/ˈfæntəsi/',
+    pos: 'n.',
+    definition: '幻想，魔幻小说；奇想',
+    tag: '核心主题'
+  },
+  classic: {
+    word: 'classic',
+    phonetic: '/ˈklæsɪk/',
+    pos: 'adj./n.',
+    definition: '经典的，第一流的；经典作品，名著',
+    tag: '高频核心'
+  },
+  discovery: {
+    word: 'discovery',
+    phonetic: '/dɪˈskʌvəri/',
+    pos: 'n.',
+    definition: '发现，被发掘的事物',
+    tag: '高频核心'
+  },
+  friendship: {
+    word: 'friendship',
+    phonetic: '/ˈfrendʃɪp/',
+    pos: 'n.',
+    definition: '友谊，朋友情谊',
+    tag: '核心主题'
+  },
+  narrate: {
+    word: 'narrate',
+    phonetic: '/nəˈreɪt/',
+    pos: 'v.',
+    definition: '讲述，叙述，为…作旁白',
+    tag: '文学用词'
+  },
+  author: {
+    word: 'author',
+    phonetic: '/ˈɔːθə(r)/',
+    pos: 'n.',
+    definition: '作者，作家',
+    tag: '身份称谓'
+  },
+  edit: {
+    word: 'edit',
+    phonetic: '/ˈedɪt/',
+    pos: 'v.',
+    definition: '编辑，剪辑，校订',
+    tag: '常用动词'
+  },
+  mystery: {
+    word: 'mystery',
+    phonetic: '/ˈmɪstri/',
+    pos: 'n.',
+    definition: '神秘，奥秘，悬疑',
+    tag: '文学主题'
+  },
+  mysterious: {
+    word: 'mysterious',
+    phonetic: '/mɪˈstɪəriəs/',
+    pos: 'adj.',
+    definition: '神秘的，不可思议的',
+    tag: '高频形容词'
+  },
+  secret: {
+    word: 'secret',
+    phonetic: '/ˈsiːkrət/',
+    pos: 'n./adj.',
+    definition: '秘密，机密；秘密的',
+    tag: '剧情线索'
+  },
+  sorcerer: {
+    word: 'sorcerer',
+    phonetic: '/ˈsɔːsərə(r)/',
+    pos: 'n.',
+    definition: '巫师，魔法师',
+    tag: '魔法身份'
+  },
+  stone: {
+    word: 'stone',
+    phonetic: '/stəʊn/',
+    pos: 'n.',
+    definition: '石头，魔法石',
+    tag: '核心道具'
+  },
+  philosopher: {
+    word: 'philosopher',
+    phonetic: '/fəˈlɒsəfə(r)/',
+    pos: 'n.',
+    definition: '哲人，哲学家，魔法学者',
+    tag: '核心概念'
+  },
   privet: {
     word: 'privet',
     phonetic: '/ˈprɪvɪt/',
@@ -466,3 +557,67 @@ export function lookupWord(rawWord) {
     tag: '拓展生词'
   }
 }
+
+/**
+ * Common English function and stop words to exclude from core vocabulary keyword cards.
+ */
+export const STOP_WORDS = new Set([
+  'a', 'an', 'the', 'and', 'or', 'but', 'nor', 'so', 'yet',
+  'of', 'in', 'on', 'at', 'to', 'for', 'with', 'by', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'from', 'up', 'down', 'out', 'off', 'over', 'under',
+  'is', 'am', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'done',
+  'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them',
+  'my', 'your', 'his', 'her', 'its', 'our', 'their', 'mine', 'yours', 'hers', 'ours', 'theirs',
+  'this', 'that', 'these', 'those', 'who', 'whom', 'whose', 'which', 'what',
+  'as', 'if', 'then', 'than', 'because', 'while', 'where', 'when', 'how', 'why',
+  'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'not', 'only', 'own', 'same', 'too', 'very', 'can', 'will', 'just', 'should', 'now', 'there', 'here'
+])
+
+/**
+ * Extract key content vocabulary from a sentence for listening focus and vocabulary learning.
+ * Normalizes punctuation, strips stop words, prioritizes dictionary entries and lemmas.
+ *
+ * @param {string} sentence - Subtitle or cue sentence text
+ * @param {number} [maxCount=6] - Maximum number of core keywords to return
+ * @returns {Array<{ word: string, rawToken: string, phonetic: string, pos: string, definition: string, tag: string, isInDict: boolean }>}
+ */
+export function extractSentenceKeywords(sentence, maxCount = 6) {
+  if (!sentence || typeof sentence !== 'string') return []
+  const tokens = sentence.trim().split(/\s+/)
+  if (tokens.length === 0) return []
+
+  const seen = new Set()
+  const candidates = []
+
+  for (const token of tokens) {
+    const clean = cleanWordToken(token)
+    if (!clean || clean.length < 2) continue
+    if (STOP_WORDS.has(clean)) continue
+    if (seen.has(clean)) continue
+    seen.add(clean)
+
+    const dictResult = lookupWord(clean)
+    const isDirectMatch = !!DICTIONARY[clean]
+    const isLemmaMatch = !isDirectMatch && getLemmaCandidates(clean).some((c) => !!DICTIONARY[c])
+    const isInDict = isDirectMatch || isLemmaMatch
+
+    candidates.push({
+      word: dictResult.word || clean,
+      rawToken: token,
+      phonetic: dictResult.phonetic || '',
+      pos: dictResult.pos || '',
+      definition: dictResult.definition || '点击收录至生词本',
+      tag: dictResult.tag || '拓展生词',
+      isInDict
+    })
+  }
+
+  // Prioritize dictionary matches first, then longer content words
+  candidates.sort((a, b) => {
+    if (a.isInDict && !b.isInDict) return -1
+    if (!a.isInDict && b.isInDict) return 1
+    return b.word.length - a.word.length
+  })
+
+  return candidates.slice(0, maxCount)
+}
+

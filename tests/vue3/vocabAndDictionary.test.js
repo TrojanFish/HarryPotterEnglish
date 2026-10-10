@@ -175,3 +175,39 @@ describe('vocabStore enhancements (toggleWord, hasWord, removeWord, rich schema)
     assert.strictEqual(dupObj, false)
   })
 })
+
+describe('extractSentenceKeywords NLP utility', () => {
+  test('extractSentenceKeywords extracts keywords from Harry Potter sentences and filters stop words', async () => {
+    const { extractSentenceKeywords } = await import('../../src/data/dictionaryData.js')
+    assert.strictEqual(typeof extractSentenceKeywords, 'function', 'extractSentenceKeywords must be exported')
+
+    const sentence = 'A fantasy classic of discovery and friendship.'
+    const result = extractSentenceKeywords(sentence)
+    assert.ok(Array.isArray(result), 'Must return an array')
+    assert.ok(result.length >= 3, 'Must extract at least 3 content keywords')
+
+    const words = result.map(k => k.word.toLowerCase())
+    assert.ok(words.includes('fantasy'), 'Must extract fantasy')
+    assert.ok(words.includes('classic'), 'Must extract classic')
+    assert.ok(words.includes('discovery'), 'Must extract discovery')
+    assert.ok(words.includes('friendship'), 'Must extract friendship')
+
+    // Stop words like 'a', 'of', 'and' must be excluded
+    assert.ok(!words.includes('a'), 'Must exclude stop word "a"')
+    assert.ok(!words.includes('of'), 'Must exclude stop word "of"')
+    assert.ok(!words.includes('and'), 'Must exclude stop word "and"')
+
+    // Each keyword must have rich fields
+    const fantasy = result.find(k => k.word.toLowerCase() === 'fantasy')
+    assert.ok(fantasy.definition, 'Must have definition')
+    assert.ok(fantasy.phonetic, 'Must have phonetic')
+    assert.ok(fantasy.tag, 'Must have tag')
+  })
+
+  test('extractSentenceKeywords returns empty array for empty or null sentence', async () => {
+    const { extractSentenceKeywords } = await import('../../src/data/dictionaryData.js')
+    assert.deepStrictEqual(extractSentenceKeywords(''), [])
+    assert.deepStrictEqual(extractSentenceKeywords(null), [])
+    assert.deepStrictEqual(extractSentenceKeywords('   '), [])
+  })
+})
