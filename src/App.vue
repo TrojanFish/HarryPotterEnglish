@@ -48,42 +48,9 @@
         <span class="truncate">{{ currentChapterLabel }}</span>
       </button>
 
-      <!-- Right Desktop (md:flex): Full 7 Action Buttons -->
-      <div class="hidden md:flex items-center gap-1 sm:gap-1.5 shrink-0">
-        <!-- 1. A/B Shadowing Recorder -->
-        <button
-          type="button"
-          @click="isShadowingOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
-          title="A/B 影子跟读工坊"
-          aria-label="影子跟读工坊"
-        >
-          <Mic class="w-5 h-5" />
-        </button>
-
-        <!-- 2. Dictation Studio -->
-        <button
-          type="button"
-          @click="isDictationOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
-          title="拼写听写工坊"
-          aria-label="拼写听写工坊"
-        >
-          <PenTool class="w-5 h-5" />
-        </button>
-
-        <!-- 3. Vocabulary Drawer (Leitner 5-box & Anki/PDF) -->
-        <button
-          type="button"
-          @click="isVocabOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
-          title="艾宾浩斯生词本"
-          aria-label="艾宾浩斯生词本"
-        >
-          <BookMarked class="w-5 h-5" />
-        </button>
-
-        <!-- 4. Analytics Dashboard -->
+      <!-- Right: Utility Tools & Bookshelf -->
+      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+        <!-- Analytics Dashboard -->
         <button
           type="button"
           @click="isAnalyticsOpen = true"
@@ -94,7 +61,7 @@
           <BarChart2 class="w-5 h-5" />
         </button>
 
-        <!-- 5. Offline Storage Bag -->
+        <!-- Offline Storage Bag -->
         <button
           type="button"
           @click="isStorageOpen = true"
@@ -105,18 +72,18 @@
           <HardDrive class="w-5 h-5" />
         </button>
 
-        <!-- 6. Shortcuts Help -->
+        <!-- Shortcuts Help -->
         <button
           type="button"
           @click="isShortcutsOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
+          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors hidden sm:flex"
           title="快捷键与指南"
           aria-label="快捷键指南"
         >
           <HelpCircle class="w-5 h-5" />
         </button>
 
-        <!-- 7. Bookshelf Drawer Toggle Button -->
+        <!-- Bookshelf Drawer Toggle Button -->
         <button
           type="button"
           @click="player.toggleBookshelf(true)"
@@ -124,102 +91,13 @@
           aria-label="打开书架抽屉"
         >
           <Library class="w-4 h-4" />
-          <span class="hidden lg:inline">书架</span>
+          <span class="hidden md:inline">书架</span>
         </button>
-      </div>
-
-      <!-- Right Mobile (md:hidden): Compact Ergonomic Tools + More Menu -->
-      <div class="flex md:hidden items-center gap-1 shrink-0 relative">
-        <!-- 1. A/B Shadowing Recorder -->
-        <button
-          type="button"
-          @click="isShadowingOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors active:scale-95"
-          title="A/B 影子跟读工坊"
-          aria-label="影子跟读工坊"
-        >
-          <Mic class="w-5 h-5" />
-        </button>
-
-        <!-- 2. Vocabulary Drawer -->
-        <button
-          type="button"
-          @click="isVocabOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors active:scale-95"
-          title="艾宾浩斯生词本"
-          aria-label="艾宾浩斯生词本"
-        >
-          <BookMarked class="w-5 h-5" />
-        </button>
-
-        <!-- 3. More Tools Menu -->
-        <button
-          type="button"
-          @click="isMobileMenuOpen = !isMobileMenuOpen"
-          class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors active:scale-95"
-          title="更多魔法工具"
-          aria-label="更多魔法工具"
-        >
-          <MoreVertical class="w-5 h-5" />
-        </button>
-
-        <!-- Mobile More Menu Dropdown -->
-        <Transition
-          enter-active-class="transition duration-150 ease-out"
-          enter-from-class="opacity-0 scale-95 -translate-y-1"
-          enter-to-class="opacity-100 scale-100 translate-y-0"
-          leave-active-class="transition duration-100 ease-in"
-          leave-from-class="opacity-100 scale-100 translate-y-0"
-          leave-to-class="opacity-0 scale-95 -translate-y-1"
-        >
-          <div
-            v-if="isMobileMenuOpen"
-            class="absolute right-0 top-12 z-50 w-52 bg-white border border-[#e4e4e7] rounded-xl p-2 space-y-1 shadow-sm"
-          >
-            <button
-              type="button"
-              @click="isDictationOpen = true; isMobileMenuOpen = false"
-              class="w-full min-h-[44px] px-3 rounded-lg flex items-center gap-2.5 text-xs text-[#18181b] hover:bg-[#f4f4f5] transition-colors"
-            >
-              <PenTool class="w-4 h-4 text-[#2563eb]" />
-              <span>拼写听写工坊</span>
-            </button>
-            <button
-              type="button"
-              @click="isAnalyticsOpen = true; isMobileMenuOpen = false"
-              class="w-full min-h-[44px] px-3 rounded-lg flex items-center gap-2.5 text-xs text-[#18181b] hover:bg-[#f4f4f5] transition-colors"
-            >
-              <BarChart2 class="w-4 h-4 text-[#2563eb]" />
-              <span>学业分析仪表盘</span>
-            </button>
-            <button
-              type="button"
-              @click="isStorageOpen = true; isMobileMenuOpen = false"
-              class="w-full min-h-[44px] px-3 rounded-lg flex items-center gap-2.5 text-xs text-[#18181b] hover:bg-[#f4f4f5] transition-colors"
-            >
-              <HardDrive class="w-4 h-4 text-[#2563eb]" />
-              <span>离线魔法行囊</span>
-            </button>
-            <button
-              type="button"
-              @click="isShortcutsOpen = true; isMobileMenuOpen = false"
-              class="w-full min-h-[44px] px-3 rounded-lg flex items-center gap-2.5 text-xs text-[#18181b] hover:bg-[#f4f4f5] transition-colors"
-            >
-              <HelpCircle class="w-4 h-4 text-[#2563eb]" />
-              <span>快捷手势指南</span>
-            </button>
-            <button
-              type="button"
-              @click="player.toggleBookshelf(true); isMobileMenuOpen = false"
-              class="w-full min-h-[44px] px-3 rounded-lg flex items-center gap-2.5 text-xs text-[#18181b] hover:bg-[#f4f4f5] transition-colors border-t border-[#e4e4e7] pt-1"
-            >
-              <Library class="w-4 h-4 text-[#2563eb]" />
-              <span>打开魔法书架</span>
-            </button>
-          </div>
-        </Transition>
       </div>
     </header>
+
+    <!-- Step Flow Navigation Bar -->
+    <StepTabBar />
 
     <!-- Global Notice Banner (e.g. Offline fallback notice) -->
     <div
@@ -241,23 +119,18 @@
       </button>
     </div>
 
-    <!-- Main Content Area: Split-Pane Workbench (方案 B: 55% 字幕流 + 45% 交互工作台) -->
-    <main class="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden relative" role="main">
-      <!-- Left Column: Full Chapter Subtitle Stream (55%) -->
-      <section class="flex-1 md:flex-[1.15] flex flex-col overflow-hidden min-w-0 bg-white">
-        <MagicErrorBoundary>
-          <SubtitleViewer />
-        </MagicErrorBoundary>
-      </section>
-
-      <!-- Right Column: Permanent Interactive Training Studio Workbench (45%) -->
-      <section class="hidden md:flex md:flex-[0.85] overflow-hidden bg-[#f8f8f6] border-l border-[#e4e4e7]">
-        <StudioWorkbench />
-      </section>
+    <!-- Main Content Area: Dynamic 4-Step Session Stage View -->
+    <main class="flex-1 min-h-0 flex flex-col overflow-hidden relative" role="main">
+      <MagicErrorBoundary>
+        <StepListening v-if="sessionStore.currentStep === 1" />
+        <StepShadowing v-else-if="sessionStore.currentStep === 2" />
+        <StepDictation v-else-if="sessionStore.currentStep === 3" />
+        <StepVocabReview v-else-if="sessionStore.currentStep === 4" />
+      </MagicErrorBoundary>
     </main>
 
     <!-- Bottom Audio Player Scrubber -->
-    <AudioPlayer />
+    <SmartAudioPlayer />
 
     <!-- Bookshelf Drawer -->
     <BookshelfDrawer />
@@ -315,6 +188,12 @@ import { SAMPLE_CHAPTER_1_VTT, SAMPLE_AUDIO_URL } from './data/chapters.js'
 import AudioPlayer from './components/AudioPlayer.vue'
 import SubtitleViewer from './components/SubtitleViewer.vue'
 import StudioWorkbench from './components/StudioWorkbench.vue'
+import StepTabBar from './components/layout/StepTabBar.vue'
+import StepListening from './components/session/StepListening.vue'
+import StepShadowing from './components/session/StepShadowing.vue'
+import StepDictation from './components/session/StepDictation.vue'
+import StepVocabReview from './components/session/StepVocabReview.vue'
+import SmartAudioPlayer from './components/player/SmartAudioPlayer.vue'
 import BookshelfDrawer from './components/BookshelfDrawer.vue'
 import ShadowingRecorder from './components/ShadowingRecorder.vue'
 import DictationStudio from './components/DictationStudio.vue'
@@ -323,6 +202,7 @@ import AnalyticsDashboard from './components/AnalyticsDashboard.vue'
 import StorageManagerModal from './components/StorageManagerModal.vue'
 import ShortcutsModal from './components/ShortcutsModal.vue'
 import MagicErrorBoundary from './components/common/MagicErrorBoundary.vue'
+import { useSessionStore } from './stores/sessionStore.js'
 import {
   Sparkles,
   BookOpen,
@@ -342,6 +222,7 @@ const player = usePlayerStore()
 const subtitleStore = useSubtitleStore()
 const catalog = useCatalogStore()
 const analyticsStore = useAnalyticsStore()
+const sessionStore = useSessionStore()
 
 // Native HTMLAudioElement held in shallowRef to avoid Proxy traps
 const audioRef = shallowRef(null)
