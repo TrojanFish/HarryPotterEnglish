@@ -128,7 +128,7 @@ describe('WordLookupModal Component and Specifications', () => {
     assert.strictEqual(cloakEntry.word, 'cloak')
     assert.strictEqual(cloakEntry.phonetic, '/kləʊk/')
     assert.strictEqual(cloakEntry.pos, 'n.')
-    assert.strictEqual(cloakEntry.tag, '服饰魔法')
+    assert.strictEqual(cloakEntry.tag, '中考核心')
 
     // 'cloak' is initially seeded
     assert.strictEqual(vocabStore.hasWord(cloakEntry.word), true)

@@ -3,6 +3,9 @@
  * Zero-emoji, local-first vocabulary lookup tailored for Harry Potter reader.
  */
 
+import { GRADED_DICTIONARY } from './gradedDictionaryData.js'
+import { HP_LORE_DICTIONARY } from './hpDictionary.js'
+
 export const DICTIONARY = {
   cloak: {
     word: 'cloak',
@@ -535,20 +538,77 @@ export function lookupWord(rawWord) {
     }
   }
 
-  // Exact match
+  // 1. Exact match in DICTIONARY (overlay graded tag if available)
   if (DICTIONARY[clean]) {
-    return { ...DICTIONARY[clean] }
-  }
-
-  // Inflection candidate match
-  const candidates = getLemmaCandidates(clean)
-  for (const cand of candidates) {
-    if (DICTIONARY[cand]) {
-      return { ...DICTIONARY[cand] }
+    const graded = GRADED_DICTIONARY[clean]
+    return {
+      ...DICTIONARY[clean],
+      tag: graded ? graded[3] : DICTIONARY[clean].tag
     }
   }
 
-  // Fallback for unknown word
+  // 2. Exact match in GRADED_DICTIONARY
+  if (GRADED_DICTIONARY[clean]) {
+    const tuple = GRADED_DICTIONARY[clean]
+    return {
+      word: clean,
+      phonetic: tuple[0] || '',
+      pos: tuple[1] || '',
+      definition: tuple[2] || '',
+      tag: tuple[3] || '拓展生词'
+    }
+  }
+
+  // 3. Inflection candidate matches in DICTIONARY and GRADED_DICTIONARY
+  const candidates = getLemmaCandidates(clean)
+  for (const cand of candidates) {
+    if (DICTIONARY[cand]) {
+      const graded = GRADED_DICTIONARY[cand]
+      return {
+        ...DICTIONARY[cand],
+        word: DICTIONARY[cand].word || cand,
+        tag: graded ? graded[3] : DICTIONARY[cand].tag
+      }
+    }
+    if (GRADED_DICTIONARY[cand]) {
+      const tuple = GRADED_DICTIONARY[cand]
+      return {
+        word: cand,
+        phonetic: tuple[0] || '',
+        pos: tuple[1] || '',
+        definition: tuple[2] || '',
+        tag: tuple[3] || '拓展生词'
+      }
+    }
+  }
+
+  // 4. Exact match in HP_LORE_DICTIONARY
+  if (HP_LORE_DICTIONARY[clean]) {
+    const lore = HP_LORE_DICTIONARY[clean]
+    return {
+      word: lore.word || clean,
+      phonetic: lore.phonetic || '',
+      pos: 'n.',
+      definition: lore.translation || lore.explanation || '',
+      tag: '魔法专有'
+    }
+  }
+
+  // 5. Inflection candidate matches in HP_LORE_DICTIONARY
+  for (const cand of candidates) {
+    if (HP_LORE_DICTIONARY[cand]) {
+      const lore = HP_LORE_DICTIONARY[cand]
+      return {
+        word: lore.word || cand,
+        phonetic: lore.phonetic || '',
+        pos: 'n.',
+        definition: lore.translation || lore.explanation || '',
+        tag: '魔法专有'
+      }
+    }
+  }
+
+  // 6. Fallback for unknown word
   return {
     word: clean,
     phonetic: '',
@@ -596,8 +656,13 @@ export function extractSentenceKeywords(sentence, maxCount = 6) {
     seen.add(clean)
 
     const dictResult = lookupWord(clean)
-    const isDirectMatch = !!DICTIONARY[clean]
-    const isLemmaMatch = !isDirectMatch && getLemmaCandidates(clean).some((c) => !!DICTIONARY[c])
+    const isDirectMatch =
+      !!HP_LORE_DICTIONARY[clean] || !!GRADED_DICTIONARY[clean] || !!DICTIONARY[clean]
+    const isLemmaMatch =
+      !isDirectMatch &&
+      getLemmaCandidates(clean).some(
+        (c) => !!HP_LORE_DICTIONARY[c] || !!GRADED_DICTIONARY[c] || !!DICTIONARY[c]
+      )
     const isInDict = isDirectMatch || isLemmaMatch
 
     candidates.push({

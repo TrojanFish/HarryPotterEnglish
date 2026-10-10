@@ -185,7 +185,6 @@ export const GRADED_DICTIONARY = {
   refuse: ['/rɪˈfjuːz/', 'v.', '拒绝，谢绝', '高考重点'],
   struggle: ['/ˈstrʌɡl/', 'v./n.', '奋斗，挣扎', '高考重点'],
   surround: ['/səˈraʊnd/', 'v.', '包围，围绕', '高考重点'],
-  whispering: ['/ˈwɪspərɪŋ/', 'n.', '窃窃私语', '高考重点'],
   spectacles: ['/ˈspektəklz/', 'n.', '眼镜（复数）', '高考重点'],
   quill: ['/kwɪl/', 'n.', '羽毛笔', '高考重点'],
   parchment: ['/ˈpɑːtʃmənt/', 'n.', '羊皮纸', '高考重点'],

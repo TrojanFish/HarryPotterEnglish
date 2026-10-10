@@ -211,3 +211,28 @@ describe('extractSentenceKeywords NLP utility', () => {
     assert.deepStrictEqual(extractSentenceKeywords('   '), [])
   })
 })
+
+describe('Graded curriculum tag resolution in lookupWord', () => {
+  test('lookupWord resolves distinct curriculum grade tags and HP lore tags', async () => {
+    const { lookupWord } = await import('../../src/data/dictionaryData.js')
+
+    const primary = lookupWord('cat')
+    assert.strictEqual(primary.tag, '小学基础', 'cat must have 小学基础 tag')
+
+    const middle = lookupWord('discover')
+    assert.strictEqual(middle.tag, '中考核心', 'discover must have 中考核心 tag')
+
+    const gaokao = lookupWord('peculiar')
+    assert.strictEqual(gaokao.tag, '高考重点', 'peculiar must have 高考重点 tag')
+
+    const cet4 = lookupWord('philosopher')
+    assert.strictEqual(cet4.tag, '四级高频', 'philosopher must have 四级高频 tag')
+
+    const cet6 = lookupWord('eccentric')
+    assert.strictEqual(cet6.tag, '六级进阶', 'eccentric must have 六级进阶 tag')
+
+    const lore = lookupWord('quidditch')
+    assert.strictEqual(lore.tag, '魔法专有', 'quidditch must have 魔法专有 tag')
+  })
+})
+
