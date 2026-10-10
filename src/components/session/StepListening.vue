@@ -171,7 +171,6 @@ const sessionStore = useSessionStore()
 
 const scrollContainerRef = ref(null)
 const toastMsg = ref('')
-let toastTimer = null
 
 const isLookupOpen = ref(false)
 const lookupWordTarget = ref('')
@@ -198,20 +197,10 @@ function handleWordClick(token, fullSentence) {
   if (!clean || clean.length < 2) return
   if (player.isPlaying) {
     player.pause()
-  } else {
-    player.pause()
   }
   lookupWordTarget.value = token
   lookupQuote.value = fullSentence || ''
   isLookupOpen.value = true
-}
-
-function showToast(word, msg) {
-  if (toastTimer) clearTimeout(toastTimer)
-  toastMsg.value = `"${word}" · ${msg}`
-  toastTimer = setTimeout(() => {
-    toastMsg.value = ''
-  }, 2000)
 }
 
 function jumpToCue(cue, idx) {

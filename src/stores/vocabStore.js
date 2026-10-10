@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { cleanWordToken as cleanWord } from '../data/dictionaryData.js'
 
 const STORAGE_KEY = 'hp_vocab_list'
 
@@ -35,10 +36,6 @@ const initialSeeds = [
   }
 ]
 
-function cleanWord(str) {
-  if (!str || typeof str !== 'string') return ''
-  return str.toLowerCase().replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '')
-}
 
 function loadVocab() {
   if (typeof localStorage === 'undefined') return JSON.parse(JSON.stringify(initialSeeds))
