@@ -17,16 +17,16 @@
         aria-label="拼写听写工坊"
       >
         <div
-          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden"
+          class="bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden"
           @click.stop
         >
           <!-- Header -->
-          <div class="px-5 py-4 border-b border-[#e8ddd0] flex items-center justify-between shrink-0">
+          <div class="px-5 py-4 border-b border-[#e4e4e7] bg-white flex items-center justify-between shrink-0">
             <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-lg bg-[#d97706]/15 border border-[#d97706]/30 flex items-center justify-center text-[#d97706]">
+              <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#2563eb]">
                 <PenTool class="w-4 h-4" />
               </div>
-              <h2 class="font-serif text-base font-semibold text-[#1e1610]">
+              <h2 class="font-serif text-base font-semibold text-[#18181b]">
                 拼写听写工坊
               </h2>
             </div>
@@ -34,7 +34,7 @@
             <button
               type="button"
               @click="$emit('close')"
-              class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+              class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
               aria-label="关闭听写工坊"
             >
               <X class="w-5 h-5" />
@@ -44,12 +44,12 @@
           <!-- Main Scrollable Area -->
           <div class="flex-1 overflow-y-auto p-5 space-y-4">
             <!-- Audio Playback Buttons Card -->
-            <div class="p-4 bg-white/70 border border-[#e8ddd0] rounded-xl flex items-center justify-between gap-3">
+            <div class="p-4 bg-white border border-[#e4e4e7] rounded-xl flex items-center justify-between gap-3">
               <div>
-                <p class="text-xs font-semibold text-[#1e1610]">
+                <p class="text-xs font-semibold text-[#18181b]">
                   盲听本句音频
                 </p>
-                <p class="text-[11px] text-[#78695d] mt-0.5">
+                <p class="text-[11px] text-[#71717a] mt-0.5">
                   仔细辨音，输入听到的原版英文句子
                 </p>
               </div>
@@ -58,18 +58,28 @@
                 <button
                   type="button"
                   @click="playSnippet(1.0)"
-                  class="min-h-[44px] px-3.5 py-2 bg-[#d97706] hover:bg-[#b45309] text-white text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors active:scale-95 shadow-sm"
+                  :class="[
+                    'min-h-[44px] px-3.5 py-2 border rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer',
+                    isPlayingSnippet && currentRate === 1.0
+                      ? 'bg-blue-50 border-[#2563eb] text-[#2563eb]'
+                      : 'bg-white border-[#e4e4e7] text-[#18181b] hover:bg-[#f4f4f5]'
+                  ]"
                 >
-                  <Volume2 class="w-4 h-4" />
+                  <Volume2 :class="['w-4 h-4 text-[#2563eb]', isPlayingSnippet && currentRate === 1.0 ? 'animate-pulse' : '']" />
                   <span>原速</span>
                 </button>
 
                 <button
                   type="button"
                   @click="playSnippet(0.8)"
-                  class="min-h-[44px] px-3.5 py-2 bg-[#f4ebe1] hover:bg-[#ebdccb] border border-[#e8ddd0] text-[#1e1610] text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors active:scale-95 shadow-sm"
+                  :class="[
+                    'min-h-[44px] px-3.5 py-2 border rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer',
+                    isPlayingSnippet && currentRate === 0.8
+                      ? 'bg-blue-50 border-[#2563eb] text-[#2563eb]'
+                      : 'bg-white border-[#e4e4e7] text-[#18181b] hover:bg-[#f4f4f5]'
+                  ]"
                 >
-                  <RotateCcw class="w-4 h-4 text-[#d97706]" />
+                  <RotateCcw :class="['w-4 h-4 text-[#2563eb]', isPlayingSnippet && currentRate === 0.8 ? 'animate-spin' : '']" />
                   <span>0.8x 慢放</span>
                 </button>
               </div>
@@ -77,7 +87,7 @@
 
             <!-- Dictation Input Area (Strict 16px text-base for iOS zoom prevention) -->
             <div class="space-y-2">
-              <label for="dictation-input" class="text-xs font-medium text-[#78695d] block">
+              <label for="dictation-input" class="text-xs font-medium text-[#71717a] block">
                 你的听写输入：
               </label>
 
@@ -86,7 +96,7 @@
                 v-model="userText"
                 rows="3"
                 placeholder="在此输入听到的原版英文句子..."
-                class="w-full text-base p-3.5 bg-white border border-[#e8ddd0] rounded-xl focus:outline-none focus:border-[#d97706] focus:ring-1 focus:ring-[#d97706] text-[#1e1610] leading-relaxed resize-none transition-all placeholder:text-[#a89a8c]"
+                class="w-full text-base p-3.5 bg-white border border-[#e4e4e7] rounded-xl focus:outline-none focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb] text-[#18181b] leading-relaxed resize-none transition-all placeholder:text-[#a1a1aa]"
               ></textarea>
             </div>
 
@@ -96,9 +106,9 @@
               <button
                 type="button"
                 @click="showHint = !showHint"
-                class="min-h-[44px] px-3 py-2 text-xs text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] rounded-lg border border-[#e8ddd0] flex items-center gap-1.5 transition-colors"
+                class="min-h-[44px] px-3 py-2 text-xs text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-lg border border-[#e4e4e7] flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                <HelpCircle class="w-4 h-4 text-[#d97706]" />
+                <HelpCircle class="w-4 h-4 text-[#2563eb]" />
                 <span>{{ showHint ? '隐藏羽毛笔提示' : '羽毛笔提示' }}</span>
               </button>
 
@@ -106,7 +116,7 @@
               <button
                 type="button"
                 @click="checkAnswer"
-                class="min-h-[44px] px-5 py-2 bg-[#d97706] hover:bg-[#b45309] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors active:scale-95 shadow-sm"
+                class="min-h-[44px] px-5 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer"
               >
                 <CheckCircle2 class="w-4 h-4" />
                 <span>提交校验</span>
@@ -114,7 +124,7 @@
             </div>
 
             <!-- Hint Box -->
-            <div v-if="showHint" class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl text-xs text-amber-900 leading-relaxed font-serif">
+            <div v-if="showHint" class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl text-xs text-blue-900 leading-relaxed font-serif">
               <span class="font-semibold">提示首词：</span>
               <span>{{ hintText }}</span>
             </div>
@@ -148,15 +158,15 @@
           </div>
 
           <!-- Bottom Footer Navigation -->
-          <div class="p-4 border-t border-[#e8ddd0] bg-white/50 shrink-0 flex items-center justify-between">
-            <span class="text-xs text-[#78695d]">
+          <div class="p-4 border-t border-[#e4e4e7] bg-white shrink-0 flex items-center justify-between">
+            <span class="text-xs text-[#71717a]">
               听写训练 · 单句精进
             </span>
 
             <button
               type="button"
               @click="nextSentence"
-              class="min-h-[44px] px-4 py-2 bg-[#f4ebe1] hover:bg-[#ebdccb] border border-[#e8ddd0] text-[#1e1610] text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors active:scale-95"
+              class="min-h-[44px] px-4 py-2 bg-[#f4f4f5] hover:bg-[#e4e4e7] border border-[#e4e4e7] text-[#18181b] text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer"
             >
               <span>下一句</span>
               <ArrowRight class="w-4 h-4" />
@@ -169,7 +179,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { usePlayerStore } from '../stores/playerStore.js'
 import {
   X,
@@ -201,6 +211,8 @@ const userText = ref('')
 const checked = ref(false)
 const isCorrect = ref(false)
 const showHint = ref(false)
+const isPlayingSnippet = ref(false)
+const currentRate = ref(1.0)
 
 const targetSentence = computed(() => {
   return props.currentCue?.text || 'Mr. and Mrs. Dursley of number four Privet Drive'
@@ -213,11 +225,39 @@ const hintText = computed(() => {
 
 function playSnippet(rate = 1.0) {
   if (props.currentCue?.start !== undefined) {
+    if (isPlayingSnippet.value && currentRate.value === rate) {
+      player.pause()
+      isPlayingSnippet.value = false
+      return
+    }
+    currentRate.value = rate
     player.setPlaybackRate(rate)
+    isPlayingSnippet.value = true
     player.seek(props.currentCue.start)
     player.play()
   }
 }
+
+watch(
+  () => player.currentTime,
+  (t) => {
+    if (
+      isPlayingSnippet.value &&
+      props.currentCue?.end !== undefined &&
+      t >= props.currentCue.end - 0.15
+    ) {
+      player.pause()
+      isPlayingSnippet.value = false
+    }
+  }
+)
+
+watch(
+  () => player.isPlaying,
+  (playing) => {
+    if (!playing) isPlayingSnippet.value = false
+  }
+)
 
 function cleanStr(s) {
   return (s || '')
@@ -242,4 +282,11 @@ function nextSentence() {
   showHint.value = false
   emit('next')
 }
+
+onUnmounted(() => {
+  if (isPlayingSnippet.value) {
+    player.pause()
+    isPlayingSnippet.value = false
+  }
+})
 </script>

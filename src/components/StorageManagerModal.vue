@@ -17,16 +17,16 @@
         aria-label="离线行囊与存储管理"
       >
         <div
-          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden"
+          class="bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden"
           @click.stop
         >
           <!-- Header -->
-          <div class="px-5 py-4 border-b border-[#e8ddd0] flex items-center justify-between shrink-0">
+          <div class="px-5 py-4 border-b border-[#e4e4e7] bg-white flex items-center justify-between shrink-0">
             <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-lg bg-[#d97706]/15 border border-[#d97706]/30 flex items-center justify-center text-[#d97706]">
+              <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#2563eb]">
                 <HardDrive class="w-4 h-4" />
               </div>
-              <h2 class="font-serif text-base font-semibold text-[#1e1610]">
+              <h2 class="font-serif text-base font-semibold text-[#18181b]">
                 离线行囊 · 本地存储
               </h2>
             </div>
@@ -34,7 +34,7 @@
             <button
               type="button"
               @click="$emit('close')"
-              class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+              class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
               aria-label="关闭存储管理"
             >
               <X class="w-5 h-5" />
@@ -44,42 +44,42 @@
           <!-- Content -->
           <div class="flex-1 overflow-y-auto p-5 space-y-4">
             <!-- Quota Bar -->
-            <div class="p-4 bg-white/70 border border-[#e8ddd0] rounded-xl space-y-2">
+            <div class="p-4 bg-white border border-[#e4e4e7] rounded-xl space-y-2">
               <div class="flex items-center justify-between text-xs">
-                <span class="font-semibold text-[#1e1610]">已占用空间</span>
-                <span class="font-mono text-[#78695d]">{{ formatBytes(storageInfo.usedBytes) }} / {{ formatBytes(storageInfo.quotaBytes) }}</span>
+                <span class="font-semibold text-[#18181b]">已占用空间</span>
+                <span class="font-mono text-[#71717a]">{{ formatBytes(storageInfo.usedBytes) }} / {{ formatBytes(storageInfo.quotaBytes) }}</span>
               </div>
-              <div class="w-full h-2 bg-[#e8ddd0] rounded-full overflow-hidden">
+              <div class="w-full h-2 bg-[#f4f4f5] rounded-full overflow-hidden">
                 <div
-                  class="h-full bg-[#d97706] rounded-full transition-all"
+                  class="h-full bg-[#2563eb] rounded-full transition-all"
                   :style="{ width: `${quotaPercent}%` }"
                 ></div>
               </div>
-              <p class="text-[11px] text-[#a89a8c]">
+              <p class="text-[11px] text-[#a1a1aa]">
                 基于 IndexedDB 本地沙箱存储，断网离线 0ms 纯本地秒开，免除流量消耗。
               </p>
             </div>
 
             <!-- Cached Chapters List -->
             <div class="space-y-2">
-              <h3 class="text-xs font-semibold text-[#78695d] uppercase tracking-wider">
+              <h3 class="text-xs font-semibold text-[#71717a] uppercase tracking-wider">
                 已离线章节 ({{ storageInfo.chapters?.length || 0 }})
               </h3>
 
-              <div v-if="!storageInfo.chapters || storageInfo.chapters.length === 0" class="text-center py-8 text-xs text-[#a89a8c] bg-[#f4ebe1]/40 rounded-xl border border-[#e8ddd0]">
+              <div v-if="!storageInfo.chapters || storageInfo.chapters.length === 0" class="text-center py-8 text-xs text-[#a1a1aa] bg-white rounded-xl border border-[#e4e4e7]">
                 暂无离线章节。可在有 Wi-Fi 时缓存音频与字幕。
               </div>
 
               <div
                 v-for="ch in storageInfo.chapters"
                 :key="ch.chapterId"
-                class="p-3 bg-white/70 border border-[#e8ddd0] rounded-xl flex items-center justify-between gap-3"
+                class="p-3 bg-white border border-[#e4e4e7] rounded-xl flex items-center justify-between gap-3"
               >
                 <div>
-                  <h4 class="text-xs font-semibold text-[#1e1610]">
+                  <h4 class="text-xs font-semibold text-[#18181b]">
                     {{ ch.title || ch.chapterId }}
                   </h4>
-                  <span class="text-[10px] text-[#a89a8c] font-mono">
+                  <span class="text-[10px] text-[#a1a1aa] font-mono">
                     {{ formatBytes(ch.totalBytes) }}
                   </span>
                 </div>
@@ -88,7 +88,7 @@
                   <button
                     type="button"
                     @click="deleteChapter(ch.chapterId)"
-                    class="min-h-[44px] min-w-[44px] p-2 text-rose-700 hover:bg-rose-50 rounded-lg flex items-center justify-center transition-colors"
+                    class="min-h-[44px] min-w-[44px] p-2 text-rose-700 hover:bg-rose-50 rounded-lg flex items-center justify-center transition-colors cursor-pointer"
                     aria-label="删除离线缓存"
                   >
                     <Trash2 class="w-4 h-4" />
@@ -98,19 +98,19 @@
             </div>
 
             <!-- Available Downloadable Chapters List -->
-            <div class="space-y-2 pt-2 border-t border-[#e8ddd0]">
+            <div class="space-y-2 pt-2 border-t border-[#e4e4e7]">
               <div class="flex items-center justify-between">
-                <h3 class="text-xs font-semibold text-[#78695d] uppercase tracking-wider">
+                <h3 class="text-xs font-semibold text-[#71717a] uppercase tracking-wider">
                   可下载章节 ({{ availableChapters.length }})
                 </h3>
-                <span class="text-[11px] text-[#a89a8c] font-serif">
+                <span class="text-[11px] text-[#a1a1aa] font-serif">
                   {{ catalogStore.currentBook?.title || '当前书籍' }}
                 </span>
               </div>
 
               <div
                 v-if="availableChapters.length === 0"
-                class="text-center py-6 text-xs text-[#a89a8c] bg-[#f4ebe1]/40 rounded-xl border border-[#e8ddd0]"
+                class="text-center py-6 text-xs text-[#a1a1aa] bg-white rounded-xl border border-[#e4e4e7]"
               >
                 暂无可下载章节。
               </div>
@@ -118,13 +118,13 @@
               <div
                 v-for="ch in availableChapters"
                 :key="ch.id"
-                class="p-3 bg-white/70 border border-[#e8ddd0] rounded-xl flex items-center justify-between gap-3"
+                class="p-3 bg-white border border-[#e4e4e7] rounded-xl flex items-center justify-between gap-3"
               >
                 <div class="min-w-0 flex-1">
-                  <h4 class="text-xs font-semibold text-[#1e1610] truncate">
+                  <h4 class="text-xs font-semibold text-[#18181b] truncate">
                     {{ ch.title || ch.id }}
                   </h4>
-                  <span class="text-[10px] text-[#a89a8c] font-mono">
+                  <span class="text-[10px] text-[#a1a1aa] font-mono">
                     {{ ch.duration ? `${Math.round(ch.duration / 60)} 分钟` : '标准原版' }}
                   </span>
                 </div>
@@ -142,9 +142,9 @@
                   <!-- Downloading progress spinner -->
                   <div
                     v-else-if="downloadingMap[ch.id] !== undefined"
-                    class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#d97706] bg-amber-50 border border-amber-200 rounded-lg min-h-[44px]"
+                    class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#2563eb] bg-blue-50 border border-blue-200 rounded-lg min-h-[44px]"
                   >
-                    <Loader2 class="w-4 h-4 text-[#d97706] animate-spin" />
+                    <Loader2 class="w-4 h-4 text-[#2563eb] animate-spin" />
                     <span class="font-mono">{{ downloadingMap[ch.id] }}%</span>
                   </div>
 
@@ -153,10 +153,10 @@
                     v-else
                     type="button"
                     @click="downloadChapter(ch)"
-                    class="min-h-[44px] min-w-[44px] px-3 py-1.5 bg-[#f4ebe1] hover:bg-[#ebdccb] active:scale-95 text-xs font-medium text-[#1e1610] border border-[#e8ddd0] rounded-lg flex items-center gap-1.5 transition-all"
+                    class="min-h-[44px] min-w-[44px] px-3 py-1.5 bg-[#f8f8f6] hover:bg-[#f4f4f5] active:scale-95 text-xs font-medium text-[#18181b] border border-[#e4e4e7] rounded-lg flex items-center gap-1.5 transition-all cursor-pointer"
                     :aria-label="`下载章节 ${ch.title || ch.id}`"
                   >
-                    <Download class="w-4 h-4 text-[#d97706]" />
+                    <Download class="w-4 h-4 text-[#2563eb]" />
                     <span>下载</span>
                   </button>
                 </div>

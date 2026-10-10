@@ -17,16 +17,16 @@
         aria-label="操作快捷键与手势指南"
       >
         <div
-          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden"
+          class="bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden"
           @click.stop
         >
           <!-- Header -->
-          <div class="px-5 py-4 border-b border-[#e8ddd0] flex items-center justify-between shrink-0">
+          <div class="px-5 py-4 border-b border-[#e4e4e7] bg-white flex items-center justify-between shrink-0">
             <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-lg bg-[#d97706]/15 border border-[#d97706]/30 flex items-center justify-center text-[#d97706]">
+              <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#2563eb]">
                 <Keyboard class="w-4 h-4" />
               </div>
-              <h2 class="font-serif text-base font-semibold text-[#1e1610]">
+              <h2 class="font-serif text-base font-semibold text-[#18181b]">
                 快捷键与手势指南
               </h2>
             </div>
@@ -34,7 +34,7 @@
             <button
               type="button"
               @click="$emit('close')"
-              class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+              class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
               aria-label="关闭快捷键指南"
             >
               <X class="w-5 h-5" />
@@ -46,47 +46,30 @@
             <div
               v-for="item in shortcuts"
               :key="item.key"
-              class="p-3 bg-white/70 border border-[#e8ddd0] rounded-xl flex items-center justify-between gap-3"
+              class="p-3 bg-white border border-[#e4e4e7] rounded-xl flex items-center justify-between gap-3"
             >
-              <span class="text-xs text-[#4a3b32] font-medium">
+              <span class="text-xs text-[#18181b] font-medium">
                 {{ item.desc }}
               </span>
-              <kbd class="px-2.5 py-1 text-xs font-mono font-semibold bg-[#f4ebe1] border border-[#e8ddd0] text-[#1e1610] rounded-lg shadow-inner">
+              <kbd class="px-2.5 py-1 text-xs font-mono font-semibold bg-[#f4f4f5] border border-[#e4e4e7] text-[#18181b] rounded-lg shadow-inner">
                 {{ item.key }}
               </kbd>
             </div>
           </div>
 
-          <!-- Footer with Legal Disclaimer -->
-          <div class="px-5 py-3 border-t border-[#e8ddd0] bg-[#f4ebe1]/50 flex items-center justify-between text-xs shrink-0">
-            <button
-              type="button"
-              @click="isLegalOpen = true"
-              class="min-h-[44px] flex items-center gap-1.5 text-[#78695d] hover:text-[#1e1610] transition-colors group cursor-pointer"
-              aria-label="查看研学公约与法律声明"
-            >
-              <Scale class="w-3.5 h-3.5 text-[#d97706] group-hover:scale-110 transition-transform" />
-              <span class="text-[11px] underline">研学公约与版权声明 (Fair Use / DMCA)</span>
-            </button>
-            <span class="text-[10px] text-[#a89a8c] font-mono">v1.0.0-prod</span>
+          <!-- Footer -->
+          <div class="px-5 py-3 border-t border-[#e4e4e7] bg-white flex items-center justify-between text-xs shrink-0">
+            <span class="text-xs text-[#71717a] font-serif">快捷键支持随时唤起</span>
+            <span class="text-[10px] text-[#a1a1aa] font-mono">v1.0.0-prod</span>
           </div>
         </div>
       </div>
     </Transition>
-
-    <LegalDisclaimerModal
-      :is-open="isLegalOpen"
-      @close="isLegalOpen = false"
-    />
   </Teleport>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Keyboard, X, Scale } from 'lucide-vue-next'
-import LegalDisclaimerModal from './LegalDisclaimerModal.vue'
-
-const isLegalOpen = ref(false)
+import { Keyboard, X } from 'lucide-vue-next'
 
 defineProps({
   isOpen: {

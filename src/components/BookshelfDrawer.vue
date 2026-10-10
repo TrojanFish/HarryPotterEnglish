@@ -28,24 +28,24 @@
     >
       <aside
         v-if="player.isBookshelfOpen"
-        class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-[#fbf9f5] border-l border-[#e8ddd0] flex flex-col"
+        class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-[#f8f8f6] border-l border-[#e4e4e7] flex flex-col"
         role="dialog"
         aria-modal="true"
         aria-label="霍格沃茨书架与章节目录"
       >
         <!-- Header -->
-        <div class="p-4 border-b border-[#e8ddd0] flex items-center justify-between shrink-0">
+        <div class="p-4 border-b border-[#e4e4e7] bg-white flex items-center justify-between shrink-0">
           <div class="flex items-center gap-2">
-            <BookMarked class="w-5 h-5 text-[#d97706]" />
-            <h2 class="font-serif text-base font-semibold text-[#1e1610]">
-              魔法书架 · 章节导航
+            <BookMarked class="w-5 h-5 text-[#2563eb]" />
+            <h2 class="font-serif text-base font-semibold text-[#18181b]">
+              原版书架 · 章节导航
             </h2>
           </div>
 
           <button
             type="button"
             @click="player.toggleBookshelf(false)"
-            class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+            class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors"
             aria-label="关闭书架抽屉"
           >
             <X class="w-5 h-5" />
@@ -53,17 +53,17 @@
         </div>
 
         <!-- Book Selection Tabs (HP1 ~ HP7) with CEFR Level Pills -->
-        <div class="p-3 border-b border-[#e8ddd0] flex gap-2 overflow-x-auto no-scrollbar shrink-0">
+        <div class="p-3 border-b border-[#e4e4e7] bg-white flex gap-2 overflow-x-auto no-scrollbar shrink-0">
           <button
             v-for="book in BOOKS"
             :key="book.id"
             type="button"
             @click="onSelectBook(book.id)"
             :class="[
-              'min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all flex flex-col items-start gap-0.5 border',
+              'min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all flex flex-col items-start gap-0.5 border touch-manipulation',
               activeBookId === book.id
-                ? 'bg-[#d97706]/15 border-[#d97706] text-[#92400e] shadow-sm'
-                : 'border-[#e8ddd0] text-[#78695d] hover:bg-[#f4ebe1]'
+                ? 'bg-blue-50 border-[#2563eb] text-[#2563eb] font-semibold'
+                : 'border-[#e4e4e7] text-[#71717a] hover:bg-[#f4f4f5] bg-[#f8f8f6]'
             ]"
             :aria-selected="activeBookId === book.id"
           >
@@ -71,7 +71,7 @@
             <span
               :class="[
                 'text-[10px] px-1.5 py-0.2 rounded-full font-sans border',
-                CEFR_LEVELS[book.cefr]?.badgeClass || 'bg-amber-50 text-amber-800 border-amber-300/60'
+                CEFR_LEVELS[book.cefr]?.badgeClass || 'bg-blue-50 text-blue-800 border-blue-200'
               ]"
             >
               {{ CEFR_LEVELS[book.cefr]?.badgeText || book.cefr }}
@@ -80,27 +80,27 @@
         </div>
 
         <!-- Book Info Header & Chapter Search -->
-        <div v-if="currentBookData" class="px-4 py-3 bg-[#f4ebe1]/40 border-b border-[#e8ddd0] shrink-0 space-y-2">
+        <div v-if="currentBookData" class="px-4 py-3 bg-[#f8f8f6] border-b border-[#e4e4e7] shrink-0 space-y-2">
           <div class="flex items-baseline justify-between">
-            <h3 class="font-serif text-sm font-semibold text-[#1e1610] leading-snug">
+            <h3 class="font-serif text-sm font-semibold text-[#18181b] leading-snug">
               {{ currentBookData.titleZh }}
             </h3>
-            <span class="text-[11px] text-[#78695d] font-mono">
+            <span class="text-[11px] text-[#71717a] font-mono">
               共 {{ filteredChapters.length }} 章节
             </span>
           </div>
-          <p class="text-[11px] text-[#78695d] font-serif italic truncate">
+          <p class="text-[11px] text-[#71717a] font-serif italic truncate">
             {{ currentBookData.title }}
           </p>
 
           <!-- Search Filter -->
           <div class="relative flex items-center">
-            <Search class="w-4 h-4 text-[#78695d] absolute left-3 pointer-events-none" />
+            <Search class="w-4 h-4 text-[#71717a] absolute left-3 pointer-events-none" />
             <input
               v-model="searchQuery"
               type="text"
               placeholder="搜索章节标题或序号..."
-              class="w-full min-h-[44px] pl-9 pr-8 text-xs bg-white border border-[#e8ddd0] rounded-xl text-[#1e1610] placeholder-[#a89a8c] focus:outline-none focus:border-[#d97706]"
+              class="w-full min-h-[44px] pl-9 pr-8 text-xs bg-white border border-[#e4e4e7] rounded-xl text-[#18181b] placeholder-[#a1a1aa] focus:outline-none focus:border-[#2563eb]"
               autoCapitalize="none"
               autoCorrect="off"
               :spellcheck="false"
@@ -109,7 +109,7 @@
               v-if="searchQuery"
               type="button"
               @click="searchQuery = ''"
-              class="absolute right-2 min-h-[44px] min-w-[36px] flex items-center justify-center text-[#78695d] hover:text-[#1e1610]"
+              class="absolute right-2 min-h-[44px] min-w-[36px] flex items-center justify-center text-[#71717a] hover:text-[#18181b]"
               aria-label="清空搜索"
             >
               <X class="w-3.5 h-3.5" />
@@ -121,7 +121,7 @@
         <div class="flex-1 overflow-y-auto p-4 space-y-2">
           <div
             v-if="filteredChapters.length === 0"
-            class="text-center py-12 px-4 text-xs text-[#78695d] font-serif"
+            class="text-center py-12 px-4 text-xs text-[#71717a] font-serif"
           >
             未找到与 "{{ searchQuery }}" 匹配的章节
           </div>
@@ -132,10 +132,10 @@
             type="button"
             @click="onSelectChapter(chapter)"
             :class="[
-              'w-full min-h-[48px] p-3 rounded-xl border text-left transition-all flex items-center justify-between gap-3 group',
+              'w-full min-h-[48px] p-3 rounded-xl border text-left transition-all flex items-center justify-between gap-3 group touch-manipulation',
               isCurrentActive(chapter)
-                ? 'bg-[#d97706]/10 border-[#d97706] border-l-4 border-l-[#d97706] text-[#1e1610] shadow-sm'
-                : 'border-[#e8ddd0] bg-white/70 hover:bg-[#f4ebe1]/70 text-[#4a3b32]'
+                ? 'bg-blue-50/70 border-[#2563eb] border-l-4 border-l-[#2563eb] text-[#18181b]'
+                : 'border-[#e4e4e7] bg-white hover:bg-[#f4f4f5] text-[#18181b]'
             ]"
           >
             <div class="flex items-center gap-3 min-w-0">
@@ -143,11 +143,11 @@
                 :class="[
                   'w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-semibold shrink-0',
                   isCurrentActive(chapter)
-                    ? 'bg-[#d97706] text-white'
-                    : 'bg-[#e8ddd0] text-[#78695d]'
+                    ? 'bg-[#2563eb] text-white'
+                    : 'bg-[#f4f4f5] text-[#71717a]'
                 ]"
               >
-                <Volume2 v-if="isCurrentActive(chapter) && player.isPlaying" class="w-3.5 h-3.5 animate-pulse" />
+                <Volume2 v-if="isCurrentActive(chapter) && player.isPlaying" class="w-3.5 h-3.5 animate-pulse text-white" />
                 <span v-else>{{ chapter.number || idx + 1 }}</span>
               </span>
 
@@ -156,10 +156,10 @@
                   {{ chapter.title || `Chapter ${chapter.number || idx + 1}` }}
                 </p>
                 <div class="flex items-center gap-2 mt-0.5">
-                  <span v-if="chapter.cnTitle" class="text-[11px] text-[#78695d] truncate">
+                  <span v-if="chapter.cnTitle" class="text-[11px] text-[#71717a] truncate">
                     {{ chapter.cnTitle }}
                   </span>
-                  <span v-if="chapter.duration" class="text-[10px] text-[#a89a8c] flex items-center gap-1 font-mono shrink-0">
+                  <span v-if="chapter.duration" class="text-[10px] text-[#a1a1aa] flex items-center gap-1 font-mono shrink-0">
                     <Clock class="w-3 h-3" />
                     <span>{{ chapter.duration }}</span>
                   </span>
@@ -170,41 +170,27 @@
             <div class="flex items-center gap-1.5 shrink-0">
               <span
                 v-if="isCurrentActive(chapter)"
-                class="text-[10px] px-2 py-0.5 rounded-full font-mono bg-[#d97706]/15 text-[#92400e] border border-[#d97706]/30 hidden sm:inline"
+                class="text-[10px] px-2 py-0.5 rounded-full font-mono bg-blue-100 text-[#2563eb] border border-blue-200 hidden sm:inline"
               >
                 当前播放
               </span>
               <ChevronRight
                 :class="[
                   'w-4 h-4 shrink-0 transition-transform group-hover:translate-x-0.5',
-                  isCurrentActive(chapter) ? 'text-[#d97706]' : 'text-[#a89a8c]'
+                  isCurrentActive(chapter) ? 'text-[#2563eb]' : 'text-[#a1a1aa]'
                 ]"
               />
             </div>
           </button>
         </div>
 
-        <!-- Footer: Academic Fair Use & DMCA Notice -->
-        <div class="px-4 py-3 border-t border-[#e8ddd0] bg-[#f4ebe1]/50 flex items-center justify-between text-xs shrink-0">
-          <button
-            type="button"
-            @click="isLegalOpen = true"
-            class="min-h-[44px] flex items-center gap-1.5 text-[#78695d] hover:text-[#1e1610] transition-colors group cursor-pointer"
-            aria-label="查看研学公约与法律声明"
-          >
-            <Scale class="w-3.5 h-3.5 text-[#d97706] group-hover:scale-110 transition-transform" />
-            <span class="text-[11px] underline">研学公约与版权声明 (Fair Use / DMCA)</span>
-          </button>
-          <span class="text-[10px] text-[#a89a8c] font-mono">v1.0.0-prod</span>
+        <!-- Footer -->
+        <div class="px-4 py-3 border-t border-[#e4e4e7] bg-white flex items-center justify-between text-xs shrink-0">
+          <span class="text-xs text-[#71717a] font-serif">Hogwarts Audio · 沉浸原版研读</span>
+          <span class="text-[10px] text-[#a1a1aa] font-mono">v1.0.0-prod</span>
         </div>
       </aside>
     </Transition>
-
-    <!-- Legal Disclaimer Modal -->
-    <LegalDisclaimerModal
-      :is-open="isLegalOpen"
-      @close="isLegalOpen = false"
-    />
   </Teleport>
 </template>
 
@@ -213,13 +199,11 @@ import { ref, computed } from 'vue'
 import { usePlayerStore } from '../stores/playerStore.js'
 import { useCatalogStore } from '../stores/catalogStore.js'
 import { BOOKS, CEFR_LEVELS } from '../utils/booksData.js'
-import { BookMarked, X, Clock, ChevronRight, Scale, Volume2, Search } from 'lucide-vue-next'
-import LegalDisclaimerModal from './LegalDisclaimerModal.vue'
+import { BookMarked, X, Clock, ChevronRight, Volume2, Search } from 'lucide-vue-next'
 
 const player = usePlayerStore()
 const catalog = useCatalogStore()
 
-const isLegalOpen = ref(false)
 const searchQuery = ref('')
 const activeBookId = ref(player.currentBookId || 'book1')
 

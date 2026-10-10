@@ -104,9 +104,9 @@
       <!-- Fallback notification if SpeechRecognition not supported -->
       <div
         v-if="!isSpeechRecognitionSupported"
-        class="p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center gap-2"
+        class="p-3 bg-blue-50/80 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-center gap-2"
       >
-        <AlertCircle class="w-4 h-4 shrink-0 text-[#d97706]" />
+        <AlertCircle class="w-4 h-4 shrink-0 text-[#2563eb]" />
         <span>当前环境未检测到麦克风语音识别，跟读录音将启用启发式测评模式</span>
       </div>
     </div>

@@ -17,16 +17,16 @@
         aria-label="A/B 影子跟读工坊"
       >
         <div
-          class="bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-md overflow-hidden"
+          class="bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden"
           @click.stop
         >
           <!-- Header -->
-          <div class="px-5 py-4 border-b border-[#e8ddd0] flex items-center justify-between shrink-0">
+          <div class="px-5 py-4 border-b border-[#e4e4e7] bg-white flex items-center justify-between shrink-0">
             <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-lg bg-[#d97706]/15 border border-[#d97706]/30 flex items-center justify-center text-[#d97706]">
+              <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#2563eb]">
                 <Mic class="w-4 h-4" />
               </div>
-              <h2 class="font-serif text-base font-semibold text-[#1e1610]">
+              <h2 class="font-serif text-base font-semibold text-[#18181b]">
                 A/B 影子跟读工坊
               </h2>
             </div>
@@ -34,7 +34,7 @@
             <button
               type="button"
               @click="handleClose"
-              class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#78695d] hover:text-[#1e1610] hover:bg-[#f4ebe1] flex items-center justify-center transition-colors"
+              class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
               aria-label="关闭影子跟读"
             >
               <X class="w-5 h-5" />
@@ -45,15 +45,15 @@
           <div class="flex-1 overflow-y-auto p-5 space-y-4">
             <div
               v-if="!isSpeechRecognitionSupported"
-              class="p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center gap-2"
+              class="p-3 bg-blue-50/80 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-center gap-2"
             >
-              <AlertCircle class="w-4 h-4 shrink-0 text-[#d97706]" />
+              <AlertCircle class="w-4 h-4 shrink-0 text-[#2563eb]" />
               <span>当前浏览器不支持 Web Speech API，录音后将使用示范句进行模拟打分</span>
             </div>
 
             <!-- Target Sentence Card -->
-            <div class="p-4 bg-white/70 border border-[#e8ddd0] rounded-xl space-y-2">
-              <div class="text-[11px] font-mono text-[#a89a8c] uppercase tracking-wide">
+            <div class="p-4 bg-white border border-[#e4e4e7] rounded-xl space-y-2">
+              <div class="text-[11px] font-mono text-[#a1a1aa] uppercase tracking-wide">
                 示范句 (Target Sentence)
               </div>
 
@@ -67,18 +67,18 @@
                     w.status === 'matched'
                       ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
                       : w.status === 'partial'
-                      ? 'bg-amber-50 text-amber-800 border-amber-300'
+                      ? 'bg-amber-50 text-amber-900 border-amber-200'
                       : 'bg-rose-50 text-rose-800 border-rose-300'
                   ]"
                 >
                   {{ w.word }}
                 </span>
               </div>
-              <p v-else class="font-serif text-base leading-relaxed text-[#1e1610]">
+              <p v-else class="font-serif text-base leading-relaxed text-[#18181b]">
                 {{ targetSentence }}
               </p>
 
-              <p v-if="currentCue?.translation" class="text-xs text-[#78695d]">
+              <p v-if="currentCue?.translation" class="text-xs text-[#71717a]">
                 {{ currentCue.translation }}
               </p>
             </div>
@@ -91,7 +91,7 @@
                 evaluationResult.score >= 80
                   ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900'
                   : evaluationResult.score >= 60
-                  ? 'bg-amber-50/70 border-amber-200 text-amber-900'
+                  ? 'bg-blue-50/70 border-blue-200 text-blue-900'
                   : 'bg-rose-50/70 border-rose-200 text-rose-900'
               "
             >
@@ -111,33 +111,33 @@
             <!-- Dual-Track Audio Comparison: Track A vs Track B -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <!-- Track A: Original Audio Snippet -->
-              <div class="p-3.5 bg-[#f4ebe1]/50 border border-[#e8ddd0] rounded-xl flex flex-col justify-between gap-3">
+              <div class="p-3.5 bg-white border border-[#e4e4e7] rounded-xl flex flex-col justify-between gap-3">
                 <div class="flex items-center justify-between">
-                  <span class="text-xs font-semibold text-[#1e1610] flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-[#d97706]"></span>
+                  <span class="text-xs font-semibold text-[#18181b] flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-[#2563eb]"></span>
                     Track A 原声
                   </span>
-                  <span class="text-[10px] text-[#a89a8c] font-mono">原版英音示范</span>
+                  <span class="text-[10px] text-[#a1a1aa] font-mono">原版英音示范</span>
                 </div>
 
                 <button
                   type="button"
                   @click="playOriginalSnippet"
-                  class="min-h-[44px] w-full py-2 px-3 bg-white hover:bg-[#fbf9f5] border border-[#e8ddd0] text-[#1e1610] text-xs font-medium rounded-lg flex items-center justify-center gap-2 transition-colors active:scale-95 shadow-sm"
+                  class="min-h-[44px] w-full py-2 px-3 bg-[#f8f8f6] hover:bg-[#f4f4f5] border border-[#e4e4e7] text-[#18181b] text-xs font-medium rounded-lg flex items-center justify-center gap-2 transition-colors active:scale-95 cursor-pointer"
                 >
-                  <Volume2 class="w-4 h-4 text-[#d97706]" />
+                  <Volume2 class="w-4 h-4 text-[#2563eb]" />
                   <span>播放原声示范</span>
                 </button>
               </div>
 
               <!-- Track B: User Recording -->
-              <div class="p-3.5 bg-[#f4ebe1]/50 border border-[#e8ddd0] rounded-xl flex flex-col justify-between gap-3">
+              <div class="p-3.5 bg-white border border-[#e4e4e7] rounded-xl flex flex-col justify-between gap-3">
                 <div class="flex items-center justify-between">
-                  <span class="text-xs font-semibold text-[#1e1610] flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full" :class="recordedAudioUrl ? 'bg-emerald-600' : 'bg-gray-400'"></span>
+                  <span class="text-xs font-semibold text-[#18181b] flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full" :class="recordedAudioUrl ? 'bg-emerald-600' : 'bg-zinc-400'"></span>
                     Track B 我的录音
                   </span>
-                  <span class="text-[10px] text-[#a89a8c] font-mono">
+                  <span class="text-[10px] text-[#a1a1aa] font-mono">
                     {{ recordedAudioUrl ? '已录制' : '等待录音' }}
                   </span>
                 </div>
@@ -146,7 +146,7 @@
                   type="button"
                   @click="playUserRecording"
                   :disabled="!recordedAudioUrl"
-                  class="min-h-[44px] w-full py-2 px-3 bg-white hover:bg-[#fbf9f5] disabled:opacity-40 disabled:hover:bg-white border border-[#e8ddd0] text-[#1e1610] text-xs font-medium rounded-lg flex items-center justify-center gap-2 transition-colors active:scale-95 shadow-sm"
+                  class="min-h-[44px] w-full py-2 px-3 bg-[#f8f8f6] hover:bg-[#f4f4f5] disabled:opacity-40 disabled:hover:bg-[#f8f8f6] border border-[#e4e4e7] text-[#18181b] text-xs font-medium rounded-lg flex items-center justify-center gap-2 transition-colors active:scale-95 cursor-pointer"
                 >
                   <Play class="w-4 h-4 text-emerald-600" />
                   <span>回放我的录音</span>
@@ -156,14 +156,14 @@
           </div>
 
           <!-- Bottom Action Bar (Microphone Control) -->
-          <div class="p-4 border-t border-[#e8ddd0] bg-white/50 shrink-0 flex items-center justify-center gap-4">
+          <div class="p-4 border-t border-[#e4e4e7] bg-white shrink-0 flex items-center justify-center gap-4">
             <button
               v-if="!isRecording"
               type="button"
               @click="startRecording"
-              class="min-h-[48px] px-8 py-2.5 bg-[#d97706] hover:bg-[#b45309] text-white text-sm font-semibold rounded-full flex items-center gap-2 shadow-md transition-all active:scale-95"
+              class="min-h-[48px] px-8 py-2.5 bg-[#18181b] hover:bg-[#27272a] text-white text-sm font-semibold rounded-full flex items-center gap-2 transition-all active:scale-95 cursor-pointer"
             >
-              <Mic class="w-5 h-5" />
+              <Mic class="w-5 h-5 text-white" />
               <span>开始跟读录音</span>
             </button>
 
@@ -171,9 +171,9 @@
               v-else
               type="button"
               @click="stopRecording"
-              class="min-h-[48px] px-8 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-full flex items-center gap-2 shadow-md transition-all animate-pulse"
+              class="min-h-[48px] px-8 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-full flex items-center gap-2 transition-all animate-pulse cursor-pointer"
             >
-              <Square class="w-5 h-5 fill-current" />
+              <Square class="w-5 h-5 fill-current text-white" />
               <span>停止录音并评测</span>
             </button>
           </div>
