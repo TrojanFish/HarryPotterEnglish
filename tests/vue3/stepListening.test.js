@@ -20,4 +20,23 @@ describe('StepListening component', () => {
     assert.ok(content.includes('isBlindMode') || content.includes('toggleBlind'), 'Must support blind listening mode')
     assert.ok(content.includes('tokenizeText') || content.includes('handleWordClick'), 'Must support word tap tokenization')
   })
+
+  test('StepListening integrates WordLookupModal for word-tap lookup and audio pause', () => {
+    const filePath = path.resolve('src/components/session/StepListening.vue')
+    const content = fs.readFileSync(filePath, 'utf-8')
+
+    // Check WordLookupModal component import and template mounting
+    assert.ok(content.includes('WordLookupModal'), 'Must import or reference WordLookupModal')
+    assert.ok(content.includes(':is-open="isLookupOpen"') || content.includes(':isOpen="isLookupOpen"'), 'Must bind isLookupOpen to WordLookupModal')
+    assert.ok(content.includes(':word="lookupWordTarget"'), 'Must bind lookupWordTarget to WordLookupModal')
+    assert.ok(content.includes(':context-quote="lookupQuote"') || content.includes(':contextQuote="lookupQuote"'), 'Must bind lookupQuote to WordLookupModal')
+    assert.ok(content.includes('@close="isLookupOpen = false"'), 'Must handle close event for WordLookupModal')
+
+    // Check handleWordClick behavior
+    assert.ok(content.includes('player.pause()'), 'handleWordClick must pause audio playback')
+    assert.ok(content.includes('lookupWordTarget.value ='), 'Must set lookupWordTarget ref')
+    assert.ok(content.includes('lookupQuote.value ='), 'Must set lookupQuote ref')
+    assert.ok(content.includes('isLookupOpen.value = true'), 'Must set isLookupOpen to true')
+  })
 })
+

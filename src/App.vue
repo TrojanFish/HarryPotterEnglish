@@ -51,6 +51,21 @@
 
       <!-- Right: Utility Tools -->
       <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+        <!-- Vocabulary Notebook Drawer -->
+        <button
+          type="button"
+          @click="isVocabOpen = true"
+          class="relative min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
+          title="生词本"
+          aria-label="打开生词本"
+        >
+          <BookMarked class="w-5 h-5" />
+          <span
+            v-if="vocabStore.vocabList.length > 0"
+            class="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-[#2563eb] text-white text-[10px] font-mono flex items-center justify-center pointer-events-none"
+          >{{ vocabStore.vocabList.length }}</span>
+        </button>
+
         <!-- Analytics Dashboard -->
         <button
           type="button"
@@ -172,6 +187,7 @@ import { usePlayerStore } from './stores/playerStore.js'
 import { useSubtitleStore } from './stores/subtitleStore.js'
 import { useCatalogStore } from './stores/catalogStore.js'
 import { useAnalyticsStore } from './stores/analyticsStore.js'
+import { useVocabStore } from './stores/vocabStore.js'
 import { parseVTT } from './utils/vttParser.js'
 import { getCachedChapter } from './utils/offlineStorage.js'
 import { SAMPLE_CHAPTER_1_VTT, SAMPLE_AUDIO_URL } from './data/chapters.js'
@@ -212,6 +228,7 @@ const player = usePlayerStore()
 const subtitleStore = useSubtitleStore()
 const catalog = useCatalogStore()
 const analyticsStore = useAnalyticsStore()
+const vocabStore = useVocabStore()
 const sessionStore = useSessionStore()
 
 // Native HTMLAudioElement held in shallowRef to avoid Proxy traps

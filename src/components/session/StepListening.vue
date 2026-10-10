@@ -144,6 +144,14 @@
         <span>{{ toastMsg }}</span>
       </div>
     </Transition>
+
+    <!-- Word Lookup Modal -->
+    <WordLookupModal
+      :is-open="isLookupOpen"
+      :word="lookupWordTarget"
+      :context-quote="lookupQuote"
+      @close="isLookupOpen = false"
+    />
   </div>
 </template>
 
@@ -154,6 +162,7 @@ import { useSubtitleStore } from '../../stores/subtitleStore.js'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
+import WordLookupModal from '../common/WordLookupModal.vue'
 
 const subtitleStore = useSubtitleStore()
 const player = usePlayerStore()
@@ -163,6 +172,10 @@ const sessionStore = useSessionStore()
 const scrollContainerRef = ref(null)
 const toastMsg = ref('')
 let toastTimer = null
+
+const isLookupOpen = ref(false)
+const lookupWordTarget = ref('')
+const lookupQuote = ref('')
 
 function formatTime(seconds) {
   if (isNaN(seconds) || seconds === null) return '00:00'
@@ -181,10 +194,16 @@ function tokenizeText(text) {
 }
 
 function handleWordClick(token, fullSentence) {
-  const clean = token.toLowerCase().replace(/^[^\w]+|[^\w]+$/g, '')
+  const clean = token ? token.toLowerCase().replace(/^[^\w]+|[^\w]+$/g, '') : ''
   if (!clean || clean.length < 2) return
-  const added = vocabStore.addWord(clean, fullSentence)
-  showToast(clean, added ? '已收录至艾宾浩斯生词本' : '已在生词本中')
+  if (player.isPlaying) {
+    player.pause()
+  } else {
+    player.pause()
+  }
+  lookupWordTarget.value = token
+  lookupQuote.value = fullSentence || ''
+  isLookupOpen.value = true
 }
 
 function showToast(word, msg) {

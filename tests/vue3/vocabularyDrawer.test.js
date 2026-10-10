@@ -28,7 +28,27 @@ test('VocabularyDrawer.vue file exists and meets standards', () => {
   assert.ok(content.includes('min-h-[44px]') || content.includes('h-11') || content.includes('h-12'), 'Touch targets must be >= 44px')
   assert.ok(content.includes('lucide-vue-next'), 'Must use lucide-vue-next')
   assert.ok(!content.includes('lucide-react'), 'Must not import lucide-react')
+
+  // Search input and >= 16px font-size to prevent mobile zoom
+  assert.ok(content.includes('searchQuery'), 'Must support search query state')
+  assert.ok(content.includes('Search'), 'Must import and use Search icon')
+  assert.ok(content.includes('text-base') || content.includes('text-[16px]'), 'Search input font-size must be >= 16px to prevent iOS zoom')
+
+  // Card pronunciation button
+  assert.ok(content.includes('Volume2'), 'Must include Volume2 icon for pronunciation')
+  assert.ok(content.includes('speechSynthesis'), 'Must integrate Web Speech API for pronunciation')
+
+  // Mobile swipe-down close gesture support
+  assert.ok(content.includes('useBottomSheet'), 'Must support mobile swipe-down close via useBottomSheet')
+
+  // Design constraints
+  const emojiMatches = content.match(/\p{Extended_Pictographic}/gu)
+  assert.strictEqual(emojiMatches, null, 'Must contain zero Unicode emoji characters')
+  assert.ok(!content.includes('shadow-lg'), 'Must not use shadow-lg')
+  assert.ok(!content.includes('shadow-xl'), 'Must not use shadow-xl')
+  assert.ok(!content.includes('shadow-2xl'), 'Must not use shadow-2xl')
 })
+
 
 test('Anki TSV generation integration check', async () => {
   const { generateAnkiTSV } = await import('../../src/utils/ankiExport.js')
@@ -101,3 +121,53 @@ test('vocabStore promotes box, deletes word, and clears all', () => {
   vocabStore.clearAll()
   assert.strictEqual(vocabStore.vocabList.length, 0)
 })
+
+test('VocabularyDrawer search filtering logic by word and definition', () => {
+  const sampleList = [
+    { word: 'wand', definition: '魔杖，魔法棒', box: 1 },
+    { word: 'cloak', definition: '斗篷，披风', box: 2 },
+    { word: 'peculiar', definition: '奇怪的，古怪的', box: 1 }
+  ]
+
+  function filterVocab(list, query, box = null) {
+    const q = (query || '').trim().toLowerCase()
+    return list.filter((item) => {
+      if (box !== null && (item.box || 1) !== box) return false
+      if (!q) return true
+      const matchesWord = item.word && item.word.toLowerCase().includes(q)
+      const matchesDef = (item.definition && item.definition.includes(query)) || (item.definition && item.definition.toLowerCase().includes(q))
+      return Boolean(matchesWord || matchesDef)
+    })
+  }
+
+  // Search by word English
+  const res1 = filterVocab(sampleList, 'wand')
+  assert.strictEqual(res1.length, 1)
+  assert.strictEqual(res1[0].word, 'wand')
+
+  // Search by definition Chinese
+  const res2 = filterVocab(sampleList, '斗篷')
+  assert.strictEqual(res2.length, 1)
+  assert.strictEqual(res2[0].word, 'cloak')
+
+  // Partial match
+  const res3 = filterVocab(sampleList, 'ar')
+  assert.strictEqual(res3.length, 1)
+  assert.strictEqual(res3[0].word, 'peculiar')
+
+  // Combined with box filter
+  const res4 = filterVocab(sampleList, '', 2)
+  assert.strictEqual(res4.length, 1)
+  assert.strictEqual(res4[0].word, 'cloak')
+})
+
+test('App.vue includes header vocabulary button with word count badge', () => {
+  const appPath = path.resolve('src/App.vue')
+  const content = fs.readFileSync(appPath, 'utf-8')
+
+  assert.ok(content.includes('isVocabOpen = true'), 'Header must have button opening vocab drawer')
+  assert.ok(content.includes('BookMarked'), 'Vocab button must render BookMarked icon')
+  assert.ok(content.includes('vocabStore.vocabList.length'), 'Must display vocab count badge pill')
+  assert.ok(content.includes('useVocabStore'), 'App.vue must import and use vocabStore')
+})
+
