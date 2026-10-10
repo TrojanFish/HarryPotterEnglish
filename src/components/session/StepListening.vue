@@ -83,30 +83,128 @@
 
     <!-- Right Column: Focus Insight & Word Details (Desktop only) -->
     <div class="hidden md:flex md:flex-[0.8] flex-col p-6 bg-[#f8f8f6] overflow-y-auto space-y-5">
+      <!-- Section: Core Vocabulary of Current Cue -->
       <div>
-        <h3 class="text-xs font-mono font-bold tracking-wider text-[#71717a] uppercase mb-2">
-          当前精听句核心词汇
-        </h3>
-        <div class="space-y-2">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-mono font-bold tracking-wider text-[#71717a] uppercase flex items-center gap-1.5">
+            <span>当前精听句核心词汇</span>
+            <span
+              v-if="currentCueVocab.length > 0"
+              class="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200"
+            >
+              {{ currentCueVocab.length }} 词
+            </span>
+          </h3>
+
+          <span
+            v-if="savedVocabCountInCurrentCue > 0"
+            class="text-[11px] font-mono text-[#2563eb] bg-blue-50 px-2 py-0.5 rounded border border-blue-200"
+          >
+            已收录 {{ savedVocabCountInCurrentCue }}/{{ currentCueVocab.length }}
+          </span>
+        </div>
+
+        <!-- Vocabulary Cards List -->
+        <div class="space-y-2.5">
           <div
             v-for="word in currentCueVocab"
             :key="word.word"
-            class="p-3 bg-white border border-[#e4e4e7] rounded-xl"
+            @click="openWordDetails(word)"
+            class="group p-3.5 bg-white border border-[#e4e4e7] hover:border-[#2563eb]/60 rounded-xl transition-all cursor-pointer select-text"
           >
+            <!-- Word Header row -->
             <div class="flex items-center justify-between">
-              <span class="font-serif font-bold text-sm text-[#18181b]">{{ word.word }}</span>
-              <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-[#2563eb] font-mono">
+              <div class="flex items-baseline gap-2">
+                <span class="font-serif font-bold text-base text-[#18181b] group-hover:text-[#2563eb] transition-colors">
+                  {{ word.word }}
+                </span>
+                <span v-if="word.phonetic" class="text-xs font-mono text-[#71717a]">
+                  {{ word.phonetic }}
+                </span>
+              </div>
+
+              <!-- Action buttons row: Pronunciation + Vocab Toggle -->
+              <div class="flex items-center gap-1 shrink-0" @click.stop>
+                <!-- TTS Pronunciation Button -->
+                <button
+                  type="button"
+                  @click="speakWord(word.word)"
+                  class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-[#f4f4f5] text-[#71717a] hover:text-[#18181b] flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer"
+                  title="朗读发音"
+                  aria-label="朗读发音"
+                >
+                  <Volume2 class="w-4 h-4" />
+                </button>
+
+                <!-- One-click Vocab Toggle Button -->
+                <button
+                  type="button"
+                  @click="toggleVocabWord(word)"
+                  class="min-h-[44px] min-w-[44px] p-2 rounded-lg flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer"
+                  :class="vocabStore.hasWord(word.word)
+                    ? 'text-[#2563eb] hover:bg-blue-50'
+                    : 'text-[#71717a] hover:bg-[#f4f4f5] hover:text-[#18181b]'"
+                  :title="vocabStore.hasWord(word.word) ? '已在生词本中（点击移除）' : '收录至生词本'"
+                  :aria-label="vocabStore.hasWord(word.word) ? '已在生词本中' : '收录至生词本'"
+                >
+                  <BookmarkCheck v-if="vocabStore.hasWord(word.word)" class="w-4 h-4 text-[#2563eb]" />
+                  <BookMarked v-else class="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <!-- Definition & Tag -->
+            <div class="mt-1.5 flex items-center justify-between gap-2">
+              <p class="text-xs text-[#52525b] leading-relaxed line-clamp-2">
+                {{ word.definition }}
+              </p>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-[#2563eb] border border-blue-200/60 font-mono shrink-0">
                 {{ word.tag }}
               </span>
             </div>
-            <p class="text-xs text-[#52525b] mt-1">{{ word.definition }}</p>
           </div>
-          <div v-if="currentCueVocab.length === 0" class="p-4 bg-white border border-[#e4e4e7] rounded-xl text-center text-xs text-[#71717a]">
-            点击左侧任意单词可快速收录至生词本
+
+          <!-- Empty State when sentence only has basic words -->
+          <div
+            v-if="currentCueVocab.length === 0"
+            class="p-5 bg-white border border-[#e4e4e7] rounded-xl text-center space-y-1.5"
+          >
+            <div class="w-8 h-8 mx-auto rounded-full bg-[#f4f4f5] flex items-center justify-center text-[#71717a]">
+              <Sparkles class="w-4 h-4 text-[#2563eb]" />
+            </div>
+            <p class="text-xs font-medium text-[#18181b]">本句为基础短句，无难点生词</p>
+            <p class="text-[11px] text-[#71717a]">
+              点击左侧字幕中的任意单词，即可随时呼出词典查词与收录
+            </p>
           </div>
         </div>
       </div>
 
+      <!-- Section: Sentence Content Word Chips Cloud -->
+      <div v-if="sentenceContentTokens.length > 0">
+        <h3 class="text-xs font-mono font-bold tracking-wider text-[#71717a] uppercase mb-2">
+          全句单词速查
+        </h3>
+        <div class="p-3.5 bg-white border border-[#e4e4e7] rounded-xl">
+          <div class="flex flex-wrap gap-1.5">
+            <button
+              v-for="(chip, cIdx) in sentenceContentTokens"
+              :key="cIdx"
+              type="button"
+              @click="handleWordClick(chip.clean, subtitleStore.currentCue?.text)"
+              class="px-2.5 py-1 text-xs font-mono rounded-lg border transition-all active:scale-95 cursor-pointer flex items-center gap-1"
+              :class="vocabStore.hasWord(chip.clean)
+                ? 'bg-blue-50 border-blue-200 text-[#2563eb] font-semibold'
+                : 'bg-[#f4f4f5] border-[#e4e4e7] text-[#52525b] hover:bg-white hover:border-[#2563eb]/60'"
+            >
+              <span>{{ chip.clean }}</span>
+              <BookmarkCheck v-if="vocabStore.hasWord(chip.clean)" class="w-3 h-3 text-[#2563eb]" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Next Step (Shadowing) -->
       <div>
         <h3 class="text-xs font-mono font-bold tracking-wider text-[#71717a] uppercase mb-2">
           下一步：进阶跟读
@@ -157,11 +255,21 @@
 
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue'
-import { Eye, EyeOff, BookOpen, ChevronRight, Sparkles } from 'lucide-vue-next'
+import {
+  Eye,
+  EyeOff,
+  BookOpen,
+  ChevronRight,
+  Sparkles,
+  Volume2,
+  BookMarked,
+  BookmarkCheck
+} from 'lucide-vue-next'
 import { useSubtitleStore } from '../../stores/subtitleStore.js'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
+import { extractSentenceKeywords, STOP_WORDS, cleanWordToken } from '../../data/dictionaryData.js'
 import WordLookupModal from '../common/WordLookupModal.vue'
 
 const subtitleStore = useSubtitleStore()
@@ -171,6 +279,7 @@ const sessionStore = useSessionStore()
 
 const scrollContainerRef = ref(null)
 const toastMsg = ref('')
+let toastTimer = null
 
 const isLookupOpen = ref(false)
 const lookupWordTarget = ref('')
@@ -203,30 +312,84 @@ function handleWordClick(token, fullSentence) {
   isLookupOpen.value = true
 }
 
+function openWordDetails(item) {
+  if (!item || !item.word) return
+  if (player.isPlaying) {
+    player.pause()
+  }
+  lookupWordTarget.value = item.word
+  lookupQuote.value = subtitleStore.currentCue?.text || ''
+  isLookupOpen.value = true
+}
+
+function speakWord(wordText) {
+  if (!wordText || typeof window === 'undefined' || !window.speechSynthesis) return
+  try {
+    window.speechSynthesis.cancel()
+    const utter = new SpeechSynthesisUtterance(wordText)
+    utter.lang = 'en-GB'
+    utter.rate = 0.95
+    window.speechSynthesis.speak(utter)
+  } catch (err) {}
+}
+
+function toggleVocabWord(item) {
+  if (!item || !item.word) return
+  const quote = subtitleStore.currentCue?.text || ''
+  const isAdded = vocabStore.toggleWord(
+    {
+      word: item.word,
+      phonetic: item.phonetic || '',
+      pos: item.pos || '',
+      definition: item.definition || '生词本收录',
+      tag: item.tag || '重点生词'
+    },
+    quote
+  )
+  showToast(item.word, isAdded ? '已加入生词本' : '已从生词本移除')
+}
+
+function showToast(word, msg) {
+  if (toastTimer) clearTimeout(toastTimer)
+  toastMsg.value = `${word} · ${msg}`
+  toastTimer = setTimeout(() => {
+    toastMsg.value = ''
+  }, 1800)
+}
+
 function jumpToCue(cue, idx) {
   subtitleStore.activeCueIndex = idx
   player.seek(cue.start)
 }
 
-// Extract vocabulary keywords from current active cue
+// Dynamically extract core vocabulary keywords from current active cue
 const currentCueVocab = computed(() => {
   const cur = subtitleStore.currentCue
   if (!cur || !cur.text) return []
-  const text = cur.text.toLowerCase()
-  const list = []
-  if (text.includes('privet') || text.includes('dursley')) {
-    list.push({ word: 'Privet', tag: '专有名词', definition: 'n. 女贞树；Privet Drive 即女贞路' })
+  return extractSentenceKeywords(cur.text, 5)
+})
+
+// Count how many extracted keywords of the current cue are saved in vocabStore
+const savedVocabCountInCurrentCue = computed(() => {
+  return currentCueVocab.value.filter((w) => vocabStore.hasWord(w.word)).length
+})
+
+// Extract content tokens in current cue for the interactive word chips cloud
+const sentenceContentTokens = computed(() => {
+  const cur = subtitleStore.currentCue
+  if (!cur || !cur.text) return []
+  const tokens = cur.text.trim().split(/\s+/)
+  const seen = new Set()
+  const res = []
+  for (const t of tokens) {
+    const clean = cleanWordToken(t)
+    if (!clean || clean.length < 2) continue
+    if (STOP_WORDS.has(clean)) continue
+    if (seen.has(clean)) continue
+    seen.add(clean)
+    res.push({ raw: t, clean })
   }
-  if (text.includes('proud')) {
-    list.push({ word: 'proud', tag: '中考重点', definition: 'adj. 骄傲的，自豪的' })
-  }
-  if (text.includes('perfectly')) {
-    list.push({ word: 'perfectly', tag: '核心副词', definition: 'adv. 完全地；无可挑剔地' })
-  }
-  if (text.includes('peculiar')) {
-    list.push({ word: 'peculiar', tag: '高考拓展', definition: 'adj. 奇怪的，古怪的；特殊的' })
-  }
-  return list
+  return res
 })
 
 // Auto scroll active cue into view

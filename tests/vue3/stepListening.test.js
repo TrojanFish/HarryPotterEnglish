@@ -38,5 +38,25 @@ describe('StepListening component', () => {
     assert.ok(content.includes('lookupQuote.value ='), 'Must set lookupQuote ref')
     assert.ok(content.includes('isLookupOpen.value = true'), 'Must set isLookupOpen to true')
   })
+
+  test('StepListening integrates dynamic core vocabulary cards with pronunciation and vocab toggle', () => {
+    const filePath = path.resolve('src/components/session/StepListening.vue')
+    const content = fs.readFileSync(filePath, 'utf-8')
+
+    // Must import and use extractSentenceKeywords
+    assert.ok(content.includes('extractSentenceKeywords'), 'Must use extractSentenceKeywords for dynamic vocabulary analysis')
+
+    // Must include pronunciation action with Volume2
+    assert.ok(content.includes('Volume2'), 'Must include pronunciation button using Volume2')
+    assert.ok(content.includes('speakWord') || content.includes('speechSynthesis'), 'Must support audio pronunciation')
+
+    // Must include vocab toggle button with BookMarked or BookmarkCheck
+    assert.ok(content.includes('BookMarked') || content.includes('BookmarkCheck'), 'Must support one-click bookmarking with Lucide icon')
+    assert.ok(content.includes('toggleVocabWord') || content.includes('vocabStore.toggleWord'), 'Must toggle word in vocabStore')
+
+    // Must include word chips cloud for sentence tokens
+    assert.ok(content.includes('sentenceContentTokens') || content.includes('sentenceChips') || content.includes('本句单词速查') || content.includes('全句单词速查'), 'Must provide sentence word chips cloud')
+  })
 })
+
 
