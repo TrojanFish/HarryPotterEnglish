@@ -13,7 +13,7 @@
       >
         <div
           class="fixed inset-0 bg-black/50 backdrop-blur-sm"
-          @click="$emit('close')"
+          @click="handleClose"
           aria-hidden="true"
         ></div>
       </Transition>
@@ -42,7 +42,7 @@
           >
             <!-- Pull Handle (Mobile only) -->
             <div
-              class="pt-3 pb-1 sm:hidden flex justify-center cursor-grab active:cursor-grabbing touch-none shrink-0"
+              class="min-h-[44px] flex items-center justify-center sm:hidden cursor-grab active:cursor-grabbing touch-none shrink-0"
               @touchstart="onTouchStart"
               @touchmove="handleDragTouchMove"
               @touchend="onTouchEnd"
@@ -102,7 +102,7 @@
               <!-- Close button -->
               <button
                 type="button"
-                @click="$emit('close')"
+                @click="handleClose"
                 class="min-h-[44px] min-w-[44px] p-2 rounded-xl text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] border border-[#e4e4e7] flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 aria-label="关闭单词弹窗"
               >
@@ -171,7 +171,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { Volume2, BookMarked, Check, X } from 'lucide-vue-next'
 import { lookupWord } from '../../data/dictionaryData.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
@@ -209,6 +209,29 @@ const isSaved = computed(() => {
   return vocabStore.hasWord(target)
 })
 
+function cancelAudio() {
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel()
+      isPlayingAudio.value = false
+    } catch (_) {}
+  }
+}
+
+watch(
+  () => props.isOpen,
+  (open) => {
+    if (!open) {
+      cancelAudio()
+    }
+  }
+)
+
+function handleClose() {
+  cancelAudio()
+  emit('close')
+}
+
 const {
   sheetStyle,
   onTouchStart,
@@ -216,7 +239,7 @@ const {
   onTouchEnd
 } = useBottomSheet({
   threshold: 80,
-  onClose: () => emit('close')
+  onClose: () => handleClose()
 })
 
 function handleDragTouchMove(e) {
@@ -260,7 +283,7 @@ function handleToggleVocab() {
 
 function handleKeyDown(e) {
   if (e.key === 'Escape' && props.isOpen) {
-    emit('close')
+    handleClose()
   }
 }
 
@@ -271,12 +294,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  cancelAudio()
   if (typeof window !== 'undefined') {
-    if ('speechSynthesis' in window) {
-      try {
-        window.speechSynthesis.cancel()
-      } catch (e) {}
-    }
     window.removeEventListener('keydown', handleKeyDown)
   }
 })

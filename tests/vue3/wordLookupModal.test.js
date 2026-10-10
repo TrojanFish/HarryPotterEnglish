@@ -62,7 +62,11 @@ describe('WordLookupModal Component and Specifications', () => {
       'Touch targets must be >= 44px'
     )
 
-    // Pull handle for mobile
+    // Pull handle for mobile with min-h-[44px] touch target
+    assert.ok(
+      content.includes('min-h-[44px] flex items-center justify-center'),
+      'Pull handle container must have min-h-[44px] flex items-center justify-center touch target'
+    )
     assert.ok(
       content.includes('w-10 h-1.5 rounded-full bg-[#d4d4d8]'),
       'Must include specified pull handle (w-10 h-1.5 rounded-full bg-[#d4d4d8])'
@@ -96,13 +100,18 @@ describe('WordLookupModal Component and Specifications', () => {
     assert.ok(content.includes('close'), 'Must emit close')
   })
 
-  test('Speech synthesis pronunciation and vocab toggle copy', () => {
+  test('Speech synthesis pronunciation and cancellation on modal close', () => {
     assert.ok(fs.existsSync(componentPath), 'File must exist')
     const content = fs.readFileSync(componentPath, 'utf-8')
 
     // TTS speech synthesis
     assert.ok(content.includes('speechSynthesis'), 'Must integrate window.speechSynthesis')
     assert.ok(content.includes('en-GB') || content.includes('en-US'), 'Must specify English speech locale')
+
+    // Speech synthesis cancel on close and on isOpen watch
+    assert.ok(content.includes('cancelAudio') || content.includes('speechSynthesis.cancel()'), 'Must contain speech cancellation logic')
+    assert.ok(content.includes('props.isOpen'), 'Must watch props.isOpen to cancel speech synthesis on modal close')
+    assert.ok(content.includes('handleClose'), 'Must handle close with audio cancellation')
 
     // Full-width action button copy
     assert.ok(content.includes('收录至生词本'), 'Must include text "收录至生词本"')
