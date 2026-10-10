@@ -18,15 +18,24 @@ if (typeof globalThis.localStorage === 'undefined') {
 test('AnalyticsDashboard.vue file exists and meets standards', () => {
   const filePath = path.resolve('src/components/AnalyticsDashboard.vue')
   assert.ok(fs.existsSync(filePath), 'src/components/AnalyticsDashboard.vue must exist')
-
   const content = fs.readFileSync(filePath, 'utf-8')
-  assert.ok(content.includes('svg') || content.includes('SVG'), 'Must render SVG chart for weekly trend')
+  assert.ok(content.includes('weeklyData'), 'Must render weekly trend chart with weeklyData')
+  assert.ok(!content.includes('preserveAspectRatio="none"'), 'Must not use preserveAspectRatio="none"')
   assert.ok(content.includes('Streak') || content.includes('streak'), 'Must display streak days')
   assert.ok(content.includes('min-h-[44px]') || content.includes('h-11') || content.includes('h-12'), 'Touch targets must be >= 44px')
   assert.ok(content.includes('lucide-vue-next'), 'Must use lucide-vue-next')
   assert.ok(!content.includes('lucide-react'), 'Must not import lucide-react')
   assert.ok(!content.includes('shadow-2xl'), 'Must remove shadow-2xl for flat design')
   assert.ok(content.includes('useAnalyticsStore'), 'Must use real Pinia analyticsStore')
+})
+
+test('AnalyticsDashboard weekly trend chart does not distort text labels with preserveAspectRatio none', () => {
+  const filePath = path.resolve('src/components/AnalyticsDashboard.vue')
+  const content = fs.readFileSync(filePath, 'utf-8')
+  assert.ok(
+    !content.includes('preserveAspectRatio="none"'),
+    'Must not use preserveAspectRatio="none" which distorts and stretches font glyphs'
+  )
 })
 
 test('analyticsStore summary integration check', async () => {

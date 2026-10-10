@@ -147,50 +147,57 @@
                 </span>
               </div>
 
-              <!-- Pure SVG Bar Chart -->
-              <div class="w-full h-44 pt-2">
-                <svg viewBox="0 0 350 140" class="w-full h-full select-none" preserveAspectRatio="none">
-                  <!-- Horizontal Grid Lines -->
-                  <line x1="20" y1="20" x2="330" y2="20" stroke="#f4f4f5" stroke-width="1" stroke-dasharray="3 3" />
-                  <line x1="20" y1="60" x2="330" y2="60" stroke="#f4f4f5" stroke-width="1" stroke-dasharray="3 3" />
-                  <line x1="20" y1="100" x2="330" y2="100" stroke="#e4e4e7" stroke-width="1" />
+              <!-- Responsive Weekly Trend Bar Chart -->
+              <div class="w-full pt-4 pb-1">
+                <!-- Chart Canvas Area with baseline and reference gridlines -->
+                <div class="relative w-full h-36 flex items-end justify-between gap-1.5 sm:gap-3 px-1 sm:px-3 pb-2 border-b border-[#e4e4e7]">
+                  <!-- Background Grid Lines -->
+                  <div class="absolute inset-x-0 top-0 bottom-2 flex flex-col justify-between pointer-events-none px-1 sm:px-3">
+                    <div class="border-b border-dashed border-[#f4f4f5] w-full"></div>
+                    <div class="border-b border-dashed border-[#f4f4f5] w-full"></div>
+                    <div class="h-0 w-full"></div>
+                  </div>
 
-                  <!-- Bars -->
-                  <g v-for="(day, idx) in weeklyData" :key="idx">
-                    <!-- Bar Column -->
-                    <rect
-                      :x="35 + idx * 42"
-                      :y="100 - day.height"
-                      width="24"
-                      :height="day.height"
-                      rx="4"
-                      :fill="day.isToday ? '#2563eb' : '#e4e4e7'"
-                      class="transition-all duration-300 hover:fill-blue-700"
-                    />
+                  <!-- 7 Day Columns -->
+                  <div
+                    v-for="(day, idx) in weeklyData"
+                    :key="idx"
+                    class="flex-1 flex flex-col items-center justify-end h-full z-10 group"
+                  >
                     <!-- Minutes Label on Top -->
-                    <text
-                      :x="47 + idx * 42"
-                      :y="92 - day.height"
-                      text-anchor="middle"
-                      font-size="9"
-                      fill="#71717a"
-                      font-family="monospace"
+                    <span
+                      class="text-[10px] sm:text-xs font-mono tabular-nums mb-1 transition-colors leading-none"
+                      :class="day.isToday ? 'text-[#2563eb] font-semibold' : 'text-[#71717a] group-hover:text-[#18181b]'"
                     >
                       {{ day.minutes }}
-                    </text>
-                    <!-- Day Label at Bottom -->
-                    <text
-                      :x="47 + idx * 42"
-                      y="118"
-                      text-anchor="middle"
-                      font-size="10"
-                      :fill="day.isToday ? '#2563eb' : '#71717a'"
-                      font-weight="500"
+                    </span>
+
+                    <!-- Bar Pillar Container -->
+                    <div class="w-full flex justify-center items-end h-24">
+                      <div
+                        class="w-full max-w-[24px] sm:max-w-[32px] rounded-t-md transition-all duration-300"
+                        :style="{ height: `${day.heightPercent}%` }"
+                        :class="day.isToday ? 'bg-[#2563eb] hover:bg-blue-700' : 'bg-[#e4e4e7] hover:bg-zinc-300'"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Day Names Axis Row -->
+                <div class="flex items-center justify-between gap-1.5 sm:gap-3 px-1 sm:px-3 pt-2">
+                  <div
+                    v-for="(day, idx) in weeklyData"
+                    :key="idx"
+                    class="flex-1 text-center"
+                  >
+                    <span
+                      class="text-[11px] sm:text-xs font-medium transition-colors"
+                      :class="day.isToday ? 'text-[#2563eb] font-bold' : 'text-[#71717a]'"
                     >
                       {{ day.name }}
-                    </text>
-                  </g>
-                </svg>
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -274,9 +281,13 @@ const weeklyTotalMinutes = computed(() => {
 
 const weeklyData = computed(() => {
   const maxMins = Math.max(...weeklyDays.value.map((d) => d.minutes || 0), 45)
-  return weeklyDays.value.map((d) => ({
-    ...d,
-    height: Math.max(6, Math.round(((d.minutes || 0) / maxMins) * 75))
-  }))
+  return weeklyDays.value.map((d) => {
+    const percent = Math.max(8, Math.min(100, Math.round(((d.minutes || 0) / maxMins) * 100)))
+    return {
+      ...d,
+      heightPercent: percent,
+      height: Math.max(6, Math.round(((d.minutes || 0) / maxMins) * 75))
+    }
+  })
 })
 </script>
