@@ -119,78 +119,122 @@
         </button>
       </div>
 
-      <!-- Right: Sleep Timer Button -->
+      <!-- Right: Sleep Timer Button (Borderless matching other auxiliary controls) -->
       <div class="flex items-center shrink-0">
         <button
           type="button"
           @click="isSleepMenuOpen = true"
           :class="[
-            'min-h-[44px] px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap flex items-center gap-1.5 transition-all active:scale-95 touch-manipulation cursor-pointer border',
+            'min-h-[44px] min-w-[44px] px-2.5 py-1 text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 touch-manipulation active:scale-95 cursor-pointer',
             player.sleepTimerMode
-              ? 'bg-blue-50 border-blue-200 text-[#2563eb] font-semibold'
-              : 'bg-[#f8f8f6] hover:bg-[#f4f4f5] border-[#e4e4e7] text-[#71717a] hover:text-[#18181b]'
+              ? 'text-[#2563eb] font-semibold bg-blue-50/80'
+              : 'text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5]'
           ]"
           :title="player.sleepTimerMode ? `睡眠定时进行中: ${sleepTimerDisplay}` : '设置睡眠定时'"
           aria-label="设置睡眠定时"
         >
-          <Moon class="w-4 h-4 text-[#2563eb]" />
+          <Moon class="w-4 h-4" />
           <span v-if="player.sleepTimerMode" class="font-mono text-xs">{{ sleepTimerDisplay }}</span>
           <span v-else class="hidden md:inline">睡眠定时</span>
         </button>
       </div>
     </div>
 
-    <!-- Sleep Timer Modal Sheet -->
+    <!-- Sleep Timer iOS Bottom Sheet Modal -->
     <Teleport to="body">
       <div v-if="isSleepMenuOpen" class="fixed inset-0 z-50 overflow-hidden">
-        <div
-          class="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
-          @click="isSleepMenuOpen = false"
-        ></div>
-
-        <div class="fixed inset-0 pointer-events-none flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <!-- Backdrop Fade Transition -->
+        <Transition
+          appear
+          enter-active-class="transition-opacity duration-300 ease-out"
+          enter-from-class="opacity-0"
+          enter-to-class="opacity-100"
+          leave-active-class="transition-opacity duration-200 ease-in"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
+        >
           <div
-            class="pointer-events-auto bg-[#f8f8f6] border-t border-x sm:border border-[#e4e4e7] rounded-t-2xl sm:rounded-2xl max-w-sm w-full p-5 space-y-4 pb-[calc(env(safe-area-inset-bottom,0px)+16px)] sm:pb-5"
-            @click.stop
-            role="dialog"
-            aria-modal="true"
-            aria-label="睡眠定时选择"
-          >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#2563eb]">
-                  <Moon class="w-4 h-4" />
-                </div>
-                <h3 class="font-serif text-sm font-semibold text-[#18181b]">睡眠定时</h3>
-              </div>
-              <button
-                type="button"
-                @click="isSleepMenuOpen = false"
-                class="min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] flex items-center justify-center rounded-lg cursor-pointer"
-                aria-label="关闭定时器选择"
-              >
-                <X class="w-4 h-4" />
-              </button>
-            </div>
+            class="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            @click="isSleepMenuOpen = false"
+            aria-hidden="true"
+          ></div>
+        </Transition>
 
-            <div class="space-y-1.5">
-              <button
-                v-for="opt in sleepOptions"
-                :key="opt.label"
-                type="button"
-                @click="selectSleepTimer(opt.value)"
-                :class="[
-                  'w-full min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-medium flex items-center justify-between border transition-all cursor-pointer',
-                  isOptionActive(opt.value)
-                    ? 'bg-blue-50 border-blue-300 text-[#2563eb]'
-                    : 'bg-white hover:bg-[#f4f4f5] border-[#e4e4e7] text-[#18181b]'
-                ]"
+        <!-- Bottom Sheet Modal Container -->
+        <div
+          class="fixed inset-0 pointer-events-none flex items-end sm:items-center justify-center p-0 sm:p-4"
+        >
+          <Transition
+            appear
+            enter-active-class="transition-all duration-300 ease-out"
+            enter-from-class="translate-y-full sm:translate-y-4 opacity-0 sm:opacity-0"
+            enter-to-class="translate-y-0 opacity-100 sm:opacity-100"
+            leave-active-class="transition-all duration-200 ease-in"
+            leave-from-class="translate-y-0 opacity-100"
+            leave-to-class="translate-y-full sm:translate-y-4 opacity-0"
+          >
+            <div
+              v-if="isSleepMenuOpen"
+              class="pointer-events-auto bg-[#f8f8f6] border-t border-x sm:border border-[#e4e4e7] rounded-t-2xl sm:rounded-2xl max-w-sm w-full p-5 space-y-4 pb-[calc(env(safe-area-inset-bottom,0px)+16px)] sm:pb-5 flex flex-col overflow-hidden"
+              :style="sheetStyle"
+              @click.stop
+              role="dialog"
+              aria-modal="true"
+              aria-label="睡眠定时选择"
+            >
+              <!-- Pull Handle (Mobile only) -->
+              <div
+                class="pt-1 pb-2 sm:hidden flex justify-center cursor-grab active:cursor-grabbing touch-none shrink-0"
+                @touchstart="onTouchStart"
+                @touchmove="handleDragTouchMove"
+                @touchend="onTouchEnd"
               >
-                <span>{{ opt.label }}</span>
-                <Check v-if="isOptionActive(opt.value)" class="w-4 h-4 text-[#2563eb]" />
-              </button>
+                <div class="w-10 h-1.5 rounded-full bg-stone-300"></div>
+              </div>
+
+              <!-- Header -->
+              <div
+                class="flex items-center justify-between shrink-0 select-none touch-none"
+                @touchstart="onTouchStart"
+                @touchmove="handleDragTouchMove"
+                @touchend="onTouchEnd"
+              >
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#2563eb]">
+                    <Moon class="w-4 h-4" />
+                  </div>
+                  <h3 class="font-serif text-sm font-semibold text-[#18181b]">睡眠定时</h3>
+                </div>
+                <button
+                  type="button"
+                  @click="isSleepMenuOpen = false"
+                  class="min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-lg flex items-center justify-center transition-colors cursor-pointer"
+                  aria-label="关闭定时器选择"
+                >
+                  <X class="w-4 h-4" />
+                </button>
+              </div>
+
+              <!-- Presets List -->
+              <div class="space-y-1.5">
+                <button
+                  v-for="opt in sleepOptions"
+                  :key="opt.label"
+                  type="button"
+                  @click="selectSleepTimer(opt.value)"
+                  :class="[
+                    'w-full min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-medium flex items-center justify-between border transition-all cursor-pointer active:scale-95 touch-manipulation',
+                    isOptionActive(opt.value)
+                      ? 'bg-blue-50 border-blue-300 text-[#2563eb]'
+                      : 'bg-white hover:bg-[#f4f4f5] border-[#e4e4e7] text-[#18181b]'
+                  ]"
+                >
+                  <span>{{ opt.label }}</span>
+                  <Check v-if="isOptionActive(opt.value)" class="w-4 h-4 text-[#2563eb]" />
+                </button>
+              </div>
             </div>
-          </div>
+          </Transition>
         </div>
       </div>
     </Teleport>
@@ -213,13 +257,29 @@ import {
 } from 'lucide-vue-next'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useSubtitleStore } from '../../stores/subtitleStore.js'
+import { useBottomSheet } from '../../composables/useBottomSheet.js'
 
 const player = usePlayerStore()
 const subtitleStore = useSubtitleStore()
 
 const progressBarRef = ref(null)
 const isLooping = ref(false)
+const lockedLoopCue = ref(null)
 const isSleepMenuOpen = ref(false)
+
+const {
+  sheetStyle,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd
+} = useBottomSheet({
+  threshold: 80,
+  onClose: () => { isSleepMenuOpen.value = false }
+})
+
+function handleDragTouchMove(e) {
+  onTouchMove(e, 0)
+}
 
 const sleepOptions = [
   { label: '关闭定时', value: null },
@@ -291,12 +351,18 @@ function cycleRate() {
 
 function toggleLoop() {
   isLooping.value = !isLooping.value
+  if (isLooping.value) {
+    lockedLoopCue.value = subtitleStore.effectiveCue || subtitleStore.cues?.[0] || null
+  } else {
+    lockedLoopCue.value = null
+  }
 }
 
 function jumpToPrevCue() {
   subtitleStore.jumpToPrevCue()
   const cue = subtitleStore.currentCue
   if (cue && cue.start !== undefined) {
+    if (isLooping.value) lockedLoopCue.value = cue
     player.seek(cue.start)
   }
 }
@@ -305,18 +371,25 @@ function jumpToNextCue() {
   subtitleStore.jumpToNextCue()
   const cue = subtitleStore.currentCue
   if (cue && cue.start !== undefined) {
+    if (isLooping.value) lockedLoopCue.value = cue
     player.seek(cue.start)
   }
 }
 
-// Single sentence loop watcher
+// Single sentence loop watcher: cleanly loops locked cue before sentence boundary
 watch(
   () => player.currentTime,
   (t) => {
-    if (isLooping.value && subtitleStore.currentCue) {
-      const cue = subtitleStore.currentCue
-      if (cue.end !== undefined && t >= cue.end) {
+    if (isLooping.value) {
+      if (!lockedLoopCue.value && subtitleStore.effectiveCue) {
+        lockedLoopCue.value = subtitleStore.effectiveCue
+      }
+      const cue = lockedLoopCue.value
+      if (cue && cue.end !== undefined && t >= cue.end - 0.2) {
         player.seek(cue.start || 0)
+        if (!player.isPlaying) {
+          player.play()
+        }
       }
     }
   }

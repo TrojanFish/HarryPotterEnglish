@@ -401,6 +401,15 @@ watch(
 )
 
 watch(
+  () => player.seekTimestamp,
+  () => {
+    if (audioRef.value) {
+      audioRef.value.currentTime = player.currentTime
+    }
+  }
+)
+
+watch(
   () => player.currentTime,
   (newTime) => {
     if (!audioRef.value) return

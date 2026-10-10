@@ -33,7 +33,8 @@ export const usePlayerStore = defineStore('player', {
       audioSrc: '',
       sleepTimerMode: null,
       sleepTimerRemaining: null,
-      sleepTimerTargetTimestamp: null
+      sleepTimerTargetTimestamp: null,
+      seekTimestamp: 0
     }
   },
 
@@ -77,6 +78,7 @@ export const usePlayerStore = defineStore('player', {
     seek(seconds) {
       const target = Math.max(0, Math.min(seconds, this.duration || Infinity))
       this.currentTime = target
+      this.seekTimestamp = Date.now()
     },
 
     setPlaybackRate(rate) {

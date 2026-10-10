@@ -13,17 +13,12 @@
         <button
           type="button"
           @click="toggleBlindMode"
-          :class="[
-            'min-h-[44px] px-3 py-1.5 text-xs border rounded-lg flex items-center gap-1.5 transition-colors active:scale-95 touch-manipulation cursor-pointer',
-            player.isBlindMode
-              ? 'bg-blue-50 border-[#2563eb] text-[#2563eb] font-medium'
-              : 'border-[#e4e4e7] hover:bg-[#f4f4f5] text-[#71717a]'
-          ]"
-          aria-label="切换盲听模式"
+          class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-[#f4f4f5] flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer"
+          :title="player.isBlindMode ? '盲听模式开启中（点击取消模糊）' : '开启盲听模式（模糊字幕专注听力）'"
+          :aria-label="player.isBlindMode ? '取消盲听模式' : '开启盲听模式'"
         >
-          <EyeOff v-if="player.isBlindMode" class="w-3.5 h-3.5 text-[#2563eb]" />
-          <Eye v-else class="w-3.5 h-3.5" />
-          <span>盲听</span>
+          <EyeOff v-if="player.isBlindMode" class="w-5 h-5 text-[#2563eb]" />
+          <Eye v-else class="w-5 h-5 text-[#71717a] hover:text-[#18181b]" />
         </button>
       </div>
 
@@ -44,7 +39,7 @@
         :id="'cue-' + idx"
         @click="jumpToCue(cue, idx)"
         :class="[
-          'cue-card p-4 sm:p-5 rounded-xl border transition-all cursor-pointer select-text',
+          'cue-card group p-4 sm:p-5 rounded-xl border transition-all cursor-pointer select-text',
           idx === subtitleStore.activeCueIndex
             ? 'border-[#2563eb] bg-[#f8f8f6] border-l-4 border-l-[#2563eb]'
             : 'border-[#e4e4e7] hover:border-[#a1a1aa] bg-white'
@@ -57,11 +52,12 @@
           </span>
         </div>
 
-        <!-- English Sentence with word-level tap -->
+        <!-- English Sentence with word-level tap (supports Blind Mode Blur) -->
         <p
           :class="[
-            'font-serif text-lg sm:text-xl leading-[2.0] tracking-wide',
-            idx === subtitleStore.activeCueIndex ? 'text-[#18181b] font-medium' : 'text-[#27272a]'
+            'font-serif text-lg sm:text-xl leading-[2.0] tracking-wide transition-all',
+            idx === subtitleStore.activeCueIndex ? 'text-[#18181b] font-medium' : 'text-[#27272a]',
+            player.isBlindMode ? 'filter blur-[7px] select-none opacity-40 group-hover:filter-none group-hover:opacity-100' : ''
           ]"
         >
           <span
@@ -77,7 +73,7 @@
           v-if="cue.translation"
           :class="[
             'text-xs sm:text-sm text-[#52525b] mt-2 pt-2 border-t border-[#e4e4e7]/60 leading-relaxed font-sans transition-all',
-            player.isBlindMode ? 'filter blur-[5px] select-none opacity-40' : ''
+            player.isBlindMode ? 'filter blur-[7px] select-none opacity-40 group-hover:filter-none group-hover:opacity-100' : ''
           ]"
         >
           {{ cue.translation }}
