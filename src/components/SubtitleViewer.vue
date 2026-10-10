@@ -42,27 +42,27 @@
         :ref="(el) => setCueRef(el, idx)"
         @click="onCueClick(cue)"
         :class="[
-          'relative p-4 sm:p-5 rounded-2xl transition-all duration-200 cursor-pointer select-text border group',
+          'relative p-4 sm:p-5 rounded-xl transition-all duration-200 cursor-pointer select-text border group',
           idx === subtitleStore.activeCueIndex
-            ? 'reading-hero-sentence bg-[#f5ede2]/90 border-l-4 border-[#d97706] border-y-[#e8ddd0] border-r-[#e8ddd0] ring-1 ring-[#d97706]/20 shadow-sm'
-            : 'reading-inactive-sentence border-transparent hover:border-[#e8ddd0] hover:bg-[#f4ebe1]/50 text-[#78695d]'
+            ? 'reading-hero-sentence bg-white border-l-4 border-[#2563eb] border-y-[#e4e4e7] border-r-[#e4e4e7]'
+            : 'reading-inactive-sentence border-transparent hover:border-[#e4e4e7] hover:bg-white/60 text-[#71717a]'
         ]"
       >
         <!-- Time badge & Lumos prompt -->
-        <div class="flex items-center justify-between mb-2 text-[11px] font-mono text-[#a89a8c]">
+        <div class="flex items-center justify-between mb-2 text-[11px] font-mono text-[#a1a1aa]">
           <span class="flex items-center gap-1.5 font-medium">
-            <Volume2 v-if="idx === subtitleStore.activeCueIndex" class="w-3.5 h-3.5 text-[#d97706] animate-pulse" />
-            <span :class="idx === subtitleStore.activeCueIndex ? 'text-[#92400e]' : ''">
+            <Volume2 v-if="idx === subtitleStore.activeCueIndex" class="w-3.5 h-3.5 text-[#2563eb] animate-pulse" />
+            <span :class="idx === subtitleStore.activeCueIndex ? 'text-[#2563eb] font-semibold' : ''">
               {{ formatTime(cue.start) }} - {{ formatTime(cue.end) }}
             </span>
           </span>
 
           <span
             v-if="idx === subtitleStore.activeCueIndex"
-            class="text-[#d97706] font-medium flex items-center gap-1 text-[11px]"
+            class="text-[#2563eb] font-medium flex items-center gap-1 text-[11px]"
           >
-            <Sparkles class="w-3 h-3" />
-            <span>Lumos 专注</span>
+            <Sparkles class="w-3 h-3 text-[#2563eb]" />
+            <span>专注精听</span>
           </span>
         </div>
 
@@ -71,8 +71,8 @@
           :class="[
             'text-base sm:text-lg leading-[1.8] font-serif transition-all',
             idx === subtitleStore.activeCueIndex
-              ? 'text-[#1e1610] font-semibold tracking-wide'
-              : 'text-[#4a3b32]',
+              ? 'text-[#18181b] font-medium tracking-wide'
+              : 'text-[#52525b]',
             player.isBlindMode && idx !== subtitleStore.activeCueIndex
               ? 'filter blur-[5px] select-none opacity-40'
               : ''
@@ -82,7 +82,7 @@
             v-for="(token, tokenIdx) in tokenizeText(cue.text)"
             :key="tokenIdx"
             @click.stop="handleWordClick(token, cue.text)"
-            class="hover:text-[#d97706] hover:underline hover:decoration-dotted cursor-pointer transition-colors"
+            class="hover:text-[#2563eb] hover:bg-blue-50/50 hover:underline hover:decoration-dotted cursor-pointer transition-colors rounded-sm"
           >{{ token }} </span>
         </p>
 
@@ -90,7 +90,7 @@
         <p
           v-if="cue.translation"
           :class="[
-            'text-xs sm:text-sm text-[#78695d] mt-2 sm:mt-2.5 font-sans leading-relaxed',
+            'text-xs sm:text-sm text-[#71717a] mt-2 sm:mt-2.5 font-sans leading-relaxed',
             player.isBlindMode && idx !== subtitleStore.activeCueIndex
               ? 'filter blur-[4px] select-none opacity-30'
               : ''
@@ -112,9 +112,9 @@
     >
       <div
         v-if="toastWord"
-        class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-[#1e1610] text-[#fbf9f5] text-xs font-mono rounded-full border border-[#d97706]/40 flex items-center gap-2 pointer-events-none"
+        class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-[#18181b] text-[#f8f8f6] text-xs font-mono rounded-lg border border-[#27272a] flex items-center gap-2 pointer-events-none"
       >
-        <Sparkles class="w-3.5 h-3.5 text-[#d97706]" />
+        <Sparkles class="w-3.5 h-3.5 text-[#3b82f6]" />
         <span>{{ toastWord }}</span>
       </div>
     </Transition>

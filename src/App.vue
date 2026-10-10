@@ -240,11 +240,19 @@
       </button>
     </div>
 
-    <!-- Main Content Area: Subtitle Viewer protected by Error Boundary -->
-    <main class="flex-1 flex flex-col overflow-hidden relative" role="main">
-      <MagicErrorBoundary>
-        <SubtitleViewer />
-      </MagicErrorBoundary>
+    <!-- Main Content Area: Split-Pane Workbench (方案 B: 55% 字幕流 + 45% 交互工作台) -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative" role="main">
+      <!-- Left Column: Full Chapter Subtitle Stream (55%) -->
+      <section class="flex-1 md:flex-[1.15] flex flex-col overflow-hidden min-w-0">
+        <MagicErrorBoundary>
+          <SubtitleViewer />
+        </MagicErrorBoundary>
+      </section>
+
+      <!-- Right Column: Permanent Interactive Training Studio Workbench (45%) -->
+      <section class="hidden md:flex md:flex-[0.85] overflow-hidden bg-[#f8f8f6]/60 border-l border-[#e4e4e7]">
+        <StudioWorkbench />
+      </section>
     </main>
 
     <!-- Bottom Audio Player Scrubber -->
@@ -305,6 +313,7 @@ import { getCachedChapter } from './utils/offlineStorage.js'
 import { SAMPLE_CHAPTER_1_VTT, SAMPLE_AUDIO_URL } from './data/chapters.js'
 import AudioPlayer from './components/AudioPlayer.vue'
 import SubtitleViewer from './components/SubtitleViewer.vue'
+import StudioWorkbench from './components/StudioWorkbench.vue'
 import BookshelfDrawer from './components/BookshelfDrawer.vue'
 import ShadowingRecorder from './components/ShadowingRecorder.vue'
 import DictationStudio from './components/DictationStudio.vue'

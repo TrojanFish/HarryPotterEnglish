@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const ignoreDirs = ['node_modules', '.git', '.gemini', 'dist'];
+const ignoreDirs = ['node_modules', '.git', '.gemini', 'dist', '.superpowers'];
 
 function scan(dir) {
   let findings = [];
