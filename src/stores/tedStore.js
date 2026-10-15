@@ -24,6 +24,7 @@ export const useTedStore = defineStore('ted', {
 
     // Four-step progression (1: Vocab Preload, 2: Deep Viewing, 3: Task Studio, 4: Shadowing)
     currentStep: 1,
+    maxStepReached: 1,
 
     // Step 1 Vocab Preload
     listenedVocabIds: new Set(),
@@ -84,6 +85,7 @@ export const useTedStore = defineStore('ted', {
 
       this.selectedTalkId = talk.id
       this.currentStep = 1
+      this.maxStepReached = 1
       this.listenedVocabIds = new Set()
       this.vocabUnlocked = false
       this.videoSrc = resolveVideoStreamUrl(talk.videoKey)
@@ -119,6 +121,7 @@ export const useTedStore = defineStore('ted', {
         return
       }
       this.currentStep = targetStep
+      this.maxStepReached = Math.max(this.maxStepReached, targetStep)
     },
 
     toggleBlindMode() {
@@ -142,7 +145,18 @@ export const useTedStore = defineStore('ted', {
     },
 
     submitMatchingAnswer(id, timestampSeconds) {
+      for (const [key, val] of Object.entries(this.matchingAnswers)) {
+        if (val === timestampSeconds && key !== id) {
+          delete this.matchingAnswers[key]
+        }
+      }
       this.matchingAnswers[id] = timestampSeconds
+    },
+
+    resetTask() {
+      this.clozeAnswers = {}
+      this.matchingAnswers = {}
+      this.taskScore = null
     },
 
     scoreTask() {

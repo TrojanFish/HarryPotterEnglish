@@ -137,3 +137,52 @@ describe('setLookupWord and currentTalk getter', () => {
     assert.equal(store.currentTalk?.id, TALKS[0].id)
   })
 })
+
+describe('maxStepReached and step tracking', () => {
+  it('initializes to 1 and updates on goToStep', () => {
+    const store = useTedStore()
+    store.selectTalk(TALKS[0].id)
+    assert.equal(store.maxStepReached, 1)
+    store.vocabUnlocked = true
+    store.goToStep(3)
+    assert.equal(store.maxStepReached, 3)
+    store.goToStep(2)
+    assert.equal(store.maxStepReached, 3)
+  })
+  it('resets maxStepReached to 1 on selectTalk', () => {
+    const store = useTedStore()
+    store.selectTalk(TALKS[0].id)
+    store.vocabUnlocked = true
+    store.goToStep(4)
+    assert.equal(store.maxStepReached, 4)
+    store.selectTalk(TALKS[0].id)
+    assert.equal(store.maxStepReached, 1)
+  })
+})
+
+describe('submitMatchingAnswer 1:1 binding', () => {
+  it('removes conflicting selection when assigning same timestamp to another item', () => {
+    const store = useTedStore()
+    store.selectTalk(TALKS[0].id)
+    store.submitMatchingAnswer('match-1', 45.0)
+    assert.equal(store.matchingAnswers['match-1'], 45.0)
+    store.submitMatchingAnswer('match-2', 45.0)
+    assert.equal(store.matchingAnswers['match-2'], 45.0)
+    assert.equal(store.matchingAnswers['match-1'], undefined)
+  })
+})
+
+describe('resetTask', () => {
+  it('clears clozeAnswers, matchingAnswers, and taskScore', () => {
+    const store = useTedStore()
+    store.selectTalk(TALKS[0].id)
+    store.submitClozeAnswer('c1', 'answer')
+    store.submitMatchingAnswer('m1', 30.0)
+    store.taskScore = 85
+    store.resetTask()
+    assert.deepEqual(store.clozeAnswers, {})
+    assert.deepEqual(store.matchingAnswers, {})
+    assert.equal(store.taskScore, null)
+  })
+})
+

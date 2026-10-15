@@ -47,6 +47,10 @@ describe('TedStepBar.vue', () => {
     assert.ok(src.includes('goToStep'), 'Missing goToStep call')
   })
 
+  it('checks maxStepReached in isCompleted', () => {
+    assert.ok(src.includes('tedStore.maxStepReached > stepId'), 'Missing maxStepReached comparison in isCompleted')
+  })
+
   it('is a valid Vue 3 SFC', () => {
     assert.ok(existsSync(FILE_PATH), 'TedStepBar.vue must exist')
     const { descriptor, errors } = parse(src)

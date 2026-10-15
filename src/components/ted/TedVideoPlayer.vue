@@ -437,12 +437,16 @@ watch(
 )
 
 function getZhText(index, cue) {
-  if (zhCues.value[index]?.text) {
-    return zhCues.value[index].text
-  }
-  if (cue) {
-    const matched = zhCues.value.find((z) => Math.abs(z.startTime - cue.startTime) < 0.3)
-    if (matched) return matched.text
+  if (!cue) return ''
+  // 1. Proximity matching
+  const match = zhCues.value.find(
+    (zh) => Math.abs(zh.startTime - cue.startTime) < 0.35
+  )
+  if (match) return match.text
+  // 2. Direct index fallback if reasonably close in time (< 1s)
+  const direct = zhCues.value[index]
+  if (direct && Math.abs(direct.startTime - cue.startTime) < 1.0) {
+    return direct.text
   }
   return ''
 }

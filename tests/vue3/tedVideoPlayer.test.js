@@ -57,6 +57,10 @@ describe('TedVideoPlayer.vue', () => {
     assert.doesNotMatch(src, /\p{Extended_Pictographic}/u, 'Emoji found in TedVideoPlayer.vue')
   })
 
+  it('getZhText implements proximity matching (< 0.35s)', () => {
+    assert.ok(src.includes('Math.abs(zh.startTime - cue.startTime) < 0.35'), 'Missing proximity matching in getZhText')
+  })
+
   it('has CTA button advancing to step 3', () => {
     assert.ok(src.includes('goToStep(3)') || src.includes("goToStep('3')") || src.includes('goToStep'), 'Missing goToStep CTA')
   })

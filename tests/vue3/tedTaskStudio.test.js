@@ -50,6 +50,10 @@ describe('TedTaskStudio.vue', () => {
     assert.ok(src.includes('Zap'), 'Missing Zap icon for reward')
   })
 
+  it('calls resetTask on retry', () => {
+    assert.ok(src.includes('tedStore.resetTask()'), 'Missing resetTask() call in handleRetry')
+  })
+
   it('is a valid Vue 3 SFC', () => {
     assert.ok(existsSync(FILE_PATH), 'TedTaskStudio.vue must exist')
     const { descriptor, errors } = parse(src)

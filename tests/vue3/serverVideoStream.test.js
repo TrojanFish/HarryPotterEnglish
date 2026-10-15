@@ -5,6 +5,7 @@ import assert from 'node:assert/strict'
 // (We test the routing logic in isolation - integration test would need a running server)
 function getVideoContentType(key) {
   if (/\.webm$/i.test(key)) return 'video/webm'
+  if (/\.mp3$/i.test(key)) return 'audio/mpeg'
   return 'video/mp4'
 }
 
@@ -14,6 +15,9 @@ describe('getVideoContentType', () => {
   })
   it('returns video/webm for .webm keys', () => {
     assert.equal(getVideoContentType('ted/foo/video.webm'), 'video/webm')
+  })
+  it('returns audio/mpeg for .mp3 keys', () => {
+    assert.equal(getVideoContentType('ted/foo/audio.mp3'), 'audio/mpeg')
   })
   it('defaults to video/mp4 for unknown extension', () => {
     assert.equal(getVideoContentType('ted/foo/video'), 'video/mp4')

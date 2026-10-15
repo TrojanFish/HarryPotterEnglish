@@ -87,17 +87,18 @@ function isLocked(stepId) {
 
 function isCompleted(stepId) {
   if (isActive(stepId)) return false
-  if (stepId < tedStore.currentStep) return true
   if (tedStore.isCurrentTalkCompleted) return true
+  if (tedStore.maxStepReached > stepId) return true
   return false
 }
 
 function isConnectorCompleted(stepId) {
   if (tedStore.isCurrentTalkCompleted) return true
+  const highest = Math.max(tedStore.currentStep, tedStore.maxStepReached || 1)
   if (stepId === 1) {
-    return tedStore.currentStep > 1 || tedStore.vocabUnlocked
+    return highest > 1 || tedStore.vocabUnlocked
   }
-  return tedStore.currentStep > stepId
+  return highest > stepId
 }
 
 function goToStep(stepId) {

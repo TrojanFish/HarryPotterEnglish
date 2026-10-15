@@ -324,6 +324,7 @@ function stopSnippetPlayback() {
     try {
       originalAudio.pause()
       originalAudio.ontimeupdate = null
+      originalAudio.onloadedmetadata = null
       originalAudio.onended = null
       originalAudio.onerror = null
     } catch (_) {}
@@ -348,7 +349,6 @@ function togglePlaySnippet() {
 
   try {
     originalAudio = new Audio(tedStore.videoSrc)
-    originalAudio.currentTime = currentSegment.value.startSeconds || 0
     isPlayingSnippet.value = true
 
     originalAudio.ontimeupdate = () => {
@@ -369,10 +369,17 @@ function togglePlaySnippet() {
       stopSnippetPlayback()
     }
 
-    originalAudio.play().catch((err) => {
-      console.warn('[TedShadowing] Original audio play error:', err)
-      stopSnippetPlayback()
-    })
+    if (originalAudio.readyState >= 1) {
+      originalAudio.currentTime = currentSegment.value.startSeconds || 0
+      originalAudio.play().catch(stopSnippetPlayback)
+    } else {
+      originalAudio.onloadedmetadata = () => {
+        if (originalAudio && currentSegment.value) {
+          originalAudio.currentTime = currentSegment.value.startSeconds || 0
+          originalAudio.play().catch(stopSnippetPlayback)
+        }
+      }
+    }
   } catch (err) {
     console.warn('[TedShadowing] Audio initialization error:', err)
     stopSnippetPlayback()
@@ -400,6 +407,7 @@ const recordedCount = computed(() => {
 let mediaStream = null
 let mediaRecorder = null
 let recordedChunks = []
+let activeRecordingIndex = null
 
 const isPlayingUserRecording = ref(false)
 let userAudioPlayer = null
@@ -466,12 +474,16 @@ async function startRecording() {
   stopSnippetPlayback()
   stopUserPlayback()
 
+  const activeIndex = currentSegmentIndex.value
+  activeRecordingIndex = activeIndex
+  const targetTranscript = segments.value[activeIndex]?.transcript || currentSegment.value?.transcript
+
   // Clean previous blob for current segment if re-recording
-  if (segmentRecordings[currentSegmentIndex.value]?.blobUrl) {
+  if (segmentRecordings[activeIndex]?.blobUrl) {
     try {
-      URL.revokeObjectURL(segmentRecordings[currentSegmentIndex.value].blobUrl)
+      URL.revokeObjectURL(segmentRecordings[activeIndex].blobUrl)
     } catch (_) {}
-    delete segmentRecordings[currentSegmentIndex.value]
+    delete segmentRecordings[activeIndex]
   }
 
   recordedChunks = []
@@ -535,8 +547,8 @@ async function startRecording() {
               type: mimeType || 'audio/webm'
             })
             const blobUrl = URL.createObjectURL(blob)
-            const evalResult = evaluatePronunciation(currentSegment.value?.transcript, spokenText)
-            segmentRecordings[currentSegmentIndex.value] = {
+            const evalResult = evaluatePronunciation(targetTranscript, spokenText)
+            segmentRecordings[activeIndex] = {
               blobUrl,
               evalResult
             }
@@ -549,8 +561,8 @@ async function startRecording() {
   } catch (err) {
     console.warn('[TedShadowing] Microphone access error:', err)
     // Even if getUserMedia fails, fallback to heuristic completion without dummy URL
-    const evalResult = evaluatePronunciation(currentSegment.value?.transcript, spokenText)
-    segmentRecordings[currentSegmentIndex.value] = {
+    const evalResult = evaluatePronunciation(targetTranscript, spokenText)
+    segmentRecordings[activeIndex] = {
       blobUrl: '',
       evalResult
     }
@@ -559,6 +571,9 @@ async function startRecording() {
 }
 
 function stopRecording() {
+  const activeIndex = activeRecordingIndex !== null ? activeRecordingIndex : currentSegmentIndex.value
+  const targetTranscript = segments.value[activeIndex]?.transcript || currentSegment.value?.transcript
+
   isRecording.value = false
   if (timerInterval) {
     clearInterval(timerInterval)
@@ -586,9 +601,9 @@ function stopRecording() {
   }
 
   // If MediaRecorder was not initialized, ensure evaluation is saved synchronously
-  if (!mediaRecorder && !segmentRecordings[currentSegmentIndex.value]) {
-    const evalResult = evaluatePronunciation(currentSegment.value?.transcript, spokenText)
-    segmentRecordings[currentSegmentIndex.value] = {
+  if (!mediaRecorder && !segmentRecordings[activeIndex]) {
+    const evalResult = evaluatePronunciation(targetTranscript, spokenText)
+    segmentRecordings[activeIndex] = {
       blobUrl: recordedChunks.length > 0 ? URL.createObjectURL(new Blob(recordedChunks)) : '',
       evalResult
     }
@@ -597,8 +612,16 @@ function stopRecording() {
 }
 
 function evaluatePronunciation(targetSentence, userSpoken) {
+  if (!userSpoken || !userSpoken.trim()) {
+    return {
+      score: 0,
+      grade: '需重录 (Try Again)',
+      feedback: '未检测到清晰发音，请点击麦克风重新录制。'
+    }
+  }
+
   const target = (targetSentence || '').toLowerCase().replace(/[^a-z\s]/g, '').trim()
-  const spoken = (userSpoken || target).toLowerCase().replace(/[^a-z\s]/g, '').trim()
+  const spoken = userSpoken.toLowerCase().replace(/[^a-z\s]/g, '').trim()
 
   const targetWords = target.split(/\s+/).filter(Boolean)
   const spokenWords = spoken.split(/\s+/).filter(Boolean)
@@ -608,16 +631,18 @@ function evaluatePronunciation(targetSentence, userSpoken) {
     if (targetWords.includes(w)) matches++
   }
 
-  const ratio = targetWords.length > 0 ? matches / targetWords.length : 1
-  const score = Math.min(100, Math.max(78, Math.round(ratio * 100)))
+  const ratio = targetWords.length > 0 ? matches / targetWords.length : 0
+  const score = Math.min(100, Math.round(ratio * 100))
 
   return {
     score,
-    grade: score >= 90 ? '发音极佳 (Excellent)' : '良好，继续保持 (Good)',
+    grade: score >= 90 ? '发音极佳 (Excellent)' : (score >= 60 ? '良好，继续保持 (Good)' : '需进一步提高 (Keep Practicing)'),
     feedback:
       score >= 90
         ? '连读顺畅自然，核心重音词咬字准确清晰！'
-        : '句式节奏稳定，可适度注意单词词尾辅音的爆破与弱读。'
+        : (score >= 60
+            ? '句式节奏稳定，可适度注意单词词尾辅音的爆破与弱读。'
+            : '部分核心词汇发音有偏差，建议多听原声示范后再跟读。')
   }
 }
 

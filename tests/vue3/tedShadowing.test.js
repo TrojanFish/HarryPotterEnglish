@@ -56,4 +56,14 @@ describe('TedShadowing.vue', () => {
     assert.ok(src.length > 0, 'File must not be empty')
     assert.doesNotMatch(src, /\p{Extended_Pictographic}/u, 'Emoji found in TedShadowing.vue')
   })
+
+  it('checks readyState or waits for onloadedmetadata before seeking snippet', () => {
+    assert.ok(src.includes('readyState >= 1'), 'Missing audio readyState check')
+    assert.ok(src.includes('onloadedmetadata'), 'Missing onloadedmetadata callback fallback')
+  })
+
+  it('captures activeIndex to prevent segment switch race condition', () => {
+    assert.ok(src.includes('const activeIndex = currentSegmentIndex.value'), 'Missing activeIndex capture')
+    assert.ok(src.includes('segmentRecordings[activeIndex]'), 'Must save recording to captured activeIndex')
+  })
 })

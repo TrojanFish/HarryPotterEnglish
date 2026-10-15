@@ -582,9 +582,7 @@ function handleSubmit() {
 }
 
 function handleRetry() {
-  tedStore.taskScore = null
-  tedStore.clozeAnswers = {}
-  tedStore.matchingAnswers = {}
+  tedStore.resetTask()
   if (matchingList.value.length > 0) {
     selectedSummaryId.value = matchingList.value[0].id
   }

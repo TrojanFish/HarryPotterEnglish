@@ -508,7 +508,9 @@ app.get('/api/stream/video/*', async (req, res) => {
   }
 
   const key = req.params[0];
-  const contentType = /\.webm$/i.test(key) ? 'video/webm' : 'video/mp4';
+  const contentType = /\.webm$/i.test(key)
+    ? 'video/webm'
+    : (/\.mp3$/i.test(key) ? 'audio/mpeg' : 'video/mp4');
 
   // Anti-leech: verify Referer header if present
   const referer = req.headers.referer || req.headers.origin;
