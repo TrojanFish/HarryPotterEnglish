@@ -56,7 +56,7 @@
           <button
             type="button"
             @click="handleClose"
-            class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
+            class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer touch-manipulation"
             aria-label="关闭生词本"
           >
             <X class="w-5 h-5" />
@@ -78,7 +78,7 @@
               v-if="searchQuery"
               type="button"
               @click="searchQuery = ''"
-              class="absolute right-1.5 min-h-[44px] min-w-[44px] p-2 text-[#a1a1aa] hover:text-[#18181b] flex items-center justify-center rounded-lg transition-colors cursor-pointer"
+              class="absolute right-1.5 min-h-[44px] min-w-[44px] p-2 text-[#a1a1aa] hover:text-[#18181b] flex items-center justify-center rounded-lg transition-colors cursor-pointer touch-manipulation"
               aria-label="清空搜索内容"
             >
               <X class="w-4 h-4" />
@@ -92,7 +92,7 @@
           <button
             type="button"
             @click="handlePrintCards"
-            class="min-h-[44px] w-full py-2.5 px-4 bg-[#18181b] hover:bg-[#27272a] text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer"
+            class="min-h-[44px] w-full py-2.5 px-4 bg-[#18181b] hover:bg-[#27272a] text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer touch-manipulation"
           >
             <Printer class="w-4 h-4" />
             <span>打印羊皮纸单词卡 (PDF)</span>
@@ -103,7 +103,7 @@
             <button
               type="button"
               @click="handleExportAnki"
-              class="min-h-[44px] flex-1 py-2 px-3 bg-[#f4f4f5] hover:bg-[#e4e4e7] border border-[#e4e4e7] text-[#18181b] text-xs font-medium rounded-xl flex items-center justify-center gap-1.5 transition-colors active:scale-95 cursor-pointer"
+              class="min-h-[44px] flex-1 py-2 px-3 bg-[#f4f4f5] hover:bg-[#e4e4e7] border border-[#e4e4e7] text-[#18181b] text-xs font-medium rounded-xl flex items-center justify-center gap-1.5 transition-colors active:scale-95 cursor-pointer touch-manipulation"
             >
               <Download class="w-4 h-4 text-[#2563eb]" />
               <span>导出 Anki (TSV)</span>
@@ -112,7 +112,7 @@
             <button
               type="button"
               @click="handleClearVocab"
-              class="min-h-[44px] px-3 py-2 text-[#b91c1c] hover:bg-rose-50 border border-transparent hover:border-rose-200 text-xs font-medium rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+              class="min-h-[44px] px-3 py-2 text-[#b91c1c] hover:bg-rose-50 border border-transparent hover:border-rose-200 text-xs font-medium rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
             >
               <Trash2 class="w-4 h-4" />
               <span>清空</span>
@@ -126,7 +126,7 @@
             type="button"
             @click="activeBox = null"
             :class="[
-              'min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border cursor-pointer',
+              'min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border cursor-pointer touch-manipulation',
               activeBox === null
                 ? 'bg-blue-50 border-[#2563eb] text-[#2563eb]'
                 : 'border-transparent text-[#71717a] hover:bg-[#f4f4f5]'
@@ -141,13 +141,52 @@
             type="button"
             @click="activeBox = b"
             :class="[
-              'min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border cursor-pointer',
+              'min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border cursor-pointer touch-manipulation',
               activeBox === b
                 ? 'bg-blue-50 border-[#2563eb] text-[#2563eb]'
                 : 'border-transparent text-[#71717a] hover:bg-[#f4f4f5]'
             ]"
           >
             Box {{ b }} ({{ getBoxCount(b) }})
+          </button>
+        </div>
+
+        <!-- CEFR Filter Tabs -->
+        <div class="px-3 py-2 border-b border-[#e4e4e7] bg-[#fdfdfc] flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+          <span class="text-xs font-medium text-[#71717a] shrink-0 mr-1">CEFR分级:</span>
+          <button
+            v-for="tab in cefrTabs"
+            :key="tab.value"
+            type="button"
+            @click="activeCefr = tab.value"
+            :class="[
+              'min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border cursor-pointer touch-manipulation',
+              activeCefr === tab.value
+                ? 'bg-amber-100/70 border-amber-500 text-amber-900 font-semibold'
+                : 'border-transparent text-[#71717a] hover:bg-[#f4f4f5]'
+            ]"
+          >
+            {{ tab.label }}
+          </button>
+        </div>
+
+        <!-- Box 5 Guard Alert Banner -->
+        <div
+          v-if="boxGuardAlert"
+          role="alert"
+          class="mx-4 mt-3 p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center justify-between gap-2 shadow-sm shrink-0"
+        >
+          <div class="flex items-center gap-2">
+            <AlertCircle class="w-4 h-4 text-amber-600 shrink-0" />
+            <span>{{ boxGuardAlert }}</span>
+          </div>
+          <button
+            type="button"
+            @click="boxGuardAlert = ''"
+            class="min-h-[44px] min-w-[44px] p-2 text-amber-700 hover:text-amber-900 flex items-center justify-center rounded-lg touch-manipulation cursor-pointer"
+            aria-label="关闭提示"
+          >
+            <X class="w-4 h-4" />
           </button>
         </div>
 
@@ -169,40 +208,57 @@
           <div
             v-for="item in filteredList"
             :key="item.id || item.word"
-            class="p-4 bg-white border border-[#e4e4e7] rounded-xl space-y-2 hover:border-blue-300 transition-colors"
+            class="p-4 bg-white border border-[#e4e4e7] rounded-xl space-y-2.5 hover:border-blue-300 transition-colors"
           >
             <!-- Word Header -->
-            <div class="flex items-start justify-between gap-2">
-              <div class="flex items-center gap-2 flex-wrap min-w-0">
-                <h3 class="font-serif text-base font-bold text-[#18181b] truncate">
-                  {{ item.word }}
-                </h3>
-                <!-- Audio pronunciation button -->
-                <button
-                  type="button"
-                  @click="playPronunciation(item.word)"
-                  class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer active:scale-95"
-                  :aria-label="'朗读发音 ' + item.word"
-                  title="朗读发音"
-                >
-                  <Volume2 class="w-4 h-4" />
-                </button>
-                <span v-if="item.phonetic || item.ipa" class="text-xs font-mono text-[#a1a1aa]">
-                  {{ item.phonetic || item.ipa }}
-                </span>
+            <div class="space-y-1.5">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2 flex-wrap min-w-0">
+                  <h3 class="font-serif text-base font-bold text-[#18181b] truncate">
+                    {{ item.word }}
+                  </h3>
+                  <!-- Audio pronunciation button -->
+                  <button
+                    type="button"
+                    @click="playPronunciation(item.word)"
+                    class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer active:scale-95 touch-manipulation"
+                    :aria-label="'朗读发音 ' + item.word"
+                    title="朗读发音"
+                  >
+                    <Volume2 class="w-4 h-4" />
+                  </button>
+                  <span v-if="item.phonetic || item.ipa" class="text-xs font-mono text-[#a1a1aa]">
+                    {{ item.phonetic || item.ipa }}
+                  </span>
+                </div>
+
+                <!-- Badges & Pills -->
+                <div class="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+                  <!-- Source badge -->
+                  <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#e4e4e7] bg-[#f4f4f5] text-[#52525b] shrink-0">
+                    {{ item.sourceType === 'ted' ? 'TED精讲' : 'HP原著' }}
+                  </span>
+                  <!-- CEFR badge -->
+                  <span :class="['text-[10px] font-mono px-1.5 py-0.5 rounded border font-semibold shrink-0', getCefrBadgeClass(resolveCefr(item))]">
+                    {{ resolveCefr(item) }}
+                  </span>
+                  <!-- Tag badge -->
+                  <span
+                    v-if="resolveTag(item)"
+                    :class="['text-[10px] font-mono px-1.5 py-0.5 rounded border shrink-0', getTagBadgeClass(resolveTag(item))]"
+                  >
+                    {{ resolveTag(item) }}
+                  </span>
+                  <!-- Box badge -->
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#2563eb] shrink-0">
+                    Box {{ item.box || 1 }}
+                  </span>
+                </div>
               </div>
 
-              <!-- Tag and Box Pills -->
-              <div class="flex items-center gap-1.5 shrink-0">
-                <span
-                  v-if="resolveTag(item)"
-                  :class="['text-[10px] font-mono px-1.5 py-0.5 rounded border shrink-0', getTagBadgeClass(resolveTag(item))]"
-                >
-                  {{ resolveTag(item) }}
-                </span>
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#2563eb] shrink-0">
-                  Box {{ item.box || 1 }}
-                </span>
+              <!-- Depth meter row -->
+              <div class="flex items-center justify-between pt-0.5">
+                <VocabDepthMeter :acquisition="item.acquisition" size="compact" />
               </div>
             </div>
 
@@ -222,19 +278,25 @@
                 {{ getBoxInterval(item.box || 1) }}
               </span>
 
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-1.5">
                 <button
                   type="button"
                   @click="promoteBox(item)"
-                  class="min-h-[44px] px-2.5 py-1 text-[11px] font-medium text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
-                  title="提升至下一个记忆盒"
+                  :class="[
+                    'min-h-[44px] px-2.5 py-1 text-[11px] font-medium rounded-lg transition-colors cursor-pointer touch-manipulation flex items-center gap-1',
+                    item.box === 4 && !item.acquisition?.l4
+                      ? 'text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200'
+                      : 'text-emerald-700 hover:bg-emerald-50'
+                  ]"
+                  :title="item.box === 4 && !item.acquisition?.l4 ? '升级至Box 5需先掌握L4产出' : '提升至下一个记忆盒'"
                 >
-                  熟记 +1
+                  <Lock v-if="item.box === 4 && !item.acquisition?.l4" class="w-3 h-3 text-amber-700" />
+                  <span>{{ item.box === 4 && !item.acquisition?.l4 ? '熟记 +1 (需L4)' : '熟记 +1' }}</span>
                 </button>
                 <button
                   type="button"
                   @click="deleteWord(item)"
-                  class="min-h-[44px] px-2.5 py-1 text-[11px] font-medium text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                  class="min-h-[44px] px-2.5 py-1 text-[11px] font-medium text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer touch-manipulation"
                   title="删除生词"
                 >
                   移除
@@ -251,11 +313,12 @@
 <script setup>
 import { ref, computed, onBeforeUnmount } from 'vue'
 import { useVocabStore } from '../stores/vocabStore.js'
-import { lookupWord } from '../data/dictionaryData.js'
+import { lookupWord, getCefrLevel } from '../data/dictionaryData.js'
 import { getTagBadgeClass } from '../utils/tagTheme.js'
 import { generateAnkiTSV, downloadAnkiFile } from '../utils/ankiExport.js'
 import { generatePrintableParchmentHTML } from '../utils/parchmentPdfGenerator.js'
 import { useBottomSheet } from '../composables/useBottomSheet.js'
+import VocabDepthMeter from './common/VocabDepthMeter.vue'
 import {
   BookMarked,
   Printer,
@@ -263,7 +326,9 @@ import {
   Trash2,
   X,
   Search,
-  Volume2
+  Volume2,
+  Lock,
+  AlertCircle
 } from 'lucide-vue-next'
 
 defineProps({
@@ -277,13 +342,50 @@ const emit = defineEmits(['close'])
 
 const vocabStore = useVocabStore()
 const activeBox = ref(null)
+const activeCefr = ref('all')
 const searchQuery = ref('')
 const scrollContainerRef = ref(null)
+const boxGuardAlert = ref('')
+let guardTimer = null
+
+const cefrTabs = [
+  { label: '全部', value: 'all' },
+  { label: 'A1/A2', value: 'A1/A2' },
+  { label: 'B1/B2', value: 'B1/B2' },
+  { label: 'C1', value: 'C1' }
+]
 
 function resolveTag(item) {
   if (item.tag) return item.tag
   const lookedUp = lookupWord(item.word)
   return lookedUp?.tag || '拓展生词'
+}
+
+function resolveCefr(item) {
+  if (item.cefrLevel) return item.cefrLevel
+  return getCefrLevel(item.word, resolveTag(item))
+}
+
+function getCefrBadgeClass(level) {
+  if (level === 'A1' || level === 'A2') {
+    return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+  }
+  if (level === 'B1' || level === 'B2') {
+    return 'bg-amber-50 text-amber-700 border-amber-200'
+  }
+  if (level === 'C1' || level === 'C2') {
+    return 'bg-purple-50 text-purple-700 border-purple-200'
+  }
+  return 'bg-amber-50 text-amber-700 border-amber-200'
+}
+
+function matchesCefr(item, filter) {
+  if (!filter || filter === 'all') return true
+  const lvl = resolveCefr(item)
+  if (filter === 'A1/A2') return lvl === 'A1' || lvl === 'A2'
+  if (filter === 'B1/B2') return lvl === 'B1' || lvl === 'B2'
+  if (filter === 'C1') return lvl === 'C1' || lvl === 'C2'
+  return true
 }
 
 function handleClose() {
@@ -316,6 +418,7 @@ function handleContentTouchMove(e) {
 
 function playPronunciation(word) {
   if (!word) return
+  vocabStore.recordAcquisition(word, 'l1')
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     try {
       window.speechSynthesis.cancel()
@@ -331,6 +434,9 @@ const filteredList = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
   return vocabStore.vocabList.filter((item) => {
     if (activeBox.value !== null && (item.box || 1) !== activeBox.value) {
+      return false
+    }
+    if (!matchesCefr(item, activeCefr.value)) {
       return false
     }
     if (!q) return true
@@ -350,7 +456,16 @@ function getBoxInterval(box) {
 }
 
 function promoteBox(item) {
-  vocabStore.promoteBox(item)
+  const res = vocabStore.promoteBox(item)
+  if (res && !res.promoted && res.reason === 'NEED_L4_PRODUCTION') {
+    boxGuardAlert.value = res.message || '需完成听写拼写或造句跟读(L4)方可进入永久记忆盒(Box 5)'
+    if (guardTimer) clearTimeout(guardTimer)
+    guardTimer = setTimeout(() => {
+      boxGuardAlert.value = ''
+    }, 4000)
+    return
+  }
+  boxGuardAlert.value = ''
 }
 
 function deleteWord(item) {
@@ -386,6 +501,9 @@ function handlePrintCards() {
 }
 
 onBeforeUnmount(() => {
+  if (guardTimer) {
+    clearTimeout(guardTimer)
+  }
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     try {
       window.speechSynthesis.cancel()
