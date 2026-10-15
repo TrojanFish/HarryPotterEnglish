@@ -110,6 +110,8 @@ test('vocabStore promotes box, deletes word, and clears all', () => {
   vocabStore.promoteBox(snitch)
   assert.strictEqual(snitch.box, 3)
   vocabStore.promoteBox(snitch)
+  assert.strictEqual(snitch.box, 4)
+  vocabStore.recordAcquisition('snitch', 'l4')
   vocabStore.promoteBox(snitch)
   assert.strictEqual(snitch.box, 5)
   // Max box is 5
