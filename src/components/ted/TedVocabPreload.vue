@@ -229,7 +229,8 @@ function playVocabAudio(vocab) {
     if (audioUrl && typeof Audio !== 'undefined') {
       try {
         currentAudio = new Audio(audioUrl)
-        currentAudio.play().catch(() => {
+        currentAudio.play().catch((err) => {
+          console.debug('[TedVocabPreload] Audio playback failed, falling back to speech synthesis:', err?.message)
           fallbackSpeech(vocab.word)
         })
         return
