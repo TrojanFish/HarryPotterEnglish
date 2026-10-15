@@ -16,9 +16,9 @@
             v-for="boxNum in 5"
             :key="boxNum"
             type="button"
-            @click="currentBox = boxNum"
+            @click="selectBox(boxNum)"
             :class="[
-              'py-1.5 px-1 rounded-lg text-center transition-colors touch-manipulation cursor-pointer',
+              'min-h-[44px] py-1.5 px-1 rounded-lg text-center transition-colors touch-manipulation cursor-pointer flex items-center justify-center',
               currentBox === boxNum
                 ? 'bg-[#18181b] text-white font-medium'
                 : 'bg-white border border-[#e4e4e7] text-[#71717a] hover:bg-[#f4f4f5]'
@@ -34,7 +34,7 @@
       <div v-if="currentCard" class="space-y-4">
         <!-- 3D Flashcard Container -->
         <div
-          class="perspective w-full h-56 sm:h-64 cursor-pointer select-none"
+          class="perspective w-full h-64 sm:h-72 cursor-pointer select-none"
           @click="flipCard"
         >
           <div
@@ -60,16 +60,39 @@
 
             <!-- Back of Card -->
             <div
-              class="absolute inset-0 p-5 sm:p-6 bg-[#f8f8f6] border border-[#2563eb] rounded-2xl flex flex-col items-center justify-center text-center space-y-2 backface-hidden rotate-y-180"
+              class="absolute inset-0 p-4 sm:p-6 bg-[#f8f8f6] border border-[#2563eb] rounded-2xl flex flex-col items-center justify-center text-center space-y-2.5 backface-hidden rotate-y-180 overflow-y-auto"
             >
               <span class="px-2 py-0.5 rounded bg-blue-100 text-[#2563eb] text-[10px] font-mono font-medium">
                 Box {{ currentCard.box || 1 }}
               </span>
-              <h3 class="font-bold text-lg sm:text-xl text-[#18181b]">
+              <h3 class="font-bold text-base sm:text-lg text-[#18181b]">
                 {{ currentCard.definition }}
               </h3>
+              <div class="w-full pt-1">
+                <VocabDepthMeter :acquisition="currentCard.acquisition" size="full" />
+              </div>
             </div>
           </div>
+        </div>
+
+        <!-- Box 5 L4 Production Guard Notice Banner -->
+        <div
+          v-if="l4Notice"
+          role="alert"
+          class="p-3 bg-amber-50 border border-amber-300 text-amber-900 rounded-xl text-xs flex items-center justify-between gap-2 shadow-sm"
+        >
+          <div class="flex items-center gap-2">
+            <AlertCircle class="w-4 h-4 text-amber-600 shrink-0" />
+            <span>{{ l4Notice }}</span>
+          </div>
+          <button
+            type="button"
+            @click="l4Notice = ''"
+            class="min-h-[44px] min-w-[44px] p-2 text-amber-700 hover:text-amber-900 flex items-center justify-center rounded-lg touch-manipulation cursor-pointer"
+            aria-label="关闭提示"
+          >
+            <X class="w-4 h-4" />
+          </button>
         </div>
 
         <!-- Leitner Review Actions -->
@@ -100,7 +123,7 @@
               type="button"
               :disabled="currentIndex === 0"
               @click="prevCard"
-              class="min-h-[36px] px-3 py-1 border border-[#e4e4e7] rounded-lg hover:bg-[#f4f4f5] disabled:opacity-40 cursor-pointer"
+              class="min-h-[44px] min-w-[44px] px-3 py-1 border border-[#e4e4e7] rounded-lg hover:bg-[#f4f4f5] disabled:opacity-40 cursor-pointer touch-manipulation flex items-center justify-center"
             >
               上一张
             </button>
@@ -108,7 +131,7 @@
               type="button"
               :disabled="currentIndex >= activeList.length - 1"
               @click="nextCard"
-              class="min-h-[36px] px-3 py-1 border border-[#e4e4e7] rounded-lg hover:bg-[#f4f4f5] disabled:opacity-40 cursor-pointer"
+              class="min-h-[44px] min-w-[44px] px-3 py-1 border border-[#e4e4e7] rounded-lg hover:bg-[#f4f4f5] disabled:opacity-40 cursor-pointer touch-manipulation flex items-center justify-center"
             >
               下一张
             </button>
@@ -130,14 +153,16 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { BookMarked, Check, X } from 'lucide-vue-next'
+import { BookMarked, Check, X, AlertCircle } from 'lucide-vue-next'
 import { useVocabStore } from '../../stores/vocabStore.js'
+import VocabDepthMeter from '../common/VocabDepthMeter.vue'
 
 const vocabStore = useVocabStore()
 
 const currentBox = ref(1)
 const currentIndex = ref(0)
 const isFlipped = ref(false)
+const l4Notice = ref('')
 
 const activeList = computed(() => {
   return vocabStore.vocabList || []
@@ -152,24 +177,43 @@ function getBoxCount(box) {
   return (vocabStore.vocabList || []).filter(w => (w.box || 1) === box).length
 }
 
+function selectBox(boxNum) {
+  currentBox.value = boxNum
+  l4Notice.value = ''
+}
+
 function flipCard() {
   isFlipped.value = !isFlipped.value
 }
 
 function handlePromote() {
-  if (currentCard.value) {
-    vocabStore.promoteBox(currentCard.value)
+  if (!currentCard.value) return
+
+  // 1. Mark L3 acquisition on successful active recall
+  vocabStore.recordAcquisition(currentCard.value.word, 'l3')
+
+  // 2. Attempt Leitner box promotion
+  const res = vocabStore.promoteBox(currentCard.value)
+
+  // 3. Handle Box 5 Gate Guard (NEED_L4_PRODUCTION)
+  if (res && !res.promoted && res.reason === 'NEED_L4_PRODUCTION') {
+    l4Notice.value = '已达 Box 4！在听写或造句跟读中正确拼写(L4)后即可晋升 Box 5 永久记忆盒。'
+    return
   }
+
+  l4Notice.value = ''
   isFlipped.value = false
   nextCard()
 }
 
 function handleForgot() {
+  l4Notice.value = ''
   isFlipped.value = false
   nextCard()
 }
 
 function nextCard() {
+  l4Notice.value = ''
   if (currentIndex.value < activeList.value.length - 1) {
     currentIndex.value += 1
   } else {
@@ -178,11 +222,11 @@ function nextCard() {
 }
 
 function prevCard() {
+  l4Notice.value = ''
   if (currentIndex.value > 0) {
     currentIndex.value -= 1
   }
 }
-
 </script>
 
 <style scoped>
