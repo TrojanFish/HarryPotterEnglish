@@ -90,6 +90,19 @@
             </p>
           </div>
         </div>
+
+        <!-- Mobile 前往任务 CTA -->
+        <div class="pt-4 pb-2">
+          <button
+            type="button"
+            @click="goToStep(3)"
+            class="w-full min-h-[44px] min-w-[44px] px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer shadow-none touch-manipulation"
+            aria-label="前往任务演练"
+          >
+            <span>前往任务</span>
+            <ArrowRight class="w-4 h-4 stroke-[2.2]" aria-hidden="true" />
+          </button>
+        </div>
       </div>
 
       <!-- Video Control Bar (Fixed/sticky bottom with dark theme bg-[#1e1610]/90) -->
