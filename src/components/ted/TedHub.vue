@@ -57,7 +57,9 @@
     <!-- Mobile & Tablet Slide-over Drawer -->
     <div
       v-if="isTalkDrawerOpen"
-      class="fixed inset-0 z-50 flex lg:hidden bg-stone-900/40 backdrop-blur-xs"
+      class="fixed inset-0 z-50 flex lg:hidden bg-stone-900/40 backdrop-blur-xs outline-none"
+      tabindex="-1"
+      @keydown.esc="isTalkDrawerOpen = false"
       @click.self="isTalkDrawerOpen = false"
     >
       <div class="w-4/5 max-w-xs h-full bg-[#fbf9f5] shadow-xl flex flex-col border-r border-[#e8ddd0]">
