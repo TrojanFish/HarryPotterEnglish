@@ -37,7 +37,8 @@ describe('TabletRailVue Component Tests', () => {
 
     assert.ok(source.includes('lucide-vue-next'), 'Must import icons from lucide-vue-next')
     assert.ok(!source.includes('lucide-react'), 'Must not import from lucide-react')
-    assert.ok(source.includes('Sparkles'), 'Must use Sparkles icon for brand & player_reader')
+    assert.ok(source.includes('Sparkles'), 'Must use Sparkles icon for brand')
+    assert.ok(source.includes('Headphones'), 'Must use Headphones icon for player_reader')
     assert.ok(source.includes('Library'), 'Must use Library icon for bookshelf')
     assert.ok(source.includes('Video'), 'Must use Video icon for ted')
     assert.ok(source.includes('EyeOff'), 'Must use EyeOff icon for player_blind')
@@ -104,6 +105,7 @@ describe('TabletRailVue Component Tests', () => {
     assert.ok(source.includes('font-mono'), 'Must use font-mono for streak badge')
     assert.ok(source.includes('text-orange-600'), 'Must use text-orange-600 for streak badge')
     assert.ok(source.includes('Flame'), 'Must render Flame icon for streak badge')
+    assert.ok(source.includes('min-w-[44px] min-h-[44px]'), 'Must enforce min-w-[44px] min-h-[44px] touch target on streak button')
   })
 
   it('consumes stores and exposes required emits and props', () => {

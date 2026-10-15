@@ -52,7 +52,7 @@
     <button
       type="button"
       @click="handleStreakClick"
-      class="flex flex-col items-center cursor-pointer p-1.5 rounded-xl hover:bg-white text-orange-600 font-mono font-bold text-xs touch-manipulation transition-transform active:scale-95"
+      class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer p-1.5 rounded-xl hover:bg-white text-orange-600 font-mono font-bold text-xs touch-manipulation transition-transform active:scale-95"
       :title="`连续打卡 ${streakDays} 天`"
       :aria-label="`连续打卡 ${streakDays} 天`"
     >
@@ -66,6 +66,7 @@
 import { computed } from 'vue'
 import {
   Sparkles,
+  Headphones,
   Library,
   Video,
   EyeOff,
@@ -122,7 +123,7 @@ const navItems = [
   {
     id: 'player_reader',
     title: '原著精听',
-    icon: Sparkles,
+    icon: Headphones,
     view: 'player',
     studyMode: 'normal'
   },
