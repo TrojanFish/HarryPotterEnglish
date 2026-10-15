@@ -105,7 +105,8 @@ export const useTedStore = defineStore('ted', {
 
     markVocabListened(word) {
       if (!word) return
-      this.listenedVocabIds.add(word)
+      const clean = typeof word === 'string' ? word.trim().toLowerCase() : word
+      this.listenedVocabIds.add(clean)
       const totalVocab = this.currentTalk?.vocabSet?.length || 0
       if (totalVocab > 0) {
         this.vocabUnlocked = this.listenedVocabIds.size >= totalVocab
@@ -113,10 +114,11 @@ export const useTedStore = defineStore('ted', {
     },
 
     goToStep(step) {
-      if (step === 2 && !this.vocabUnlocked) {
+      const targetStep = Math.max(1, Math.min(4, Math.floor(Number(step) || 1)))
+      if (targetStep > 1 && !this.vocabUnlocked) {
         return
       }
-      this.currentStep = step
+      this.currentStep = targetStep
     },
 
     toggleBlindMode() {
