@@ -64,7 +64,7 @@
                   <button
                     type="button"
                     @click="playPronunciation"
-                    class="min-h-[44px] min-w-[44px] p-2 rounded-xl border border-[#e4e4e7] flex items-center justify-center transition-colors cursor-pointer text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] active:scale-95"
+                    class="min-h-[44px] min-w-[44px] p-2 rounded-xl border border-[#e4e4e7] flex items-center justify-center transition-colors cursor-pointer text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] active:scale-95 touch-manipulation"
                     :class="{ 'bg-amber-50 text-amber-800 border-amber-300': isPlayingAudio }"
                     aria-label="朗读发音"
                   >
@@ -79,6 +79,14 @@
                     class="text-stone-500 font-mono text-sm"
                   >
                     {{ wordData.phonetic }}
+                  </span>
+
+                  <!-- CEFR badge -->
+                  <span
+                    v-if="cefrLevel"
+                    :class="['px-2 py-0.5 rounded text-xs font-semibold border font-mono', getCefrBadgeClass(cefrLevel)]"
+                  >
+                    CEFR {{ cefrLevel }}
                   </span>
 
                   <!-- Exam tag badge -->
@@ -96,6 +104,14 @@
                   >
                     {{ wordData.pos }}
                   </span>
+
+                  <!-- Leitner Box badge (if stored) -->
+                  <span
+                    v-if="storedEntry"
+                    class="px-2 py-0.5 rounded text-xs font-mono font-medium bg-blue-50 text-blue-700 border border-blue-200"
+                  >
+                    Box {{ storedEntry.box || 1 }}
+                  </span>
                 </div>
               </div>
 
@@ -103,7 +119,7 @@
               <button
                 type="button"
                 @click="handleClose"
-                class="min-h-[44px] min-w-[44px] p-2 rounded-xl text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] border border-[#e4e4e7] flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                class="min-h-[44px] min-w-[44px] p-2 rounded-xl text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] border border-[#e4e4e7] flex items-center justify-center transition-colors cursor-pointer shrink-0 touch-manipulation"
                 aria-label="关闭单词弹窗"
               >
                 <X class="w-5 h-5" />
@@ -141,6 +157,25 @@
                   "{{ contextQuote }}"
                 </p>
               </div>
+
+              <!-- Vocab 6D Learning Depth Card (Rendered when word is in vocabStore) -->
+              <div
+                v-if="storedEntry"
+                class="p-4 bg-white border border-[#e4e4e7] rounded-xl space-y-3"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="text-xs font-semibold text-stone-400 uppercase tracking-wider">
+                    六维词汇习得深度
+                  </div>
+                  <span class="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                    Box {{ storedEntry.box || 1 }}
+                  </span>
+                </div>
+                <VocabDepthMeter
+                  :acquisition="storedEntry.acquisition"
+                  size="full"
+                />
+              </div>
             </div>
 
             <!-- Footer: Vocab Toggle Button -->
@@ -148,7 +183,7 @@
               <button
                 type="button"
                 @click="handleToggleVocab"
-                class="w-full min-h-[48px] px-4 rounded-xl font-medium text-sm flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] border"
+                class="w-full min-h-[48px] px-4 rounded-xl font-medium text-sm flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] border touch-manipulation"
                 :class="isSaved
                   ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
                   : 'bg-amber-500 text-stone-900 border-amber-600 hover:bg-amber-400 font-semibold'"
@@ -173,10 +208,11 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { Volume2, BookMarked, Check, X } from 'lucide-vue-next'
-import { lookupWord } from '../../data/dictionaryData.js'
+import { lookupWord, getCefrLevel, cleanWordToken } from '../../data/dictionaryData.js'
 import { getTagBadgeClass } from '../../utils/tagTheme.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useBottomSheet } from '../../composables/useBottomSheet.js'
+import VocabDepthMeter from './VocabDepthMeter.vue'
 
 const props = defineProps({
   isOpen: {
@@ -204,11 +240,35 @@ const wordData = computed(() => {
   return lookupWord(props.word)
 })
 
-const isSaved = computed(() => {
+const cefrLevel = computed(() => {
+  if (wordData.value?.cefrLevel) return wordData.value.cefrLevel
   const target = wordData.value?.word || props.word
-  if (!target) return false
-  return vocabStore.hasWord(target)
+  const tag = wordData.value?.tag
+  return getCefrLevel(target, tag) || 'B1'
 })
+
+function getCefrBadgeClass(level) {
+  if (level === 'A1' || level === 'A2') {
+    return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+  }
+  if (level === 'B1' || level === 'B2') {
+    return 'bg-amber-50 text-amber-700 border-amber-200'
+  }
+  if (level === 'C1' || level === 'C2') {
+    return 'bg-purple-50 text-purple-700 border-purple-200'
+  }
+  return 'bg-amber-50 text-amber-700 border-amber-200'
+}
+
+const storedEntry = computed(() => {
+  const target = wordData.value?.word || props.word
+  if (!target) return null
+  const clean = cleanWordToken(target)
+  if (!clean) return null
+  return vocabStore.vocabList.find((w) => cleanWordToken(w.word) === clean) || null
+})
+
+const isSaved = computed(() => !!storedEntry.value)
 
 function cancelAudio() {
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -255,6 +315,11 @@ function handleContentTouchMove(e) {
 function playPronunciation() {
   const textToSpeak = wordData.value?.word || props.word
   if (!textToSpeak) return
+
+  // Trigger L1 recognition acquisition if word is in vocabStore
+  if (vocabStore.hasWord(textToSpeak)) {
+    vocabStore.recordAcquisition(textToSpeak, 'l1')
+  }
 
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     try {
