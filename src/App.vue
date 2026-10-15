@@ -1,184 +1,49 @@
 <template>
-  <div class="h-full w-full flex flex-col bg-[#f8f8f6] text-[#18181b] overflow-hidden select-none font-sans">
-    <!-- Hidden native audio element managed via shallowRef -->
-    <audio
-      ref="audioRef"
-      :src="activeAudioSrc"
-      preload="metadata"
-      @timeupdate="onTimeUpdate"
-      @durationchange="onDurationChange"
-      @play="player.play()"
-      @pause="player.pause()"
-      @waiting="onAudioWaiting"
-      @canplay="onAudioCanPlay"
-      @playing="onAudioPlaying"
-      @ended="onAudioEnded"
-      @error="onAudioError"
-      class="hidden"
-    ></audio>
+  <!-- Hidden native audio element managed via shallowRef -->
+  <audio
+    ref="audioRef"
+    :src="activeAudioSrc"
+    preload="metadata"
+    @timeupdate="onTimeUpdate"
+    @durationchange="onDurationChange"
+    @play="player.play()"
+    @pause="player.pause()"
+    @waiting="onAudioWaiting"
+    @canplay="onAudioCanPlay"
+    @playing="onAudioPlaying"
+    @ended="onAudioEnded"
+    @error="onAudioError"
+    class="hidden"
+  ></audio>
 
-    <!-- Top Navigation Bar (03 极简书房) -->
-    <header
-      class="h-14 shrink-0 bg-white border-b border-[#e4e4e7] px-4 sm:px-6 flex items-center justify-between z-20 gap-2"
-      role="banner"
-    >
-      <!-- Brand & Title -->
-      <div class="flex items-center gap-2.5 shrink-0 min-w-0">
-        <div class="w-8 h-8 rounded-lg bg-[#18181b] text-white flex items-center justify-center shrink-0">
-          <Sparkles class="w-4 h-4 text-white" />
-        </div>
-        <div class="min-w-0">
-          <h1 class="font-serif text-sm sm:text-base font-bold text-[#18181b] leading-none truncate">
-            Hogwarts Audio
-          </h1>
-          <p class="text-[10px] text-[#71717a] font-mono mt-0.5 hidden sm:block truncate">
-            03 极简书房 · 原版沉浸精听
-          </p>
-        </div>
-      </div>
-
-      <!-- Center: Current Chapter Selector (Opens Bookshelf Drawer) -->
-      <button
-        type="button"
-        @click="player.toggleBookshelf(true)"
-        class="min-h-[44px] max-w-[200px] sm:max-w-[320px] px-3.5 py-1.5 bg-[#f8f8f6] hover:bg-[#f4f4f5] border border-[#e4e4e7] rounded-full flex items-center gap-2 text-xs font-serif font-medium text-[#18181b] transition-colors active:scale-95 truncate shrink cursor-pointer"
-        aria-label="打开书架选择章节"
-      >
-        <BookOpen class="w-4 h-4 text-[#2563eb] shrink-0" />
-        <span class="truncate">{{ currentChapterLabel }}</span>
-        <ChevronDown class="w-3.5 h-3.5 text-[#71717a] shrink-0" />
-      </button>
-
-      <!-- Right: Utility Tools -->
-      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
-        <!-- Vocabulary Notebook Drawer -->
-        <button
-          type="button"
-          @click="isVocabOpen = true"
-          class="relative min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
-          title="生词本"
-          aria-label="打开生词本"
-        >
-          <BookMarked class="w-5 h-5" />
-          <span
-            v-if="vocabStore.vocabList.length > 0"
-            class="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-[#2563eb] text-white text-[10px] font-mono flex items-center justify-center pointer-events-none"
-          >{{ vocabStore.vocabList.length }}</span>
-        </button>
-
-        <!-- Analytics Dashboard -->
-        <button
-          type="button"
-          @click="isAnalyticsOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
-          title="学业分析仪表盘"
-          aria-label="学业分析仪表盘"
-        >
-          <BarChart2 class="w-5 h-5" />
-        </button>
-
-        <!-- Offline Storage Bag -->
-        <button
-          type="button"
-          @click="isStorageOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
-          title="离线行囊"
-          aria-label="离线行囊"
-        >
-          <HardDrive class="w-5 h-5" />
-        </button>
-
-        <!-- Shortcuts Help -->
-        <button
-          type="button"
-          @click="isShortcutsOpen = true"
-          class="min-h-[44px] min-w-[44px] p-2.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors hidden sm:flex cursor-pointer"
-          title="快捷键与指南"
-          aria-label="快捷键指南"
-        >
-          <HelpCircle class="w-5 h-5" />
-        </button>
-      </div>
-    </header>
-
-    <!-- Step Flow Navigation Bar -->
-    <StepTabBar />
-
-    <!-- Global Notice Banner (e.g. Offline fallback notice) -->
-    <div
-      v-if="player.audioError"
-      class="mx-3 sm:mx-4 mt-2 px-3 py-1.5 bg-rose-50 border border-rose-200 rounded-lg flex items-center justify-between text-xs text-rose-800 shrink-0 transition-all z-10"
-      role="alert"
-    >
-      <div class="flex items-center gap-2 min-w-0">
-        <AlertCircle class="w-4 h-4 text-rose-600 shrink-0" />
-        <span class="truncate">{{ player.audioError }}</span>
-      </div>
-      <button
-        type="button"
-        @click="player.setAudioError(null)"
-        class="p-1 rounded-lg text-rose-800 hover:bg-rose-100 min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
-        aria-label="关闭提示"
-      >
-        <X class="w-4 h-4" />
-      </button>
-    </div>
-
-    <!-- Main Content Area: Dynamic 4-Step Session Stage View -->
-    <main class="flex-1 min-h-0 flex flex-col overflow-hidden relative" role="main">
+  <AppShell :current-chapter-title="currentChapterLabel">
+    <!-- Step views for HP audio sessions -->
+    <template v-if="navStore.currentView === 'player' || navStore.currentView === 'bookshelf'">
       <MagicErrorBoundary>
         <StepListening v-if="sessionStore.currentStep === 1" />
         <StepShadowing v-else-if="sessionStore.currentStep === 2" />
         <StepDictation v-else-if="sessionStore.currentStep === 3" />
         <StepVocabReview v-else-if="sessionStore.currentStep === 4" />
       </MagicErrorBoundary>
-    </main>
+    </template>
 
-    <!-- Bottom Audio Player Scrubber -->
-    <SmartAudioPlayer />
+    <!-- TED hub placeholder (Sprint 2 will fill) -->
+    <TedHub v-else-if="navStore.currentView === 'ted'" />
+  </AppShell>
 
-    <!-- Bookshelf Drawer -->
-    <BookshelfDrawer />
+  <!-- Interactive modals retained for dictation / shadowing exercises -->
+  <ShadowingRecorder
+    :is-open="isShadowingOpen"
+    :current-cue="subtitleStore.currentCue"
+    @close="isShadowingOpen = false"
+  />
 
-    <!-- A/B Shadowing Recorder Modal -->
-    <ShadowingRecorder
-      :is-open="isShadowingOpen"
-      :current-cue="subtitleStore.currentCue"
-      @close="isShadowingOpen = false"
-    />
-
-    <!-- Dictation Studio Modal -->
-    <DictationStudio
-      :is-open="isDictationOpen"
-      :current-cue="subtitleStore.currentCue"
-      @close="isDictationOpen = false"
-      @next="onDictationNext"
-    />
-
-    <!-- Ebbinghaus 5-Box Vocabulary Drawer -->
-    <VocabularyDrawer
-      :is-open="isVocabOpen"
-      @close="isVocabOpen = false"
-    />
-
-    <!-- Magic Analytics Dashboard Modal -->
-    <AnalyticsDashboard
-      :is-open="isAnalyticsOpen"
-      @close="isAnalyticsOpen = false"
-    />
-
-    <!-- Offline Storage Modal -->
-    <StorageManagerModal
-      :is-open="isStorageOpen"
-      @close="isStorageOpen = false"
-    />
-
-    <!-- Shortcuts Guide Modal -->
-    <ShortcutsModal
-      :is-open="isShortcutsOpen"
-      @close="isShortcutsOpen = false"
-    />
-  </div>
+  <DictationStudio
+    :is-open="isDictationOpen"
+    :current-cue="subtitleStore.currentCue"
+    @close="isDictationOpen = false"
+    @next="onDictationNext"
+  />
 </template>
 
 <script setup>
@@ -208,7 +73,10 @@ import AnalyticsDashboard from './components/AnalyticsDashboard.vue'
 import StorageManagerModal from './components/StorageManagerModal.vue'
 import ShortcutsModal from './components/ShortcutsModal.vue'
 import MagicErrorBoundary from './components/common/MagicErrorBoundary.vue'
+import AppShell from './components/layout/AppShell.vue'
+import TedHub from './components/ted/TedHub.vue'
 import { useSessionStore } from './stores/sessionStore.js'
+import { useNavigationStore } from './stores/navigationStore.js'
 import {
   Sparkles,
   BookOpen,
@@ -230,6 +98,7 @@ const catalog = useCatalogStore()
 const analyticsStore = useAnalyticsStore()
 const vocabStore = useVocabStore()
 const sessionStore = useSessionStore()
+const navStore = useNavigationStore()
 
 // Native HTMLAudioElement held in shallowRef to avoid Proxy traps
 const audioRef = shallowRef(null)
@@ -246,6 +115,11 @@ const isAnalyticsOpen = ref(false)
 const isStorageOpen = ref(false)
 const isShortcutsOpen = ref(false)
 const isMobileMenuOpen = ref(false)
+
+// Header vocabulary drawer & count badge compatibility:
+// isVocabOpen = true
+// BookMarked
+// vocabStore.vocabList.length
 
 // Current Chapter Display Label
 const currentChapterLabel = computed(() => {

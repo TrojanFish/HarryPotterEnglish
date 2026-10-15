@@ -3,7 +3,7 @@
     <!-- Top bar: mobile only (hidden on md and up) -->
     <MobileTopBarVue
       class="md:hidden"
-      :current-chapter-title="currentChapterTitle"
+      :current-chapter-title="computedChapterTitle"
       @open-chapter-drawer="handleOpenBookshelf"
       @open-vocab="isVocabOpen = true"
       @open-analytics="isAnalyticsOpen = true"
@@ -60,7 +60,7 @@
     <MobileBottomNavVue class="md:hidden" />
 
     <!-- Persistent smart audio player bar -->
-    <SmartAudioPlayer />
+    <SmartAudioPlayer class="mb-[calc(56px+env(safe-area-inset-bottom,0px))] md:mb-0" />
 
     <!-- Bookshelf Drawer -->
     <BookshelfDrawer />
@@ -129,7 +129,7 @@ const isAnalyticsOpen = ref(false)
 const isStorageOpen = ref(false)
 const isShortcutsOpen = ref(false)
 
-const currentChapterTitle = computed(() => {
+const computedChapterTitle = computed(() => {
   if (props.currentChapterTitle) {
     return props.currentChapterTitle
   }
