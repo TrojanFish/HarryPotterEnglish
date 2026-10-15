@@ -501,6 +501,68 @@ app.get(['/api/stream/audio/*', '/api/media/*'], async (req, res) => {
   }
 });
 
+// 3b. Video streaming endpoint with Range support, anti-sniffing & inline protection
+app.get('/api/stream/video/*', async (req, res) => {
+  if (!s3Client) {
+    return res.status(503).json({ error: 'R2 storage credentials not configured' });
+  }
+
+  const key = req.params[0];
+  const contentType = /\.webm$/i.test(key) ? 'video/webm' : 'video/mp4';
+
+  // Anti-leech: verify Referer header if present
+  const referer = req.headers.referer || req.headers.origin;
+  if (referer) {
+    try {
+      const refUrl = new URL(referer);
+      const host = req.headers.host;
+      const isAllowed = !host || refUrl.host === host || refUrl.hostname === 'localhost' || refUrl.hostname === '127.0.0.1';
+      if (!isAllowed) {
+        return res.status(403).json({ error: 'Forbidden: unauthorized media referer' });
+      }
+    } catch {}
+  }
+
+  try {
+    const range = req.headers.range;
+
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+      Range: range,
+    });
+
+    const response = await s3Client.send(command);
+
+    res.set({
+      'Content-Type': contentType,
+      'Content-Disposition': 'inline; filename="stream.dat"',
+      'X-Content-Type-Options': 'nosniff',
+      'Accept-Ranges': 'bytes',
+      'Content-Length': response.ContentLength,
+      'Content-Range': response.ContentRange,
+      'Cache-Control': 'public, max-age=2592000, immutable',
+    });
+
+    res.status(range ? 206 : 200);
+
+    // Stream video body with connection cleanup
+    const stream = response.Body;
+    stream.pipe(res);
+
+    // If client cancels/disconnects early, destroy stream to free resources immediately
+    res.on('close', () => {
+      if (stream.destroy) stream.destroy();
+    });
+  } catch (err) {
+    console.error(`[R2 Error] Video stream error ${key}:`, err.message);
+    res.status(err.$metadata?.httpStatusCode || 500).json({ 
+      error: 'Video not found in R2', 
+      key 
+    });
+  }
+});
+
 // 4. Generic raw media endpoint (cover.jpg, png) with strong browser cache
 app.get('/api/raw/*', async (req, res) => {
   const key = req.params[0];
