@@ -72,7 +72,8 @@ describe('Offline Dictionary Data and lookupWord', () => {
       phonetic: '',
       pos: '',
       definition: '点击收录至生词本',
-      tag: '拓展生词'
+      tag: '拓展生词',
+      cefrLevel: 'B1'
     })
   })
 

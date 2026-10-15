@@ -519,43 +519,92 @@ export function getLemmaCandidates(word) {
   return candidates
 }
 
+export const CEFR_TAG_MAP = {
+  '小学基础': 'A1',
+  '中考核心': 'A2',
+  '高考重点': 'B1',
+  '四级高频': 'B2',
+  '六级进阶': 'C1',
+  '雅思核心': 'C1',
+  '魔法专有': 'B2',
+  '拓展生词': 'B1'
+}
+
+/**
+ * Derive CEFR level ('A1' | 'A2' | 'B1' | 'B2' | 'C1') from exam tag or word lookup.
+ * @param {string} [word]
+ * @param {string} [tag]
+ * @returns {'A1' | 'A2' | 'B1' | 'B2' | 'C1'}
+ */
+export function getCefrLevel(word, tag) {
+  let resolvedTag = tag
+  if (!resolvedTag && word) {
+    const clean = cleanWordToken(word)
+    if (clean) {
+      if (GRADED_DICTIONARY[clean]) {
+        resolvedTag = GRADED_DICTIONARY[clean][3]
+      } else if (DICTIONARY[clean]) {
+        resolvedTag = DICTIONARY[clean].tag
+      } else if (HP_LORE_DICTIONARY[clean]) {
+        resolvedTag = '魔法专有'
+      }
+    }
+  }
+
+  if (resolvedTag && CEFR_TAG_MAP[resolvedTag]) {
+    return CEFR_TAG_MAP[resolvedTag]
+  }
+
+  if (resolvedTag && (resolvedTag.includes('魔法') || resolvedTag.includes('魁地奇') || resolvedTag.includes('魔药'))) {
+    return 'B2'
+  }
+
+  return 'B1'
+}
+
 /**
  * Lookup a word in the offline dictionary.
  * Cleans punctuation, attempts inflection reduction, and returns entry or fallback.
  * @param {string} rawWord
- * @returns {{ word: string, phonetic: string, pos: string, definition: string, tag: string }}
+ * @returns {{ word: string, phonetic: string, pos: string, definition: string, tag: string, cefrLevel: string }}
  */
 export function lookupWord(rawWord) {
   const clean = cleanWordToken(rawWord)
 
   if (!clean) {
+    const tag = '拓展生词'
     return {
       word: typeof rawWord === 'string' ? rawWord.trim() : '',
       phonetic: '',
       pos: '',
       definition: '点击收录至生词本',
-      tag: '拓展生词'
+      tag,
+      cefrLevel: getCefrLevel(rawWord, tag)
     }
   }
 
   // 1. Exact match in DICTIONARY (overlay graded tag if available)
   if (DICTIONARY[clean]) {
     const graded = GRADED_DICTIONARY[clean]
+    const tag = graded ? graded[3] : DICTIONARY[clean].tag
     return {
       ...DICTIONARY[clean],
-      tag: graded ? graded[3] : DICTIONARY[clean].tag
+      tag,
+      cefrLevel: getCefrLevel(clean, tag)
     }
   }
 
   // 2. Exact match in GRADED_DICTIONARY
   if (GRADED_DICTIONARY[clean]) {
     const tuple = GRADED_DICTIONARY[clean]
+    const tag = tuple[3] || '拓展生词'
     return {
       word: clean,
       phonetic: tuple[0] || '',
       pos: tuple[1] || '',
       definition: tuple[2] || '',
-      tag: tuple[3] || '拓展生词'
+      tag,
+      cefrLevel: getCefrLevel(clean, tag)
     }
   }
 
@@ -564,20 +613,24 @@ export function lookupWord(rawWord) {
   for (const cand of candidates) {
     if (DICTIONARY[cand]) {
       const graded = GRADED_DICTIONARY[cand]
+      const tag = graded ? graded[3] : DICTIONARY[cand].tag
       return {
         ...DICTIONARY[cand],
         word: DICTIONARY[cand].word || cand,
-        tag: graded ? graded[3] : DICTIONARY[cand].tag
+        tag,
+        cefrLevel: getCefrLevel(cand, tag)
       }
     }
     if (GRADED_DICTIONARY[cand]) {
       const tuple = GRADED_DICTIONARY[cand]
+      const tag = tuple[3] || '拓展生词'
       return {
         word: cand,
         phonetic: tuple[0] || '',
         pos: tuple[1] || '',
         definition: tuple[2] || '',
-        tag: tuple[3] || '拓展生词'
+        tag,
+        cefrLevel: getCefrLevel(cand, tag)
       }
     }
   }
@@ -585,12 +638,14 @@ export function lookupWord(rawWord) {
   // 4. Exact match in HP_LORE_DICTIONARY
   if (HP_LORE_DICTIONARY[clean]) {
     const lore = HP_LORE_DICTIONARY[clean]
+    const tag = '魔法专有'
     return {
       word: lore.word || clean,
       phonetic: lore.phonetic || '',
       pos: 'n.',
       definition: lore.translation || lore.explanation || '',
-      tag: '魔法专有'
+      tag,
+      cefrLevel: getCefrLevel(clean, tag)
     }
   }
 
@@ -598,23 +653,27 @@ export function lookupWord(rawWord) {
   for (const cand of candidates) {
     if (HP_LORE_DICTIONARY[cand]) {
       const lore = HP_LORE_DICTIONARY[cand]
+      const tag = '魔法专有'
       return {
         word: lore.word || cand,
         phonetic: lore.phonetic || '',
         pos: 'n.',
         definition: lore.translation || lore.explanation || '',
-        tag: '魔法专有'
+        tag,
+        cefrLevel: getCefrLevel(cand, tag)
       }
     }
   }
 
   // 6. Fallback for unknown word
+  const tag = '拓展生词'
   return {
     word: clean,
     phonetic: '',
     pos: '',
     definition: '点击收录至生词本',
-    tag: '拓展生词'
+    tag,
+    cefrLevel: getCefrLevel(clean, tag)
   }
 }
 
@@ -638,7 +697,7 @@ export const STOP_WORDS = new Set([
  *
  * @param {string} sentence - Subtitle or cue sentence text
  * @param {number} [maxCount=6] - Maximum number of core keywords to return
- * @returns {Array<{ word: string, rawToken: string, phonetic: string, pos: string, definition: string, tag: string, isInDict: boolean }>}
+ * @returns {Array<{ word: string, rawToken: string, phonetic: string, pos: string, definition: string, tag: string, cefrLevel: string, isInDict: boolean }>}
  */
 export function extractSentenceKeywords(sentence, maxCount = 6) {
   if (!sentence || typeof sentence !== 'string') return []
@@ -672,6 +731,7 @@ export function extractSentenceKeywords(sentence, maxCount = 6) {
       pos: dictResult.pos || '',
       definition: dictResult.definition || '点击收录至生词本',
       tag: dictResult.tag || '拓展生词',
+      cefrLevel: dictResult.cefrLevel || 'B1',
       isInDict
     })
   }
