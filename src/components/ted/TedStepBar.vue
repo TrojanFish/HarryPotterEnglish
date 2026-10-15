@@ -93,6 +93,7 @@ function isCompleted(stepId) {
 }
 
 function isConnectorCompleted(stepId) {
+  if (tedStore.isCurrentTalkCompleted) return true
   if (stepId === 1) {
     return tedStore.currentStep > 1 || tedStore.vocabUnlocked
   }
