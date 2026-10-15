@@ -374,10 +374,13 @@ import {
 import { useSubtitleStore } from '../../stores/subtitleStore.js'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
+import { useVocabStore } from '../../stores/vocabStore.js'
+import { cleanWordToken } from '../../data/dictionaryData.js'
 
 const subtitleStore = useSubtitleStore()
 const player = usePlayerStore()
 const sessionStore = useSessionStore()
+const vocabStore = useVocabStore()
 
 // Game mode selection: 'scramble' | 'cloze' | 'full'
 const activeMode = ref('scramble')
@@ -431,7 +434,7 @@ const unplacedTokens = computed(() => {
 
 // Clean word utility
 function cleanWord(str) {
-  return (str || '').toLowerCase().replace(/^[^\w]+|[^\w]+$/g, '')
+  return cleanWordToken(str)
 }
 
 // Single-sentence audio toggle
@@ -525,6 +528,15 @@ function checkScramble() {
     }
   }
 
+  if (allMatch) {
+    targetWords.forEach((word) => {
+      const clean = cleanWord(word)
+      if (clean && vocabStore.hasWord(clean)) {
+        vocabStore.recordAcquisition(clean, 'l4')
+      }
+    })
+  }
+
   isAnswerCorrect.value = allMatch
   hasChecked.value = true
   evaluateStarRating(allMatch)
@@ -598,7 +610,11 @@ function checkCloze() {
   clozeTokens.value.forEach((tok) => {
     if (tok.isBlank) {
       const userInputVal = cleanWord(clozeInputs.value[tok.blankIndex])
-      if (userInputVal !== tok.clean) {
+      if (userInputVal === tok.clean) {
+        if (vocabStore.hasWord(tok.clean)) {
+          vocabStore.recordAcquisition(tok.clean, 'l4')
+        }
+      } else {
         allCorrect = false
       }
     }
@@ -626,8 +642,13 @@ function checkFullDictation() {
     const userWord = userWords[idx] || ''
     const cleanUser = cleanWord(userWord)
 
-    const matched = cleanTarget === cleanUser
-    if (matched) matchedCount++
+    const matched = Boolean(cleanTarget && cleanTarget === cleanUser)
+    if (matched) {
+      matchedCount++
+      if (vocabStore.hasWord(cleanTarget)) {
+        vocabStore.recordAcquisition(cleanTarget, 'l4')
+      }
+    }
     result.push({
       text: word,
       matched
@@ -643,6 +664,10 @@ function checkFullDictation() {
 
 // Backward-compatible alias
 function checkDictation() {
+  checkFullDictation()
+}
+
+function checkAnswer() {
   checkFullDictation()
 }
 

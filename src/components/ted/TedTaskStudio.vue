@@ -418,6 +418,8 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useTedStore } from '../../stores/tedStore.js'
+import { useVocabStore } from '../../stores/vocabStore.js'
+import { cleanWordToken } from '../../data/dictionaryData.js'
 import {
   CheckCircle2,
   XCircle,
@@ -430,6 +432,7 @@ import {
 } from 'lucide-vue-next'
 
 const tedStore = useTedStore()
+const vocabStore = useVocabStore()
 
 const activeSection = ref('all')
 const selectedSummaryId = ref(null)
@@ -461,13 +464,42 @@ function splitSentence(sentence) {
   }
 }
 
-// Cloze input handler
+// Cloze input handler with L4 acquisition recording
+function submitClozeAnswer(clozeId, blankIndexOrValue, maybeValue) {
+  const actualBlankIndex = maybeValue !== undefined ? (Number(blankIndexOrValue) || 0) : 0
+  const actualValue = maybeValue !== undefined ? maybeValue : blankIndexOrValue
+
+  tedStore.submitClozeAnswer(clozeId, actualValue)
+
+  // When learner fills in the blank correctly:
+  const q = clozeList.value.find((item) => item.id === clozeId)
+  if (!q) return
+
+  const targetAns = q.blanks?.[actualBlankIndex] || q.blanks?.[0]
+  if (typeof actualValue === 'string' && typeof targetAns === 'string') {
+    if (actualValue.trim().toLowerCase() === targetAns.trim().toLowerCase()) {
+      // Split target answer into words and record acquisition for saved words
+      const fullClean = cleanWordToken(targetAns)
+      if (fullClean && vocabStore.hasWord(fullClean)) {
+        vocabStore.recordAcquisition(fullClean, 'l4')
+      }
+      const words = targetAns.split(/\s+/).filter(Boolean)
+      for (const w of words) {
+        const clean = cleanWordToken(w)
+        if (clean && vocabStore.hasWord(clean)) {
+          vocabStore.recordAcquisition(clean, 'l4')
+        }
+      }
+    }
+  }
+}
+
 function onClozeInput(id, val) {
-  tedStore.submitClozeAnswer(id, val)
+  submitClozeAnswer(id, 0, val)
 }
 
 function onClozeChange(id, val) {
-  tedStore.submitClozeAnswer(id, val)
+  submitClozeAnswer(id, 0, val)
 }
 
 // Check cloze correctness
@@ -579,6 +611,25 @@ const answeredCount = computed(() => {
 
 function handleSubmit() {
   tedStore.scoreTask()
+
+  for (const q of clozeList.value) {
+    if (isClozeCorrect(q)) {
+      const targetAns = q.blanks?.[0]
+      if (targetAns) {
+        const fullClean = cleanWordToken(targetAns)
+        if (fullClean && vocabStore.hasWord(fullClean)) {
+          vocabStore.recordAcquisition(fullClean, 'l4')
+        }
+        const words = targetAns.split(/\s+/).filter(Boolean)
+        for (const w of words) {
+          const clean = cleanWordToken(w)
+          if (clean && vocabStore.hasWord(clean)) {
+            vocabStore.recordAcquisition(clean, 'l4')
+          }
+        }
+      }
+    }
+  }
 }
 
 function handleRetry() {
