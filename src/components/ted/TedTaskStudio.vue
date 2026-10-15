@@ -312,12 +312,15 @@
                       <span>已配对: {{ formatSeconds(tedStore.matchingAnswers[item.id]) }}</span>
                     </span>
 
+                    <!-- Status badge after submission -->
                     <span
                       v-if="hasSubmitted"
-                      class="text-xs font-semibold"
+                      class="text-xs font-semibold flex items-center gap-1"
                       :class="isMatchingCorrect(item) ? 'text-emerald-700' : 'text-red-600'"
                     >
-                      {{ isMatchingCorrect(item) ? '✓ 正确' : `✗ 应为 ${item.formattedTime}` }}
+                      <CheckCircle2 v-if="isMatchingCorrect(item)" class="w-3.5 h-3.5 stroke-[2.2]" aria-hidden="true" />
+                      <XCircle v-else class="w-3.5 h-3.5 stroke-[2.2]" aria-hidden="true" />
+                      <span>{{ isMatchingCorrect(item) ? '正确' : `应为 ${item.formattedTime}` }}</span>
                     </span>
                   </div>
                 </div>
@@ -441,7 +444,7 @@ const hasSubmitted = computed(() => taskScore.value !== null)
 watch(
   matchingList,
   (list) => {
-    if (list && list.length > 0 && !selectedSummaryId.value) {
+    if (list && list.length > 0 && (!selectedSummaryId.value || !list.some((m) => m.id === selectedSummaryId.value))) {
       selectedSummaryId.value = list[0].id
     }
   },
@@ -487,7 +490,7 @@ const clozeStats = computed(() => {
   return { correct, total: clozeList.value.length }
 })
 
-// Matching options
+// Matching options - shuffled to promote active listening comprehension
 const availableTimestamps = computed(() => {
   const seen = new Set()
   const result = []
@@ -500,7 +503,9 @@ const availableTimestamps = computed(() => {
       })
     }
   }
-  return result
+  return [...result].sort(
+    (a, b) => ((a.timestampSeconds * 37 + 13) % 97) - ((b.timestampSeconds * 37 + 13) % 97)
+  )
 })
 
 function onSelectSummary(id) {
