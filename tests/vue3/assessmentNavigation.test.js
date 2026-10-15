@@ -25,5 +25,7 @@ describe('Assessment Navigation Integration', () => {
     const shell = fs.readFileSync(path.resolve('src/components/layout/AppShell.vue'), 'utf-8')
     assert.ok(shell.includes('assessment'), 'AppShell must handle assessment view')
     assert.ok(shell.includes('AssessmentHub'), 'AppShell must reference AssessmentHub')
+    assert.ok(shell.includes("navStore.currentView === 'assessment'"), 'AppShell must use navStore directly')
+    assert.ok(!shell.includes('const navigationStore = navStore'), 'AppShell must not have redundant navigationStore alias')
   })
 })

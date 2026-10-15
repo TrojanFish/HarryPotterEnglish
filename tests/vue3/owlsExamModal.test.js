@@ -42,8 +42,10 @@ describe('OwlsExamModal.vue Component Standards', () => {
     // Stage 4: Summary / Graduation
     assert.ok(content.includes('saveExamResult'), 'Must save exam result to analyticsStore')
     assert.ok(content.includes('cefrResult') || content.includes('compositeScore'), 'Must compute composite score and CEFR result')
+    assert.ok(content.includes('composite >= 92') && content.includes("'C1'"), 'Must include C1 cutoff threshold')
     assert.ok(content.includes('mentorFeedback'), 'Must produce mentor diagnostic feedback')
     assert.ok(content.includes('viewCertificate'), 'Must provide view certificate handler')
+    assert.ok(!content.includes('Play,'), 'Must not import unused Play icon')
   })
 
   test('Curated test bank contains required questions and vocabulary', () => {

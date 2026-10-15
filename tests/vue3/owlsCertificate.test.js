@@ -138,5 +138,15 @@ describe('O.W.L.s Printable Certificate Generator & Modal', () => {
     // Lucide icons
     assert.ok(content.includes('lucide-vue-next'), 'Must import icons from lucide-vue-next')
     assert.ok(!content.includes('lucide-react'), 'Must not import from lucide-react')
+
+    // Dynamic candidate name
+    assert.ok(content.includes('activeRecord.value?.candidateName'), 'Must resolve candidate name dynamically from record')
+  })
+
+  test('owlsCertificateExport.js uses valid CSS min-width property', () => {
+    const exportPath = path.resolve('src/utils/owlsCertificateExport.js')
+    const exportContent = fs.readFileSync(exportPath, 'utf-8')
+    assert.ok(exportContent.includes('min-width: 44px;'), 'Must use standard CSS min-width property')
+    assert.ok(!exportContent.includes('min-w: 44px;'), 'Must not contain invalid CSS min-w property')
   })
 })

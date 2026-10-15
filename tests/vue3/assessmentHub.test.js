@@ -83,9 +83,13 @@ describe('AssessmentHub.vue Component Standards', () => {
     assert.ok(content.includes('查看/打印羊皮纸成绩单'), 'Must have secondary CTA for parchment certificate')
     assert.ok(content.includes('showCertModal = true'), 'Secondary CTA must trigger showCertModal = true')
 
-    // Modal stubs/bindings
-    assert.ok(content.includes('showExamModal') || content.includes('OwlsExamModal'), 'Must support OwlsExamModal trigger')
-    assert.ok(content.includes('showCertModal') || content.includes('OwlsCertificateModal'), 'Must support OwlsCertificateModal trigger')
+    // Real modal component wiring
+    assert.ok(content.includes('import OwlsExamModal from'), 'Must import OwlsExamModal component')
+    assert.ok(content.includes('import OwlsCertificateModal from'), 'Must import OwlsCertificateModal component')
+    assert.ok(content.includes('<OwlsExamModal'), 'Must mount OwlsExamModal component')
+    assert.ok(content.includes('<OwlsCertificateModal'), 'Must mount OwlsCertificateModal component')
+    assert.ok(content.includes('handleExamCompleted'), 'Must implement handleExamCompleted')
+    assert.ok(content.includes('handleStartExamFromCert'), 'Must implement handleStartExamFromCert')
   })
 
   test('Supports responsive layout for Mobile, Tablet, and Desktop', () => {
@@ -95,6 +99,7 @@ describe('AssessmentHub.vue Component Standards', () => {
     assert.ok(content.includes('grid-cols-1'), 'Must support single-column mobile layout')
     assert.ok(content.includes('md:grid-cols-2'), 'Must support 2-column tablet layout')
     assert.ok(content.includes('lg:grid-cols-3'), 'Must support 3-column desktop layout')
+    assert.ok(content.includes('md:col-span-2 lg:col-span-1'), 'Column 3 must span 2 columns on tablet')
   })
 
   test('Adheres strictly to design system: zero emojis, Apple HIG touch targets, Lucide icons', () => {

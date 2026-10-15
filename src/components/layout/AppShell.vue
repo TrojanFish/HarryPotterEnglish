@@ -54,7 +54,7 @@
 
       <!-- Main content stage slot -->
       <main class="flex-1 min-w-0 overflow-hidden relative flex flex-col" role="main">
-        <AssessmentHub v-if="navigationStore.currentView === 'assessment'" />
+        <AssessmentHub v-if="navStore.currentView === 'assessment'" />
         <slot v-else />
       </main>
     </div>
@@ -125,7 +125,6 @@ const props = defineProps({
 })
 
 const navStore = useNavigationStore()
-const navigationStore = navStore
 const player = usePlayerStore()
 const catalogStore = useCatalogStore()
 const sessionStore = useSessionStore()

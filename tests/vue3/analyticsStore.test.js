@@ -84,4 +84,49 @@ describe('analyticsStore CEFR & Radar Engine', () => {
     assert.strictEqual(store.cefrLevel, 'B2')
     assert.strictEqual(store.wizardTitle, '魔法进阶者')
   })
+
+  test('recordListeningTime session inflation prevention', () => {
+    const store = useAnalyticsStore()
+    assert.strictEqual(store.listeningSessionsCount, 0)
+    // First call sets up initial session (count -> 1)
+    store.recordListeningTime(15)
+    assert.strictEqual(store.listeningSessionsCount, 1)
+
+    // Periodic ticks (isNewSession = false) do not increment session count
+    store.recordListeningTime(15)
+    store.recordListeningTime(15)
+    assert.strictEqual(store.listeningSessionsCount, 1)
+    assert.strictEqual(store.listeningSeconds, 45)
+
+    // Explicit new session increments session count
+    store.recordListeningTime(15, true)
+    assert.strictEqual(store.listeningSessionsCount, 2)
+    assert.strictEqual(store.listeningSeconds, 60)
+  })
+
+  test('cefrLevel preserves highest achieved level across exam history', () => {
+    const store = useAnalyticsStore()
+    const examB2 = {
+      id: 'owls-1',
+      timestamp: Date.now() - 10000,
+      cefrResult: 'B2',
+      title: '魔法进阶者',
+      compositeScore: 88,
+      dimensions: { auditory: 85, vocabDepth: 88, comprehension: 84, shadowing: 86, production: 87 }
+    }
+    store.saveExamResult(examB2)
+    assert.strictEqual(store.cefrLevel, 'B2')
+
+    // Later exam with lower result should not downgrade earned rank
+    const examB1 = {
+      id: 'owls-2',
+      timestamp: Date.now(),
+      cefrResult: 'B1',
+      title: '魔法探索者',
+      compositeScore: 75,
+      dimensions: { auditory: 70, vocabDepth: 75, comprehension: 72, shadowing: 78, production: 74 }
+    }
+    store.saveExamResult(examB1)
+    assert.strictEqual(store.cefrLevel, 'B2', 'Earned B2 must be preserved when later exam score is B1')
+  })
 })

@@ -201,7 +201,9 @@ function onTimeUpdate() {
 
   // Track elapsed listening playback in analytics store (~15s threshold)
   if (Math.abs(audioRef.value.currentTime - lastTrackedTime) >= 15) {
-    analyticsStore.recordListening(15)
+    if (sessionStore.currentStep !== 1) {
+      analyticsStore.recordListening(15)
+    }
     lastTrackedTime = audioRef.value.currentTime
   }
 }

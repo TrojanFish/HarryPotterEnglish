@@ -489,7 +489,6 @@ import {
   Sparkles,
   Volume2,
   Pause,
-  Play,
   Square,
   Mic,
   PenTool,
@@ -832,7 +831,9 @@ function finishExamAndGraduation() {
 
   // Derive CEFR Level
   let cefrResult = 'A2'
-  if (composite >= 85) {
+  if (composite >= 92) {
+    cefrResult = 'C1'
+  } else if (composite >= 85) {
     cefrResult = 'B2'
   } else if (composite >= 70) {
     cefrResult = 'B1'

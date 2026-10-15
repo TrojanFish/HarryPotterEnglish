@@ -257,7 +257,7 @@ export function generateOwlsCertificateHTML(examData = {}, studentProfile = {}) 
       transition: background 0.15s ease;
       touch-action: manipulation;
       min-height: 44px;
-      min-w: 44px;
+      min-width: 44px;
     }
 
     .toolbar-btn:hover {

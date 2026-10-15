@@ -90,7 +90,7 @@ export const useAnalyticsStore = defineStore('analytics', {
 
   getters: {
     cefrLevel: (state) => {
-      // If exam history has records, take the highest or latest result
+      // If exam history has records, return highest achieved level
       if (Array.isArray(state.examHistory) && state.examHistory.length > 0) {
         const order = ['A2', 'B1', 'B2', 'C1']
         let best = 'A2'
@@ -99,8 +99,7 @@ export const useAnalyticsStore = defineStore('analytics', {
             best = ex.cefrResult
           }
         }
-        const latest = state.examHistory[state.examHistory.length - 1]
-        return latest?.cefrResult || best || 'A2'
+        return best
       }
 
       // Otherwise derive from cumulative metrics
@@ -367,13 +366,15 @@ export const useAnalyticsStore = defineStore('analytics', {
   },
 
   actions: {
-    recordListeningTime(seconds = 30) {
+    recordListeningTime(seconds = 30, isNewSession = false) {
       const sec = Number(seconds) || 0
       if (sec <= 0) return
 
       this.listeningSeconds = (this.listeningSeconds || 0) + sec
       this.totalListeningSeconds = (this.totalListeningSeconds || 0) + sec
-      this.listeningSessionsCount = (this.listeningSessionsCount || 0) + 1
+      if (isNewSession || !this.listeningSessionsCount) {
+        this.listeningSessionsCount = (this.listeningSessionsCount || 0) + 1
+      }
 
       const today = formatDate(new Date())
       if (!this.dailyListening || typeof this.dailyListening !== 'object') {
@@ -383,8 +384,8 @@ export const useAnalyticsStore = defineStore('analytics', {
       this.saveToStorage()
     },
 
-    recordListening(seconds = 30) {
-      this.recordListeningTime(seconds)
+    recordListening(seconds = 30, isNewSession = false) {
+      this.recordListeningTime(seconds, isNewSession)
     },
 
     recordShadowingScore(score, type = 'hp') {

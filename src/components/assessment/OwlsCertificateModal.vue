@@ -291,7 +291,7 @@ const activeRecord = computed(() => {
 })
 
 const candidateName = computed(() => {
-  return 'Hogwarts Candidate'
+  return activeRecord.value?.candidateName || activeRecord.value?.studentName || 'Hogwarts Candidate'
 })
 
 const formattedExamDate = computed(() => {

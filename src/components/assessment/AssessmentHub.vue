@@ -221,7 +221,7 @@
         </section>
 
         <!-- COLUMN 3: 3-Card Metrics Overview & Milestones -->
-        <section class="space-y-4 flex flex-col">
+        <section class="space-y-4 flex flex-col md:col-span-2 lg:col-span-1">
           <!-- Metric Card 1: 听力总时长 -->
           <div class="bg-white/60 border border-[#e8ddd0] rounded-2xl p-5 space-y-2">
             <div class="flex items-center justify-between">
@@ -317,113 +317,20 @@
       </div>
     </div>
 
-    <!-- O.W.L.s Exam Modal / OwlsExamModal Stub Binding -->
-    <transition name="fade">
-      <div
-        v-if="showExamModal"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm"
-        role="dialog"
-        aria-modal="true"
-        aria-label="O.W.L.s 等级评定考核"
-      >
-        <div class="relative w-full max-w-lg bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl p-6 shadow-xl flex flex-col gap-4">
-          <div class="flex items-center justify-between border-b border-[#e8ddd0] pb-3">
-            <div class="flex items-center gap-2">
-              <Award class="w-5 h-5 text-amber-700" />
-              <h3 class="text-base font-bold text-stone-900">O.W.L.s 魔法等级评定考核</h3>
-            </div>
-            <button
-              type="button"
-              @click="showExamModal = false"
-              class="p-2 text-stone-500 hover:text-stone-800 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
-              aria-label="关闭考核窗口"
-            >
-              <X class="w-5 h-5" />
-            </button>
-          </div>
-          <p class="text-sm text-stone-600 leading-relaxed">
-            即将开启全方位 O.W.L.s 测评（听音辨析、填空拼写与口语跟读）。完成考核后将自动颁发魔法部等级认证证书。
-          </p>
-          <div class="p-3 bg-[#f5efe6] rounded-xl border border-[#decbb8] text-xs text-stone-700 space-y-1">
-            <div class="font-bold text-amber-900">考场规则须知：</div>
-            <div>1. 听力理解（3题选择）：考察原声长难句关键意图</div>
-            <div>2. 词汇填空（3题听写）：考察重点考纲生词拼写</div>
-            <div>3. 经典原声跟读（1题录音）：考察音标发音与流利节奏</div>
-          </div>
-          <div class="flex justify-end gap-3 pt-2">
-            <button
-              type="button"
-              @click="showExamModal = false"
-              class="px-4 py-2 border border-[#e8ddd0] rounded-xl text-stone-700 hover:bg-stone-100 min-h-[44px] min-w-[44px] touch-manipulation"
-            >
-              稍后测评
-            </button>
-            <button
-              type="button"
-              @click="showExamModal = false"
-              class="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-amber-50 font-medium rounded-xl min-h-[44px] min-w-[44px] touch-manipulation flex items-center gap-1.5"
-            >
-              <Sparkles class="w-4 h-4" />
-              <span>进入考场</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </transition>
+    <!-- O.W.L.s Exam Modal -->
+    <OwlsExamModal
+      :is-open="showExamModal"
+      @close="showExamModal = false"
+      @exam-completed="handleExamCompleted"
+    />
 
-    <!-- O.W.L.s Certificate Modal / OwlsCertificateModal Stub Binding -->
-    <transition name="fade">
-      <div
-        v-if="showCertModal"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm"
-        role="dialog"
-        aria-modal="true"
-        aria-label="羊皮纸成绩单"
-      >
-        <div class="relative w-full max-w-lg bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl p-6 shadow-xl flex flex-col gap-4">
-          <div class="flex items-center justify-between border-b border-[#e8ddd0] pb-3">
-            <div class="flex items-center gap-2">
-              <Printer class="w-5 h-5 text-amber-700" />
-              <h3 class="text-base font-bold text-stone-900">羊皮纸魔法成绩单</h3>
-            </div>
-            <button
-              type="button"
-              @click="showCertModal = false"
-              class="p-2 text-stone-500 hover:text-stone-800 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
-              aria-label="关闭成绩单"
-            >
-              <X class="w-5 h-5" />
-            </button>
-          </div>
-          <div class="p-5 bg-[#f4ece1] rounded-xl border border-[#decbb8] text-center space-y-3">
-            <div class="text-[11px] uppercase tracking-widest text-amber-800 font-serif">Ministry of Magic Examination Board</div>
-            <div class="text-xl font-bold font-serif text-stone-900">{{ analyticsStore.wizardTitle }} · {{ analyticsStore.cefrLevel }} 等级认证</div>
-            <div class="text-xs text-stone-600 space-y-1">
-              <p>已记录听力时长 {{ Math.round((analyticsStore.listeningSeconds || 0) / 60) }} 分钟</p>
-              <p>生词收录库掌握 {{ vocabStore.vocabList.length }} 词</p>
-              <p>跟读表现平均 {{ shadowingAvgScore }} 分，听写正确率 {{ dictationAccuracy }}%</p>
-            </div>
-          </div>
-          <div class="flex justify-end gap-3 pt-2">
-            <button
-              type="button"
-              @click="showCertModal = false"
-              class="px-4 py-2 border border-[#e8ddd0] rounded-xl text-stone-700 hover:bg-stone-100 min-h-[44px] min-w-[44px] touch-manipulation"
-            >
-              关闭
-            </button>
-            <button
-              type="button"
-              @click="handlePrintCert"
-              class="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-amber-50 font-medium rounded-xl min-h-[44px] min-w-[44px] touch-manipulation flex items-center gap-1.5"
-            >
-              <Printer class="w-4 h-4" />
-              <span>打印羊皮纸</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </transition>
+    <!-- O.W.L.s Certificate Modal -->
+    <OwlsCertificateModal
+      :is-open="showCertModal"
+      :exam-record="latestExamRecord"
+      @close="showCertModal = false"
+      @start-exam="handleStartExamFromCert"
+    />
 
   </div>
 </template>
@@ -439,13 +346,14 @@ import {
   PenTool,
   Printer,
   Sparkles,
-  X,
   Clock,
   Info,
   Ear
 } from 'lucide-vue-next'
 import { useAnalyticsStore } from '../../stores/analyticsStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
+import OwlsExamModal from './OwlsExamModal.vue'
+import OwlsCertificateModal from './OwlsCertificateModal.vue'
 
 // Stores
 const analyticsStore = useAnalyticsStore()
@@ -455,6 +363,7 @@ const vocabStore = useVocabStore()
 const showExamModal = ref(false)
 const showCertModal = ref(false)
 const showCefrInfo = ref(false)
+const latestExamRecord = ref(null)
 
 // CEFR Level Color Badge Class
 const cefrColorClass = computed(() => {
@@ -582,22 +491,26 @@ const shadowingAvgScore = computed(() => {
 
 const dictationAccuracy = computed(() => {
   const hist = analyticsStore.dictationHistory || []
-  if (hist.length === 0) return 95
+  if (hist.length === 0) return 50
   let correct = 0
   let total = 0
   for (const item of hist) {
     correct += Number(item.correctCount) || 0
     total += Number(item.totalCount) || 0
   }
-  if (total === 0) return 95
+  if (total === 0) return 50
   return Math.round((correct / total) * 100)
 })
 
-// Print certificate handler
-const handlePrintCert = () => {
-  if (typeof window !== 'undefined' && typeof window.print === 'function') {
-    window.print()
-  }
+function handleExamCompleted(record) {
+  latestExamRecord.value = record
+  showExamModal.value = false
+  showCertModal.value = true
+}
+
+function handleStartExamFromCert() {
+  showCertModal.value = false
+  showExamModal.value = true
 }
 </script>
 

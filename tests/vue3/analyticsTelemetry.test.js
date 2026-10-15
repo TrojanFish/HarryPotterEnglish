@@ -22,4 +22,12 @@ describe('Analytics Telemetry Instrumentation', () => {
     const dict = fs.readFileSync(path.resolve('src/components/session/StepDictation.vue'), 'utf-8')
     assert.ok(dict.includes('useAnalyticsStore') && dict.includes('recordDictationResult'), 'StepDictation must record dictation results')
   })
+
+  test('App.vue guards onTimeUpdate listening recording to prevent double counting in Step 1', () => {
+    const app = fs.readFileSync(path.resolve('src/App.vue'), 'utf-8')
+    assert.ok(
+      app.includes('sessionStore.currentStep !== 1'),
+      'App.vue must guard analyticsStore.recordListening with sessionStore.currentStep !== 1'
+    )
+  })
 })
