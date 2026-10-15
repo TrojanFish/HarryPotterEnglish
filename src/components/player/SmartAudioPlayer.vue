@@ -88,7 +88,7 @@
         <button
           type="button"
           @click="player.togglePlay()"
-          class="w-11 h-11 rounded-full bg-[#18181b] hover:bg-[#27272a] text-white flex items-center justify-center transition-all active:scale-95 touch-manipulation cursor-pointer shadow-sm shrink-0"
+          class="w-11 h-11 min-h-[44px] min-w-[44px] rounded-full bg-[#18181b] hover:bg-[#27272a] text-white flex items-center justify-center transition-all active:scale-95 touch-manipulation cursor-pointer shadow-sm shrink-0"
           :title="player.isPlaying ? '暂停' : '播放'"
           :aria-label="player.isPlaying ? '暂停' : '播放'"
         >

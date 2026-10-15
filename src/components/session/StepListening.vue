@@ -72,7 +72,7 @@
         <p
           v-if="cue.translation"
           :class="[
-            'text-xs sm:text-sm text-[#52525b] mt-2 pt-2 border-t border-[#e4e4e7]/60 leading-relaxed font-sans transition-all',
+            'text-sm sm:text-base text-[#52525b] mt-2 pt-2 border-t border-[#e4e4e7]/60 leading-relaxed font-sans transition-all',
             player.isBlindMode ? 'filter blur-[7px] select-none opacity-40 group-hover:filter-none group-hover:opacity-100' : ''
           ]"
         >

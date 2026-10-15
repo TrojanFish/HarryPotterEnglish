@@ -209,9 +209,10 @@
                   :placeholder="showClozeHint ? `${tok.clean[0]}...` : '____'"
                   :disabled="hasChecked"
                   class="min-h-[44px] px-2.5 py-1 text-center font-serif text-base bg-[#f8f8f6] border border-[#e4e4e7] focus:border-[#2563eb] focus:bg-white rounded-lg outline-none w-28 text-[#18181b]"
-                  autocapitalize="none"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
                   autocomplete="off"
-                  spellcheck="false"
                   @keydown.enter="checkCloze"
                 />
               </span>
@@ -245,6 +246,7 @@
           @keydown.enter.prevent="checkFullDictation"
           class="w-full p-4 border border-[#e4e4e7] focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb] rounded-2xl font-serif text-base sm:text-lg leading-relaxed outline-none transition-all resize-none text-[#18181b] bg-white disabled:bg-[#f8f8f6]"
           autocapitalize="none"
+          autoCorrect="off"
           autocomplete="off"
           spellcheck="false"
         ></textarea>
