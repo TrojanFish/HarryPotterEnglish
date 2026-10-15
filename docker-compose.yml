@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  hogwarts-audio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hogwarts-audio-english
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - R2_ACCOUNT_ID=${R2_ACCOUNT_ID:-419c6c17e4bdfa104bdf7155314eb714}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID:-ff65060b70c46b5b158779f382d6494b}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY:-89c5cbda11b68ba399842be73fb2f1b7c6a4ad53709e0937b6ae7e12acf781d6}
+      - R2_BUCKET_NAME=${R2_BUCKET_NAME:-fluentfox-podcast}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

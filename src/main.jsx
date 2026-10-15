@@ -1,0 +1,45 @@
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
+import './index.css'
+
+// Global uncaught error & promise rejection diagnostics
+if (typeof window !== 'undefined') {
+  window.addEventListener('error', (event) => {
+    console.error('[Global Error]:', event.error || event.message);
+  });
+  window.addEventListener('unhandledrejection', (event) => {
+    console.error('[Global Unhandled Rejection]:', event.reason);
+  });
+}
+
+// Register PWA Service Worker in production, or unregister stale SW in dev
+if ('serviceWorker' in navigator) {
+  if (import.meta.env.PROD) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then((reg) => {
+        console.log('[PWA] Service Worker registered successfully:', reg.scope);
+        reg.update();
+      }).catch((err) => {
+        console.warn('[PWA] Service Worker registration failed:', err);
+      });
+    });
+  } else {
+    // In development mode, automatically unregister any stale service workers to prevent cache blocking
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const registration of registrations) {
+        registration.unregister();
+        console.log('[Dev] Unregistered stale service worker:', registration.scope);
+      }
+    });
+  }
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  </React.StrictMode>,
+)

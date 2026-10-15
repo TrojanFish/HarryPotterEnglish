@@ -1,0 +1,214 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import esbuild from 'esbuild';
+import React from 'react';
+import { renderToString } from 'react-dom/server';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, '..');
+
+// Transpile SubtitleViewer.jsx for Node test environment
+const viewerSrcPath = path.resolve(projectRoot, 'src', 'components', 'SubtitleViewer.jsx');
+let viewerSrcCode = fs.readFileSync(viewerSrcPath, 'utf8');
+viewerSrcCode = viewerSrcCode
+  .replace(/from '(\.\.\/)+utils\/([^']+)'/g, "from '../src/utils/$2.js'")
+  .replace(/from '(\.\.\/)+data\/([^']+)'/g, "from '../src/data/$2.js'");
+
+const transformedViewer = esbuild.transformSync(viewerSrcCode, { loader: 'jsx', format: 'esm' });
+const compiledViewerPath = path.resolve(__dirname, 'SubtitleViewer.compiled.js');
+fs.writeFileSync(compiledViewerPath, transformedViewer.code, 'utf8');
+
+const { SubtitleViewer } = await import('./SubtitleViewer.compiled.js');
+
+test('SubtitleViewer Hero Unit Focus & SLA Ergonomics Test Suite', async (t) => {
+  const mockCues = [
+    {
+      id: 'cue-0',
+      startTime: 1.0,
+      endTime: 5.5,
+      text: 'Mr. and Mrs. Dursley were proud to say that they were perfectly normal.',
+      translation: '德思礼夫妇总是得意地宣称，他们是非常规矩的正常人家。'
+    },
+    {
+      id: 'cue-1',
+      startTime: 6.0,
+      endTime: 10.5,
+      text: 'They were the last people you would expect to be involved in anything strange.',
+      translation: '他们最不愿与任何古怪或神秘的事物扯上干系。'
+    }
+  ];
+
+  await t.test('3.1: Active sentence card applies .reading-hero-sentence class and indicator', () => {
+    const html = renderToString(
+      React.createElement(SubtitleViewer, {
+        cues: mockCues,
+        activeCueIndex: 0,
+        studyMode: 'normal',
+        showTranslation: true,
+        isParchment: true,
+        onSeekToCue: () => {},
+        onWordClick: () => {},
+        onRecordCue: () => {},
+        onSaveToVocab: () => {}
+      })
+    );
+
+    // Active card (cue-0) must have hero sentence focus class
+    assert.ok(html.includes('reading-hero-sentence'), 'Active sentence card must contain reading-hero-sentence class');
+    assert.ok(html.includes('正在朗读'), 'Active sentence must render active audio indicator');
+  });
+
+  await t.test('3.2: Inactive sentences apply .reading-inactive-sentence class to reduce visual distraction', () => {
+    const html = renderToString(
+      React.createElement(SubtitleViewer, {
+        cues: mockCues,
+        activeCueIndex: 0,
+        studyMode: 'normal',
+        showTranslation: true,
+        isParchment: true,
+        onSeekToCue: () => {},
+        onWordClick: () => {},
+        onRecordCue: () => {},
+        onSaveToVocab: () => {}
+      })
+    );
+
+    assert.ok(html.includes('reading-inactive-sentence'), 'Inactive sentence cards must contain reading-inactive-sentence class');
+  });
+
+  await t.test('3.3: Blind listening mode hides inactive text with mist mask', () => {
+    const html = renderToString(
+      React.createElement(SubtitleViewer, {
+        cues: mockCues,
+        activeCueIndex: 0,
+        studyMode: 'blind',
+        showTranslation: false,
+        isParchment: true,
+        onSeekToCue: () => {},
+        onWordClick: () => {},
+        onRecordCue: () => {},
+        onSaveToVocab: () => {}
+      })
+    );
+
+    // In blind mode, the inactive sentence (cue-1) should show the blind mask prompt
+    assert.ok(html.includes('迷雾遮罩') || html.includes('blind-mask'), 'Blind mode must show mist mask indicator');
+  });
+
+  await t.test('3.4: Interactive action buttons adhere to Apple HIG >=44px touch targets', () => {
+    const html = renderToString(
+      React.createElement(SubtitleViewer, {
+        cues: mockCues,
+        activeCueIndex: 0,
+        studyMode: 'normal',
+        showTranslation: true,
+        isParchment: true,
+        onSeekToCue: () => {},
+        onWordClick: () => {},
+        onRecordCue: () => {},
+        onSaveToVocab: () => {}
+      })
+    );
+
+    // Sentence row action buttons must enforce min-w-[44px] min-h-[44px]
+    assert.ok(html.includes('min-h-[44px]'), 'Must enforce Apple HIG 44px minimum height touch target');
+    assert.ok(html.includes('min-w-[44px]'), 'Must enforce Apple HIG 44px minimum width touch target');
+  });
+
+  await t.test('3.5: Clean action toolbar eliminates redundant robotic TTS speak button', () => {
+    const html = renderToString(
+      React.createElement(SubtitleViewer, {
+        cues: mockCues,
+        activeCueIndex: 0,
+        studyMode: 'normal',
+        showTranslation: true,
+        isParchment: true,
+        onSeekToCue: () => {},
+        onWordClick: () => {},
+        onRecordCue: () => {},
+        onSaveToVocab: () => {}
+      })
+    );
+
+    // Sentence row must not render redundant synthetic TTS speak button
+    assert.ok(!html.includes('朗读示范'), 'Must eliminate redundant synthetic TTS speak button');
+  });
+
+  await t.test('3.6: Action buttons follow GitHub-style icon-only design without text clutter', () => {
+    const html = renderToString(
+      React.createElement(SubtitleViewer, {
+        cues: mockCues,
+        activeCueIndex: 0,
+        studyMode: 'normal',
+        showTranslation: true,
+        isParchment: true,
+        onSeekToCue: () => {},
+        onWordClick: () => {},
+        onRecordCue: () => {},
+        onSaveToVocab: () => {}
+      })
+    );
+
+    // Sentence row buttons must be icon-only (e.g. no >跟读< text)
+    assert.ok(!html.includes('>跟读<'), 'Sentence action buttons must be pure SVG icons without redundant text');
+  });
+
+  await t.test('3.7: Subtitle card supports direct click-to-play while eliminating mini play button', () => {
+    const html = renderToString(
+      React.createElement(SubtitleViewer, {
+        cues: mockCues,
+        activeCueIndex: 0,
+        studyMode: 'normal',
+        showTranslation: true,
+        isParchment: true,
+        onSeekToCue: () => {},
+        onWordClick: () => {},
+        onRecordCue: () => {},
+        onSaveToVocab: () => {}
+      })
+    );
+
+    // Mini play button in header action toolbar must be eliminated
+    assert.ok(!html.includes('从此句播放'), 'Sentence card toolbar must eliminate redundant mini play button');
+    // Card root must offer cursor-pointer feedback and click-to-play affordance
+    assert.ok(html.includes('cursor-pointer'), 'Sentence card container must have pointer cursor for click-to-play');
+    assert.ok(html.includes('点击播放此句') || html.includes('点击重新播放此句'), 'Sentence card must provide click-to-play title tooltip');
+  });
+
+  await t.test('3.8: Apple Podcasts style word illumination highlights active speaking word and distinguishes word states', () => {
+    // When playing midway through cue-0 (1.0s -> 5.5s, at 3.0s)
+    const html = renderToString(
+      React.createElement(SubtitleViewer, {
+        cues: mockCues,
+        activeCueIndex: 0,
+        studyMode: 'normal',
+        showTranslation: true,
+        isParchment: true,
+        isPlaying: true,
+        currentTime: 3.0,
+        onSeekToCue: () => {},
+        onWordClick: () => {},
+        onRecordCue: () => {},
+        onSaveToVocab: () => {}
+      })
+    );
+
+    // Active speaking word should have illumination highlight
+    assert.ok(
+      html.includes('bg-amber-400') || html.includes('ring-amber-400') || html.includes('speaking-word-glow'),
+      'Must illuminate actively spoken word in active sentence'
+    );
+    // Spoken words should have distinct font-semibold or clear text
+    assert.ok(
+      html.includes('font-semibold'),
+      'Must render already spoken words with clear emphasis'
+    );
+  });
+});
+
+
+

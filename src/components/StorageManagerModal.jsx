@@ -1,0 +1,356 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  X, 
+  HardDrive, 
+  Trash2, 
+  DownloadCloud, 
+  Play, 
+  CheckCircle2, 
+  AlertCircle, 
+  Sparkles, 
+  RefreshCw,
+  FolderDown,
+  Layers,
+  BookOpen
+} from 'lucide-react';
+import { 
+  getOfflineStorageInfo, 
+  deleteCachedChapter, 
+  saveChapterOffline, 
+  isChapterCached 
+} from '../utils/offlineStorage';
+import { resolveAudioStreamUrl } from '../hooks/useCatalog';
+
+export function StorageManagerModal({
+  isOpen,
+  onClose,
+  isParchment,
+  currentBook,
+  currentChapter,
+  onPlayChapter,
+  isPageView = false
+}) {
+  const [storageInfo, setStorageInfo] = useState({
+    usedBytes: 0,
+    quotaBytes: 2 * 1024 * 1024 * 1024,
+    chapters: []
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [downloadProgress, setDownloadProgress] = useState(null); // { chapterId, progress }
+  const [deletingId, setDeletingId] = useState(null);
+  const [isCurrentCached, setIsCurrentCached] = useState(false);
+
+  // Load offline storage metadata
+  const refreshStorage = async () => {
+    setIsLoading(true);
+    try {
+      const info = await getOfflineStorageInfo();
+      setStorageInfo(info);
+      if (currentChapter?.id) {
+        const cached = await isChapterCached(currentChapter.id);
+        setIsCurrentCached(cached);
+      }
+    } catch (err) {
+      console.error('Failed to query offline storage:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen || isPageView) {
+      refreshStorage();
+    }
+  }, [isOpen, isPageView, currentChapter?.id]);
+
+  useEffect(() => {
+    if (!isOpen && !isPageView) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isPageView, onClose]);
+
+  if (!isOpen && !isPageView) return null;
+
+  // Format bytes into human-readable string
+  const formatBytes = (bytes) => {
+    if (!bytes || bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  };
+
+  // Handle deleting a cached chapter
+  const handleDelete = async (chapterId) => {
+    setDeletingId(chapterId);
+    try {
+      await deleteCachedChapter(chapterId);
+      await refreshStorage();
+    } catch (err) {
+      console.error('Failed to delete chapter:', err);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  // Handle caching current chapter
+  const handleDownloadCurrent = async () => {
+    if (!currentChapter || !currentChapter.id) return;
+    const chapterId = currentChapter.id;
+    const title = currentChapter.cnTitle || currentChapter.title || `Chapter ${chapterId}`;
+    const apiBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE) || '';
+    const bookId = currentBook?.id || 'hp-book-1';
+    const epId = currentChapter.epId || currentChapter.id || 'ep01';
+    const audioKey = currentChapter.audioKey || `podcasts/${bookId}/episodes/${epId}/audio.mp3`;
+    const subKey = currentChapter.subtitleKey || `podcasts/${bookId}/episodes/${epId}/subtitle.vtt`;
+    const audioUrl = currentChapter.audioUrl || resolveAudioStreamUrl(audioKey, apiBase);
+    const vttUrl = currentChapter.vttUrl || `${apiBase}/api/subtitles/${subKey}`;
+
+    setDownloadProgress({ chapterId, progress: 0 });
+
+    try {
+      await saveChapterOffline(
+        {
+          chapterId,
+          title,
+          audioUrl,
+          vttUrl
+        },
+        ({ progress }) => {
+          setDownloadProgress({ chapterId, progress });
+        }
+      );
+      await refreshStorage();
+    } catch (err) {
+      console.error('Download failed:', err);
+      alert('下载离线资源失败，请检查网络或后端代理');
+    } finally {
+      setDownloadProgress(null);
+    }
+  };
+
+  const formatQuota = (bytes) => {
+    if (!bytes) return '0 MB';
+    const mb = bytes / (1024 * 1024);
+    if (mb >= 1024) {
+      return `${(mb / 1024).toFixed(1)} GB`;
+    }
+    return `${mb.toFixed(0)} MB`;
+  };
+  const usedStr = formatQuota(storageInfo.usedBytes);
+  const quotaStr = formatQuota(storageInfo.quotaBytes);
+  const usedPercent = Math.min(100, Math.max(0, ((storageInfo.usedBytes / storageInfo.quotaBytes) * 100).toFixed(1)));
+
+  const storageContent = (
+    <div 
+      className={isPageView
+        ? "w-full h-full bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col no-scrollbar"
+        : "relative w-full max-w-2xl rounded-t-3xl sm:rounded-2xl border-t sm:border border-[#e8ddd0] bg-[#fbf9f5] text-[#1e1610] overflow-hidden flex flex-col max-h-[88dvh] sm:max-h-[85dvh] transition-all duration-300 no-scrollbar"
+      }
+    >
+      {/* Mobile Pull Handle Indicator */}
+      {!isPageView && <div className="sm:hidden w-10 h-1.5 bg-stone-300 rounded-full mx-auto my-2.5 shrink-0" />}
+
+      {/* Header — Standardized h-14 (56px) */}
+      <div className={`shrink-0 z-20 ${isPageView ? 'pt-safe' : ''} border-b border-[#e8ddd0] bg-white select-none`}>
+        <div className="h-14 px-4 sm:px-6 flex items-center justify-between gap-2">
+          <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+            <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-300/80 text-amber-700 shrink-0">
+              <HardDrive size={18} className="sm:w-5 sm:h-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-magical text-base sm:text-lg font-bold text-amber-950 flex items-center gap-2 truncate">
+                魔法行囊 · 离线存储管理
+              </h2>
+              <p className="text-[11px] sm:text-xs text-stone-500 truncate">
+                原版双轨离线缓存 · 随时随地无网畅听
+              </p>
+            </div>
+          </div>
+
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:bg-stone-50 flex items-center justify-center text-stone-500 hover:text-amber-950 transition-all active:scale-95 cursor-pointer shrink-0"
+              title={isPageView ? "返回" : "关闭魔法行囊"}
+              aria-label="关闭魔法行囊"
+            >
+              <X size={18} />
+            </button>
+          )}
+        </div>
+      </div>
+
+        {/* Storage Quota Bar */}
+        <div className="p-4 sm:p-5 border-b border-[#e8ddd0] bg-white shrink-0">
+          <div className="flex items-center justify-between text-xs mb-2">
+            <span className="font-semibold text-stone-700 flex items-center gap-1.5">
+              <Layers size={14} className="text-amber-600" />
+              设备存储占用情况
+            </span>
+            <span className="font-mono text-stone-500">
+              {usedStr} / {quotaStr} ({usedPercent}%)
+            </span>
+          </div>
+          <div className="w-full h-3 rounded-full overflow-hidden p-0.5 border border-[#e8ddd0] bg-stone-100">
+            <div 
+              className="h-full rounded-full bg-gradient-to-r from-amber-500 via-amber-500 to-emerald-500 transition-all duration-500"
+              style={{ width: `${Math.max(usedPercent, 2)}%` }}
+            />
+          </div>
+
+          {/* Quick Download Current Chapter Bar */}
+          {currentChapter && (
+            <div className="mt-3.5 sm:mt-4 p-3 sm:p-3.5 rounded-2xl border border-amber-300/80 bg-amber-500/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center space-x-2.5 w-full sm:w-auto min-w-0 flex-1">
+                <Sparkles className="w-5 h-5 text-amber-600 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-bold text-amber-950 truncate">
+                    当前章节：{currentChapter.title || `Chapter ${currentChapter.id}`}
+                  </div>
+                  <div className="text-[11px] text-stone-600 truncate">
+                    {isCurrentCached ? '已保存在魔法行囊中，可 100% 离线顺畅精听' : '尚未缓存，可提前下载完整音频与字幕'}
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full sm:w-auto flex justify-end shrink-0">
+                {isCurrentCached ? (
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold">
+                    <CheckCircle2 size={14} className="text-emerald-700" />
+                    <span>离线已就绪</span>
+                  </span>
+                ) : downloadProgress?.chapterId === currentChapter.id ? (
+                  <div className="flex items-center gap-2 text-xs text-amber-800 font-semibold">
+                    <RefreshCw size={14} className="animate-spin text-amber-700" />
+                    <span>下载中 <span className="font-mono">{downloadProgress.progress}%</span></span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleDownloadCurrent}
+                    className="duo-btn-primary flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-bold active:scale-95 cursor-pointer shrink-0"
+                    title="离线缓存当前章节音频与同步字幕"
+                  >
+                    <DownloadCloud size={14} />
+                    <span>一键缓存本章</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Cached Chapter List */}
+        <div className={`flex-1 overflow-y-auto overscroll-contain no-scrollbar p-5 space-y-3 ${isPageView ? 'pb-32' : 'pb-6'}`}>
+          <div className="flex items-center justify-between mb-1">
+            <h3 className={`text-xs font-bold uppercase tracking-wider ${
+              isParchment ? 'text-[#7d6852]' : 'text-[#8c9ba5]'
+            }`}>
+              已离线缓存章节 ({storageInfo.chapters.length})
+            </h3>
+            <button
+              onClick={refreshStorage}
+              className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl border border-amber-300/70 bg-white/90 text-amber-900 hover:bg-amber-50 hover:border-amber-400 font-bold transition-all active:scale-95 cursor-pointer shrink-0"
+              title="刷新本地离线存储信息"
+              aria-label="刷新本地离线存储信息"
+            >
+              <RefreshCw size={15} className={isLoading ? 'animate-spin' : ''} />
+            </button>
+          </div>
+
+          {storageInfo.chapters.length === 0 ? (
+            <div className="p-8 text-center rounded-2xl border border-dashed border-[#e8ddd0] bg-white flex flex-col items-center justify-center">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-300/60 flex items-center justify-center text-amber-700 mb-3">
+                <BookOpen size={24} className="text-amber-700" />
+              </div>
+              <p className="text-sm font-semibold text-amber-950 mb-1">魔法行囊尚空</p>
+              <p className="text-xs max-w-sm text-stone-500">
+                暂无离线下载章节。在有声书播放时点击缓存按钮，即使断网或在旅途中也能随时随地学习霍格沃茨原版音频！
+              </p>
+            </div>
+          ) : (
+            storageInfo.chapters.map((ch) => {
+              const isPlayingThis = currentChapter?.id === ch.chapterId;
+              const isDeleting = deletingId === ch.chapterId;
+
+              return (
+                <div
+                  key={ch.chapterId}
+                  className="p-3.5 rounded-2xl border border-[#e8ddd0] bg-white hover:border-amber-300 flex items-center justify-between gap-3 transition-all"
+                >
+                  <div className="flex items-center space-x-3 min-w-0">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${
+                      isPlayingThis
+                        ? 'bg-amber-500 text-white font-bold border-amber-600'
+                        : 'bg-stone-100 text-stone-600 border-[#e8ddd0]'
+                    }`}>
+                      <CheckCircle2 size={16} />
+                    </div>
+
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-amber-950 truncate">
+                        {ch.title}
+                      </div>
+                      <div className="text-[11px] flex items-center gap-2 mt-0.5 text-stone-500">
+                        <span>大小: {formatBytes(ch.totalBytes)}</span>
+                        <span>•</span>
+                        <span>{new Date(ch.downloadedAt).toLocaleDateString()}</span>
+                        {isPlayingThis && (
+                          <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 rounded text-[9px] font-bold">
+                            正在播放
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2 shrink-0">
+                    {onPlayChapter && !isPlayingThis && (
+                      <button
+                        onClick={() => onPlayChapter(ch.chapterId)}
+                        className="duo-btn-secondary w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-xs font-bold flex items-center justify-center active:scale-95 transition-all cursor-pointer shrink-0"
+                        title="立即从离线本地播放此章"
+                        aria-label="立即从离线本地播放此章"
+                      >
+                        <Play size={14} className="fill-current" />
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => handleDelete(ch.chapterId)}
+                      disabled={isDeleting}
+                      className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50/70 text-rose-600 hover:bg-rose-100 hover:border-rose-300 transition-all active:scale-90 cursor-pointer disabled:opacity-50 shrink-0"
+                      title="删除此离线缓存以释放存储"
+                      aria-label="删除此离线缓存"
+                    >
+                      <Trash2 size={16} className={isDeleting ? 'animate-spin' : ''} />
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+
+          {/* Bottom subtle note */}
+          <div className="text-center text-[11px] text-stone-400 pt-3 pb-safe select-none">
+            原声与双语文字已安全封入行囊，无网即点即听
+          </div>
+        </div>
+      </div>
+  );
+
+  if (isPageView) {
+    return storageContent;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+      {storageContent}
+    </div>
+  );
+}
