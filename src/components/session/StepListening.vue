@@ -269,6 +269,7 @@ import { useSubtitleStore } from '../../stores/subtitleStore.js'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
+import { useAnalyticsStore } from '../../stores/analyticsStore.js'
 import { extractSentenceKeywords, STOP_WORDS, cleanWordToken } from '../../data/dictionaryData.js'
 import { getTagBadgeClass } from '../../utils/tagTheme.js'
 import WordLookupModal from '../common/WordLookupModal.vue'
@@ -277,6 +278,7 @@ const subtitleStore = useSubtitleStore()
 const player = usePlayerStore()
 const vocabStore = useVocabStore()
 const sessionStore = useSessionStore()
+const analyticsStore = useAnalyticsStore()
 
 const scrollContainerRef = ref(null)
 const toastMsg = ref('')
@@ -403,6 +405,35 @@ watch(
         el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
       }
     })
+  }
+)
+
+// Listening telemetry: accumulate playback seconds
+let lastTrackedTime = player.currentTime || 0
+
+watch(
+  () => player.currentTime,
+  (newTime) => {
+    if (!player.isPlaying) {
+      lastTrackedTime = newTime
+      return
+    }
+    const diff = newTime - lastTrackedTime
+    if (diff >= 5 && diff < 30) {
+      analyticsStore.recordListeningTime(Math.round(diff))
+      lastTrackedTime = newTime
+    } else if (diff < 0 || diff >= 30) {
+      lastTrackedTime = newTime
+    }
+  }
+)
+
+watch(
+  () => player.isPlaying,
+  (playing) => {
+    if (playing) {
+      lastTrackedTime = player.currentTime || 0
+    }
   }
 )
 </script>

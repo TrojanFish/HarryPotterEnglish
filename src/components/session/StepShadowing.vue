@@ -126,10 +126,12 @@ import { Mic, Play, Pause, ChevronRight, AlertCircle } from 'lucide-vue-next'
 import { useSubtitleStore } from '../../stores/subtitleStore.js'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
+import { useAnalyticsStore } from '../../stores/analyticsStore.js'
 
 const subtitleStore = useSubtitleStore()
 const player = usePlayerStore()
 const sessionStore = useSessionStore()
+const analyticsStore = useAnalyticsStore()
 
 const currentCue = computed(() => subtitleStore.effectiveCue)
 const cueNumber = computed(() => subtitleStore.effectiveCueIndex + 1)
@@ -344,6 +346,8 @@ function evaluateScore() {
       ? '句调自然生动，关键连读词咬字准确清晰！'
       : '语速可略作放慢，注意单词词尾辅音的爆破与弱读。'
   }
+
+  analyticsStore.recordShadowingScore(score, 'hp')
 }
 
 function playUserRecording() {

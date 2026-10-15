@@ -375,12 +375,14 @@ import { useSubtitleStore } from '../../stores/subtitleStore.js'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
+import { useAnalyticsStore } from '../../stores/analyticsStore.js'
 import { cleanWordToken } from '../../data/dictionaryData.js'
 
 const subtitleStore = useSubtitleStore()
 const player = usePlayerStore()
 const sessionStore = useSessionStore()
 const vocabStore = useVocabStore()
+const analyticsStore = useAnalyticsStore()
 
 // Game mode selection: 'scramble' | 'cloze' | 'full'
 const activeMode = ref('scramble')
@@ -540,6 +542,14 @@ function checkScramble() {
   isAnswerCorrect.value = allMatch
   hasChecked.value = true
   evaluateStarRating(allMatch)
+
+  let matchedWords = 0
+  for (let i = 0; i < Math.min(scramblePlaced.value.length, targetWords.length); i++) {
+    if (cleanWord(scramblePlaced.value[i].raw) === cleanWord(targetWords[i])) {
+      matchedWords++
+    }
+  }
+  analyticsStore.recordDictationResult(matchedWords, targetWords.length)
 }
 
 // Setup Game 2: Cloze Key Words
@@ -607,10 +617,15 @@ function initCloze() {
 
 function checkCloze() {
   let allCorrect = true
+  let correctCount = 0
+  let totalBlanks = 0
+
   clozeTokens.value.forEach((tok) => {
     if (tok.isBlank) {
+      totalBlanks++
       const userInputVal = cleanWord(clozeInputs.value[tok.blankIndex])
       if (userInputVal === tok.clean) {
+        correctCount++
         if (vocabStore.hasWord(tok.clean)) {
           vocabStore.recordAcquisition(tok.clean, 'l4')
         }
@@ -623,6 +638,8 @@ function checkCloze() {
   isAnswerCorrect.value = allCorrect
   hasChecked.value = true
   evaluateStarRating(allCorrect)
+
+  analyticsStore.recordDictationResult(correctCount, totalBlanks || 1)
 }
 
 // Setup Game 3: Full Dictation
@@ -660,6 +677,8 @@ function checkFullDictation() {
   isAnswerCorrect.value = perfect
   hasChecked.value = true
   evaluateStarRating(perfect)
+
+  analyticsStore.recordDictationResult(matchedCount, targetWords.length)
 }
 
 // Backward-compatible alias

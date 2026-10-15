@@ -257,9 +257,11 @@ import {
 } from 'lucide-vue-next'
 import { useTedStore } from '../../stores/tedStore.js'
 import { useNavigationStore } from '../../stores/navigationStore.js'
+import { useAnalyticsStore } from '../../stores/analyticsStore.js'
 
 const tedStore = useTedStore()
 const navStore = useNavigationStore()
+const analyticsStore = useAnalyticsStore()
 
 // Segments and Current Talk
 const currentTalk = computed(() => tedStore.currentTalk)
@@ -634,7 +636,7 @@ function evaluatePronunciation(targetSentence, userSpoken) {
   const ratio = targetWords.length > 0 ? matches / targetWords.length : 0
   const score = Math.min(100, Math.round(ratio * 100))
 
-  return {
+  const evalResult = {
     score,
     grade: score >= 90 ? '发音极佳 (Excellent)' : (score >= 60 ? '良好，继续保持 (Good)' : '需进一步提高 (Keep Practicing)'),
     feedback:
@@ -644,6 +646,10 @@ function evaluatePronunciation(targetSentence, userSpoken) {
             ? '句式节奏稳定，可适度注意单词词尾辅音的爆破与弱读。'
             : '部分核心词汇发音有偏差，建议多听原声示范后再跟读。')
   }
+
+  analyticsStore.recordShadowingScore(score, 'ted')
+
+  return evalResult
 }
 
 // ---------------------------------------------------------
