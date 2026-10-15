@@ -476,6 +476,7 @@ async function startRecording() {
 
   recordedChunks = []
   isRecording.value = true
+  tedStore.setShadowingPhase('recording')
   recordingSeconds.value = 0
   spokenText = ''
 
@@ -547,12 +548,13 @@ async function startRecording() {
     }
   } catch (err) {
     console.warn('[TedShadowing] Microphone access error:', err)
-    // Even if getUserMedia fails, fallback to heuristic completion
+    // Even if getUserMedia fails, fallback to heuristic completion without dummy URL
     const evalResult = evaluatePronunciation(currentSegment.value?.transcript, spokenText)
     segmentRecordings[currentSegmentIndex.value] = {
-      blobUrl: 'mock-audio',
+      blobUrl: '',
       evalResult
     }
+    tedStore.setShadowingPhase('reviewing')
   }
 }
 
@@ -583,14 +585,15 @@ function stopRecording() {
     mediaStream = null
   }
 
-  // If MediaRecorder was not triggered or empty, ensure evaluation is saved
-  if (!segmentRecordings[currentSegmentIndex.value]) {
+  // If MediaRecorder was not initialized, ensure evaluation is saved synchronously
+  if (!mediaRecorder && !segmentRecordings[currentSegmentIndex.value]) {
     const evalResult = evaluatePronunciation(currentSegment.value?.transcript, spokenText)
     segmentRecordings[currentSegmentIndex.value] = {
       blobUrl: recordedChunks.length > 0 ? URL.createObjectURL(new Blob(recordedChunks)) : '',
       evalResult
     }
   }
+  tedStore.setShadowingPhase('reviewing')
 }
 
 function evaluatePronunciation(targetSentence, userSpoken) {
@@ -632,6 +635,7 @@ function handleFinishTalk() {
 // Lifecycle Cleanup
 // ---------------------------------------------------------
 onUnmounted(() => {
+  tedStore.setShadowingPhase('idle')
   stopSnippetPlayback()
   stopUserPlayback()
   if (timerInterval) clearInterval(timerInterval)
