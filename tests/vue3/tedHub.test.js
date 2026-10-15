@@ -73,3 +73,50 @@ describe('TedHub.vue Component Tests', () => {
     )
   })
 })
+
+describe('TedHub.vue Sprint 2', () => {
+  const getHubSrc = () => fs.readFileSync('src/components/ted/TedHub.vue', 'utf8')
+
+  it('imports TedVocabPreload', () => {
+    const hubSrc = getHubSrc()
+    assert.ok(hubSrc.includes('TedVocabPreload'), 'Missing TedVocabPreload import')
+  })
+  it('imports TedVideoPlayer', () => {
+    const hubSrc = getHubSrc()
+    assert.ok(hubSrc.includes('TedVideoPlayer'), 'Missing TedVideoPlayer import')
+  })
+  it('imports TedTaskStudio', () => {
+    const hubSrc = getHubSrc()
+    assert.ok(hubSrc.includes('TedTaskStudio'), 'Missing TedTaskStudio import')
+  })
+  it('imports TedShadowing', () => {
+    const hubSrc = getHubSrc()
+    assert.ok(hubSrc.includes('TedShadowing'), 'Missing TedShadowing import')
+  })
+  it('imports TedStepBar', () => {
+    const hubSrc = getHubSrc()
+    assert.ok(hubSrc.includes('TedStepBar'), 'Missing TedStepBar import')
+  })
+  it('imports TedTalkList', () => {
+    const hubSrc = getHubSrc()
+    assert.ok(hubSrc.includes('TedTalkList'), 'Missing TedTalkList import')
+  })
+  it('TedTalkList hidden on mobile, shown on lg', () => {
+    const hubSrc = getHubSrc()
+    assert.ok(hubSrc.includes('hidden lg:flex') || hubSrc.includes('lg:block'), 'TedTalkList should be hidden on mobile')
+  })
+  it('uses conditional rendering (v-if) for step components', () => {
+    const hubSrc = getHubSrc()
+    assert.ok(hubSrc.includes('v-if'), 'Missing v-if step routing')
+  })
+  it('contains no Unicode emojis', () => {
+    const hubSrc = getHubSrc()
+    assert.doesNotMatch(hubSrc, /\p{Extended_Pictographic}/u, 'Emoji found in TedHub.vue')
+  })
+  it('imports useTedStore and auto-selects first talk on mount', () => {
+    const hubSrc = getHubSrc()
+    assert.ok(hubSrc.includes('useTedStore'), 'Missing useTedStore import')
+    assert.ok(hubSrc.includes('onMounted'), 'Missing onMounted lifecycle hook')
+    assert.ok(hubSrc.includes('selectTalk'), 'Missing auto-select talk on mount')
+  })
+})
