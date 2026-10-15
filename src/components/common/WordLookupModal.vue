@@ -108,7 +108,7 @@
                   <!-- Leitner Box badge (if stored) -->
                   <span
                     v-if="storedEntry"
-                    class="px-2 py-0.5 rounded text-xs font-mono font-medium bg-blue-50 text-blue-700 border border-blue-200"
+                    class="px-2 py-0.5 rounded-full text-xs font-mono font-medium bg-blue-50 text-blue-700 border border-blue-200"
                   >
                     Box {{ storedEntry.box || 1 }}
                   </span>

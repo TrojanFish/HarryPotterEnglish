@@ -352,7 +352,7 @@ const cefrTabs = [
   { label: '全部', value: 'all' },
   { label: 'A1/A2', value: 'A1/A2' },
   { label: 'B1/B2', value: 'B1/B2' },
-  { label: 'C1', value: 'C1' }
+  { label: 'C1/C2', value: 'C1' }
 ]
 
 function resolveTag(item) {

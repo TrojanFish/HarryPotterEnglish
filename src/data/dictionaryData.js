@@ -541,22 +541,29 @@ export function getCefrLevel(word, tag) {
   if (!resolvedTag && word) {
     const clean = cleanWordToken(word)
     if (clean) {
-      if (GRADED_DICTIONARY[clean]) {
-        resolvedTag = GRADED_DICTIONARY[clean][3]
-      } else if (DICTIONARY[clean]) {
-        resolvedTag = DICTIONARY[clean].tag
-      } else if (HP_LORE_DICTIONARY[clean]) {
-        resolvedTag = '魔法专有'
+      const candidates = [clean, ...getLemmaCandidates(clean)]
+      for (const cand of candidates) {
+        if (GRADED_DICTIONARY[cand]) {
+          resolvedTag = GRADED_DICTIONARY[cand][3]
+          break
+        } else if (DICTIONARY[cand]) {
+          resolvedTag = DICTIONARY[cand].tag
+          break
+        } else if (HP_LORE_DICTIONARY[cand]) {
+          resolvedTag = '魔法专有'
+          break
+        }
       }
     }
   }
 
-  if (resolvedTag && CEFR_TAG_MAP[resolvedTag]) {
-    return CEFR_TAG_MAP[resolvedTag]
-  }
-
-  if (resolvedTag && (resolvedTag.includes('魔法') || resolvedTag.includes('魁地奇') || resolvedTag.includes('魔药'))) {
-    return 'B2'
+  if (typeof resolvedTag === 'string') {
+    if (CEFR_TAG_MAP[resolvedTag]) {
+      return CEFR_TAG_MAP[resolvedTag]
+    }
+    if (resolvedTag.includes('魔法') || resolvedTag.includes('魁地奇') || resolvedTag.includes('魔药')) {
+      return 'B2'
+    }
   }
 
   return 'B1'

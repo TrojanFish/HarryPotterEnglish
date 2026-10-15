@@ -248,6 +248,13 @@ export const useVocabStore = defineStore('vocab', {
       this.saveVocab()
       return true
     },
+    /**
+     * Promote an item to the next Leitner Box (1 -> 5).
+     * - Box 3+: Automatically marks L3 (Recall) acquisition as completed.
+     * - Box 4 -> Box 5: Hard-gated by L4 (Production). Blocks promotion if !acquisition.l4.
+     * @param {string | object} item
+     * @returns {{ promoted: boolean, currentBox?: number, reason?: string, message?: string }}
+     */
     promoteBox(item) {
       if (!item) return { promoted: false, reason: 'INVALID_ITEM' }
       const clean = cleanWord(typeof item === 'string' ? item : item.word)
