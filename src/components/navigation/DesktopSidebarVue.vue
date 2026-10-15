@@ -13,7 +13,7 @@
         <button
           type="button"
           @click="handleSelectView('bookshelf')"
-          class="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer shrink-0 touch-manipulation"
+          class="w-11 h-11 rounded-2xl bg-amber-500 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer shrink-0 touch-manipulation"
           title="霍格沃茨魔法英语 · 点击返回书架"
           aria-label="霍格沃茨魔法英语 · 点击返回书架"
         >
@@ -489,6 +489,7 @@ function handleInstallPwa() {
 }
 
 function handleKeydown(e) {
+  if (['input', 'textarea'].includes(e.target?.tagName?.toLowerCase())) return
   if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
     e.preventDefault()
     handleToggleCollapse()

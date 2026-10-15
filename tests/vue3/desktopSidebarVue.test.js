@@ -129,5 +129,12 @@ describe('DesktopSidebarVue Component Tests', () => {
     assert.ok(source.includes('touch-manipulation'), 'Must include touch-manipulation')
     assert.ok(source.includes('active:scale-95'), 'Must include active:scale-95 feedback')
     assert.ok(source.includes('min-h-[44px]') || source.includes('w-11 h-11'), 'Must enforce minimum touch targets')
+    assert.ok(source.includes('w-11 h-11 rounded-2xl bg-amber-500'), 'Collapsed brand button must enforce 44x44px (w-11 h-11)')
+  })
+
+  it('handleKeydown ignores Ctrl+B when typing in input or textarea', () => {
+    const filePath = path.resolve('src/components/navigation/DesktopSidebarVue.vue')
+    const source = fs.readFileSync(filePath, 'utf-8')
+    assert.ok(source.includes("['input', 'textarea'].includes(e.target?.tagName?.toLowerCase())"), 'Must ignore Ctrl+B when typing in inputs')
   })
 })

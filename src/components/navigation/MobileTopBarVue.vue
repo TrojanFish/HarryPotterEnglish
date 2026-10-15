@@ -20,7 +20,7 @@
     <button
       type="button"
       @click="handleChapterClick"
-      class="min-h-[44px] px-3 rounded-full border border-[#e8ddd0] bg-white flex items-center gap-2 text-sm font-medium touch-action-manipulation text-amber-950 hover:border-amber-400 active:scale-95 transition-all cursor-pointer select-none"
+      class="min-h-[44px] px-3 rounded-full border border-[#e8ddd0] bg-white flex items-center gap-2 text-sm font-medium touch-manipulation text-amber-950 hover:border-amber-400 active:scale-95 transition-all cursor-pointer select-none"
       title="选择章节"
       aria-label="选择章节"
     >
@@ -37,14 +37,14 @@
       <button
         type="button"
         @click="handleVocabClick"
-        class="relative min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-white text-stone-600 hover:text-amber-950 active:scale-95 transition-all touch-action-manipulation cursor-pointer"
+        class="relative min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-white text-stone-600 hover:text-amber-950 active:scale-95 transition-all touch-manipulation cursor-pointer"
         title="生词本"
         aria-label="打开生词本"
       >
         <BookMarked :size="18" class="text-stone-700" />
         <span
           v-if="vocabCount > 0"
-          class="absolute -top-1 -right-1 bg-amber-600 text-white text-xs font-bold font-mono px-1.5 py-0.2 rounded-full min-w-[18px] text-center leading-tight shadow-none border border-white"
+          class="absolute -top-1 -right-1 bg-amber-600 text-white text-xs font-bold font-mono px-1.5 py-0.5 rounded-full min-w-[18px] text-center leading-tight shadow-none border border-white"
         >
           {{ vocabCount }}
         </span>
@@ -54,7 +54,7 @@
       <button
         type="button"
         @click="handleAnalyticsClick"
-        class="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-white text-stone-600 hover:text-amber-950 active:scale-95 transition-all touch-action-manipulation cursor-pointer"
+        class="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-white text-stone-600 hover:text-amber-950 active:scale-95 transition-all touch-manipulation cursor-pointer"
         title="学情罗盘"
         aria-label="打开学情分析"
       >
@@ -65,7 +65,7 @@
       <button
         type="button"
         @click="handleStorageClick"
-        class="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-white text-stone-600 hover:text-amber-950 active:scale-95 transition-all touch-action-manipulation cursor-pointer"
+        class="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-white text-stone-600 hover:text-amber-950 active:scale-95 transition-all touch-manipulation cursor-pointer"
         title="离线缓存"
         aria-label="打开存储管理"
       >

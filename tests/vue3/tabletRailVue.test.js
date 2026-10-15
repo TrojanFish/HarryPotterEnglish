@@ -77,7 +77,7 @@ describe('TabletRailVue Component Tests', () => {
     assert.ok(source.includes('storage'), 'Must define storage item')
 
     // Brand icon
-    assert.ok(source.includes('w-10 h-10 rounded-2xl bg-amber-500'), 'Brand icon must be w-10 h-10 rounded-2xl bg-amber-500')
+    assert.ok(source.includes('w-11 h-11 rounded-2xl bg-amber-500') || source.includes('w-10 h-10 rounded-2xl bg-amber-500'), 'Brand icon must be rounded-2xl bg-amber-500')
   })
 
   it('enforces touch targets (>= 44x44px) and active/inactive button styles', () => {

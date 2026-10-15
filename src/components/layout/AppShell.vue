@@ -5,9 +5,9 @@
       class="md:hidden"
       :current-chapter-title="computedChapterTitle"
       @open-chapter-drawer="handleOpenBookshelf"
-      @open-vocab="isVocabOpen = true"
-      @open-analytics="isAnalyticsOpen = true"
-      @open-storage="isStorageOpen = true"
+      @open-vocab="openVocab"
+      @open-analytics="openAnalytics"
+      @open-storage="openStorage"
     />
 
     <!-- Step tab bar: HP sessions only, hidden on TED view -->
@@ -37,17 +37,19 @@
     <div class="flex-1 min-h-0 flex overflow-hidden">
       <!-- Tablet icon rail: 768px - 1023px (hidden on mobile and desktop) -->
       <TabletRailVue
-        @open-vocab="isVocabOpen = true"
-        @open-analytics="isAnalyticsOpen = true"
-        @open-storage="isStorageOpen = true"
+        @open-vocab="openVocab"
+        @open-analytics="openAnalytics"
+        @open-storage="openStorage"
+        @change-study-mode="handleStudyModeChange"
       />
 
       <!-- Desktop sidebar: >= 1024px (hidden on mobile and tablet) -->
       <DesktopSidebarVue
-        @open-vocab="isVocabOpen = true"
-        @open-analytics="isAnalyticsOpen = true"
-        @open-storage="isStorageOpen = true"
+        @open-vocab="openVocab"
+        @open-analytics="openAnalytics"
+        @open-storage="openStorage"
         @open-legal="handleOpenLegal"
+        @change-study-mode="handleStudyModeChange"
       />
 
       <!-- Main content stage slot -->
@@ -97,6 +99,7 @@ import { AlertCircle, X } from 'lucide-vue-next'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useCatalogStore } from '../../stores/catalogStore.js'
+import { useSessionStore } from '../../stores/sessionStore.js'
 import { useBreakpointVue } from '../../utils/useBreakpointVue.js'
 
 import MobileTopBarVue from '../navigation/MobileTopBarVue.vue'
@@ -122,12 +125,15 @@ const props = defineProps({
 const navStore = useNavigationStore()
 const player = usePlayerStore()
 const catalogStore = useCatalogStore()
+const sessionStore = useSessionStore()
 const breakpoint = useBreakpointVue()
 
 const isVocabOpen = ref(false)
 const isAnalyticsOpen = ref(false)
 const isStorageOpen = ref(false)
 const isShortcutsOpen = ref(false)
+
+let previousView = 'player'
 
 const computedChapterTitle = computed(() => {
   if (props.currentChapterTitle) {
@@ -140,6 +146,20 @@ const computedChapterTitle = computed(() => {
   return `${code} · ${title}`
 })
 
+function handleStudyModeChange(mode) {
+  if (mode === 'blind') {
+    player.isBlindMode = true
+    sessionStore.setStep(1)
+  } else if (mode === 'dictation') {
+    player.isBlindMode = false
+    sessionStore.setStep(3)
+  } else {
+    player.isBlindMode = false
+    sessionStore.setStep(1)
+  }
+  navStore.setView('player')
+}
+
 function handleOpenBookshelf() {
   player.toggleBookshelf(true)
 }
@@ -148,24 +168,45 @@ function handleOpenLegal() {
   isShortcutsOpen.value = true
 }
 
+function openVocab() {
+  if (navStore.currentView && !['vocab', 'analytics', 'storage'].includes(navStore.currentView)) {
+    previousView = navStore.currentView
+  }
+  isVocabOpen.value = true
+}
+
+function openAnalytics() {
+  if (navStore.currentView && !['vocab', 'analytics', 'storage'].includes(navStore.currentView)) {
+    previousView = navStore.currentView
+  }
+  isAnalyticsOpen.value = true
+}
+
+function openStorage() {
+  if (navStore.currentView && !['vocab', 'analytics', 'storage'].includes(navStore.currentView)) {
+    previousView = navStore.currentView
+  }
+  isStorageOpen.value = true
+}
+
 function closeVocab() {
   isVocabOpen.value = false
   if (navStore.currentView === 'vocab') {
-    navStore.setView('player')
+    navStore.setView(previousView || 'player')
   }
 }
 
 function closeAnalytics() {
   isAnalyticsOpen.value = false
   if (navStore.currentView === 'analytics') {
-    navStore.setView('player')
+    navStore.setView(previousView || 'player')
   }
 }
 
 function closeStorage() {
   isStorageOpen.value = false
   if (navStore.currentView === 'storage') {
-    navStore.setView('player')
+    navStore.setView(previousView || 'player')
   }
 }
 
@@ -177,10 +218,19 @@ watch(
   () => navStore.currentView,
   (newView, oldView) => {
     if (newView === 'vocab') {
+      if (oldView && !['vocab', 'analytics', 'storage'].includes(oldView)) {
+        previousView = oldView
+      }
       isVocabOpen.value = true
     } else if (newView === 'analytics') {
+      if (oldView && !['vocab', 'analytics', 'storage'].includes(oldView)) {
+        previousView = oldView
+      }
       isAnalyticsOpen.value = true
     } else if (newView === 'storage') {
+      if (oldView && !['vocab', 'analytics', 'storage'].includes(oldView)) {
+        previousView = oldView
+      }
       isStorageOpen.value = true
     } else if (newView === 'bookshelf' && oldView !== undefined && oldView !== 'bookshelf') {
       player.toggleBookshelf(true)

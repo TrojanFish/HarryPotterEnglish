@@ -43,13 +43,16 @@ describe('MobileTopBarVue Component Tests', () => {
     assert.ok(source.includes('HardDrive'), 'Must use HardDrive icon')
   })
 
-  it('enforces Apple HIG touch targets (>= 44x44px)', () => {
+  it('enforces Apple HIG touch targets (>= 44x44px) and touch-manipulation', () => {
     const filePath = path.resolve('src/components/navigation/MobileTopBarVue.vue')
     assert.ok(fs.existsSync(filePath), 'MobileTopBarVue.vue must exist')
 
     const source = fs.readFileSync(filePath, 'utf-8')
     assert.ok(source.includes('min-h-[44px]'), 'Must enforce minimum touch height of 44px')
     assert.ok(source.includes('min-w-[44px]'), 'Must enforce minimum touch width of 44px for icon buttons')
+    assert.ok(source.includes('touch-manipulation'), 'Must use Tailwind touch-manipulation utility')
+    assert.ok(!source.includes('touch-action-manipulation'), 'Must not use non-standard touch-action-manipulation')
+    assert.ok(source.includes('py-0.5'), 'Badge must use standard py-0.5 padding')
   })
 
   it('enforces K12 brand typography and hides subtitle on mobile', () => {

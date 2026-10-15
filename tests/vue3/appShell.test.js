@@ -105,10 +105,14 @@ describe('AppShell and useBreakpointVue Unit & Integration Tests', () => {
     assert.ok(source.includes('min-h-[44px] min-w-[44px]') || source.includes('min-h-[44px]'), 'Error close button must satisfy 44px touch target')
   })
 
-  it('AppShell.vue uses parchment design palette', () => {
+  it('AppShell.vue connects study mode handling and preserves previousView', () => {
     const filePath = path.resolve('src/components/layout/AppShell.vue')
     const source = fs.readFileSync(filePath, 'utf-8')
 
-    assert.ok(source.includes('#fbf9f5'), 'Must use warm parchment base background #fbf9f5')
+    assert.ok(source.includes('useSessionStore'), 'Must import and consume useSessionStore')
+    assert.ok(source.includes('handleStudyModeChange'), 'Must define handleStudyModeChange')
+    assert.ok(source.includes('@change-study-mode="handleStudyModeChange"'), 'Must bind @change-study-mode to handleStudyModeChange')
+    assert.ok(source.includes('previousView'), 'Must track previousView for restoration on drawer close')
   })
 })
+

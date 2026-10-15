@@ -9,7 +9,7 @@
       <button
         type="button"
         @click="handleSelectView('bookshelf')"
-        class="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center text-white active:scale-95 cursor-pointer touch-manipulation transition-transform"
+        class="w-11 h-11 rounded-2xl bg-amber-500 flex items-center justify-center text-white active:scale-95 cursor-pointer touch-manipulation transition-transform"
         title="霍格沃茨魔法英语"
         aria-label="霍格沃茨魔法英语"
       >
@@ -91,7 +91,13 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['change-view', 'change-study-mode'])
+const emit = defineEmits([
+  'change-view',
+  'change-study-mode',
+  'open-vocab',
+  'open-analytics',
+  'open-storage'
+])
 
 const navigationStore = useNavigationStore()
 const vocabStore = useVocabStore()
@@ -182,9 +188,13 @@ function handleItemClick(item) {
   if (item.studyMode) {
     emit('change-study-mode', item.studyMode)
   }
+  if (item.id === 'vocab') emit('open-vocab')
+  if (item.id === 'analytics') emit('open-analytics')
+  if (item.id === 'storage') emit('open-storage')
 }
 
 function handleStreakClick() {
   handleSelectView('analytics')
+  emit('open-analytics')
 }
 </script>
