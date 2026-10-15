@@ -280,7 +280,8 @@ import {
   PanelLeftOpen,
   Flame,
   Scale,
-  Download
+  Download,
+  Award
 } from 'lucide-vue-next'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
@@ -396,6 +397,13 @@ const navItems = [
     desc: '双语演讲与名家视界',
     icon: Video,
     view: 'ted'
+  },
+  {
+    id: 'assessment',
+    label: '能力评定',
+    desc: 'CEFR定级与巫师等级考',
+    icon: Award,
+    view: 'assessment'
   },
   {
     id: 'player_reader',

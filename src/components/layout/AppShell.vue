@@ -54,7 +54,8 @@
 
       <!-- Main content stage slot -->
       <main class="flex-1 min-w-0 overflow-hidden relative flex flex-col" role="main">
-        <slot />
+        <AssessmentHub v-if="navigationStore.currentView === 'assessment'" />
+        <slot v-else />
       </main>
     </div>
 
@@ -114,6 +115,7 @@ import VocabularyDrawer from '../VocabularyDrawer.vue'
 import AnalyticsDashboard from '../AnalyticsDashboard.vue'
 import StorageManagerModal from '../StorageManagerModal.vue'
 import ShortcutsModal from '../ShortcutsModal.vue'
+import AssessmentHub from '../assessment/AssessmentHub.vue'
 
 const props = defineProps({
   currentChapterTitle: {
@@ -123,6 +125,7 @@ const props = defineProps({
 })
 
 const navStore = useNavigationStore()
+const navigationStore = navStore
 const player = usePlayerStore()
 const catalogStore = useCatalogStore()
 const sessionStore = useSessionStore()

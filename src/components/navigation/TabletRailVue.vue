@@ -74,7 +74,8 @@ import {
   Bookmark,
   BarChart2,
   HardDrive,
-  Flame
+  Flame,
+  Award
 } from 'lucide-vue-next'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
@@ -125,6 +126,12 @@ const navItems = [
     title: 'TED演讲',
     icon: Video,
     view: 'ted'
+  },
+  {
+    id: 'assessment',
+    title: '能力评定',
+    icon: Award,
+    view: 'assessment'
   },
   {
     id: 'player_reader',

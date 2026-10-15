@@ -36,7 +36,8 @@ import {
   Video,
   Bookmark,
   BarChart2,
-  HardDrive
+  HardDrive,
+  Award
 } from 'lucide-vue-next'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
@@ -51,6 +52,7 @@ const vocabCount = computed(() => vocabStore.vocabList?.length || 0)
 const navItems = [
   { id: 'bookshelf', label: '书架', icon: Library, view: 'bookshelf' },
   { id: 'ted', label: 'TED', icon: Video, view: 'ted' },
+  { id: 'assessment', label: '评定', icon: Award, view: 'assessment' },
   { id: 'vocab', label: '生词本', icon: Bookmark, view: 'vocab' },
   { id: 'analytics', label: '学情', icon: BarChart2, view: 'analytics' },
   { id: 'storage', label: '离线', icon: HardDrive, view: 'storage' }
