@@ -24,7 +24,7 @@
         <button
           type="button"
           @click="selectTalk(talk.id)"
-          class="w-full text-left px-4 py-3 min-h-[44px] touch-manipulation transition-colors duration-150 flex flex-col gap-1 focus:outline-none"
+          class="w-full text-left px-4 py-3 min-h-[44px] touch-manipulation transition-colors duration-150 flex flex-col gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50"
           :class="[
             isSelected(talk.id)
               ? 'bg-amber-500/10 border-l-4 border-amber-500'
