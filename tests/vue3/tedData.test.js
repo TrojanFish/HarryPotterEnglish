@@ -59,4 +59,12 @@ describe('parseBilingualVtt', () => {
     assert.equal(enCues.length, 0)
     assert.equal(zhCues.length, 0)
   })
+  it('handles UTF-8 BOM prefix cleanly', () => {
+    const vtt = `\uFEFFWEBVTT\n\n00:00:01.000 --> 00:00:04.000\nBOM test\n\n00:00:01.000 --> 00:00:04.000\nBOM测试\n`
+    const { enCues, zhCues } = parseBilingualVtt(vtt)
+    assert.equal(enCues.length, 1)
+    assert.equal(enCues[0].text, 'BOM test')
+    assert.equal(zhCues.length, 1)
+    assert.equal(zhCues[0].text, 'BOM测试')
+  })
 })

@@ -250,7 +250,7 @@ export function parseBilingualVtt(vttText) {
     return { enCues: [], zhCues: [] }
   }
 
-  const normalized = vttText.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+  const normalized = vttText.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n')
   const blocks = normalized.split(/\n\s*\n/)
   const allCues = []
 
