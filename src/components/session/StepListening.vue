@@ -3,7 +3,7 @@
     <!-- Left Column: Reading Subtitle Stream (Full width on mobile, 65% on desktop) -->
     <div
       ref="scrollContainerRef"
-      class="flex-1 md:flex-[1.2] flex flex-col min-w-0 border-r border-[#e4e4e7] overflow-y-auto p-4 sm:p-6 pb-32 sm:pb-36 space-y-3 sm:space-y-3.5"
+      class="flex-1 md:flex-[1.2] max-w-3xl flex flex-col min-w-0 border-r border-[#e4e4e7] overflow-y-auto p-4 sm:p-6 pb-32 sm:pb-36 space-y-3 sm:space-y-3.5"
     >
       <!-- Subtitle Control Strip -->
       <div class="flex items-center justify-between pb-3 border-b border-[#e4e4e7] text-xs text-[#71717a] shrink-0">
@@ -82,7 +82,7 @@
     </div>
 
     <!-- Right Column: Focus Insight & Word Details (Desktop only) -->
-    <div class="hidden md:flex md:flex-[0.8] flex-col p-6 bg-[#f8f8f6] overflow-y-auto space-y-5">
+    <div class="hidden md:flex md:w-80 lg:w-72 shrink-0 flex-col p-6 bg-[#f8f8f6] overflow-y-auto space-y-5">
       <!-- Section: Core Vocabulary of Current Cue -->
       <div>
         <div class="flex items-center justify-between mb-2">
