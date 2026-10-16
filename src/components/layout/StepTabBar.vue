@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="h-12 shrink-0 bg-white border-b border-[#e4e4e7] px-3 sm:px-6 flex items-center justify-center z-10"
+    class="h-12 shrink-0 bg-[#fbf9f5] border-b border-[#e8ddd0] px-3 sm:px-6 flex items-center justify-center z-10"
     role="navigation"
     aria-label="学习步骤流程"
   >
@@ -13,8 +13,8 @@
         :class="[
           'flex-1 min-h-[44px] px-2 py-1.5 rounded-lg flex items-center justify-center gap-1.5 text-xs font-medium transition-all active:scale-95 touch-manipulation',
           sessionStore.currentStep === item.id
-            ? 'bg-[#2563eb] text-white font-semibold'
-            : 'text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5]'
+            ? 'bg-amber-700 text-amber-50 font-bold shadow-sm'
+            : 'text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6]'
         ]"
         :aria-current="sessionStore.currentStep === item.id ? 'step' : undefined"
       >
@@ -22,8 +22,8 @@
           :class="[
             'w-4 h-4 rounded-full border flex items-center justify-center text-[10px] font-bold font-mono',
             sessionStore.currentStep === item.id
-              ? 'border-white text-white'
-              : 'border-[#71717a] text-[#71717a]'
+              ? 'border-amber-100 text-amber-100'
+              : 'border-stone-400 text-stone-600'
           ]"
         >
           {{ item.id }}

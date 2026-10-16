@@ -1,18 +1,18 @@
 <template>
   <footer
-    class="shrink-0 w-full bg-white border-t border-[#e4e4e7] px-3 sm:px-6 pt-2 pb-[calc(env(safe-area-inset-bottom,0px)+8px)] flex flex-col justify-center z-20"
+    class="shrink-0 w-full bg-[#fbf9f5] border-t border-[#e8ddd0] px-3 sm:px-6 pt-2 pb-[calc(env(safe-area-inset-bottom,0px)+8px)] flex flex-col justify-center z-20"
     role="region"
     aria-label="音频智能控制台"
   >
     <!-- Top Progress Bar (Scrubber) -->
     <div class="w-full flex items-center gap-2 sm:gap-3 mb-1">
-      <span class="text-[11px] font-mono text-[#71717a] w-10 text-right shrink-0">
+      <span class="text-[11px] font-mono text-stone-500 w-10 text-right shrink-0">
         {{ formatTime(player.currentTime) }}
       </span>
       <div
         ref="progressBarRef"
         @click="seekAudio"
-        class="flex-1 h-1.5 sm:h-2 bg-[#e4e4e7] rounded-full overflow-hidden cursor-pointer relative touch-manipulation group"
+        class="flex-1 h-1.5 sm:h-2 bg-[#e8ddd0] rounded-full overflow-hidden cursor-pointer relative touch-manipulation group"
         role="slider"
         :aria-valuenow="progressPercent"
         aria-valuemin="0"
@@ -20,11 +20,11 @@
         aria-label="播放进度条"
       >
         <div
-          class="h-full bg-[#2563eb] transition-all group-hover:bg-blue-600"
+          class="h-full bg-amber-600 transition-all group-hover:bg-amber-700"
           :style="{ width: progressPercent + '%' }"
         ></div>
       </div>
-      <span class="text-[11px] font-mono text-[#71717a] w-10 shrink-0">
+      <span class="text-[11px] font-mono text-stone-500 w-10 shrink-0">
         {{ formatTime(player.duration) }}
       </span>
     </div>
@@ -39,8 +39,8 @@
           :class="[
             'min-h-[44px] px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 touch-manipulation active:scale-95 cursor-pointer',
             isLooping
-              ? 'bg-blue-100 text-[#2563eb] font-semibold'
-              : 'text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5]'
+              ? 'bg-amber-100 text-amber-900 border border-amber-300 font-semibold'
+              : 'text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6]'
           ]"
           :title="isLooping ? '单句循环锁定已开启' : '开启单句循环锁定'"
           aria-label="单句循环"
@@ -52,7 +52,7 @@
         <button
           type="button"
           @click="cycleRate"
-          class="min-h-[44px] px-2.5 py-1 text-xs font-mono font-medium text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-lg transition-colors touch-manipulation active:scale-95 cursor-pointer"
+          class="min-h-[44px] px-2.5 py-1 text-xs font-mono font-medium text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] rounded-lg transition-colors touch-manipulation active:scale-95 cursor-pointer"
           title="切换播放倍速"
           aria-label="切换播放倍速"
         >
@@ -66,7 +66,7 @@
         <button
           type="button"
           @click="jumpToPrevCue"
-          class="min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-full transition-colors flex items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
+          class="min-h-[44px] min-w-[44px] p-2 text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] rounded-full transition-colors flex items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
           title="上一句"
           aria-label="上一句"
         >
@@ -77,7 +77,7 @@
         <button
           type="button"
           @click="player.seekRel(-10)"
-          class="hidden sm:flex min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-full transition-colors items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
+          class="hidden sm:flex min-h-[44px] min-w-[44px] p-2 text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] rounded-full transition-colors items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
           title="快退 10 秒"
           aria-label="快退 10 秒"
         >
@@ -88,7 +88,7 @@
         <button
           type="button"
           @click="player.togglePlay()"
-          class="w-11 h-11 min-h-[44px] min-w-[44px] rounded-full bg-[#18181b] hover:bg-[#27272a] text-white flex items-center justify-center transition-all active:scale-95 touch-manipulation cursor-pointer shadow-sm shrink-0"
+          class="w-11 h-11 min-h-[44px] min-w-[44px] rounded-full bg-amber-700 hover:bg-amber-800 text-amber-50 shadow-sm flex items-center justify-center transition-all active:scale-95 touch-manipulation cursor-pointer shrink-0"
           :title="player.isPlaying ? '暂停' : '播放'"
           :aria-label="player.isPlaying ? '暂停' : '播放'"
         >
@@ -100,7 +100,7 @@
         <button
           type="button"
           @click="player.seekRel(10)"
-          class="hidden sm:flex min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-full transition-colors items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
+          class="hidden sm:flex min-h-[44px] min-w-[44px] p-2 text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] rounded-full transition-colors items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
           title="快进 10 秒"
           aria-label="快进 10 秒"
         >
@@ -111,7 +111,7 @@
         <button
           type="button"
           @click="jumpToNextCue"
-          class="min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-full transition-colors flex items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
+          class="min-h-[44px] min-w-[44px] p-2 text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] rounded-full transition-colors flex items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
           title="下一句"
           aria-label="下一句"
         >
@@ -128,13 +128,13 @@
           :class="[
             'min-h-[44px] px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 touch-manipulation active:scale-95 cursor-pointer',
             player.isBlindMode
-              ? 'bg-blue-100 text-[#2563eb] font-semibold'
-              : 'text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5]'
+              ? 'bg-amber-100 text-amber-900 border border-amber-300 font-semibold'
+              : 'text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6]'
           ]"
           :title="player.isBlindMode ? '盲听模式开启中（点击取消模糊）' : '开启盲听模式（专注听力输入）'"
           :aria-label="player.isBlindMode ? '取消盲听模式' : '开启盲听模式'"
         >
-          <EyeOff v-if="player.isBlindMode" class="w-4 h-4 shrink-0 text-[#2563eb]" />
+          <EyeOff v-if="player.isBlindMode" class="w-4 h-4 shrink-0 text-amber-800" />
           <Eye v-else class="w-4 h-4 shrink-0" />
           <span class="hidden md:inline">{{ player.isBlindMode ? '盲听中' : '盲听' }}</span>
         </button>
@@ -146,8 +146,8 @@
           :class="[
             'min-h-[44px] min-w-[44px] px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center justify-center gap-1.5 touch-manipulation active:scale-95 cursor-pointer',
             player.sleepTimerMode
-              ? 'bg-blue-100 text-[#2563eb] font-semibold'
-              : 'text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5]'
+              ? 'bg-amber-100 text-amber-900 border border-amber-300 font-semibold'
+              : 'text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6]'
           ]"
           :title="player.sleepTimerMode ? `睡眠定时进行中: ${sleepTimerDisplay}` : '设置睡眠定时'"
           aria-label="设置睡眠定时"
@@ -194,7 +194,7 @@
           >
             <div
               v-if="isSleepMenuOpen"
-              class="pointer-events-auto bg-[#f8f8f6] border-t border-x sm:border border-[#e4e4e7] rounded-t-2xl sm:rounded-2xl max-w-sm w-full p-5 space-y-4 pb-[calc(env(safe-area-inset-bottom,0px)+16px)] sm:pb-5 flex flex-col overflow-hidden"
+              class="pointer-events-auto bg-[#f5efe6] border-t border-x sm:border border-[#e8ddd0] rounded-t-2xl sm:rounded-2xl max-w-sm w-full p-5 space-y-4 pb-[calc(env(safe-area-inset-bottom,0px)+16px)] sm:pb-5 flex flex-col overflow-hidden"
               :style="sheetStyle"
               @click.stop
               role="dialog"
@@ -208,7 +208,7 @@
                 @touchmove="handleDragTouchMove"
                 @touchend="onTouchEnd"
               >
-                <div class="w-10 h-1.5 rounded-full bg-stone-300"></div>
+                <div class="w-10 h-1.5 rounded-full bg-[#e8ddd0]"></div>
               </div>
 
               <!-- Header -->
@@ -219,15 +219,15 @@
                 @touchend="onTouchEnd"
               >
                 <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#2563eb]">
+                  <div class="w-8 h-8 rounded-lg bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-900">
                     <Moon class="w-4 h-4" />
                   </div>
-                  <h3 class="font-serif text-sm font-semibold text-[#18181b]">睡眠定时</h3>
+                  <h3 class="font-serif text-sm font-semibold text-stone-900">睡眠定时</h3>
                 </div>
                 <button
                   type="button"
                   @click="isSleepMenuOpen = false"
-                  class="min-h-[44px] min-w-[44px] p-2 text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] rounded-lg flex items-center justify-center transition-colors cursor-pointer"
+                  class="min-h-[44px] min-w-[44px] p-2 text-stone-600 hover:text-stone-900 hover:bg-[#fbf9f5] rounded-lg flex items-center justify-center transition-colors cursor-pointer"
                   aria-label="关闭定时器选择"
                 >
                   <X class="w-4 h-4" />
@@ -244,12 +244,12 @@
                   :class="[
                     'w-full min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-medium flex items-center justify-between border transition-all cursor-pointer active:scale-95 touch-manipulation',
                     isOptionActive(opt.value)
-                      ? 'bg-blue-50 border-blue-300 text-[#2563eb]'
-                      : 'bg-white hover:bg-[#f4f4f5] border-[#e4e4e7] text-[#18181b]'
+                      ? 'bg-amber-100 border border-amber-300 text-amber-900 font-bold'
+                      : 'bg-white/80 hover:bg-[#fbf9f5] border-[#e8ddd0] text-stone-800'
                   ]"
                 >
                   <span>{{ opt.label }}</span>
-                  <Check v-if="isOptionActive(opt.value)" class="w-4 h-4 text-[#2563eb]" />
+                  <Check v-if="isOptionActive(opt.value)" class="w-4 h-4 text-amber-700" />
                 </button>
               </div>
             </div>
