@@ -122,10 +122,43 @@ describe('Dashboard Navigation Architecture Verification', () => {
       )
     })
 
+    test('DesktopSidebarVue prevents vertical shift on vocab selection and uses SVG keyboard guide button', () => {
+      const content = readComponent('src/components/navigation/DesktopSidebarVue.vue')
+      
+      // Fix visual clutter: brand title must not truncate
+      assert.ok(content.includes('whitespace-nowrap'), 'Brand title must use whitespace-nowrap to prevent truncation to 霍格...')
+
+      // Zero shift: fixed height h-11 on nav item buttons
+      assert.ok(content.includes('h-11') && content.includes('rounded-xl'), 'Nav item buttons must have fixed h-11 and rounded-xl to prevent vertical shift')
+
+      // Badge must have fixed height
+      assert.ok(content.includes('h-5') || content.includes('min-h-[20px]'), 'Vocab badge must have fixed height to prevent button expansion')
+
+      // Simplifies 研学公约 to Keyboard SVG button
+      assert.ok(!content.includes('研学公约与法律声明'), 'DesktopSidebar must eliminate clunky 研学公约与法律声明 text button')
+      assert.ok(content.includes('Keyboard'), 'DesktopSidebar must use Keyboard SVG icon for shortcuts guide')
+      assert.ok(content.includes('快捷键与手势指南'), 'Must provide clear title/aria-label for shortcuts guide')
+    })
+
     test('TabletRailVue removes 魔法磨耳朵 and 拼写大闯关 from navItems', () => {
       const content = readComponent('src/components/navigation/TabletRailVue.vue')
       assert.ok(!content.includes("id: 'player_blind'"), 'TabletRail must remove player_blind (魔法磨耳朵) from navItems')
       assert.ok(!content.includes("id: 'player_dictation'"), 'TabletRail must remove player_dictation (拼写大闯关) from navItems')
+    })
+  })
+
+  describe('5. SmartAudioPlayer right-page width docking', () => {
+    test('AppShell places SmartAudioPlayer in the right content column so width follows the right stage', () => {
+      const content = readComponent('src/components/layout/AppShell.vue')
+      const sidebarIdx = content.indexOf('<DesktopSidebarVue')
+      const mainIdx = content.indexOf('<main')
+      const playerIdx = content.indexOf('<SmartAudioPlayer')
+
+      assert.ok(sidebarIdx !== -1 && mainIdx !== -1 && playerIdx !== -1, 'Components must exist in AppShell')
+      
+      // SmartAudioPlayer must be grouped with main inside right column (so width follows right stage, not full screen under sidebar)
+      assert.ok(playerIdx > mainIdx, 'SmartAudioPlayer must follow main inside the right content area')
+      assert.ok(!content.includes('</main>\n    </div>\n\n    <!-- Bottom navigation bar'), 'SmartAudioPlayer must not be outside middle flex container')
     })
   })
 })

@@ -2,7 +2,7 @@
   <aside
     :class="[
       'hidden lg:flex shrink-0 flex-col justify-between border-r border-[#e8ddd0] bg-[#fbf9f5] select-none h-full overflow-y-auto transition-all duration-200',
-      isCollapsed ? 'w-18 py-4 px-2 items-center' : 'w-60 p-4'
+      isCollapsed ? 'w-18 py-4 px-2 items-center' : 'w-64 p-3.5'
     ]"
     aria-label="桌面端侧边导航"
   >
@@ -36,7 +36,7 @@
             </div>
             <div class="flex flex-col min-w-0">
               <div class="flex items-center gap-1.5">
-                <h1 class="font-magical font-bold text-base text-amber-950 tracking-tight truncate">
+                <h1 class="font-magical font-bold text-base text-amber-950 tracking-tight whitespace-nowrap">
                   霍格沃茨英语
                 </h1>
                 <span class="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-red-800 text-amber-100 font-sans font-bold shrink-0">
@@ -63,7 +63,7 @@
       </div>
 
       <!-- Navigation Items (Collapsed) -->
-      <nav v-if="isCollapsed" class="flex flex-col items-center gap-2 w-full" aria-label="桌面精简导航">
+      <nav v-if="isCollapsed" class="flex flex-col items-center gap-1.5 w-full" aria-label="桌面精简导航">
         <button
           v-for="item in navItems"
           :key="item.id"
@@ -72,23 +72,23 @@
           :title="`${item.label} · ${item.desc}`"
           :aria-label="item.label"
           :aria-current="isItemActive(item) ? 'page' : undefined"
-          class="relative w-11 h-11 rounded-2xl flex items-center justify-center transition-colors cursor-pointer touch-manipulation active:scale-95"
+          class="relative w-11 h-11 rounded-xl flex items-center justify-center transition-all cursor-pointer touch-manipulation active:scale-95 border"
           :class="isItemActive(item)
-            ? 'bg-amber-500 text-white border border-amber-600'
-            : 'text-stone-600 hover:text-amber-950 hover:bg-white border border-transparent hover:border-[#e8ddd0]'"
+            ? 'bg-amber-100/90 text-amber-950 border-amber-300/80 shadow-none'
+            : 'text-stone-600 hover:text-stone-900 hover:bg-white/80 border-transparent hover:border-[#e8ddd0]'"
         >
-          <span :class="[isItemActive(item) ? 'text-white' : 'text-stone-500 hover:text-amber-700', 'transition-colors']">
+          <span :class="[isItemActive(item) ? 'text-amber-800' : 'text-stone-500 hover:text-stone-700', 'transition-colors']">
             <component :is="item.icon" :size="20" class="shrink-0" />
           </span>
           <span
             v-if="item.id === 'vocab' && vocabCount > 0"
-            class="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-amber-600 text-white font-mono font-bold text-[9px] flex items-center justify-center border border-white leading-none shadow-none"
+            class="absolute -top-1 -right-1 min-w-[18px] h-4 px-1 rounded-full bg-amber-600 text-white font-mono font-bold text-[9px] flex items-center justify-center border border-white leading-none shadow-none"
           >
             {{ vocabCount > 99 ? '99+' : vocabCount }}
           </span>
           <span
             v-else-if="item.id === 'storage' && cachedCount > 0"
-            class="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-amber-600 text-white font-mono font-bold text-[9px] flex items-center justify-center border border-white leading-none shadow-none"
+            class="absolute -top-1 -right-1 min-w-[18px] h-4 px-1 rounded-full bg-amber-600 text-white font-mono font-bold text-[9px] flex items-center justify-center border border-white leading-none shadow-none"
           >
             {{ cachedCount > 99 ? '99+' : cachedCount }}
           </span>
@@ -96,7 +96,7 @@
       </nav>
 
       <!-- Navigation Items (Expanded) -->
-      <nav v-else class="space-y-1.5 w-full" aria-label="桌面主导航">
+      <nav v-else class="space-y-1 w-full" aria-label="桌面主导航">
         <button
           v-for="item in navItems"
           :key="item.id"
@@ -105,22 +105,22 @@
           :title="item.desc"
           :aria-label="item.label"
           :aria-current="isItemActive(item) ? 'page' : undefined"
-          class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-bold min-h-[44px] transition-colors text-left cursor-pointer group touch-manipulation active:scale-95"
+          class="w-full flex items-center justify-between px-3 h-11 min-h-[44px] max-h-[44px] rounded-xl text-sm font-bold transition-all text-left cursor-pointer group touch-manipulation active:scale-95 border"
           :class="isItemActive(item)
-            ? 'bg-amber-500 text-white border border-amber-600'
-            : 'text-stone-600 hover:text-amber-950 hover:bg-white border border-transparent hover:border-[#e8ddd0]'"
+            ? 'bg-amber-100/90 text-amber-950 border-amber-300/80 shadow-none'
+            : 'text-stone-600 hover:text-stone-900 hover:bg-white/80 border-transparent hover:border-[#e8ddd0]'"
         >
           <div class="flex items-center gap-2.5 min-w-0">
-            <span :class="[isItemActive(item) ? 'text-white' : 'text-stone-500 group-hover:text-amber-700', 'transition-colors']">
-              <component :is="item.icon" :size="18" class="shrink-0" />
+            <span :class="[isItemActive(item) ? 'text-amber-800' : 'text-stone-500 group-hover:text-stone-700', 'transition-colors shrink-0']">
+              <component :is="item.icon" :size="18" />
             </span>
             <span class="truncate">{{ item.label }}</span>
           </div>
           <span
             v-if="item.id === 'vocab' && vocabCount > 0"
             :class="[
-              'text-[10px] px-2 py-0.5 rounded-full font-mono font-bold shrink-0',
-              isItemActive(item) ? 'bg-white/20 text-white' : 'bg-amber-500/15 text-amber-800 border border-amber-300'
+              'text-[10px] h-5 min-w-[20px] px-1.5 rounded-full font-mono font-bold flex items-center justify-center shrink-0 border leading-none',
+              isItemActive(item) ? 'bg-amber-200/90 text-amber-950 border-amber-300' : 'bg-amber-50 text-amber-800 border-amber-200'
             ]"
           >
             {{ vocabCount > 99 ? '99+' : vocabCount }}
@@ -128,8 +128,8 @@
           <span
             v-else-if="item.id === 'storage' && cachedCount > 0"
             :class="[
-              'text-[10px] px-2 py-0.5 rounded-full font-mono font-bold shrink-0',
-              isItemActive(item) ? 'bg-white/20 text-white' : 'bg-amber-500/15 text-amber-800 border border-amber-300'
+              'text-[10px] h-5 min-w-[20px] px-1.5 rounded-full font-mono font-bold flex items-center justify-center shrink-0 border leading-none',
+              isItemActive(item) ? 'bg-amber-200/90 text-amber-950 border-amber-300' : 'bg-amber-50 text-amber-800 border-amber-200'
             ]"
           >
             {{ cachedCount > 99 ? '99+' : cachedCount }}
@@ -197,13 +197,24 @@
       >
         <Download :size="15" />
       </button>
+
+      <!-- Shortcuts Guide SVG Button (Collapsed) -->
+      <button
+        type="button"
+        @click="handleLegalClick"
+        class="min-w-[44px] min-h-[44px] rounded-xl hover:bg-white text-stone-400 hover:text-stone-800 flex items-center justify-center transition-colors cursor-pointer touch-manipulation active:scale-95"
+        title="快捷键与手势指南 (按 ? 查看)"
+        aria-label="快捷键与手势指南"
+      >
+        <Keyboard :size="18" />
+      </button>
     </div>
 
     <!-- Expanded Bottom -->
-    <div v-else class="space-y-3 pt-4 border-t border-[#e8ddd0] w-full">
+    <div v-else class="space-y-2.5 pt-3 border-t border-[#e8ddd0] w-full">
       <!-- Habit Progress & Gamification Card -->
       <div
-        class="duo-card p-3.5 space-y-2.5 bg-white rounded-2xl border border-[#e8ddd0]"
+        class="duo-card p-3 space-y-2 bg-white rounded-xl border border-[#e8ddd0]"
       >
         <!-- House Status & Badges Quick Action Row -->
         <div class="flex items-center justify-between text-xs pb-1 border-b border-stone-100">
@@ -234,29 +245,29 @@
         <!-- Streak and Today Habit Target (Clickable to Analytics) -->
         <div
           @click="handleAnalyticsClick"
-          class="space-y-2 cursor-pointer touch-manipulation"
+          class="space-y-1.5 cursor-pointer touch-manipulation"
           role="button"
           tabindex="0"
           title="点击查看学业罗盘与听力分布"
           @keydown.enter="handleAnalyticsClick"
           @keydown.space.prevent="handleAnalyticsClick"
         >
-          <div class="flex items-center justify-between text-sm font-bold text-amber-950">
+          <div class="flex items-center justify-between text-xs font-bold text-amber-950">
             <span class="flex items-center gap-1.5 text-orange-600">
-              <Flame :size="16" class="fill-orange-500 text-orange-500" />
+              <Flame :size="15" class="fill-orange-500 text-orange-500" />
               <span>连续打卡</span>
             </span>
             <span class="font-mono font-bold text-orange-600">{{ streakDays }} 天</span>
           </div>
 
-          <div class="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+          <div class="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
             <div
               class="bg-gradient-to-r from-amber-500 to-amber-600 h-full rounded-full transition-all duration-700"
               :style="{ width: `${goalPercent}%` }"
             />
           </div>
 
-          <div class="flex items-center justify-between text-xs text-stone-500 font-reading">
+          <div class="flex items-center justify-between text-[11px] text-stone-500 font-reading">
             <span>今日契约: {{ goalMinutes }} / 5 分钟</span>
             <span class="font-mono font-bold text-amber-900">{{ goalPercent }}%</span>
           </div>
@@ -267,7 +278,7 @@
       <button
         type="button"
         @click="handleOpenCloudSync"
-        class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl border border-amber-200 bg-amber-50/70 hover:bg-amber-100/70 text-amber-950 transition-all cursor-pointer min-h-[44px] min-w-[44px] touch-manipulation active:scale-95 text-xs font-bold"
+        class="w-full flex items-center justify-between px-3 h-11 rounded-xl border border-amber-200 bg-amber-50/70 hover:bg-amber-100/70 text-amber-950 transition-all cursor-pointer min-h-[44px] min-w-[44px] touch-manipulation active:scale-95 text-xs font-bold"
         title="打开多设备云端漫游与通行码配对"
         aria-label="打开云端漫游"
       >
@@ -279,23 +290,6 @@
           无损漫游
         </span>
       </button>
-
-      <!-- Local-First Sync Indicator -->
-      <div
-        @click="handleAnalyticsClick"
-        class="flex items-center justify-between text-xs px-1 text-stone-400 hover:text-stone-600 cursor-pointer transition-colors min-h-[44px] touch-manipulation"
-        title="本地优先增量同步：离线数据已安全存储，联网时自动与云端漫游"
-        role="button"
-        tabindex="0"
-        @keydown.enter="handleAnalyticsClick"
-        @keydown.space.prevent="handleAnalyticsClick"
-      >
-        <span class="flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-          <span>云端同步 · 0ms离线</span>
-        </span>
-        <span class="font-mono text-[11px]">D1 漫游</span>
-      </div>
 
       <!-- Optional PWA Install Prompt -->
       <button
@@ -309,17 +303,31 @@
         <span>安装桌面快捷应用</span>
       </button>
 
-      <!-- Legal Disclaimers & Academic Charter Entry -->
-      <button
-        type="button"
-        @click="handleLegalClick"
-        class="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs text-stone-400 hover:text-amber-800 transition-colors cursor-pointer min-h-[44px] touch-manipulation active:scale-95"
-        title="研学公约、版权致谢与 COPPA 隐私保护声明"
-        aria-label="研学公约与法律声明"
-      >
-        <Scale :size="14" class="shrink-0" />
-        <span>研学公约与法律声明</span>
-      </button>
+      <!-- Utility Footer: Local-First Sync Indicator & Keyboard Shortcuts SVG Button -->
+      <div class="flex items-center justify-between px-1 text-xs text-stone-500 pt-0.5">
+        <div
+          @click="handleAnalyticsClick"
+          class="flex items-center gap-1.5 hover:text-stone-800 cursor-pointer transition-colors min-h-[44px] touch-manipulation"
+          title="本地优先增量同步：离线数据已安全存储，联网时自动与云端漫游"
+          role="button"
+          tabindex="0"
+          @keydown.enter="handleAnalyticsClick"
+          @keydown.space.prevent="handleAnalyticsClick"
+        >
+          <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+          <span class="text-[11px] font-medium text-stone-500">云端同步 · 0ms离线</span>
+        </div>
+
+        <button
+          type="button"
+          @click="handleLegalClick"
+          class="w-10 h-10 rounded-xl hover:bg-stone-200/60 text-stone-400 hover:text-stone-800 flex items-center justify-center transition-colors cursor-pointer touch-manipulation active:scale-95 shrink-0"
+          title="快捷键与手势指南 (按 ? 查看)"
+          aria-label="快捷键与手势指南"
+        >
+          <Keyboard :size="18" />
+        </button>
+      </div>
     </div>
   </aside>
 </template>
@@ -338,7 +346,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Flame,
-  Scale,
+  Keyboard,
   Download,
   Award,
   Trophy,

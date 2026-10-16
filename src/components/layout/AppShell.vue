@@ -47,47 +47,49 @@
         @close="closeVocab"
       />
 
-      <!-- Main content stage slot -->
-      <main class="flex-1 min-w-0 overflow-hidden relative flex flex-col" role="main">
-        <!-- Step tab bar: HP sessions only, docked in right-side main stage header so left sidebar stays full height -->
-        <StepTabBar v-if="navStore.currentView === 'player'" />
+      <!-- Right Stage Column: Main Stage View + Docked SmartAudioPlayer -->
+      <div class="flex-1 min-w-0 flex flex-col overflow-hidden relative">
+        <main class="flex-1 min-w-0 overflow-hidden relative flex flex-col" role="main">
+          <!-- Step tab bar: HP sessions only, docked in right-side main stage header so left sidebar stays full height -->
+          <StepTabBar v-if="navStore.currentView === 'player'" />
 
-        <!-- Global audio error notice banner (shared) -->
-        <div
-          v-if="player.audioError"
-          class="mx-3 sm:mx-4 mt-2 px-3 py-1.5 bg-rose-50 border border-rose-200 rounded-lg flex items-center justify-between text-xs text-rose-800 shrink-0 transition-all z-10"
-          role="alert"
-        >
-          <div class="flex items-center gap-2 min-w-0">
-            <AlertCircle class="w-4 h-4 text-rose-600 shrink-0" />
-            <span class="truncate">{{ player.audioError }}</span>
-          </div>
-          <button
-            type="button"
-            @click="player.setAudioError(null)"
-            class="p-1 rounded-lg text-rose-800 hover:bg-rose-100 min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0 cursor-pointer touch-manipulation"
-            aria-label="关闭提示"
+          <!-- Global audio error notice banner (shared) -->
+          <div
+            v-if="player.audioError"
+            class="mx-3 sm:mx-4 mt-2 px-3 py-1.5 bg-rose-50 border border-rose-200 rounded-lg flex items-center justify-between text-xs text-rose-800 shrink-0 transition-all z-10"
+            role="alert"
           >
-            <X class="w-4 h-4" />
-          </button>
-        </div>
+            <div class="flex items-center gap-2 min-w-0">
+              <AlertCircle class="w-4 h-4 text-rose-600 shrink-0" />
+              <span class="truncate">{{ player.audioError }}</span>
+            </div>
+            <button
+              type="button"
+              @click="player.setAudioError(null)"
+              class="p-1 rounded-lg text-rose-800 hover:bg-rose-100 min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0 cursor-pointer touch-manipulation"
+              aria-label="关闭提示"
+            >
+              <X class="w-4 h-4" />
+            </button>
+          </div>
 
-        <AssessmentHub v-if="navStore.currentView === 'assessment'" />
-        <BookshelfPageView v-else-if="navStore.currentView === 'bookshelf'" />
-        <VocabularyPageView v-else-if="navStore.currentView === 'vocab'" />
-        <AnalyticsPageView v-else-if="navStore.currentView === 'analytics'" />
-        <StoragePageView v-else-if="navStore.currentView === 'storage'" />
-        <BadgesPageView v-else-if="navStore.currentView === 'badges'" />
-        <CloudSyncPageView v-else-if="navStore.currentView === 'sync'" />
-        <slot v-else />
-      </main>
+          <AssessmentHub v-if="navStore.currentView === 'assessment'" />
+          <BookshelfPageView v-else-if="navStore.currentView === 'bookshelf'" />
+          <VocabularyPageView v-else-if="navStore.currentView === 'vocab'" />
+          <AnalyticsPageView v-else-if="navStore.currentView === 'analytics'" />
+          <StoragePageView v-else-if="navStore.currentView === 'storage'" />
+          <BadgesPageView v-else-if="navStore.currentView === 'badges'" />
+          <CloudSyncPageView v-else-if="navStore.currentView === 'sync'" />
+          <slot v-else />
+        </main>
+
+        <!-- Persistent smart audio player bar: docked to right column so width matches right page -->
+        <SmartAudioPlayer class="shrink-0 mb-[calc(56px+env(safe-area-inset-bottom,0px))] md:mb-0" />
+      </div>
     </div>
 
     <!-- Bottom navigation bar: mobile only (hidden on md and up) -->
     <MobileBottomNavVue class="md:hidden" />
-
-    <!-- Persistent smart audio player bar -->
-    <SmartAudioPlayer class="mb-[calc(56px+env(safe-area-inset-bottom,0px))] md:mb-0" />
 
     <!-- Magic Analytics Dashboard Modal -->
     <AnalyticsDashboard
