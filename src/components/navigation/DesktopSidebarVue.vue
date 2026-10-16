@@ -208,6 +208,28 @@
       >
         <Keyboard :size="18" />
       </button>
+
+      <!-- User Avatar (Collapsed) -->
+      <button
+        type="button"
+        @click="authStore.isLoggedIn ? null : emit('open-auth')"
+        class="w-9 h-9 rounded-full bg-amber-100 border border-amber-300/60 flex items-center justify-center min-w-[44px] min-h-[44px] touch-manipulation active:scale-95 cursor-pointer"
+        :title="authStore.isLoggedIn ? authStore.displayName : '登录账户'"
+        aria-label="用户账户"
+      >
+        <UserCircle :size="18" class="text-amber-800" />
+      </button>
+
+      <!-- Settings Gear (Collapsed) -->
+      <button
+        type="button"
+        @click="emit('open-settings')"
+        class="w-8 h-8 rounded-lg text-stone-500 hover:text-stone-800 flex items-center justify-center min-w-[44px] min-h-[44px] touch-manipulation active:scale-95 cursor-pointer"
+        title="设置中心"
+        aria-label="设置中心"
+      >
+        <Settings :size="16" />
+      </button>
     </div>
 
     <!-- Expanded Bottom -->
@@ -328,6 +350,64 @@
           <Keyboard :size="18" />
         </button>
       </div>
+
+      <!-- Gemini-style User Card -->
+      <div class="mt-2 pt-2 border-t border-[#e8ddd0]">
+        <div class="flex items-center gap-2 px-1 py-1 rounded-xl hover:bg-white/60 transition-colors">
+          <!-- Avatar -->
+          <button
+            type="button"
+            @click="authStore.isLoggedIn ? null : emit('open-auth')"
+            class="w-9 h-9 rounded-full bg-amber-100 border border-amber-300/60 flex items-center justify-center shrink-0 min-w-[44px] min-h-[44px] touch-manipulation active:scale-95 transition-transform"
+            :title="authStore.isLoggedIn ? authStore.displayName : '登录账户'"
+            aria-label="用户账户"
+          >
+            <UserCircle :size="20" class="text-amber-800" />
+          </button>
+
+          <!-- Logged in: Name + Pro/Student badge -->
+          <div v-if="authStore.isLoggedIn" class="flex-1 min-w-0">
+            <div class="text-xs font-bold text-stone-800 truncate">{{ authStore.displayName }}</div>
+            <div class="mt-0.5">
+              <span
+                v-if="authStore.isPro"
+                class="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500 text-white font-bold leading-tight"
+              >
+                <Sparkles :size="10" />
+                <span>Pro</span>
+              </span>
+              <span
+                v-else
+                class="inline-flex items-center text-[10px] px-1.5 py-0.2 rounded-full bg-stone-200 text-stone-600 font-medium leading-tight"
+              >
+                {{ authStore.proLabel || '普通学员' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Not logged in: 登入学籍 button -->
+          <button
+            v-else
+            type="button"
+            @click="emit('open-auth')"
+            class="flex-1 text-left text-xs font-bold text-amber-800 hover:text-amber-900 touch-manipulation min-h-[44px] flex items-center"
+            aria-label="登入学籍"
+          >
+            登入学籍
+          </button>
+
+          <!-- Settings gear button -->
+          <button
+            type="button"
+            @click="emit('open-settings')"
+            class="w-9 h-9 rounded-xl hover:bg-stone-200/60 text-stone-500 hover:text-stone-800 flex items-center justify-center transition-colors cursor-pointer touch-manipulation active:scale-95 shrink-0 min-h-[44px] min-w-[44px]"
+            title="设置中心"
+            aria-label="打开设置中心"
+          >
+            <Settings :size="18" />
+          </button>
+        </div>
+      </div>
     </div>
   </aside>
 </template>
@@ -350,12 +430,15 @@ import {
   Download,
   Award,
   Trophy,
-  Cloud
+  Cloud,
+  Settings,
+  UserCircle
 } from 'lucide-vue-next'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useAnalyticsStore } from '../../stores/analyticsStore.js'
 import { useGamificationStore } from '../../stores/gamificationStore.js'
+import { useAuthStore } from '../../stores/authStore.js'
 
 const props = defineProps({
   studyMode: {
@@ -403,13 +486,16 @@ const emit = defineEmits([
   'install-pwa',
   'open-house-cup',
   'open-badges',
-  'open-cloud-sync'
+  'open-cloud-sync',
+  'open-auth',
+  'open-settings'
 ])
 
 const navigationStore = useNavigationStore()
 const vocabStore = useVocabStore()
 const analyticsStore = useAnalyticsStore()
 const gamificationStore = useGamificationStore()
+const authStore = useAuthStore()
 
 const isCollapsed = computed(() => {
   if (typeof props.collapsed === 'boolean') {

@@ -135,4 +135,38 @@ describe('DesktopSidebarVue Component Tests', () => {
     const source = fs.readFileSync(filePath, 'utf-8')
     assert.ok(source.includes("['input', 'textarea'].includes(e.target?.tagName?.toLowerCase())"), 'Must ignore Ctrl+B when typing in inputs')
   })
+
+  it('renders Gemini-style user card with avatar, Pro badge, and settings gear', () => {
+    const filePath = path.resolve('src/components/navigation/DesktopSidebarVue.vue')
+    assert.ok(fs.existsSync(filePath), 'DesktopSidebarVue.vue must exist')
+
+    const source = fs.readFileSync(filePath, 'utf-8')
+
+    // 1. Emits
+    assert.ok(source.includes("'open-auth'"), "Must declare 'open-auth' emit")
+    assert.ok(source.includes("'open-settings'"), "Must declare 'open-settings' emit")
+
+    // 2. Icon imports
+    assert.ok(source.includes('Settings'), 'Must import Settings icon from lucide-vue-next')
+    assert.ok(source.includes('UserCircle'), 'Must import UserCircle icon from lucide-vue-next')
+
+    // 3. Store usage
+    assert.ok(source.includes('useAuthStore'), 'Must import and use useAuthStore')
+
+    // 4. Guest state
+    assert.ok(source.includes('登入学籍'), 'Must contain 登入学籍 button for guest state')
+    assert.ok(source.includes("emit('open-auth')"), "Must trigger emit('open-auth')")
+
+    // 5. Settings trigger and Apple HIG ergonomics
+    assert.ok(source.includes("emit('open-settings')"), "Must trigger emit('open-settings')")
+    assert.ok(source.includes('min-h-[44px] min-w-[44px]'), 'Must enforce Apple HIG 44px ergonomics on settings gear')
+
+    // 6. Pro / user status
+    assert.ok(source.includes('authStore.isPro'), 'Must check authStore.isPro for Pro badge')
+    assert.ok(source.includes('authStore.displayName'), 'Must render authStore.displayName')
+
+    // 7. Zero Unicode emojis
+    const emojiRegex = /\p{Extended_Pictographic}/gu
+    assert.strictEqual(source.match(emojiRegex), null, 'Must contain zero Unicode emoji characters')
+  })
 })
