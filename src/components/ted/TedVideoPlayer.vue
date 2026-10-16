@@ -22,7 +22,7 @@
 
         <!-- Loop Sentinel Badge Overlay when Looping -->
         <div
-          v-if="tedStore.loopCueIndex !== null"
+          v-if="tedStore.loopCueIndex !== null && !tedStore.isBlindMode"
           class="absolute top-3 left-3 bg-[#1e1610]/80 backdrop-blur-md border border-amber-500/40 text-amber-300 text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5 z-10"
         >
           <Repeat class="w-3.5 h-3.5 animate-spin-slow text-amber-400" aria-hidden="true" />
@@ -37,13 +37,27 @@
           </button>
         </div>
 
-        <!-- Blind mode water-screen banner on video (subtle badge) -->
+        <!-- Immersive Blind Mode Frosted Glass Overlay on Video Container -->
         <div
           v-if="tedStore.isBlindMode"
-          class="absolute top-3 right-3 bg-indigo-950/80 backdrop-blur-md border border-indigo-400/40 text-indigo-200 text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5 z-10"
+          class="absolute inset-0 backdrop-blur-md bg-stone-950/85 z-20 flex flex-col items-center justify-center text-center p-4 transition-all select-none"
         >
-          <EyeOff class="w-3.5 h-3.5 text-indigo-300" aria-hidden="true" />
-          <span>盲听模式已开启</span>
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 mb-3">
+            <Headphones class="w-6 h-6 stroke-[2]" aria-hidden="true" />
+          </div>
+          <p class="text-base font-bold text-amber-100">盲听沉浸模式 · 专注纯正听感</p>
+          <p class="text-xs text-stone-400 mt-1 max-w-xs leading-relaxed">
+            遮蔽画面与字幕，激发纯正语感
+          </p>
+          <button
+            type="button"
+            @click="toggleBlindMode"
+            class="mt-4 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer touch-manipulation shadow-none"
+            aria-label="退出盲听模式"
+          >
+            <Eye class="w-4 h-4 stroke-[2]" aria-hidden="true" />
+            <span>退出盲听</span>
+          </button>
         </div>
       </div>
 
@@ -59,6 +73,16 @@
           <p class="text-xs text-stone-500 mt-1">字幕已隐去，点击底部眼睛图标显现</p>
         </div>
 
+        <!-- Subtitle Off State for mobile -->
+        <div
+          v-else-if="subtitleMode === 'off'"
+          class="flex flex-col items-center justify-center py-8 text-center text-stone-400"
+        >
+          <Subtitles class="w-8 h-8 text-stone-300 mb-2 stroke-[1.5]" aria-hidden="true" />
+          <p class="text-sm font-medium text-amber-950">字幕已关闭</p>
+          <p class="text-xs text-stone-400 mt-1">点击底部字幕按钮即可切换模式</p>
+        </div>
+
         <!-- Mobile Cue List -->
         <div v-else class="space-y-3">
           <div
@@ -72,7 +96,10 @@
                 : 'border-transparent opacity-40 hover:opacity-80'
             ]"
           >
-            <p class="text-lg leading-[1.75] font-reading text-amber-950">
+            <p
+              v-if="subtitleMode === 'bilingual' || subtitleMode === 'en'"
+              class="text-lg leading-[1.75] font-reading text-amber-950"
+            >
               <template v-for="(token, tIdx) in tokenizeSentence(cue.text)" :key="tIdx">
                 <span
                   v-if="token.isWord"
@@ -83,7 +110,7 @@
               </template>
             </p>
             <p
-              v-if="tedStore.showChineseSubs && !tedStore.isBlindMode"
+              v-if="(subtitleMode === 'bilingual' || subtitleMode === 'zh') && !tedStore.isBlindMode"
               class="text-sm text-stone-500 mt-1"
             >
               {{ getZhText(i, cue) }}
@@ -167,7 +194,7 @@
               <select
                 :value="playbackRate"
                 @change="onChangeSpeed"
-                class="min-h-[44px] min-w-[44px] bg-[#2a1f18] text-amber-200 border border-amber-900/60 rounded-xl px-2 text-xs font-mono font-bold hover:bg-[#34261e] focus:outline-none cursor-pointer transition-colors"
+                class="min-h-[44px] min-w-[44px] bg-[#2a1f18] text-amber-200 border border-amber-900/60 rounded-xl px-2 text-xs font-mono font-bold hover:bg-[#34261e] focus:outline-none cursor-pointer transition-colors touch-manipulation"
                 aria-label="播放倍速"
               >
                 <option value="0.75">0.75x</option>
@@ -196,19 +223,20 @@
               <Repeat class="w-5 h-5 stroke-[2]" aria-hidden="true" />
             </button>
 
-            <!-- Bilingual / Chinese Subtitles toggle -->
+            <!-- Multi-state Subtitle Mode Toggle Button -->
             <button
               type="button"
-              @click="toggleChineseSubs"
-              class="min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center transition-all touch-manipulation focus:outline-none"
+              @click="cycleSubtitleMode"
+              class="min-h-[44px] min-w-[44px] px-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all touch-manipulation focus:outline-none"
               :class="[
-                tedStore.showChineseSubs
-                  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/50'
-                  : 'text-stone-400 hover:text-stone-200 hover:bg-white/10'
+                subtitleMode !== 'off'
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50'
+                  : 'text-stone-400 hover:text-stone-200 hover:bg-white/10 border border-transparent'
               ]"
-              :aria-label="tedStore.showChineseSubs ? '隐藏中文释义' : '显示中文释义'"
+              :aria-label="`切换字幕模式：当前为${currentSubtitleModeLabel}`"
             >
               <Subtitles class="w-5 h-5 stroke-[2]" aria-hidden="true" />
+              <span class="text-xs font-mono font-bold">{{ currentSubtitleModeLabel }}</span>
             </button>
 
             <!-- Blind mode toggle -->
@@ -232,9 +260,10 @@
               type="button"
               @click="toggleFullscreen"
               class="min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-amber-200 hover:text-white hover:bg-white/10 active:scale-95 transition-all touch-manipulation focus:outline-none"
-              aria-label="全屏显示"
+              :aria-label="isFullscreen ? '退出全屏' : '全屏显示'"
             >
-              <Maximize class="w-5 h-5 stroke-[2]" aria-hidden="true" />
+              <Minimize v-if="isFullscreen" class="w-5 h-5 stroke-[2]" aria-hidden="true" />
+              <Maximize v-else class="w-5 h-5 stroke-[2]" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -272,7 +301,7 @@
         <button
           type="button"
           @click="toggleBlindMode"
-          class="mt-4 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+          class="mt-4 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer touch-manipulation shadow-none"
         >
           <Eye class="w-4 h-4" aria-hidden="true" />
           <span>显现字幕</span>
@@ -285,6 +314,16 @@
         class="flex-1 flex flex-col items-center justify-center p-6 text-center text-stone-400"
       >
         <p class="text-xs font-medium">字幕解析中或暂无字幕</p>
+      </div>
+
+      <!-- Subtitle Off state in desktop panel -->
+      <div
+        v-else-if="subtitleMode === 'off'"
+        class="flex-1 flex flex-col items-center justify-center p-6 text-center text-stone-400"
+      >
+        <Subtitles class="w-8 h-8 text-stone-300 mb-2 stroke-[1.5]" aria-hidden="true" />
+        <p class="text-sm font-medium text-amber-950">字幕已关闭</p>
+        <p class="text-xs text-stone-400 mt-1">点击底部字幕按钮即可切换模式</p>
       </div>
 
       <!-- Subtitle Cue Items -->
@@ -314,7 +353,10 @@
           </div>
 
           <!-- English Subtitle: text-lg leading-[1.75] (K12 typography standard) -->
-          <p class="text-lg leading-[1.75] font-reading text-amber-950">
+          <p
+            v-if="subtitleMode === 'bilingual' || subtitleMode === 'en'"
+            class="text-lg leading-[1.75] font-reading text-amber-950"
+          >
             <template v-for="(token, tIdx) in tokenizeSentence(cue.text)" :key="tIdx">
               <span
                 v-if="token.isWord"
@@ -325,9 +367,9 @@
             </template>
           </p>
 
-          <!-- Chinese Subtitle: text-sm text-stone-500 mt-1 shown only when showChineseSubs && !isBlindMode -->
+          <!-- Chinese Subtitle: text-sm text-stone-500 mt-1 shown only when (subtitleMode === 'bilingual' || subtitleMode === 'zh') && !isBlindMode -->
           <p
-            v-if="tedStore.showChineseSubs && !tedStore.isBlindMode"
+            v-if="(subtitleMode === 'bilingual' || subtitleMode === 'zh') && !tedStore.isBlindMode"
             class="text-sm text-stone-500 mt-1 leading-normal"
           >
             {{ getZhText(i, cue) }}
@@ -359,7 +401,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import {
   Play,
   Pause,
@@ -369,8 +411,10 @@ import {
   Eye,
   EyeOff,
   Maximize,
+  Minimize,
   Repeat,
-  ArrowRight
+  ArrowRight,
+  Headphones
 } from 'lucide-vue-next'
 import { useTedStore } from '../../stores/tedStore.js'
 import { parseBilingualVtt } from '../../data/tedData.js'
@@ -387,6 +431,43 @@ const cueElementRefs = ref([])
 const enCues = ref([])
 const zhCues = ref([])
 const playbackRate = ref(1)
+const isFullscreen = ref(false)
+
+// Subtitle modes: 'bilingual' | 'en' | 'zh' | 'off'
+const SUBTITLE_MODES = [
+  { key: 'bilingual', label: '双语' },
+  { key: 'en', label: '英文' },
+  { key: 'zh', label: '中文' },
+  { key: 'off', label: '关闭' }
+]
+const subtitleMode = ref('bilingual')
+
+const currentSubtitleModeLabel = computed(() => {
+  const found = SUBTITLE_MODES.find((m) => m.key === subtitleMode.value)
+  return found ? found.label : '双语'
+})
+
+function cycleSubtitleMode() {
+  const currentIndex = SUBTITLE_MODES.findIndex((m) => m.key === subtitleMode.value)
+  const nextIndex = (currentIndex + 1) % SUBTITLE_MODES.length
+  subtitleMode.value = SUBTITLE_MODES[nextIndex].key
+  if (subtitleMode.value === 'bilingual' || subtitleMode.value === 'zh') {
+    tedStore.showChineseSubs = true
+  } else {
+    tedStore.showChineseSubs = false
+  }
+}
+
+function setSubtitleMode(mode) {
+  if (SUBTITLE_MODES.some((m) => m.key === mode)) {
+    subtitleMode.value = mode
+    tedStore.showChineseSubs = (mode === 'bilingual' || mode === 'zh')
+  }
+}
+
+function toggleChineseSubs() {
+  cycleSubtitleMode()
+}
 
 function setCueRef(el, index) {
   if (el) {
@@ -554,10 +635,6 @@ function toggleBlindMode() {
   tedStore.toggleBlindMode()
 }
 
-function toggleChineseSubs() {
-  tedStore.toggleChineseSubs()
-}
-
 function setLookupWord(word) {
   if (!word) return
   tedStore.setLookupWord(word)
@@ -567,21 +644,47 @@ function goToStep(step) {
   tedStore.goToStep(step)
 }
 
+function onFullscreenChange() {
+  if (typeof document === 'undefined') return
+  isFullscreen.value = Boolean(
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.mozFullScreenElement ||
+    document.msFullscreenElement
+  )
+}
+
 function toggleFullscreen() {
+  if (typeof document === 'undefined') return
   const container = playerContainerRef.value || videoRef.value
   if (!container) return
-  if (!document.fullscreenElement) {
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
     if (container.requestFullscreen) {
       container.requestFullscreen().catch(() => {})
+    } else if (container.webkitRequestFullscreen) {
+      container.webkitRequestFullscreen()
     }
   } else {
     if (document.exitFullscreen) {
       document.exitFullscreen().catch(() => {})
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen()
     }
   }
 }
 
+onMounted(() => {
+  if (typeof document !== 'undefined') {
+    document.addEventListener('fullscreenchange', onFullscreenChange)
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange)
+  }
+})
+
 onBeforeUnmount(() => {
+  if (typeof document !== 'undefined') {
+    document.removeEventListener('fullscreenchange', onFullscreenChange)
+    document.removeEventListener('webkitfullscreenchange', onFullscreenChange)
+  }
   if (videoRef.value && !videoRef.value.paused) {
     try {
       videoRef.value.pause()
