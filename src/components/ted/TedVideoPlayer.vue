@@ -605,7 +605,7 @@ function togglePlay() {
 function skip(seconds) {
   if (!videoRef.value) return
   const current = videoRef.value.currentTime || 0
-  const max = tedStore.videoDuration || 0
+  const max = tedStore.videoDuration || videoRef.value.duration || 0
   const target = Math.max(0, Math.min(max, current + seconds))
   videoRef.value.currentTime = target
   tedStore.setVideoCurrentTime(target)

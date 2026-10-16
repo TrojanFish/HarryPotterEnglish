@@ -349,7 +349,8 @@ function detectHasChanges(local, merged) {
       Boolean(merged.userHouse) ||
       merged.studentContribution > 0 ||
       Object.keys(merged.unlockedBadges).length > 0 ||
-      merged.pointHistory.length > 0
+      merged.pointHistory.length > 0 ||
+      Object.values(merged.housePoints || {}).some(pts => pts > 0)
     )
   }
 
@@ -358,6 +359,10 @@ function detectHasChanges(local, merged) {
   if (merged.studentContribution !== (Number(local.studentContribution) || 0)) return true
   if (merged.userHouse !== (local.userHouse || null)) return true
   if (merged.lastActiveDate !== (local.lastActiveDate || '')) return true
+  for (const h of Object.keys(merged.housePoints || {})) {
+    if (merged.housePoints[h] !== (Number(local.housePoints?.[h]) || 0)) return true
+  }
+
 
   const localFrozen = Array.isArray(local.streakFrozenDates) ? local.streakFrozenDates : []
   if (merged.streakFrozenDates.length !== localFrozen.length) return true

@@ -326,13 +326,26 @@ export function computeNextStepRecommendation(userState = {}) {
   const allTalkCandidates = []
   const talksSource = Array.isArray(TALKS) && TALKS.length > 0 ? TALKS : []
 
+  const completedTalkIndices = []
+  talksSource.forEach((talk, idx) => {
+    const isCompleted = completedChapters.includes(talk.id) || (Array.isArray(safeState.completedTalks) && safeState.completedTalks.includes(talk.id))
+    if (isCompleted) {
+      completedTalkIndices.push(idx)
+    }
+  })
+
+  let immediateNextTalkIndex = 0
+  if (completedTalkIndices.length > 0) {
+    immediateNextTalkIndex = Math.max(...completedTalkIndices) + 1
+  }
+
   for (let i = 0; i < talksSource.length; i++) {
     const talk = talksSource[i]
     const talkCefr = talk.cefrLevel || talk.cefr || 'B1'
     const isCompleted = completedChapters.includes(talk.id) || (Array.isArray(safeState.completedTalks) && safeState.completedTalks.includes(talk.id))
 
     const sCefr = computeCefrScore(talkCefr, userCefr)
-    const sProg = isCompleted ? 50 : (i === 0 ? 100 : 80)
+    const sProg = isCompleted ? 50 : (i === immediateNextTalkIndex ? 100 : 80)
     const talkWords = Array.isArray(talk.vocabSet)
       ? talk.vocabSet.map(v => typeof v === 'string' ? v : (v.word || '')).filter(Boolean)
       : []
@@ -395,17 +408,28 @@ export function computeNextStepRecommendation(userState = {}) {
     rationale = '本内容包含你生词本中的核心考纲词汇，推荐在原版原声语境中强化记忆。'
   } else if (topChapterCandidate.sProg === 100) {
     category = 'progress'
-    const bookCode = lastCompletedBookCode || selectedHpChapter.bookCode || 'HP1'
-    rationale = `承接上一章（${bookCode}）的学习进度，趁热打铁开启新篇章。`
+    if (completedIndices.length > 0) {
+      const bookCode = lastCompletedBookCode || selectedHpChapter.bookCode || 'HP1'
+      rationale = `承接上一章（${bookCode}）的学习进度，趁热打铁开启新篇章。`
+    } else {
+      const bookCode = selectedHpChapter.bookCode || 'HP1'
+      rationale = `从${bookCode}第一章开启原版听说之旅，循序渐进打牢听力与语感基础。`
+    }
   } else if (isHpChallenge || shadowingAverage >= 85) {
     category = 'challenge'
     const targetCefr = selectedHpChapter.cefr !== userCefr ? selectedHpChapter.cefr : selectedTedTalk.cefr
     rationale = `鉴于你在前期学习中展现出的优异能力，推荐向更高阶的 CEFR ${targetCefr} 目标挑战！`
   } else {
     category = 'progress'
-    const bookCode = lastCompletedBookCode || selectedHpChapter.bookCode || 'HP1'
-    rationale = `承接上一章（${bookCode}）的学习进度，趁热打铁开启新篇章。`
+    if (completedIndices.length > 0) {
+      const bookCode = lastCompletedBookCode || selectedHpChapter.bookCode || 'HP1'
+      rationale = `承接上一章（${bookCode}）的学习进度，趁热打铁开启新篇章。`
+    } else {
+      const bookCode = selectedHpChapter.bookCode || 'HP1'
+      rationale = `从${bookCode}第一章开启原版听说之旅，循序渐进打牢听力与语感基础。`
+    }
   }
+
 
   return {
     hpChapter: selectedHpChapter,
