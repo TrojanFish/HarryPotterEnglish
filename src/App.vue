@@ -44,6 +44,9 @@
     @close="isDictationOpen = false"
     @next="onDictationNext"
   />
+
+  <!-- Global celebratory toast for badges and house points -->
+  <BadgeUnlockedToast />
 </template>
 
 <script setup>
@@ -75,6 +78,7 @@ import ShortcutsModal from './components/ShortcutsModal.vue'
 import MagicErrorBoundary from './components/common/MagicErrorBoundary.vue'
 import AppShell from './components/layout/AppShell.vue'
 import TedHub from './components/ted/TedHub.vue'
+import BadgeUnlockedToast from './components/gamification/BadgeUnlockedToast.vue'
 import { useSessionStore } from './stores/sessionStore.js'
 import { useNavigationStore } from './stores/navigationStore.js'
 import {
