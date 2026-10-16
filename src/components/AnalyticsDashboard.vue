@@ -33,7 +33,7 @@
         >
           <div
             v-if="isOpen"
-            class="pointer-events-auto bg-[#f8f8f6] border-t border-x sm:border border-[#e4e4e7] rounded-t-2xl sm:rounded-2xl max-w-2xl w-full max-h-[88vh] sm:max-h-[85vh] flex flex-col overflow-hidden pb-[calc(env(safe-area-inset-bottom,0px)+12px)] sm:pb-0"
+            class="pointer-events-auto bg-[#f5efe6] border-t border-x sm:border border-[#e8ddd0] rounded-t-2xl sm:rounded-2xl max-w-2xl w-full max-h-[88vh] sm:max-h-[85vh] flex flex-col overflow-hidden pb-[calc(env(safe-area-inset-bottom,0px)+12px)] sm:pb-0 text-stone-900"
             :style="sheetStyle"
             @click.stop
             role="dialog"
@@ -47,21 +47,21 @@
               @touchmove="handleDragTouchMove"
               @touchend="onTouchEnd"
             >
-              <div class="w-10 h-1.5 rounded-full bg-stone-300"></div>
+              <div class="w-10 h-1.5 rounded-full bg-[#e8ddd0]"></div>
             </div>
 
             <!-- Header -->
             <div
-              class="px-5 sm:px-6 py-3 sm:py-4 border-b border-[#e4e4e7] bg-white flex items-center justify-between shrink-0 select-none touch-none"
+              class="px-5 sm:px-6 py-3 sm:py-4 border-b border-[#e8ddd0] bg-white/70 flex items-center justify-between shrink-0 select-none touch-none"
               @touchstart="onTouchStart"
               @touchmove="handleDragTouchMove"
               @touchend="onTouchEnd"
             >
               <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#2563eb]">
+                <div class="w-8 h-8 rounded-lg bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-900">
                   <BarChart2 class="w-4 h-4" />
                 </div>
-                <h2 class="font-serif text-base font-semibold text-[#18181b]">
+                <h2 class="font-serif text-base font-semibold text-stone-900">
                   魔法学业分析仪表盘
                 </h2>
               </div>
@@ -69,7 +69,7 @@
               <button
                 type="button"
                 @click="$emit('close')"
-                class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
+                class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] flex items-center justify-center transition-colors cursor-pointer touch-manipulation"
                 aria-label="关闭仪表盘"
               >
                 <X class="w-5 h-5" />
@@ -87,62 +87,62 @@
             <!-- 4 Core Metric Stat Cards -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <!-- Streak Days -->
-              <div class="p-3.5 bg-white border border-[#e4e4e7] rounded-xl flex flex-col gap-1">
-                <div class="flex items-center gap-1.5 text-xs text-[#71717a]">
-                  <Flame class="w-4 h-4 text-[#2563eb]" />
+              <div class="p-3.5 bg-white/80 border border-[#e8ddd0] rounded-xl flex flex-col gap-1 text-stone-900">
+                <div class="flex items-center gap-1.5 text-xs text-stone-600">
+                  <Flame class="w-4 h-4 text-amber-700" />
                   <span>连续打卡</span>
                 </div>
-                <div class="text-xl font-bold font-mono text-[#18181b]">
-                  {{ analyticsStore.streakDays }} <span class="text-xs font-normal text-[#71717a]">天</span>
+                <div class="text-xl font-bold font-mono text-stone-900">
+                  {{ analyticsStore.streakDays }} <span class="text-xs font-normal text-stone-500">天</span>
                 </div>
               </div>
 
               <!-- Total Listening Hours -->
-              <div class="p-3.5 bg-white border border-[#e4e4e7] rounded-xl flex flex-col gap-1">
-                <div class="flex items-center gap-1.5 text-xs text-[#71717a]">
-                  <Clock class="w-4 h-4 text-[#2563eb]" />
+              <div class="p-3.5 bg-white/80 border border-[#e8ddd0] rounded-xl flex flex-col gap-1 text-stone-900">
+                <div class="flex items-center gap-1.5 text-xs text-stone-600">
+                  <Clock class="w-4 h-4 text-amber-700" />
                   <span>总听时长</span>
                 </div>
-                <div class="text-xl font-bold font-mono text-[#18181b]">
-                  {{ analyticsStore.totalHours }} <span class="text-xs font-normal text-[#71717a]">小时</span>
+                <div class="text-xl font-bold font-mono text-stone-900">
+                  {{ analyticsStore.totalHours }} <span class="text-xs font-normal text-stone-500">小时</span>
                 </div>
               </div>
 
               <!-- Completed Chapters -->
-              <div class="p-3.5 bg-white border border-[#e4e4e7] rounded-xl flex flex-col gap-1">
-                <div class="flex items-center gap-1.5 text-xs text-[#71717a]">
-                  <BookOpen class="w-4 h-4 text-[#2563eb]" />
+              <div class="p-3.5 bg-white/80 border border-[#e8ddd0] rounded-xl flex flex-col gap-1 text-stone-900">
+                <div class="flex items-center gap-1.5 text-xs text-stone-600">
+                  <BookOpen class="w-4 h-4 text-amber-700" />
                   <span>通读章节</span>
                 </div>
-                <div class="text-xl font-bold font-mono text-[#18181b]">
-                  {{ analyticsStore.completedChaptersCount }} <span class="text-xs font-normal text-[#71717a]">章</span>
+                <div class="text-xl font-bold font-mono text-stone-900">
+                  {{ analyticsStore.completedChaptersCount }} <span class="text-xs font-normal text-stone-500">章</span>
                 </div>
               </div>
 
               <!-- Accuracy Score -->
-              <div class="p-3.5 bg-white border border-[#e4e4e7] rounded-xl flex flex-col gap-1">
-                <div class="flex items-center gap-1.5 text-xs text-[#71717a]">
-                  <Award class="w-4 h-4 text-[#2563eb]" />
+              <div class="p-3.5 bg-white/80 border border-[#e8ddd0] rounded-xl flex flex-col gap-1 text-stone-900">
+                <div class="flex items-center gap-1.5 text-xs text-stone-600">
+                  <Award class="w-4 h-4 text-amber-700" />
                   <span>听写平均</span>
                 </div>
-                <div class="text-xl font-bold font-mono text-[#18181b]">
-                  {{ analyticsStore.accuracyScore }} <span class="text-xs font-normal text-[#71717a]">%</span>
+                <div class="text-xl font-bold font-mono text-stone-900">
+                  {{ analyticsStore.accuracyScore }} <span class="text-xs font-normal text-stone-500">%</span>
                 </div>
               </div>
             </div>
 
             <!-- Weekly Listening Minutes SVG Chart -->
-            <div class="p-5 bg-white border border-[#e4e4e7] rounded-xl space-y-3">
+            <div class="p-5 bg-white/80 border border-[#e8ddd0] rounded-xl space-y-3 text-stone-900">
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="font-serif text-sm font-semibold text-[#18181b]">
+                  <h3 class="font-serif text-sm font-semibold text-stone-900">
                     过去 7 天学习分钟趋势
                   </h3>
-                  <p class="text-[11px] text-[#71717a]">
+                  <p class="text-[11px] text-stone-500">
                     每日坚持精听 15 分钟，激活大脑语感回路
                   </p>
                 </div>
-                <span class="text-xs font-mono font-medium text-[#2563eb] bg-blue-50 px-2.5 py-0.5 rounded border border-blue-200">
+                <span class="text-xs font-mono font-medium text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded border border-amber-300">
                   本周累计: {{ weeklyTotalMinutes }} 分钟
                 </span>
               </div>
@@ -150,11 +150,11 @@
               <!-- Responsive Weekly Trend Bar Chart -->
               <div class="w-full pt-4 pb-1">
                 <!-- Chart Canvas Area with baseline and reference gridlines -->
-                <div class="relative w-full h-36 flex items-end justify-between gap-1.5 sm:gap-3 px-1 sm:px-3 pb-2 border-b border-[#e4e4e7]">
+                <div class="relative w-full h-36 flex items-end justify-between gap-1.5 sm:gap-3 px-1 sm:px-3 pb-2 border-b border-[#e8ddd0]">
                   <!-- Background Grid Lines -->
                   <div class="absolute inset-x-0 top-0 bottom-2 flex flex-col justify-between pointer-events-none px-1 sm:px-3">
-                    <div class="border-b border-dashed border-[#f4f4f5] w-full"></div>
-                    <div class="border-b border-dashed border-[#f4f4f5] w-full"></div>
+                    <div class="border-b border-dashed border-[#e8ddd0]/60 w-full"></div>
+                    <div class="border-b border-dashed border-[#e8ddd0]/60 w-full"></div>
                     <div class="h-0 w-full"></div>
                   </div>
 
@@ -167,7 +167,7 @@
                     <!-- Minutes Label on Top -->
                     <span
                       class="text-[10px] sm:text-xs font-mono tabular-nums mb-1 transition-colors leading-none"
-                      :class="day.isToday ? 'text-[#2563eb] font-semibold' : 'text-[#71717a] group-hover:text-[#18181b]'"
+                      :class="day.isToday ? 'text-amber-800 font-semibold' : 'text-stone-500 group-hover:text-stone-800'"
                     >
                       {{ day.minutes }}
                     </span>
@@ -177,7 +177,7 @@
                       <div
                         class="w-full max-w-[24px] sm:max-w-[32px] rounded-t-md transition-all duration-300"
                         :style="{ height: `${day.heightPercent}%` }"
-                        :class="day.isToday ? 'bg-[#2563eb] hover:bg-blue-700' : 'bg-[#e4e4e7] hover:bg-zinc-300'"
+                        :class="day.isToday ? 'bg-amber-700 hover:bg-amber-800' : 'bg-[#e8ddd0] hover:bg-stone-300'"
                       ></div>
                     </div>
                   </div>
@@ -192,7 +192,7 @@
                   >
                     <span
                       class="text-[11px] sm:text-xs font-medium transition-colors"
-                      :class="day.isToday ? 'text-[#2563eb] font-bold' : 'text-[#71717a]'"
+                      :class="day.isToday ? 'text-amber-900 font-bold' : 'text-stone-600'"
                     >
                       {{ day.name }}
                     </span>
@@ -202,20 +202,20 @@
             </div>
 
             <!-- Time-Turner Protection Sentinel Banner -->
-            <div class="p-4 bg-blue-50/70 border border-blue-200 rounded-xl flex items-center justify-between gap-3">
+            <div class="p-4 bg-amber-50 border border-amber-300 rounded-xl flex items-center justify-between gap-3">
               <div class="flex items-center gap-3">
-                <ShieldCheck class="w-6 h-6 text-[#2563eb] shrink-0" />
+                <ShieldCheck class="w-6 h-6 text-amber-700 shrink-0" />
                 <div>
-                  <h4 class="font-serif text-sm font-semibold text-blue-950">
+                  <h4 class="font-serif text-sm font-semibold text-amber-950">
                     时间转换器 · 打卡守护结界
                   </h4>
-                  <p class="text-xs text-blue-800/90 mt-0.5">
+                  <p class="text-xs text-amber-900/90 mt-0.5">
                     已有 1 次免断签护盾。若某日因故未能学习，将自动消耗结界保住连续记录。
                   </p>
                 </div>
               </div>
 
-              <span class="text-xs font-mono font-bold text-[#2563eb] px-2.5 py-1 bg-white rounded-lg border border-blue-200 shrink-0">
+              <span class="text-xs font-mono font-bold text-amber-900 px-2.5 py-1 bg-white/90 rounded-lg border border-amber-300 shrink-0">
                 存量: 1
               </span>
             </div>

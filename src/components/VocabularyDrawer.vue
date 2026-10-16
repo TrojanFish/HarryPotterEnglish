@@ -28,7 +28,7 @@
     >
       <aside
         v-if="isOpen"
-        class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-lg bg-[#f8f8f6] border-l border-[#e4e4e7] flex flex-col"
+        class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-lg bg-[#fbf9f5] border-l border-[#e8ddd0] flex flex-col"
         :style="sheetStyle"
         role="dialog"
         aria-modal="true"
@@ -36,19 +36,19 @@
       >
         <!-- Pull Handle (Mobile only) -->
         <div
-          class="min-h-[44px] flex items-center justify-center sm:hidden cursor-grab active:cursor-grabbing touch-none shrink-0 border-b border-[#e4e4e7] bg-white"
+          class="min-h-[44px] flex items-center justify-center sm:hidden cursor-grab active:cursor-grabbing touch-none shrink-0 border-b border-[#e8ddd0] bg-white/70"
           @touchstart="onTouchStart"
           @touchmove="handleDragTouchMove"
           @touchend="onTouchEnd"
         >
-          <div class="w-10 h-1.5 rounded-full bg-[#d4d4d8]"></div>
+          <div class="w-10 h-1.5 rounded-full bg-[#e8ddd0]"></div>
         </div>
 
         <!-- Header -->
-        <div class="p-4 border-b border-[#e4e4e7] bg-white flex items-center justify-between shrink-0">
+        <div class="p-4 border-b border-[#e8ddd0] bg-white/70 flex items-center justify-between shrink-0">
           <div class="flex items-center gap-2">
-            <BookMarked class="w-5 h-5 text-[#2563eb]" />
-            <h2 class="font-serif text-base font-semibold text-[#18181b]">
+            <BookMarked class="w-5 h-5 text-amber-700" />
+            <h2 class="font-serif text-base font-semibold text-stone-900">
               艾宾浩斯生词本 ({{ vocabStore.vocabList.length }})
             </h2>
           </div>
@@ -56,7 +56,7 @@
           <button
             type="button"
             @click="handleClose"
-            class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer touch-manipulation"
+            class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] flex items-center justify-center transition-colors cursor-pointer touch-manipulation"
             aria-label="关闭生词本"
           >
             <X class="w-5 h-5" />
@@ -64,21 +64,21 @@
         </div>
 
         <!-- Search Input Bar -->
-        <div class="p-3 border-b border-[#e4e4e7] bg-white shrink-0">
+        <div class="p-3 border-b border-[#e8ddd0] bg-[#f5efe6] shrink-0">
           <div class="relative flex items-center">
-            <Search class="absolute left-3 w-4 h-4 text-[#71717a] pointer-events-none" />
+            <Search class="absolute left-3 w-4 h-4 text-stone-500 pointer-events-none" />
             <input
               v-model="searchQuery"
               type="text"
               placeholder="搜索生词或中文释义..."
-              class="w-full h-11 pl-9 pr-9 bg-[#f8f8f6] border border-[#e4e4e7] rounded-xl text-base sm:text-sm text-[#18181b] placeholder-[#a1a1aa] focus:outline-none focus:border-[#2563eb] focus:bg-white transition-colors"
+              class="w-full h-11 pl-9 pr-9 bg-white/90 border border-[#e8ddd0] rounded-xl text-base sm:text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-600 focus:bg-white transition-colors"
               aria-label="搜索生词本单词"
             />
             <button
               v-if="searchQuery"
               type="button"
               @click="searchQuery = ''"
-              class="absolute right-1.5 min-h-[44px] min-w-[44px] p-2 text-[#a1a1aa] hover:text-[#18181b] flex items-center justify-center rounded-lg transition-colors cursor-pointer touch-manipulation"
+              class="absolute right-1.5 min-h-[44px] min-w-[44px] p-2 text-stone-400 hover:text-stone-900 flex items-center justify-center rounded-lg transition-colors cursor-pointer touch-manipulation"
               aria-label="清空搜索内容"
             >
               <X class="w-4 h-4" />
@@ -87,12 +87,12 @@
         </div>
 
         <!-- 3-Tier Action Pyramid Toolbar -->
-        <div class="p-4 border-b border-[#e4e4e7] bg-white space-y-2 shrink-0">
+        <div class="p-4 border-b border-[#e8ddd0] bg-white/70 space-y-2 shrink-0">
           <!-- Primary CTA: Print A4 Cut-out Flashcards PDF -->
           <button
             type="button"
             @click="handlePrintCards"
-            class="min-h-[44px] w-full py-2.5 px-4 bg-[#18181b] hover:bg-[#27272a] text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer touch-manipulation"
+            class="min-h-[44px] w-full py-2.5 px-4 bg-amber-700 hover:bg-amber-800 text-amber-50 text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer touch-manipulation"
           >
             <Printer class="w-4 h-4" />
             <span>打印羊皮纸单词卡 (PDF)</span>
@@ -103,16 +103,16 @@
             <button
               type="button"
               @click="handleExportAnki"
-              class="min-h-[44px] flex-1 py-2 px-3 bg-[#f4f4f5] hover:bg-[#e4e4e7] border border-[#e4e4e7] text-[#18181b] text-xs font-medium rounded-xl flex items-center justify-center gap-1.5 transition-colors active:scale-95 cursor-pointer touch-manipulation"
+              class="min-h-[44px] flex-1 py-2 px-3 bg-white/80 hover:bg-[#fbf9f5] border border-[#e8ddd0] text-stone-800 text-xs font-medium rounded-xl flex items-center justify-center gap-1.5 transition-colors active:scale-95 cursor-pointer touch-manipulation"
             >
-              <Download class="w-4 h-4 text-[#2563eb]" />
+              <Download class="w-4 h-4 text-amber-700" />
               <span>导出 Anki (TSV)</span>
             </button>
 
             <button
               type="button"
               @click="handleClearVocab"
-              class="min-h-[44px] px-3 py-2 text-[#b91c1c] hover:bg-rose-50 border border-transparent hover:border-rose-200 text-xs font-medium rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
+              class="min-h-[44px] px-3 py-2 text-rose-700 hover:bg-rose-50 border border-transparent hover:border-rose-200 text-xs font-medium rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
             >
               <Trash2 class="w-4 h-4" />
               <span>清空</span>
@@ -121,15 +121,15 @@
         </div>
 
         <!-- Leitner 5-Box Distribution Tabs -->
-        <div class="p-3 border-b border-[#e4e4e7] bg-white/70 flex gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+        <div class="p-3 border-b border-[#e8ddd0] bg-white/70 flex gap-1.5 overflow-x-auto no-scrollbar shrink-0">
           <button
             type="button"
             @click="activeBox = null"
             :class="[
               'min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border cursor-pointer touch-manipulation',
               activeBox === null
-                ? 'bg-blue-50 border-[#2563eb] text-[#2563eb]'
-                : 'border-transparent text-[#71717a] hover:bg-[#f4f4f5]'
+                ? 'bg-amber-700 text-amber-50 font-bold border-amber-800'
+                : 'border-[#e8ddd0] text-stone-700 hover:bg-[#f5efe6] bg-white/80'
             ]"
           >
             全部 ({{ vocabStore.vocabList.length }})
@@ -143,8 +143,8 @@
             :class="[
               'min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border cursor-pointer touch-manipulation',
               activeBox === b
-                ? 'bg-blue-50 border-[#2563eb] text-[#2563eb]'
-                : 'border-transparent text-[#71717a] hover:bg-[#f4f4f5]'
+                ? 'bg-amber-700 text-amber-50 font-bold border-amber-800'
+                : 'border-[#e8ddd0] text-stone-700 hover:bg-[#f5efe6] bg-white/80'
             ]"
           >
             Box {{ b }} ({{ getBoxCount(b) }})
@@ -152,8 +152,8 @@
         </div>
 
         <!-- CEFR Filter Tabs -->
-        <div class="px-3 py-2 border-b border-[#e4e4e7] bg-[#fdfdfc] flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
-          <span class="text-xs font-medium text-[#71717a] shrink-0 mr-1">CEFR分级:</span>
+        <div class="px-3 py-2 border-b border-[#e8ddd0] bg-[#fbf9f5] flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+          <span class="text-xs font-medium text-stone-600 shrink-0 mr-1">CEFR分级:</span>
           <button
             v-for="tab in cefrTabs"
             :key="tab.value"
@@ -162,8 +162,8 @@
             :class="[
               'min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border cursor-pointer touch-manipulation',
               activeCefr === tab.value
-                ? 'bg-amber-100/70 border-amber-500 text-amber-900 font-semibold'
-                : 'border-transparent text-[#71717a] hover:bg-[#f4f4f5]'
+                ? 'bg-amber-100 border-amber-400 text-amber-900 font-bold'
+                : 'border-[#e8ddd0] text-stone-700 hover:bg-[#f5efe6] bg-white/80'
             ]"
           >
             {{ tab.label }}
@@ -200,7 +200,7 @@
         >
           <div
             v-if="filteredList.length === 0"
-            class="text-center py-16 text-sm text-[#71717a]"
+            class="text-center py-16 text-sm text-stone-500"
           >
             {{ searchQuery ? '未找到匹配的生词' : '当前分类暂无生词' }}
           </div>
@@ -208,26 +208,26 @@
           <div
             v-for="item in filteredList"
             :key="item.id || item.word"
-            class="p-4 bg-white border border-[#e4e4e7] rounded-xl space-y-2.5 hover:border-blue-300 transition-colors"
+            class="p-4 bg-white/90 border border-[#e8ddd0] rounded-xl space-y-2.5 hover:border-amber-300 transition-colors"
           >
             <!-- Word Header -->
             <div class="space-y-1.5">
               <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-2 flex-wrap min-w-0">
-                  <h3 class="font-serif text-base font-bold text-[#18181b] truncate">
+                  <h3 class="font-serif text-base font-bold text-stone-900 truncate">
                     {{ item.word }}
                   </h3>
                   <!-- Audio pronunciation button -->
                   <button
                     type="button"
                     @click="playPronunciation(item.word)"
-                    class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer active:scale-95 touch-manipulation"
+                    class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] flex items-center justify-center transition-colors cursor-pointer active:scale-95 touch-manipulation"
                     :aria-label="'朗读发音 ' + item.word"
                     title="朗读发音"
                   >
                     <Volume2 class="w-4 h-4" />
                   </button>
-                  <span v-if="item.phonetic || item.ipa" class="text-xs font-mono text-[#a1a1aa]">
+                  <span v-if="item.phonetic || item.ipa" class="text-xs font-mono text-stone-500">
                     {{ item.phonetic || item.ipa }}
                   </span>
                 </div>
@@ -235,7 +235,7 @@
                 <!-- Badges & Pills -->
                 <div class="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
                   <!-- Source badge -->
-                  <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#e4e4e7] bg-[#f4f4f5] text-[#52525b] shrink-0">
+                  <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border border-[#e8ddd0] bg-[#f5efe6] text-stone-600 shrink-0">
                     {{ item.sourceType === 'ted' ? 'TED精讲' : 'HP原著' }}
                   </span>
                   <!-- CEFR badge -->
@@ -250,7 +250,7 @@
                     {{ resolveTag(item) }}
                   </span>
                   <!-- Box badge -->
-                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#2563eb] shrink-0">
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 shrink-0">
                     Box {{ item.box || 1 }}
                   </span>
                 </div>
@@ -263,18 +263,18 @@
             </div>
 
             <!-- Meaning -->
-            <p class="text-xs text-[#52525b] font-sans">
+            <p class="text-xs text-stone-700 font-sans">
               {{ item.definition || item.meaning || '' }}
             </p>
 
             <!-- Context Quote -->
-            <p v-if="item.contextQuote" class="text-xs text-[#71717a] font-serif italic border-l-2 border-[#e4e4e7] pl-2 mt-1">
+            <p v-if="item.contextQuote" class="text-xs text-stone-600 font-serif italic border-l-2 border-[#e8ddd0] pl-2 mt-1">
               "{{ item.contextQuote }}"
             </p>
 
             <!-- Card Actions -->
-            <div class="pt-2 flex items-center justify-between border-t border-[#f4f4f5]">
-              <span class="text-[10px] text-[#a1a1aa] font-mono">
+            <div class="pt-2 flex items-center justify-between border-t border-[#e8ddd0]">
+              <span class="text-[10px] text-stone-500 font-mono">
                 {{ getBoxInterval(item.box || 1) }}
               </span>
 

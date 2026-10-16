@@ -33,7 +33,7 @@
         >
           <div
             v-if="isOpen"
-            class="pointer-events-auto bg-[#f8f8f6] border-t border-x sm:border border-[#e4e4e7] rounded-t-2xl sm:rounded-2xl max-w-md w-full max-h-[88vh] sm:max-h-[85vh] flex flex-col overflow-hidden pb-[calc(env(safe-area-inset-bottom,0px)+12px)] sm:pb-0"
+            class="pointer-events-auto bg-[#f5efe6] border-t border-x sm:border border-[#e8ddd0] rounded-t-2xl sm:rounded-2xl max-w-md w-full max-h-[88vh] sm:max-h-[85vh] flex flex-col overflow-hidden pb-[calc(env(safe-area-inset-bottom,0px)+12px)] sm:pb-0"
             :style="sheetStyle"
             @click.stop
             role="dialog"
@@ -47,21 +47,21 @@
               @touchmove="handleDragTouchMove"
               @touchend="onTouchEnd"
             >
-              <div class="w-10 h-1.5 rounded-full bg-stone-300"></div>
+              <div class="w-10 h-1.5 rounded-full bg-[#e8ddd0]"></div>
             </div>
 
             <!-- Header -->
             <div
-              class="px-5 py-3 sm:py-4 border-b border-[#e4e4e7] bg-white flex items-center justify-between shrink-0 select-none touch-none"
+              class="px-5 py-3 sm:py-4 border-b border-[#e8ddd0] bg-white/70 flex items-center justify-between shrink-0 select-none touch-none"
               @touchstart="onTouchStart"
               @touchmove="handleDragTouchMove"
               @touchend="onTouchEnd"
             >
               <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#2563eb]">
+                <div class="w-8 h-8 rounded-lg bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-900">
                   <Keyboard class="w-4 h-4" />
                 </div>
-                <h2 class="font-serif text-base font-semibold text-[#18181b]">
+                <h2 class="font-serif text-base font-semibold text-stone-900">
                   快捷键与手势指南
                 </h2>
               </div>
@@ -69,7 +69,7 @@
               <button
                 type="button"
                 @click="$emit('close')"
-                class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] flex items-center justify-center transition-colors cursor-pointer"
+                class="min-h-[44px] min-w-[44px] p-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-[#fbf9f5] flex items-center justify-center transition-colors cursor-pointer touch-manipulation"
                 aria-label="关闭快捷键指南"
               >
                 <X class="w-5 h-5" />
@@ -87,21 +87,21 @@
               <div
                 v-for="item in shortcuts"
                 :key="item.key"
-                class="p-3 bg-white border border-[#e4e4e7] rounded-xl flex items-center justify-between gap-3"
+                class="p-3 bg-white/80 border border-[#e8ddd0] rounded-xl flex items-center justify-between gap-3"
               >
-                <span class="text-xs text-[#18181b] font-medium">
+                <span class="text-xs text-stone-900 font-medium">
                   {{ item.desc }}
                 </span>
-                <kbd class="px-2.5 py-1 text-xs font-mono font-semibold bg-[#f4f4f5] border border-[#e4e4e7] text-[#18181b] rounded-lg shadow-inner">
+                <kbd class="px-2.5 py-1 text-xs font-mono font-semibold bg-white/90 border border-[#e8ddd0] text-stone-800 rounded-lg shadow-inner">
                   {{ item.key }}
                 </kbd>
               </div>
             </div>
 
             <!-- Footer -->
-            <div class="px-5 py-3 border-t border-[#e4e4e7] bg-white flex items-center justify-between text-xs shrink-0">
-              <span class="text-xs text-[#71717a] font-serif">快捷键支持随时唤起</span>
-              <span class="text-[10px] text-[#a1a1aa] font-mono">v1.0.0-prod</span>
+            <div class="px-5 py-3 border-t border-[#e8ddd0] bg-white/70 flex items-center justify-between text-xs shrink-0">
+              <span class="text-xs text-stone-500 font-serif">快捷键支持随时唤起</span>
+              <span class="text-[10px] text-stone-400 font-mono">v1.0.0-prod</span>
             </div>
           </div>
         </Transition>
