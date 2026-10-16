@@ -18,7 +18,7 @@
 
   <AppShell :current-chapter-title="currentChapterLabel">
     <!-- Step views for HP audio sessions -->
-    <template v-if="navStore.currentView === 'player' || navStore.currentView === 'bookshelf'">
+    <template v-if="navStore.currentView === 'player'">
       <MagicErrorBoundary>
         <StepListening v-if="sessionStore.currentStep === 1" />
         <StepShadowing v-else-if="sessionStore.currentStep === 2" />

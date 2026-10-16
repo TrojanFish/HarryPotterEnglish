@@ -13,8 +13,8 @@
       @open-cloud-sync="openCloudSync"
     />
 
-    <!-- Step tab bar: HP sessions only, hidden on TED view -->
-    <StepTabBar v-if="navStore.currentView === 'player' || navStore.currentView === 'bookshelf'" />
+    <!-- Step tab bar: HP sessions only, hidden on Bookshelf, TED, Vocab, Analytics, Storage views -->
+    <StepTabBar v-if="navStore.currentView === 'player'" />
 
     <!-- Global audio error notice banner (shared) -->
     <div
@@ -73,6 +73,7 @@
       <!-- Main content stage slot -->
       <main class="flex-1 min-w-0 overflow-hidden relative flex flex-col" role="main">
         <AssessmentHub v-if="navStore.currentView === 'assessment'" />
+        <BookshelfPageView v-else-if="navStore.currentView === 'bookshelf'" />
         <VocabularyPageView v-else-if="navStore.currentView === 'vocab'" />
         <AnalyticsPageView v-else-if="navStore.currentView === 'analytics'" />
         <StoragePageView v-else-if="navStore.currentView === 'storage'" />
@@ -159,6 +160,7 @@ import HouseCupModal from '../gamification/HouseCupModal.vue'
 import AchievementBadgesModal from '../gamification/AchievementBadgesModal.vue'
 import SortingCeremonyModal from '../gamification/SortingCeremonyModal.vue'
 import CloudSyncModal from '../sync/CloudSyncModal.vue'
+import BookshelfPageView from '../views/BookshelfPageView.vue'
 import VocabularyPageView from '../views/VocabularyPageView.vue'
 import AnalyticsPageView from '../views/AnalyticsPageView.vue'
 import StoragePageView from '../views/StoragePageView.vue'
@@ -225,19 +227,14 @@ function handleOpenLegal() {
 }
 
 function handleToggleVocab() {
-  if (navStore.currentView === 'vocab') {
-    navStore.setView(previousView || 'player')
-    isVocabOpen.value = false
-  } else {
-    openVocab()
-  }
+  openVocab()
 }
 
 function openVocab() {
   if (player.isBookshelfOpen) {
     player.toggleBookshelf(false)
   }
-  if (navStore.currentView && !['vocab', 'analytics', 'storage'].includes(navStore.currentView)) {
+  if (navStore.currentView && !['vocab', 'analytics', 'storage', 'bookshelf'].includes(navStore.currentView)) {
     previousView = navStore.currentView
   }
   isVocabOpen.value = false
@@ -245,7 +242,10 @@ function openVocab() {
 }
 
 function openAnalytics() {
-  if (navStore.currentView && !['vocab', 'analytics', 'storage'].includes(navStore.currentView)) {
+  if (player.isBookshelfOpen) {
+    player.toggleBookshelf(false)
+  }
+  if (navStore.currentView && !['vocab', 'analytics', 'storage', 'bookshelf'].includes(navStore.currentView)) {
     previousView = navStore.currentView
   }
   isAnalyticsOpen.value = false
@@ -253,7 +253,10 @@ function openAnalytics() {
 }
 
 function openStorage() {
-  if (navStore.currentView && !['vocab', 'analytics', 'storage'].includes(navStore.currentView)) {
+  if (player.isBookshelfOpen) {
+    player.toggleBookshelf(false)
+  }
+  if (navStore.currentView && !['vocab', 'analytics', 'storage', 'bookshelf'].includes(navStore.currentView)) {
     previousView = navStore.currentView
   }
   isStorageOpen.value = false
@@ -320,32 +323,12 @@ function closeCloudSync() {
 watch(
   () => navStore.currentView,
   (newView, oldView) => {
-    if (newView === 'vocab') {
-      if (oldView && !['vocab', 'analytics', 'storage'].includes(oldView)) {
-        previousView = oldView
-      }
-      isVocabOpen.value = true
-    } else if (newView === 'analytics') {
-      if (oldView && !['vocab', 'analytics', 'storage'].includes(oldView)) {
-        previousView = oldView
-      }
-      isAnalyticsOpen.value = true
-    } else if (newView === 'storage') {
-      if (oldView && !['vocab', 'analytics', 'storage'].includes(oldView)) {
-        previousView = oldView
-      }
-      isStorageOpen.value = true
-    } else if (newView === 'bookshelf' && oldView !== undefined && oldView !== 'bookshelf') {
-      player.toggleBookshelf(true)
+    if (oldView && !['vocab', 'analytics', 'storage', 'bookshelf'].includes(oldView)) {
+      previousView = oldView
     }
-  }
-)
-
-watch(
-  () => player.isBookshelfOpen,
-  (isOpen) => {
-    if (!isOpen && navStore.currentView === 'bookshelf') {
-      navStore.setView('player')
+    if (newView !== 'player') {
+      player.toggleBookshelf(false)
+      isVocabOpen.value = false
     }
   }
 )
