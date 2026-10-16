@@ -126,6 +126,8 @@ describe('SettingsModal.vue Component Standards & 4-Tab Layout', () => {
     assert.ok(content.includes('touch-manipulation'), 'Must include touch-manipulation')
     assert.ok(content.includes('role="dialog"'), 'Must declare role="dialog"')
     assert.ok(content.includes('aria-modal="true"'), 'Must declare aria-modal="true"')
+    assert.ok(content.includes('h-[85vh]') && content.includes('md:h-[620px]'), 'Must enforce fixed modal height (h-[85vh] md:h-[620px]) to prevent tab switching jumps')
+    assert.ok(content.includes('min-h-0 h-full overflow-y-auto'), 'Content container must use min-h-0 h-full overflow-y-auto')
   })
 
   it('11. Escape key listener to close modal', () => {
@@ -134,5 +136,13 @@ describe('SettingsModal.vue Component Standards & 4-Tab Layout', () => {
 
     assert.ok(content.includes('Escape') || content.includes('handleKeyDown') || content.includes('handleKeydown'), 'Must handle Escape key')
     assert.ok(content.includes('addEventListener') && content.includes('removeEventListener'), 'Must add and remove keydown listener')
+  })
+
+  it('12. Avatar selection uses authStore.avatarId and handles selection for all users', () => {
+    assert.ok(fs.existsSync(filePath), 'src/components/settings/SettingsModal.vue must exist')
+    const content = fs.readFileSync(filePath, 'utf-8')
+
+    assert.ok(content.includes('authStore.avatarId'), 'Must bind currentAvatarId to authStore.avatarId')
+    assert.ok(content.includes('authStore.setAvatar(avatarId)'), 'Must allow avatar selection by calling authStore.setAvatar')
   })
 })

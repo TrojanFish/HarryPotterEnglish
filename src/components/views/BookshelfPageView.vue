@@ -43,31 +43,31 @@
       </div>
     </div>
 
-    <!-- 7 Books Showcase Ribbon -->
+    <!-- Books Showcase Ribbon (Only shows books with stored content in R2) -->
     <div class="space-y-2.5">
       <div class="flex items-center justify-between">
         <h2 class="font-serif text-sm font-bold text-stone-800 flex items-center gap-1.5">
           <Layers :size="16" class="text-amber-700" />
-          <span>原著全集 · 选择书籍 (HP1 ~ HP7)</span>
+          <span>原著全集 · 选择书籍 (共 {{ displayBooks.length }} 部已上架)</span>
         </h2>
         <span class="text-xs font-mono text-stone-500">
-          当前选中: {{ currentBook?.titleZh }} ({{ currentBook?.code }})
+          当前选中: {{ currentBookData?.titleZh }} ({{ currentBookData?.code }})
         </span>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         <button
-          v-for="book in BOOKS"
+          v-for="book in displayBooks"
           :key="book.id"
           type="button"
           @click="selectBook(book.id)"
           :class="[
             'p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between gap-2.5 cursor-pointer touch-manipulation active:scale-95 min-h-[96px]',
-            activeBookId === book.id
+            activeBookId === book.id || currentBook?.id === book.id
               ? 'bg-amber-50/90 border-amber-600 ring-2 ring-amber-500/20 shadow-none'
               : 'bg-white border-[#e8ddd0] hover:border-amber-400 hover:bg-[#faf6ee]'
           ]"
-          :aria-selected="activeBookId === book.id"
+          :aria-selected="activeBookId === book.id || currentBook?.id === book.id"
         >
           <div class="flex items-center justify-between w-full">
             <span class="font-mono font-bold text-sm text-stone-900">{{ book.code }}</span>
@@ -242,8 +242,38 @@ const activeBookId = computed(() => {
 const currentBook = computed(() => catalogStore.currentBook)
 const currentChapter = computed(() => catalogStore.currentChapter)
 
+const displayBooks = computed(() => {
+  const booksInStore = catalogStore.availableBooks || catalogStore.books || []
+  return booksInStore
+    .filter((b) => Array.isArray(b.chapters) && b.chapters.length > 0)
+    .map((b) => {
+      const match = BOOKS.find(
+        (mb) =>
+          mb.id === b.id ||
+          mb.altIds?.includes(b.id) ||
+          (mb.code && b.code && mb.code.toLowerCase() === b.code.toLowerCase())
+      )
+      return {
+        id: b.id,
+        code: b.code || match?.code || 'BOOK',
+        title: b.title || match?.title || b.id,
+        titleZh: b.cnTitle || match?.titleZh || b.title || b.id,
+        cefr: match?.cefr || 'A2',
+        color: b.color || match?.color || '#740001',
+        chaptersCount: b.chapters?.length || 0,
+        chapters: b.chapters || []
+      }
+    })
+})
+
 const currentBookData = computed(() => {
-  return BOOKS.find((b) => b.id === activeBookId.value) || BOOKS[0]
+  return (
+    displayBooks.value.find(
+      (b) => b.id === activeBookId.value || b.id === currentBook.value?.id
+    ) ||
+    displayBooks.value[0] ||
+    null
+  )
 })
 
 const allChapters = computed(() => {

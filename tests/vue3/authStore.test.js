@@ -431,6 +431,22 @@ describe('Pinia authStore (src/stores/authStore.js)', () => {
     assert.equal(res.avatar, 'flame')
   })
 
+  it('setAvatar works for guest user when not logged in by persisting to localStorage and updating avatarId', async () => {
+    const { useAuthStore, USER_AVATAR_KEY } = await import(storeModuleUrl)
+    const store = useAuthStore()
+
+    store.token = null
+    store.currentUser = null
+    globalThis.localStorage.removeItem(USER_AVATAR_KEY)
+
+    const res = await store.setAvatar('owl')
+
+    assert.equal(res.ok, true)
+    assert.equal(res.avatar, 'owl')
+    assert.equal(store.avatarId, 'owl')
+    assert.equal(globalThis.localStorage.getItem(USER_AVATAR_KEY), 'owl')
+  })
+
   it('init calls refreshMe and safely handles expired token without unhandled rejection', async () => {
     const { useAuthStore } = await import(storeModuleUrl)
     const store = useAuthStore()

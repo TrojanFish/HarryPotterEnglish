@@ -75,10 +75,14 @@ function getInitialChapterId(books, bookId) {
 
 export const useCatalogStore = defineStore('catalog', {
   state: () => {
-    const initialBooks =
+    const baseBooks =
       DEFAULT_CATALOG?.books && DEFAULT_CATALOG.books.length > 0
         ? DEFAULT_CATALOG.books
         : HP_BOOKS
+
+    const initialBooks = baseBooks.filter(
+      (b) => Array.isArray(b.chapters) && b.chapters.length > 0
+    )
 
     const bookId = getInitialBookId(initialBooks)
     const chapterId = getInitialChapterId(initialBooks, bookId)
@@ -94,18 +98,30 @@ export const useCatalogStore = defineStore('catalog', {
   },
 
   getters: {
+    availableBooks: (state) => {
+      return state.books.filter(
+        (b) => Array.isArray(b.chapters) && b.chapters.length > 0
+      )
+    },
+
     currentBook: (state) => {
+      const validBooks = state.books.filter(
+        (b) => Array.isArray(b.chapters) && b.chapters.length > 0
+      )
       return (
-        state.books.find((b) => b.id === state.selectedBookId) ||
-        state.books[0] ||
+        validBooks.find((b) => b.id === state.selectedBookId) ||
+        validBooks[0] ||
         null
       )
     },
 
     currentChapter: (state) => {
+      const validBooks = state.books.filter(
+        (b) => Array.isArray(b.chapters) && b.chapters.length > 0
+      )
       const b =
-        state.books.find((book) => book.id === state.selectedBookId) ||
-        state.books[0]
+        validBooks.find((book) => book.id === state.selectedBookId) ||
+        validBooks[0]
       if (!b || !b.chapters || b.chapters.length === 0) return null
       return (
         b.chapters.find((c) => c.id === state.selectedChapterId) ||
@@ -144,12 +160,21 @@ export const useCatalogStore = defineStore('catalog', {
 
   actions: {
     selectBook(bookId) {
-      const b = this.books.find((x) => x.id === bookId)
-      if (!b) return
-      this.selectedBookId = bookId
+      if (!bookId) return
+      const cleanId = String(bookId).trim().toLowerCase()
+      const b = this.books.find(
+        (x) =>
+          x.id === bookId ||
+          x.id.toLowerCase() === cleanId ||
+          (x.altIds && x.altIds.includes(bookId)) ||
+          (x.code && x.code.toLowerCase() === cleanId) ||
+          (cleanId.startsWith('book') && x.id.replace('hp-', '') === cleanId)
+      )
+      if (!b || !b.chapters || b.chapters.length === 0) return
+      this.selectedBookId = b.id
       if (typeof localStorage !== 'undefined') {
         try {
-          localStorage.setItem(BOOK_STORAGE_KEY, bookId)
+          localStorage.setItem(BOOK_STORAGE_KEY, b.id)
         } catch {}
       }
 
@@ -175,12 +200,31 @@ export const useCatalogStore = defineStore('catalog', {
       if (typeof fetch === 'undefined') return
       this.isLoadingCatalog = true
       try {
-        const res = await fetch('/api/catalog')
-        if (res.ok) {
+        let res = null
+        try {
+          res = await fetch('/api/catalog')
+        } catch {}
+
+        if (!res || !res.ok) {
+          try {
+            res = await fetch('/catalog.json')
+          } catch {}
+        }
+
+        if (res && res.ok) {
           const data = await res.json()
-          if (data.books && data.books.length > 0) {
-            this.books = data.books
-            this.catalogSource = 'api'
+          if (data && Array.isArray(data.books) && data.books.length > 0) {
+            // Strictly filter to only books containing audio chapters in R2
+            const r2Books = data.books.filter(
+              (b) => Array.isArray(b.chapters) && b.chapters.length > 0
+            )
+            if (r2Books.length > 0) {
+              this.books = r2Books
+              this.catalogSource = res.url && res.url.includes('/api/catalog') ? 'api' : 'static'
+              if (!this.books.some((b) => b.id === this.selectedBookId)) {
+                this.selectBook(this.books[0].id)
+              }
+            }
           }
         }
       } catch (err) {

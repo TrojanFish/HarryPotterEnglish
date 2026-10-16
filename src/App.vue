@@ -419,6 +419,7 @@ function onKeyDown(e) {
 
 onMounted(() => {
   authStore.init()
+  catalog.fetchRemoteCatalog()
   setupMediaSession()
   window.addEventListener('keydown', onKeyDown)
 })

@@ -217,7 +217,7 @@
         :title="authStore.isLoggedIn ? authStore.displayName : '登录账户'"
         aria-label="用户账户"
       >
-        <UserCircle :size="18" class="text-amber-800" />
+        <component :is="getAvatarIcon(authStore.avatarId)" :size="18" class="text-amber-800" />
       </button>
 
       <!-- Settings Gear (Collapsed) -->
@@ -362,7 +362,7 @@
             :title="authStore.isLoggedIn ? authStore.displayName : '登录账户'"
             aria-label="用户账户"
           >
-            <UserCircle :size="20" class="text-amber-800" />
+            <component :is="getAvatarIcon(authStore.avatarId)" :size="20" class="text-amber-800" />
           </button>
 
           <!-- Logged in: Name + Pro/Student badge -->
@@ -439,6 +439,7 @@ import { useVocabStore } from '../../stores/vocabStore.js'
 import { useAnalyticsStore } from '../../stores/analyticsStore.js'
 import { useGamificationStore } from '../../stores/gamificationStore.js'
 import { useAuthStore } from '../../stores/authStore.js'
+import { getAvatarIcon } from '../../utils/avatarPresets.js'
 
 const props = defineProps({
   studyMode: {

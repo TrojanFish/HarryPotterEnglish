@@ -52,10 +52,10 @@
           </button>
         </div>
 
-        <!-- Book Selection Tabs (HP1 ~ HP7) with CEFR Level Pills -->
+        <!-- Book Selection Tabs (Only books stored in R2) -->
         <div class="p-3 border-b border-[#e8ddd0] bg-[#fbf9f5] flex gap-2 overflow-x-auto no-scrollbar shrink-0">
           <button
-            v-for="book in BOOKS"
+            v-for="book in displayBooks"
             :key="book.id"
             type="button"
             @click="onSelectBook(book.id)"
@@ -226,51 +226,64 @@ const isDesktop = computed(() => breakpoint.isDesktop.value)
 const searchQuery = ref('')
 const activeBookId = ref(player.currentBookId || 'book1')
 
+const displayBooks = computed(() => {
+  const booksInStore = catalog.availableBooks || catalog.books || []
+  return booksInStore
+    .filter((b) => Array.isArray(b.chapters) && b.chapters.length > 0)
+    .map((b) => {
+      const match = BOOKS.find(
+        (mb) =>
+          mb.id === b.id ||
+          mb.altIds?.includes(b.id) ||
+          (mb.code && b.code && mb.code.toLowerCase() === b.code.toLowerCase())
+      )
+      return {
+        id: b.id,
+        code: b.code || match?.code || 'BOOK',
+        title: b.title || match?.title || b.id,
+        titleZh: b.cnTitle || match?.titleZh || b.title || b.id,
+        cefr: match?.cefr || 'A2',
+        color: b.color || match?.color || '#740001',
+        chaptersCount: b.chapters?.length || 0,
+        chapters: b.chapters || []
+      }
+    })
+})
+
 const currentBookData = computed(() => {
   return (
-    BOOKS.find(
-      (b) => b.id === activeBookId.value || b.altIds?.includes(activeBookId.value)
-    ) || BOOKS[0]
+    displayBooks.value.find(
+      (b) =>
+        b.id === activeBookId.value ||
+        b.id === catalog.currentBook?.id ||
+        (b.code && b.code.toLowerCase() === (activeBookId.value || '').toLowerCase())
+    ) ||
+    displayBooks.value[0] ||
+    null
   )
 })
 
 const currentCatBook = computed(() => {
   return (
     catalog.books.find(
-      (cb) => cb.id === activeBookId.value || currentBookData.value?.altIds?.includes(cb.id)
+      (cb) => cb.id === currentBookData.value?.id || cb.id === activeBookId.value
     ) || catalog.currentBook
   )
 })
 
-// Real chapters derived from catalog with fallback
+// Real chapters derived strictly from R2 catalog - NEVER fake dummy chapters!
 const bookChapters = computed(() => {
-  if (currentCatBook.value?.chapters && currentCatBook.value.chapters.length > 0) {
-    return currentCatBook.value.chapters.map((ch, idx) => ({
-      id: ch.id,
-      number: ch.number || idx + 1,
-      title: ch.title || `Chapter ${ch.number || idx + 1}`,
-      cnTitle: ch.cnTitle || '',
-      duration: ch.duration || '20:00',
-      durationSeconds: ch.durationSeconds || 1200,
-      audioKey: ch.audioKey,
-      subtitleKey: ch.subtitleKey
-    }))
-  }
-
-  const count = currentBookData.value?.chaptersCount || 17
-  const bookCode = currentBookData.value?.code?.toLowerCase() || 'hp1'
-  return Array.from({ length: count }, (_, i) => {
-    const num = i + 1
-    const epId = num < 10 ? `0${num}` : `${num}`
-    return {
-      id: `${bookCode}_ep${epId}`,
-      number: num,
-      title: `Chapter ${num}`,
-      cnTitle: '',
-      duration: '15:00',
-      durationSeconds: 900
-    }
-  })
+  const chapters = currentCatBook.value?.chapters || currentBookData.value?.chapters || []
+  return chapters.map((ch, idx) => ({
+    id: ch.id,
+    number: ch.number || idx + 1,
+    title: ch.title || `Chapter ${ch.number || idx + 1}`,
+    cnTitle: ch.cnTitle || '',
+    duration: ch.duration || '20:00',
+    durationSeconds: ch.durationSeconds || 1200,
+    audioKey: ch.audioKey,
+    subtitleKey: ch.subtitleKey
+  }))
 })
 
 const filteredChapters = computed(() => {

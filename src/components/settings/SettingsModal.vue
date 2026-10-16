@@ -13,7 +13,7 @@
 
       <!-- Modal Card -->
       <div
-        class="relative z-10 max-w-2xl w-full mx-4 bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl overflow-hidden flex flex-col md:flex-row max-h-[85vh] shadow-2xl"
+        class="relative z-10 max-w-2xl w-full mx-4 bg-[#fbf9f5] border border-[#e8ddd0] rounded-2xl overflow-hidden flex flex-col md:flex-row h-[85vh] max-h-[640px] md:h-[620px] shadow-2xl"
         role="dialog"
         aria-modal="true"
         aria-label="设置中心与管理员控制台"
@@ -21,7 +21,7 @@
       >
         <!-- Left Column: Navigation Tabs -->
         <div
-          class="w-full md:w-56 shrink-0 bg-[#f5efe6] border-b md:border-b-0 md:border-r border-[#e8ddd0] flex flex-col"
+          class="w-full md:w-56 shrink-0 bg-[#f5efe6] border-b md:border-b-0 md:border-r border-[#e8ddd0] flex flex-col md:h-full overflow-hidden"
         >
           <!-- Header (Settings title + mobile close) -->
           <div
@@ -83,7 +83,7 @@
         </div>
 
         <!-- Right Column: Content Area -->
-        <div class="flex-1 overflow-y-auto p-4 md:p-6 bg-[#fbf9f5] flex flex-col space-y-6">
+        <div class="flex-1 min-h-0 h-full overflow-y-auto p-4 md:p-6 bg-[#fbf9f5] flex flex-col space-y-6">
           <!-- Desktop top close button -->
           <div class="hidden md:flex justify-end -mt-2 -mr-2">
             <button
@@ -643,7 +643,7 @@ const AVATAR_PRESETS = [
 ]
 
 const currentAvatarId = computed(() => {
-  return authStore.currentUser?.avatar || 'user'
+  return authStore.avatarId || 'user'
 })
 
 const currentAvatarComponent = computed(() => {
@@ -652,12 +652,10 @@ const currentAvatarComponent = computed(() => {
 })
 
 async function handleSelectAvatar(avatarId) {
-  if (authStore.isLoggedIn) {
-    try {
-      await authStore.setAvatar(avatarId)
-    } catch (err) {
-      console.error('Failed to update avatar', err)
-    }
+  try {
+    await authStore.setAvatar(avatarId)
+  } catch (err) {
+    console.error('Failed to update avatar', err)
   }
 }
 

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
 export const AUTH_TOKEN_KEY = 'hp_auth_token'
+export const USER_AVATAR_KEY = 'hp_user_avatar'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -9,6 +10,11 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(
     typeof localStorage !== 'undefined'
       ? localStorage.getItem(AUTH_TOKEN_KEY)
+      : null
+  )
+  const localAvatar = ref(
+    typeof localStorage !== 'undefined'
+      ? localStorage.getItem(USER_AVATAR_KEY) || null
       : null
   )
   const isLoading = ref(false)
@@ -34,7 +40,7 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   const avatarId = computed(() => {
-    return currentUser.value?.avatar || 'default'
+    return currentUser.value?.avatar || localAvatar.value || 'default'
   })
 
   // Internal request helper
@@ -171,11 +177,22 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function setAvatar(avatarIdValue) {
-    const data = await _request('PATCH', '/auth/me', { avatarId: avatarIdValue })
-    if (currentUser.value) {
-      currentUser.value.avatar = data.avatar
+    const cleanId = avatarIdValue || 'user'
+    localAvatar.value = cleanId
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(USER_AVATAR_KEY, cleanId)
+      } catch {}
     }
-    return data
+
+    if (isLoggedIn.value) {
+      const data = await _request('PATCH', '/auth/me', { avatarId: cleanId })
+      if (currentUser.value) {
+        currentUser.value.avatar = data.avatar
+      }
+      return data
+    }
+    return { ok: true, avatar: cleanId }
   }
 
   async function init() {
@@ -187,6 +204,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     currentUser,
     token,
+    localAvatar,
     isLoading,
     isLoggedIn,
     isPro,

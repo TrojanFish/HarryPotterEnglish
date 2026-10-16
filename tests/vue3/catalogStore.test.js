@@ -48,3 +48,51 @@ test('useCatalogStore switching chapter preserves book and updates stream url', 
     assert.ok(catalog.audioUrl.includes(ch2.epId || 'ep02') || catalog.audioUrl.includes('ch02'))
   }
 })
+
+test('useCatalogStore availableBooks strictly excludes books without chapters', () => {
+  setActivePinia(createPinia())
+  const catalog = useCatalogStore()
+
+  // Inject a mock book with 0 chapters to simulate a book missing from R2
+  catalog.books = [
+    { id: 'hp-book-1', code: 'HP1', chapters: [{ id: 'hp1_01', title: 'Chapter 1' }] },
+    { id: 'hp-book-4', code: 'HP4', chapters: [] },
+    { id: 'hp-book-5', code: 'HP5', chapters: null }
+  ]
+
+  assert.strictEqual(catalog.availableBooks.length, 1)
+  assert.strictEqual(catalog.availableBooks[0].id, 'hp-book-1')
+  assert.strictEqual(catalog.currentBook.id, 'hp-book-1')
+})
+
+test('useCatalogStore fetchRemoteCatalog loads from /api/catalog and drops empty books', async () => {
+  setActivePinia(createPinia())
+  const catalog = useCatalogStore()
+
+  const originalFetch = globalThis.fetch
+  globalThis.fetch = async (url) => {
+    if (url === '/api/catalog') {
+      return {
+        ok: true,
+        url: 'http://localhost/api/catalog',
+        json: async () => ({
+          books: [
+            { id: 'hp-book-1', code: 'HP1', chapters: [{ id: 'ch1', title: 'Chapter 1' }] },
+            { id: 'hp-book-7', code: 'HP7', chapters: [] }
+          ]
+        })
+      }
+    }
+    return { ok: false }
+  }
+
+  try {
+    await catalog.fetchRemoteCatalog()
+    assert.strictEqual(catalog.books.length, 1)
+    assert.strictEqual(catalog.books[0].id, 'hp-book-1')
+    assert.strictEqual(catalog.catalogSource, 'api')
+  } finally {
+    globalThis.fetch = originalFetch
+  }
+})
+

@@ -165,7 +165,11 @@ describe('DesktopSidebarVue Component Tests', () => {
     assert.ok(source.includes('authStore.isPro'), 'Must check authStore.isPro for Pro badge')
     assert.ok(source.includes('authStore.displayName'), 'Must render authStore.displayName')
 
-    // 7. Zero Unicode emojis
+    // 7. Dynamic avatar binding
+    assert.ok(source.includes('getAvatarIcon'), 'Must import and use getAvatarIcon')
+    assert.ok(source.includes('getAvatarIcon(authStore.avatarId)'), 'Must bind avatar to authStore.avatarId')
+
+    // 8. Zero Unicode emojis
     const emojiRegex = /\p{Extended_Pictographic}/gu
     assert.strictEqual(source.match(emojiRegex), null, 'Must contain zero Unicode emoji characters')
   })
