@@ -110,12 +110,6 @@
       @close="closeShortcuts"
     />
 
-    <!-- Hogwarts House Cup Modal -->
-    <HouseCupModal
-      :is-open="isHouseCupOpen"
-      @close="closeHouseCup"
-      @open-sorting="openSorting(); closeHouseCup()"
-    />
 
     <!-- Achievement Badges Gallery Modal -->
     <AchievementBadgesModal
@@ -161,7 +155,6 @@ import AnalyticsDashboard from '../AnalyticsDashboard.vue'
 import StorageManagerModal from '../StorageManagerModal.vue'
 import ShortcutsModal from '../ShortcutsModal.vue'
 import AssessmentHub from '../assessment/AssessmentHub.vue'
-import HouseCupModal from '../gamification/HouseCupModal.vue'
 import AchievementBadgesModal from '../gamification/AchievementBadgesModal.vue'
 import SortingCeremonyModal from '../gamification/SortingCeremonyModal.vue'
 import CloudSyncModal from '../sync/CloudSyncModal.vue'
@@ -191,7 +184,6 @@ const isVocabOpen = ref(false)
 const isAnalyticsOpen = ref(false)
 const isStorageOpen = ref(false)
 const isShortcutsOpen = ref(false)
-const isHouseCupOpen = ref(false)
 const isBadgesOpen = ref(false)
 const isSortingOpen = ref(false)
 const isCloudSyncOpen = ref(false)
@@ -303,12 +295,10 @@ function openHouseCup() {
   if (navStore.currentView && !['vocab', 'analytics', 'storage', 'bookshelf', 'badges', 'sync', 'house_cup'].includes(navStore.currentView)) {
     previousView = navStore.currentView
   }
-  isHouseCupOpen.value = false
   navStore.setView('house_cup')
 }
 
 function closeHouseCup() {
-  isHouseCupOpen.value = false
   if (navStore.currentView === 'house_cup') {
     navStore.setView(previousView || 'player')
   }

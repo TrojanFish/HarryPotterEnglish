@@ -48,13 +48,14 @@ describe('Task 6: Navigation & Gamification Touchpoints Tests', () => {
     assert.ok(source.includes('open-house-cup'), 'MobileTopBarVue must declare and emit open-house-cup')
   })
 
-  it('AppShell.vue imports and mounts HouseCupModal, AchievementBadgesModal, SortingCeremonyModal, and wires event handlers', () => {
+  it('AppShell.vue mounts AchievementBadgesModal, SortingCeremonyModal, HouseCupPageView (no orphaned HouseCupModal), and wires event handlers', () => {
     assert.ok(fs.existsSync(appShellPath), 'AppShell.vue must exist')
     const source = fs.readFileSync(appShellPath, 'utf-8')
     const { descriptor, errors } = parse(source)
     assert.strictEqual(errors.length, 0, 'AppShell SFC parsing must have 0 errors')
 
-    assert.ok(source.includes('HouseCupModal'), 'AppShell must import and mount HouseCupModal')
+    assert.ok(!source.includes('HouseCupModal'), 'AppShell must NOT import or mount orphaned HouseCupModal')
+    assert.ok(source.includes('HouseCupPageView'), 'AppShell must mount HouseCupPageView')
     assert.ok(source.includes('AchievementBadgesModal'), 'AppShell must import and mount AchievementBadgesModal')
     assert.ok(source.includes('SortingCeremonyModal'), 'AppShell must import and mount SortingCeremonyModal')
     assert.ok(source.includes('useGamificationStore'), 'AppShell must import useGamificationStore')
@@ -62,7 +63,7 @@ describe('Task 6: Navigation & Gamification Touchpoints Tests', () => {
     // Event wiring checks
     assert.ok(source.includes('@open-house-cup="openHouseCup"'), 'AppShell must wire @open-house-cup on navigation components')
     assert.ok(source.includes('@open-badges="openBadges"'), 'AppShell must wire @open-badges on navigation components')
-    assert.ok(source.includes('isHouseCupOpen'), 'AppShell must manage isHouseCupOpen state')
+    assert.ok(!source.includes('isHouseCupOpen'), 'AppShell must NOT retain orphaned isHouseCupOpen state')
     assert.ok(source.includes('isBadgesOpen'), 'AppShell must manage isBadgesOpen state')
     assert.ok(source.includes('isSortingOpen'), 'AppShell must manage isSortingOpen state')
   })
