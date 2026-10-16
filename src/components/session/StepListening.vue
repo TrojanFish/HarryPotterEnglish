@@ -270,6 +270,7 @@ import { usePlayerStore } from '../../stores/playerStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
 import { useAnalyticsStore } from '../../stores/analyticsStore.js'
+import { useGamificationStore, formatDate } from '../../stores/gamificationStore.js'
 import { extractSentenceKeywords, STOP_WORDS, cleanWordToken } from '../../data/dictionaryData.js'
 import { getTagBadgeClass } from '../../utils/tagTheme.js'
 import WordLookupModal from '../common/WordLookupModal.vue'
@@ -279,6 +280,7 @@ const player = usePlayerStore()
 const vocabStore = useVocabStore()
 const sessionStore = useSessionStore()
 const analyticsStore = useAnalyticsStore()
+const gamificationStore = useGamificationStore()
 
 const scrollContainerRef = ref(null)
 const toastMsg = ref('')
@@ -422,6 +424,30 @@ watch(
     if (diff >= 5 && diff < 30) {
       analyticsStore.recordListeningTime(Math.round(diff))
       lastTrackedTime = newTime
+
+      // Gamification telemetry & badges
+      gamificationStore.checkInDaily()
+
+      const todayStr = formatDate(new Date())
+      const todayListening = (analyticsStore.dailyListening && analyticsStore.dailyListening[todayStr]) || 0
+      const contractAlreadyAwardedToday = gamificationStore.pointHistory.some(
+        (p) => p.reason === '完成每日 5 分钟听力契约' && formatDate(new Date(p.timestamp)) === todayStr
+      )
+      if (
+        (todayListening >= 300 ||
+          analyticsStore.totalListeningSeconds >= 300 ||
+          gamificationStore.todayListeningSeconds >= 300) &&
+        !contractAlreadyAwardedToday
+      ) {
+        gamificationStore.awardPoints(10, '完成每日 5 分钟听力契约')
+      }
+
+      gamificationStore.checkAndUnlockBadges({
+        listeningSeconds: analyticsStore.totalListeningSeconds,
+        streakDays: gamificationStore.streakDays,
+        vocabCount: vocabStore.totalCount,
+        l4Count: vocabStore.l4Count
+      })
     } else if (diff < 0 || diff >= 30) {
       lastTrackedTime = newTime
     }

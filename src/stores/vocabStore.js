@@ -125,6 +125,11 @@ export const useVocabStore = defineStore('vocab', {
   state: () => ({
     vocabList: loadVocab()
   }),
+  getters: {
+    totalCount: (state) => (Array.isArray(state.vocabList) ? state.vocabList.length : 0),
+    l4Count: (state) =>
+      Array.isArray(state.vocabList) ? state.vocabList.filter((w) => w.acquisition?.l4).length : 0
+  },
   actions: {
     saveVocab() {
       if (typeof localStorage !== 'undefined') {

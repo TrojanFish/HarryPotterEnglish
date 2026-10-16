@@ -258,10 +258,14 @@ import {
 import { useTedStore } from '../../stores/tedStore.js'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useAnalyticsStore } from '../../stores/analyticsStore.js'
+import { useGamificationStore } from '../../stores/gamificationStore.js'
+import { useVocabStore } from '../../stores/vocabStore.js'
 
 const tedStore = useTedStore()
 const navStore = useNavigationStore()
 const analyticsStore = useAnalyticsStore()
+const gamificationStore = useGamificationStore()
+const vocabStore = useVocabStore()
 
 // Segments and Current Talk
 const currentTalk = computed(() => tedStore.currentTalk)
@@ -648,6 +652,19 @@ function evaluatePronunciation(targetSentence, userSpoken) {
   }
 
   analyticsStore.recordShadowingScore(score, 'ted')
+
+  if (score >= 85) {
+    gamificationStore.awardPoints(10, '魔咒跟读评分优异 (>=85)')
+  } else {
+    gamificationStore.awardPoints(5, '完成魔咒跟读练习')
+  }
+  gamificationStore.checkInDaily()
+  gamificationStore.checkAndUnlockBadges({
+    shadowingScore: score,
+    streakDays: gamificationStore.streakDays,
+    vocabCount: vocabStore.totalCount,
+    l4Count: vocabStore.l4Count
+  })
 
   return evalResult
 }

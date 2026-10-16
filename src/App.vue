@@ -81,6 +81,7 @@ import TedHub from './components/ted/TedHub.vue'
 import BadgeUnlockedToast from './components/gamification/BadgeUnlockedToast.vue'
 import { useSessionStore } from './stores/sessionStore.js'
 import { useNavigationStore } from './stores/navigationStore.js'
+import { useGamificationStore } from './stores/gamificationStore.js'
 import {
   Sparkles,
   BookOpen,
@@ -103,6 +104,7 @@ const analyticsStore = useAnalyticsStore()
 const vocabStore = useVocabStore()
 const sessionStore = useSessionStore()
 const navStore = useNavigationStore()
+const gamificationStore = useGamificationStore()
 
 // Native HTMLAudioElement held in shallowRef to avoid Proxy traps
 const audioRef = shallowRef(null)
@@ -207,6 +209,11 @@ function onTimeUpdate() {
   if (Math.abs(audioRef.value.currentTime - lastTrackedTime) >= 15) {
     if (sessionStore.currentStep !== 1) {
       analyticsStore.recordListening(15)
+      gamificationStore.checkInDaily()
+      gamificationStore.checkAndUnlockBadges({
+        listeningSeconds: analyticsStore.totalListeningSeconds,
+        streakDays: gamificationStore.streakDays
+      })
     }
     lastTrackedTime = audioRef.value.currentTime
   }

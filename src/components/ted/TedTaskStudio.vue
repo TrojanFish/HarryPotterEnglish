@@ -419,6 +419,7 @@
 import { ref, computed, watch } from 'vue'
 import { useTedStore } from '../../stores/tedStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
+import { useGamificationStore } from '../../stores/gamificationStore.js'
 import { cleanWordToken } from '../../data/dictionaryData.js'
 import {
   CheckCircle2,
@@ -433,6 +434,7 @@ import {
 
 const tedStore = useTedStore()
 const vocabStore = useVocabStore()
+const gamificationStore = useGamificationStore()
 
 const activeSection = ref('all')
 const selectedSummaryId = ref(null)
@@ -630,6 +632,11 @@ function handleSubmit() {
       }
     }
   }
+
+  // Award gamification house points and check badges
+  gamificationStore.awardPoints(10, '完成 TED 拓展实战任务')
+  gamificationStore.checkInDaily()
+  gamificationStore.checkAndUnlockBadges({ streakDays: gamificationStore.streakDays })
 }
 
 function handleRetry() {

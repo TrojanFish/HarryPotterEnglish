@@ -155,9 +155,11 @@
 import { ref, computed } from 'vue'
 import { BookMarked, Check, X, AlertCircle } from 'lucide-vue-next'
 import { useVocabStore } from '../../stores/vocabStore.js'
+import { useGamificationStore } from '../../stores/gamificationStore.js'
 import VocabDepthMeter from '../common/VocabDepthMeter.vue'
 
 const vocabStore = useVocabStore()
+const gamificationStore = useGamificationStore()
 
 const currentBox = ref(1)
 const currentIndex = ref(0)
@@ -195,7 +197,16 @@ function handlePromote() {
   // 2. Attempt Leitner box promotion
   const res = vocabStore.promoteBox(currentCard.value)
 
-  // 3. Handle Box 5 Gate Guard (NEED_L4_PRODUCTION)
+  // 3. Award gamification house points & badges
+  gamificationStore.awardPoints(5, '完成艾宾浩斯生词复习')
+  gamificationStore.checkInDaily()
+  gamificationStore.checkAndUnlockBadges({
+    vocabCount: vocabStore.totalCount,
+    l4Count: vocabStore.l4Count,
+    streakDays: gamificationStore.streakDays
+  })
+
+  // 4. Handle Box 5 Gate Guard (NEED_L4_PRODUCTION)
   if (res && !res.promoted && res.reason === 'NEED_L4_PRODUCTION') {
     l4Notice.value = '已达 Box 4！在听写或造句跟读中正确拼写(L4)后即可晋升 Box 5 永久记忆盒。'
     return

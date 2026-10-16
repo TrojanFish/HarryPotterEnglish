@@ -501,6 +501,7 @@ import {
 } from 'lucide-vue-next'
 import { useAnalyticsStore } from '../../stores/analyticsStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
+import { useGamificationStore } from '../../stores/gamificationStore.js'
 
 // Props & Emits
 const props = defineProps({
@@ -515,6 +516,7 @@ const emit = defineEmits(['close', 'exam-completed'])
 // Stores
 const analyticsStore = useAnalyticsStore()
 const vocabStore = useVocabStore()
+const gamificationStore = useGamificationStore()
 
 // Exam Stage Tracking: 1 = Listening, 2 = Dictation, 3 = Shadowing, 4 = Graduation
 const currentStage = ref(1)
@@ -878,6 +880,30 @@ function finishExamAndGraduation() {
     }
   } catch (err) {
     console.warn('[OwlsExamModal] Failed to save exam result to store:', err)
+  }
+
+  // Gamification: award points and check exam badges
+  try {
+    if (gamificationStore) {
+      if (typeof gamificationStore.awardPoints === 'function') {
+        gamificationStore.awardPoints(30, '完成 O.W.L.s 等级评定考核')
+      }
+      if (typeof gamificationStore.checkInDaily === 'function') {
+        gamificationStore.checkInDaily()
+      }
+      if (typeof gamificationStore.checkAndUnlockBadges === 'function') {
+        gamificationStore.checkAndUnlockBadges({
+          owlsExamCompleted: true,
+          owlsScore: composite,
+          owlsGrade: cefrResult,
+          streakDays: gamificationStore.streakDays || 0,
+          vocabCount: vocabStore ? (vocabStore.totalCount || 0) : 0,
+          l4Count: vocabStore ? (vocabStore.l4Count || 0) : 0
+        })
+      }
+    }
+  } catch (err) {
+    console.warn('[OwlsExamModal] Failed to trigger gamification on exam completion:', err)
   }
 
   currentStage.value = 4

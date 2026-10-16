@@ -489,6 +489,7 @@ export const useGamificationStore = defineStore('gamification', {
       // 8. dictation-ace
       const isDictationAce =
         context.dictationAce === true ||
+        context.perfectDictation === true ||
         context.dictationAccuracy === 100 ||
         (typeof context.dictationTotal === 'number' &&
           context.dictationTotal > 0 &&
@@ -522,6 +523,9 @@ export const useGamificationStore = defineStore('gamification', {
       const isOutstanding =
         context.owlsGrade === 'O' ||
         context.cefrResult === 'O' ||
+        context.owlsGrade === 'C1' ||
+        context.cefrResult === 'C1' ||
+        (typeof context.owlsScore === 'number' && context.owlsScore >= 90) ||
         context.owlsOutstanding === true
       if (isOutstanding) {
         this.unlockBadge('owls-outstanding')

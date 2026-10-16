@@ -376,6 +376,7 @@ import { usePlayerStore } from '../../stores/playerStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useAnalyticsStore } from '../../stores/analyticsStore.js'
+import { useGamificationStore } from '../../stores/gamificationStore.js'
 import { cleanWordToken } from '../../data/dictionaryData.js'
 
 const subtitleStore = useSubtitleStore()
@@ -383,6 +384,7 @@ const player = usePlayerStore()
 const sessionStore = useSessionStore()
 const vocabStore = useVocabStore()
 const analyticsStore = useAnalyticsStore()
+const gamificationStore = useGamificationStore()
 
 // Game mode selection: 'scramble' | 'cloze' | 'full'
 const activeMode = ref('scramble')
@@ -550,6 +552,22 @@ function checkScramble() {
     }
   }
   analyticsStore.recordDictationResult(matchedWords, targetWords.length)
+
+  const perfectScramble = allMatch
+  if (perfectScramble) {
+    gamificationStore.awardPoints(15, '全句精听听写满分 (Perfect Dictation)')
+  } else if (matchedWords > 0) {
+    gamificationStore.awardPoints(5, '精听听写句子练习')
+  }
+  gamificationStore.checkInDaily()
+  gamificationStore.checkAndUnlockBadges({
+    dictationCount: 1,
+    perfectDictation: perfectScramble,
+    dictationAce: perfectScramble,
+    streakDays: gamificationStore.streakDays,
+    vocabCount: vocabStore.totalCount,
+    l4Count: vocabStore.l4Count
+  })
 }
 
 // Setup Game 2: Cloze Key Words
@@ -640,6 +658,22 @@ function checkCloze() {
   evaluateStarRating(allCorrect)
 
   analyticsStore.recordDictationResult(correctCount, totalBlanks || 1)
+
+  const perfectCloze = allCorrect
+  if (perfectCloze) {
+    gamificationStore.awardPoints(15, '全句精听听写满分 (Perfect Dictation)')
+  } else if (correctCount > 0) {
+    gamificationStore.awardPoints(5, '精听听写句子练习')
+  }
+  gamificationStore.checkInDaily()
+  gamificationStore.checkAndUnlockBadges({
+    dictationCount: 1,
+    perfectDictation: perfectCloze,
+    dictationAce: perfectCloze,
+    streakDays: gamificationStore.streakDays,
+    vocabCount: vocabStore.totalCount,
+    l4Count: vocabStore.l4Count
+  })
 }
 
 // Setup Game 3: Full Dictation
@@ -679,6 +713,21 @@ function checkFullDictation() {
   evaluateStarRating(perfect)
 
   analyticsStore.recordDictationResult(matchedCount, targetWords.length)
+
+  if (perfect) {
+    gamificationStore.awardPoints(15, '全句精听听写满分 (Perfect Dictation)')
+  } else if (matchedCount > 0) {
+    gamificationStore.awardPoints(5, '精听听写句子练习')
+  }
+  gamificationStore.checkInDaily()
+  gamificationStore.checkAndUnlockBadges({
+    dictationCount: 1,
+    perfectDictation: perfect,
+    dictationAce: perfect,
+    streakDays: gamificationStore.streakDays,
+    vocabCount: vocabStore.totalCount,
+    l4Count: vocabStore.l4Count
+  })
 }
 
 // Backward-compatible alias

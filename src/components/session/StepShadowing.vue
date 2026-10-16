@@ -127,11 +127,15 @@ import { useSubtitleStore } from '../../stores/subtitleStore.js'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
 import { useAnalyticsStore } from '../../stores/analyticsStore.js'
+import { useGamificationStore } from '../../stores/gamificationStore.js'
+import { useVocabStore } from '../../stores/vocabStore.js'
 
 const subtitleStore = useSubtitleStore()
 const player = usePlayerStore()
 const sessionStore = useSessionStore()
 const analyticsStore = useAnalyticsStore()
+const gamificationStore = useGamificationStore()
+const vocabStore = useVocabStore()
 
 const currentCue = computed(() => subtitleStore.effectiveCue)
 const cueNumber = computed(() => subtitleStore.effectiveCueIndex + 1)
@@ -348,6 +352,19 @@ function evaluateScore() {
   }
 
   analyticsStore.recordShadowingScore(score, 'hp')
+
+  if (score >= 85) {
+    gamificationStore.awardPoints(10, '魔咒跟读评分优异 (>=85)')
+  } else {
+    gamificationStore.awardPoints(5, '完成魔咒跟读练习')
+  }
+  gamificationStore.checkInDaily()
+  gamificationStore.checkAndUnlockBadges({
+    shadowingScore: score,
+    streakDays: gamificationStore.streakDays,
+    vocabCount: vocabStore.totalCount,
+    l4Count: vocabStore.l4Count
+  })
 }
 
 function playUserRecording() {
