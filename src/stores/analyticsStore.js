@@ -134,6 +134,14 @@ export const useAnalyticsStore = defineStore('analytics', {
       return 'A2'
     },
 
+    shadowingAverage: (state) => {
+      if (Array.isArray(state.shadowingHistory) && state.shadowingHistory.length > 0) {
+        const sum = state.shadowingHistory.reduce((acc, h) => acc + (Number(h.score) || 0), 0)
+        return Math.round(sum / state.shadowingHistory.length)
+      }
+      return 0
+    },
+
     wizardTitle: function (state) {
       const titles = {
         A2: '魔法学徒',

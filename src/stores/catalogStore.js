@@ -167,6 +167,10 @@ export const useCatalogStore = defineStore('catalog', {
       }
     },
 
+    selectTedTalk(talkId) {
+      this.selectedTedTalkId = talkId
+    },
+
     async fetchRemoteCatalog() {
       if (typeof fetch === 'undefined') return
       this.isLoadingCatalog = true
