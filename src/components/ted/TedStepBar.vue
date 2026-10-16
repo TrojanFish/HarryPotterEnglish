@@ -12,7 +12,7 @@
         class="min-h-[44px] min-w-[44px] px-3 py-1 flex flex-col items-center justify-center gap-1 transition-all duration-200 touch-manipulation focus:outline-none"
         :class="[
           isActive(step.id)
-            ? 'bg-amber-500 text-white rounded-2xl font-bold shadow-none'
+            ? 'bg-amber-700 text-white rounded-2xl font-bold shadow-none'
             : isLocked(step.id)
             ? 'text-stone-400 opacity-50 cursor-not-allowed'
             : isCompleted(step.id)

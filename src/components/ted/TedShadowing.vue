@@ -18,7 +18,7 @@
             type="button"
             @click="prevSegment"
             :disabled="currentSegmentIndex <= 0"
-            class="min-h-[44px] min-w-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 transition-colors active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed hover:bg-amber-50/50 cursor-pointer"
+            class="min-h-[44px] min-w-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 transition-colors active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed hover:bg-amber-50/50 cursor-pointer touch-manipulation"
             aria-label="上一个片段"
             title="上一个片段"
           >
@@ -33,7 +33,7 @@
             type="button"
             @click="nextSegment"
             :disabled="currentSegmentIndex >= totalSegments - 1"
-            class="min-h-[44px] min-w-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 transition-colors active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed hover:bg-amber-50/50 cursor-pointer"
+            class="min-h-[44px] min-w-[44px] rounded-xl border border-[#e8ddd0] bg-white flex items-center justify-center text-stone-700 transition-colors active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed hover:bg-amber-50/50 cursor-pointer touch-manipulation"
             aria-label="下一个片段"
             title="下一个片段"
           >
@@ -92,7 +92,7 @@
             <div>
               <div class="flex items-center justify-between text-xs mb-1.5">
                 <span class="font-semibold text-stone-800 flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#2563eb] shrink-0" aria-hidden="true"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-600 shrink-0" aria-hidden="true"></span>
                   <span>原声示范</span>
                 </span>
                 <span class="text-stone-500 font-mono text-xs">
@@ -110,8 +110,8 @@
               class="w-full min-h-[44px] px-4 py-2.5 bg-amber-50/60 hover:bg-amber-100/70 border border-amber-200/80 rounded-xl text-xs font-semibold text-amber-950 flex items-center justify-center gap-2 transition-all active:scale-95 touch-manipulation cursor-pointer"
               :aria-label="isPlayingSnippet ? '暂停原声示范' : '播放原声示范'"
             >
-              <Pause v-if="isPlayingSnippet" class="w-4 h-4 text-[#2563eb]" />
-              <Play v-else class="w-4 h-4 text-[#2563eb]" />
+              <Pause v-if="isPlayingSnippet" class="w-4 h-4 text-amber-800" />
+              <Play v-else class="w-4 h-4 text-amber-800" />
               <span>{{ isPlayingSnippet ? '暂停示范' : '播放原声' }}</span>
             </button>
           </section>
@@ -148,7 +148,7 @@
                   'flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 touch-manipulation cursor-pointer',
                   isRecording
                     ? 'bg-[#dc2626] hover:bg-red-700 text-white animate-pulse'
-                    : 'bg-amber-950 hover:bg-amber-900 text-amber-50'
+                    : 'bg-amber-700 hover:bg-amber-800 text-amber-50 font-bold'
                 ]"
                 :aria-label="isRecording ? '停止录音' : '开始录音'"
               >
@@ -164,14 +164,14 @@
                 :class="[
                   'min-h-[44px] min-w-[44px] px-3.5 py-2.5 border rounded-xl text-xs font-medium flex items-center justify-center transition-all active:scale-95 cursor-pointer touch-manipulation',
                   isPlayingUserRecording
-                    ? 'border-blue-300 bg-blue-50 text-[#2563eb]'
+                    ? 'border-amber-300 bg-amber-100 text-amber-900 font-semibold'
                     : 'border-[#e8ddd0] bg-white hover:bg-amber-50/50 text-stone-700'
                 ]"
                 :title="isPlayingUserRecording ? '暂停回放' : '回放我的录音'"
                 aria-label="回放我的录音"
               >
-                <Pause v-if="isPlayingUserRecording" class="w-4 h-4 text-[#2563eb]" />
-                <Play v-else class="w-4 h-4 text-[#2563eb]" />
+                <Pause v-if="isPlayingUserRecording" class="w-4 h-4 text-amber-800" />
+                <Play v-else class="w-4 h-4 text-amber-800" />
               </button>
             </div>
           </section>
