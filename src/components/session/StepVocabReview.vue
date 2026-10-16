@@ -1,14 +1,14 @@
 <template>
-  <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-6 pb-32 sm:pb-36 bg-white overflow-y-auto">
+  <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-6 pb-32 sm:pb-36 bg-[#fbf9f5] overflow-y-auto">
     <div class="max-w-2xl w-full space-y-4 sm:space-y-5 my-auto py-2">
       <!-- Leitner 5-box Level Indicators -->
-      <div class="p-5 sm:p-6 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl space-y-2.5">
+      <div class="p-5 sm:p-6 bg-[#f5efe6] border border-[#e8ddd0] rounded-2xl space-y-2.5">
         <div class="flex items-center justify-between text-xs">
-          <div class="font-medium text-[#18181b] flex items-center gap-1.5">
-            <BookMarked class="w-4 h-4 text-[#2563eb]" />
+          <div class="font-medium text-stone-800 flex items-center gap-1.5">
+            <BookMarked class="w-4 h-4 text-amber-700" />
             <span>艾宾浩斯复习盒</span>
           </div>
-          <span class="text-[11px] font-mono text-[#71717a]">共 {{ activeList.length }} 词</span>
+          <span class="text-[11px] font-mono text-stone-500">共 {{ activeList.length }} 词</span>
         </div>
 
         <div class="grid grid-cols-5 gap-1.5 font-mono text-xs">
@@ -18,10 +18,10 @@
             type="button"
             @click="selectBox(boxNum)"
             :class="[
-              'min-h-[44px] py-1.5 px-1 rounded-lg text-center transition-colors touch-manipulation cursor-pointer flex items-center justify-center',
+              'min-h-[44px] min-w-[44px] py-1.5 px-1 rounded-lg text-center transition-colors touch-manipulation cursor-pointer flex items-center justify-center',
               currentBox === boxNum
-                ? 'bg-[#18181b] text-white font-medium'
-                : 'bg-white border border-[#e4e4e7] text-[#71717a] hover:bg-[#f4f4f5]'
+                ? 'bg-amber-700 text-amber-50 font-bold shadow-sm'
+                : 'bg-white/80 border border-[#e8ddd0] text-stone-700 hover:bg-[#fbf9f5]'
             ]"
             :title="`切换查看 Box ${boxNum}`"
           >
@@ -34,7 +34,7 @@
       <div v-if="currentCard" class="space-y-4">
         <!-- 3D Flashcard Container -->
         <div
-          class="perspective w-full h-64 sm:h-72 cursor-pointer select-none"
+          class="perspective w-full h-64 sm:h-72 cursor-pointer select-none touch-manipulation"
           @click="flipCard"
         >
           <div
@@ -45,27 +45,27 @@
           >
             <!-- Front of Card -->
             <div
-              class="absolute inset-0 p-5 sm:p-6 bg-white border border-[#e4e4e7] rounded-2xl flex flex-col items-center justify-center text-center space-y-2 backface-hidden"
+              class="absolute inset-0 p-5 sm:p-6 bg-white/90 border border-[#e8ddd0] rounded-2xl flex flex-col items-center justify-center text-center space-y-2 backface-hidden shadow-sm"
             >
-              <h3 class="font-serif font-bold text-3xl sm:text-4xl text-[#18181b]">
+              <h3 class="font-serif font-bold text-3xl sm:text-4xl text-stone-900">
                 {{ currentCard.word }}
               </h3>
-              <p v-if="currentCard.phonetic" class="font-mono text-xs text-[#71717a]">
+              <p v-if="currentCard.phonetic" class="font-mono text-xs text-stone-500">
                 {{ currentCard.phonetic }}
               </p>
-              <p v-if="currentCard.contextQuote" class="text-xs text-[#52525b] italic pt-3 border-t border-[#e4e4e7] max-w-sm line-clamp-2">
+              <p v-if="currentCard.contextQuote" class="text-xs text-stone-600 italic pt-3 border-t border-[#e8ddd0] max-w-sm line-clamp-2">
                 "{{ currentCard.contextQuote }}"
               </p>
             </div>
 
             <!-- Back of Card -->
             <div
-              class="absolute inset-0 p-4 sm:p-6 bg-[#f8f8f6] border border-[#2563eb] rounded-2xl flex flex-col items-center justify-center text-center space-y-2.5 backface-hidden rotate-y-180 overflow-y-auto"
+              class="absolute inset-0 p-5 sm:p-6 bg-[#faf6ee] border border-amber-500/50 rounded-2xl flex flex-col items-center justify-center text-center space-y-2.5 backface-hidden rotate-y-180 overflow-y-auto shadow-sm"
             >
-              <span class="px-2 py-0.5 rounded bg-blue-100 text-[#2563eb] text-[10px] font-mono font-medium">
+              <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-mono font-medium">
                 Box {{ currentCard.box || 1 }}
               </span>
-              <h3 class="font-bold text-base sm:text-lg text-[#18181b]">
+              <h3 class="font-bold text-base sm:text-lg text-stone-900">
                 {{ currentCard.definition }}
               </h3>
               <div class="w-full pt-1">
@@ -100,15 +100,15 @@
           <button
             type="button"
             @click="handleForgot"
-            class="min-h-[44px] px-4 py-3 border border-[#e4e4e7] hover:bg-[#f4f4f5] rounded-xl text-xs font-medium text-[#71717a] hover:text-[#18181b] flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation cursor-pointer"
+            class="min-h-[44px] px-4 py-3 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation cursor-pointer shadow-sm"
           >
-            <X class="w-4 h-4 text-[#dc2626]" />
+            <X class="w-4 h-4 text-rose-700" />
             <span>没记住</span>
           </button>
           <button
             type="button"
             @click="handlePromote"
-            class="min-h-[44px] px-4 py-3 bg-[#059669] hover:bg-emerald-700 text-white rounded-xl text-xs font-medium flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation cursor-pointer"
+            class="min-h-[44px] px-4 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation cursor-pointer shadow-sm"
           >
             <Check class="w-4 h-4" />
             <span>已掌握</span>
@@ -116,14 +116,14 @@
         </div>
 
         <!-- Card Index Navigation -->
-        <div class="flex items-center justify-between text-xs text-[#71717a] pt-1">
+        <div class="flex items-center justify-between text-xs text-stone-500 font-mono pt-1">
           <span>卡片 {{ currentIndex + 1 }} / {{ activeList.length }}</span>
           <div class="flex items-center gap-2">
             <button
               type="button"
               :disabled="currentIndex === 0"
               @click="prevCard"
-              class="min-h-[44px] min-w-[44px] px-3 py-1 border border-[#e4e4e7] rounded-lg hover:bg-[#f4f4f5] disabled:opacity-40 cursor-pointer touch-manipulation flex items-center justify-center"
+              class="min-h-[44px] min-w-[44px] px-3 py-1 bg-[#fbf9f5] hover:bg-[#f2ece2] border border-[#e8ddd0] text-stone-800 rounded-xl touch-manipulation cursor-pointer disabled:opacity-40 flex items-center justify-center transition-colors"
             >
               上一张
             </button>
@@ -131,7 +131,7 @@
               type="button"
               :disabled="currentIndex >= activeList.length - 1"
               @click="nextCard"
-              class="min-h-[44px] min-w-[44px] px-3 py-1 border border-[#e4e4e7] rounded-lg hover:bg-[#f4f4f5] disabled:opacity-40 cursor-pointer touch-manipulation flex items-center justify-center"
+              class="min-h-[44px] min-w-[44px] px-3 py-1 bg-[#fbf9f5] hover:bg-[#f2ece2] border border-[#e8ddd0] text-stone-800 rounded-xl touch-manipulation cursor-pointer disabled:opacity-40 flex items-center justify-center transition-colors"
             >
               下一张
             </button>
@@ -140,12 +140,21 @@
       </div>
 
       <!-- Empty state when no words collected -->
-      <div v-else class="p-5 sm:p-6 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl text-center space-y-3">
-        <BookMarked class="w-8 h-8 text-[#a1a1aa] mx-auto" />
-        <h3 class="font-bold text-sm text-[#18181b]">生词本暂无待复习单词</h3>
-        <p class="text-xs text-[#52525b] max-w-sm mx-auto">
+      <div v-else class="p-5 sm:p-6 bg-[#f5efe6] border border-[#e8ddd0] rounded-2xl text-center space-y-4 shadow-sm">
+        <BookMarked class="w-8 h-8 text-stone-400 mx-auto" />
+        <h3 class="font-bold text-sm text-stone-800">生词本暂无待复习单词</h3>
+        <p class="text-xs text-stone-600 max-w-sm mx-auto">
           在【步骤 1 精听】中点击任意英文生词，即可自动收录至此进行艾宾浩斯复习。
         </p>
+        <div class="pt-1">
+          <button
+            type="button"
+            @click="sessionStore.setStep(1)"
+            class="min-h-[44px] px-5 py-2.5 bg-amber-700 hover:bg-amber-800 text-amber-50 font-bold rounded-xl text-xs inline-flex items-center justify-center gap-1.5 transition-colors touch-manipulation cursor-pointer shadow-sm"
+          >
+            <span>前往精听收集生词</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -155,10 +164,12 @@
 import { ref, computed } from 'vue'
 import { BookMarked, Check, X, AlertCircle } from 'lucide-vue-next'
 import { useVocabStore } from '../../stores/vocabStore.js'
+import { useSessionStore } from '../../stores/sessionStore.js'
 import { useGamificationStore } from '../../stores/gamificationStore.js'
 import VocabDepthMeter from '../common/VocabDepthMeter.vue'
 
 const vocabStore = useVocabStore()
+const sessionStore = useSessionStore()
 const gamificationStore = useGamificationStore()
 
 const currentBox = ref(1)
