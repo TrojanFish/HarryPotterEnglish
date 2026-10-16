@@ -1,35 +1,35 @@
 <template>
-  <div class="h-full w-full flex flex-col md:flex-row overflow-hidden bg-white">
+  <div class="h-full w-full flex flex-col md:flex-row overflow-hidden bg-[#fbf9f5]">
     <!-- Left Column: Reading Subtitle Stream (Full width on mobile, 65% on desktop) -->
     <div
       ref="scrollContainerRef"
-      class="flex-1 md:flex-[1.2] max-w-3xl flex flex-col min-w-0 border-r border-[#e4e4e7] overflow-y-auto p-4 sm:p-6 pb-32 sm:pb-36 space-y-3 sm:space-y-3.5"
+      class="flex-1 md:flex-[1.2] max-w-3xl flex flex-col min-w-0 border-r border-[#e8ddd0] overflow-y-auto p-4 sm:p-6 pb-32 sm:pb-36 space-y-3 sm:space-y-3.5"
     >
       <!-- Subtitle Control Strip -->
-      <div class="flex items-center justify-between pb-3 border-b border-[#e4e4e7] text-xs text-[#71717a] shrink-0">
-        <span class="px-2 py-0.5 bg-[#f4f4f5] rounded border border-[#e4e4e7] font-mono text-[11px]">
+      <div class="flex items-center justify-between pb-3 border-b border-[#e8ddd0] text-xs text-stone-600 shrink-0">
+        <span class="px-2 py-0.5 bg-[#f5efe6] rounded-md border border-[#e8ddd0] font-mono text-[11px] text-stone-700">
           共 {{ subtitleStore.cues.length }} 句
         </span>
         <button
           type="button"
           @click="toggleBlindMode"
-          class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-[#f4f4f5] flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer"
+          class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-[#f2ece2] flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer"
           :title="player.isBlindMode ? '盲听模式开启中（点击取消模糊）' : '开启盲听模式（模糊字幕专注听力）'"
           :aria-label="player.isBlindMode ? '取消盲听模式' : '开启盲听模式'"
         >
-          <EyeOff v-if="player.isBlindMode" class="w-5 h-5 text-[#2563eb]" />
-          <Eye v-else class="w-5 h-5 text-[#71717a] hover:text-[#18181b]" />
+          <EyeOff v-if="player.isBlindMode" class="w-5 h-5 text-amber-700" />
+          <Eye v-else class="w-5 h-5 text-stone-500 hover:text-stone-800" />
         </button>
       </div>
 
       <!-- Empty state when no cues loaded -->
       <div
         v-if="subtitleStore.cues.length === 0"
-        class="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#71717a]"
+        class="flex-1 flex flex-col items-center justify-center p-8 text-center text-stone-500"
       >
-        <BookOpen class="w-8 h-8 text-[#a1a1aa] mb-2" />
-        <p class="text-sm font-medium text-[#18181b]">正在加载原版音频字幕...</p>
-        <p class="text-xs text-[#a1a1aa] mt-1">请稍候或检查网络连接</p>
+        <BookOpen class="w-8 h-8 text-stone-400 mb-2" />
+        <p class="text-sm font-medium text-stone-900">正在加载原版音频字幕...</p>
+        <p class="text-xs text-stone-400 mt-1">请稍候或检查网络连接</p>
       </div>
 
       <!-- Cue Cards Stream -->
@@ -39,15 +39,15 @@
         :id="'cue-' + idx"
         @click="jumpToCue(cue, idx)"
         :class="[
-          'cue-card group p-4 sm:p-5 rounded-xl border transition-all cursor-pointer select-text',
+          'cue-card group p-4 sm:p-5 rounded-xl border transition-all cursor-pointer select-text touch-manipulation',
           idx === subtitleStore.activeCueIndex
-            ? 'border-[#2563eb] bg-[#f8f8f6] border-l-4 border-l-[#2563eb]'
-            : 'border-[#e4e4e7] hover:border-[#a1a1aa] bg-white'
+            ? 'border-l-4 border-l-amber-600 border-[#e8ddd0] bg-amber-500/10'
+            : 'border-[#e8ddd0] hover:border-amber-300 bg-white/75'
         ]"
       >
         <!-- Time and Index -->
         <div class="flex items-center justify-between text-[11px] font-mono mb-2">
-          <span :class="idx === subtitleStore.activeCueIndex ? 'text-[#2563eb] font-semibold' : 'text-[#71717a]'">
+          <span :class="idx === subtitleStore.activeCueIndex ? 'text-amber-800 font-semibold' : 'text-stone-400 font-mono'">
             {{ formatTime(cue.start) }} - {{ formatTime(cue.end) }} · #{{ String(idx + 1).padStart(2, '0') }}
           </span>
         </div>
@@ -55,8 +55,8 @@
         <!-- English Sentence with word-level tap (supports Blind Mode Blur) -->
         <p
           :class="[
-            'font-serif text-lg sm:text-xl leading-[2.0] tracking-wide transition-all',
-            idx === subtitleStore.activeCueIndex ? 'text-[#18181b] font-medium' : 'text-[#27272a]',
+            'text-lg sm:text-xl leading-[2.0] tracking-wide transition-all',
+            idx === subtitleStore.activeCueIndex ? 'text-stone-900 font-medium font-serif' : 'text-stone-800 font-serif',
             player.isBlindMode ? 'filter blur-[7px] select-none opacity-40 group-hover:filter-none group-hover:opacity-100' : ''
           ]"
         >
@@ -64,7 +64,7 @@
             v-for="(token, tIdx) in tokenizeText(cue.text)"
             :key="tIdx"
             @click.stop="handleWordClick(token, cue.text)"
-            class="token hover:text-[#2563eb] hover:underline cursor-pointer inline-block mr-[0.35em] transition-colors"
+            class="token hover:text-amber-700 hover:underline cursor-pointer inline-block mr-[0.35em] transition-colors touch-manipulation"
           >{{ token }}</span>
         </p>
 
@@ -72,7 +72,7 @@
         <p
           v-if="cue.translation"
           :class="[
-            'text-sm sm:text-base text-[#52525b] mt-2 pt-2 border-t border-[#e4e4e7]/60 leading-relaxed font-sans transition-all',
+            'text-sm sm:text-base text-stone-600 mt-2 pt-2 border-t border-[#e8ddd0]/60 leading-relaxed font-sans transition-all',
             player.isBlindMode ? 'filter blur-[7px] select-none opacity-40 group-hover:filter-none group-hover:opacity-100' : ''
           ]"
         >
@@ -82,15 +82,15 @@
     </div>
 
     <!-- Right Column: Focus Insight & Word Details (Desktop only) -->
-    <div class="hidden md:flex md:w-80 lg:w-72 shrink-0 flex-col p-6 bg-[#f8f8f6] overflow-y-auto space-y-5">
+    <div class="hidden md:flex md:w-80 lg:w-72 shrink-0 flex-col p-6 bg-[#f5efe6] border-l border-[#e8ddd0] overflow-y-auto space-y-5">
       <!-- Section: Core Vocabulary of Current Cue -->
       <div>
         <div class="flex items-center justify-between mb-2">
-          <h3 class="text-xs font-mono font-bold tracking-wider text-[#71717a] uppercase flex items-center gap-1.5">
+          <h3 class="text-xs font-mono font-bold tracking-wider text-stone-800 uppercase flex items-center gap-1.5">
             <span>当前精听句核心词汇</span>
             <span
               v-if="currentCueVocab.length > 0"
-              class="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200"
+              class="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-300 font-mono"
             >
               {{ currentCueVocab.length }} 词
             </span>
@@ -98,7 +98,7 @@
 
           <span
             v-if="savedVocabCountInCurrentCue > 0"
-            class="text-[11px] font-mono text-[#2563eb] bg-blue-50 px-2 py-0.5 rounded border border-blue-200"
+            class="text-[11px] font-mono text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300"
           >
             已收录 {{ savedVocabCountInCurrentCue }}/{{ currentCueVocab.length }}
           </span>
@@ -110,15 +110,18 @@
             v-for="word in currentCueVocab"
             :key="word.word"
             @click="openWordDetails(word)"
-            class="group p-3.5 bg-white border border-[#e4e4e7] hover:border-[#2563eb]/60 rounded-xl transition-all cursor-pointer select-text"
+            class="group p-3.5 bg-white/80 border border-[#e8ddd0] rounded-xl hover:border-amber-400 transition-colors cursor-pointer select-text touch-manipulation"
           >
             <!-- Word Header row -->
             <div class="flex items-center justify-between">
               <div class="flex items-baseline gap-2">
-                <span class="font-serif font-bold text-base text-[#18181b] group-hover:text-[#2563eb] transition-colors">
+                <span class="font-serif font-bold text-base text-stone-900 group-hover:text-amber-800 transition-colors">
                   {{ word.word }}
                 </span>
-                <span v-if="word.phonetic" class="text-xs font-mono text-[#71717a]">
+                <span v-if="word.pos" class="text-xs font-semibold text-amber-800 font-mono">
+                  {{ word.pos }}
+                </span>
+                <span v-if="word.phonetic" class="text-xs font-mono text-stone-500">
                   {{ word.phonetic }}
                 </span>
               </div>
@@ -129,7 +132,7 @@
                 <button
                   type="button"
                   @click="speakWord(word.word)"
-                  class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-[#f4f4f5] text-[#71717a] hover:text-[#18181b] flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer"
+                  class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-[#f2ece2] text-stone-600 hover:text-stone-900 flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer"
                   title="朗读发音"
                   aria-label="朗读发音"
                 >
@@ -140,14 +143,14 @@
                 <button
                   type="button"
                   @click="toggleVocabWord(word)"
-                  class="min-h-[44px] min-w-[44px] p-2 rounded-lg flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer"
+                  class="min-h-[44px] min-w-[44px] p-2 rounded-lg flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer hover:bg-[#f2ece2]"
                   :class="vocabStore.hasWord(word.word)
-                    ? 'text-[#2563eb] hover:bg-blue-50'
-                    : 'text-[#71717a] hover:bg-[#f4f4f5] hover:text-[#18181b]'"
+                    ? 'text-amber-700'
+                    : 'text-stone-500 hover:text-stone-800'"
                   :title="vocabStore.hasWord(word.word) ? '已在生词本中（点击移除）' : '收录至生词本'"
                   :aria-label="vocabStore.hasWord(word.word) ? '已在生词本中' : '收录至生词本'"
                 >
-                  <BookmarkCheck v-if="vocabStore.hasWord(word.word)" class="w-4 h-4 text-[#2563eb]" />
+                  <BookmarkCheck v-if="vocabStore.hasWord(word.word)" class="w-4 h-4 text-amber-700" />
                   <BookMarked v-else class="w-4 h-4" />
                 </button>
               </div>
@@ -155,7 +158,7 @@
 
             <!-- Definition & Tag -->
             <div class="mt-1.5 flex items-center justify-between gap-2">
-              <p class="text-xs text-[#52525b] leading-relaxed line-clamp-2">
+              <p class="text-xs text-stone-600 leading-relaxed line-clamp-2">
                 {{ word.definition }}
               </p>
               <span :class="['text-[10px] px-1.5 py-0.5 rounded border font-mono shrink-0', getTagBadgeClass(word.tag)]">
@@ -167,13 +170,13 @@
           <!-- Empty State when sentence only has basic words -->
           <div
             v-if="currentCueVocab.length === 0"
-            class="p-5 bg-white border border-[#e4e4e7] rounded-xl text-center space-y-1.5"
+            class="p-5 bg-white/80 border border-[#e8ddd0] rounded-xl text-center space-y-1.5"
           >
-            <div class="w-8 h-8 mx-auto rounded-full bg-[#f4f4f5] flex items-center justify-center text-[#71717a]">
-              <Sparkles class="w-4 h-4 text-[#2563eb]" />
+            <div class="w-8 h-8 mx-auto rounded-full bg-[#f5efe6] flex items-center justify-center text-amber-700">
+              <Sparkles class="w-4 h-4 text-amber-700" />
             </div>
-            <p class="text-xs font-medium text-[#18181b]">本句为基础短句，无难点生词</p>
-            <p class="text-[11px] text-[#71717a]">
+            <p class="text-xs font-medium text-stone-900">本句为基础短句，无难点生词</p>
+            <p class="text-[11px] text-stone-500">
               点击左侧字幕中的任意单词，即可随时呼出词典查词与收录
             </p>
           </div>
@@ -182,23 +185,23 @@
 
       <!-- Section: Sentence Content Word Chips Cloud -->
       <div v-if="sentenceContentTokens.length > 0">
-        <h3 class="text-xs font-mono font-bold tracking-wider text-[#71717a] uppercase mb-2">
+        <h3 class="text-xs font-mono font-bold tracking-wider text-stone-800 uppercase mb-2">
           全句单词速查
         </h3>
-        <div class="p-3.5 bg-white border border-[#e4e4e7] rounded-xl">
+        <div class="p-3.5 bg-white/80 border border-[#e8ddd0] rounded-xl">
           <div class="flex flex-wrap gap-1.5">
             <button
               v-for="(chip, cIdx) in sentenceContentTokens"
               :key="cIdx"
               type="button"
               @click="handleWordClick(chip.clean, subtitleStore.currentCue?.text)"
-              class="px-2.5 py-1 text-xs font-mono rounded-lg border transition-all active:scale-95 cursor-pointer flex items-center gap-1"
+              class="min-h-[44px] min-w-[44px] px-2.5 py-1 text-xs font-mono rounded-lg border transition-all active:scale-95 touch-manipulation cursor-pointer flex items-center gap-1"
               :class="vocabStore.hasWord(chip.clean)
-                ? 'bg-blue-50 border-blue-200 text-[#2563eb] font-semibold'
-                : 'bg-[#f4f4f5] border-[#e4e4e7] text-[#52525b] hover:bg-white hover:border-[#2563eb]/60'"
+                ? 'bg-amber-100 border-amber-300 text-amber-900 font-semibold'
+                : 'bg-[#f5efe6] border-[#e8ddd0] text-stone-600 hover:bg-white hover:border-amber-400'"
             >
               <span>{{ chip.clean }}</span>
-              <BookmarkCheck v-if="vocabStore.hasWord(chip.clean)" class="w-3 h-3 text-[#2563eb]" />
+              <BookmarkCheck v-if="vocabStore.hasWord(chip.clean)" class="w-3 h-3 text-amber-700" />
             </button>
           </div>
         </div>
@@ -206,17 +209,17 @@
 
       <!-- Section: Next Step (Shadowing) -->
       <div>
-        <h3 class="text-xs font-mono font-bold tracking-wider text-[#71717a] uppercase mb-2">
+        <h3 class="text-xs font-mono font-bold tracking-wider text-stone-800 uppercase mb-2">
           下一步：进阶跟读
         </h3>
-        <div class="p-4 bg-white border border-[#e4e4e7] rounded-xl space-y-3">
-          <p class="text-xs text-[#52525b] leading-relaxed">
+        <div class="p-4 bg-white/80 border border-[#e8ddd0] rounded-xl space-y-3">
+          <p class="text-xs text-stone-600 leading-relaxed">
             听完本段录音后，点击下方按钮切换到 <strong>步骤 2 影子跟读</strong>，进行单句 A/B 录音比对练习。
           </p>
           <button
             type="button"
             @click="sessionStore.setStep(2)"
-            class="w-full min-h-[44px] px-4 py-2 bg-[#18181b] hover:bg-[#27272a] text-white rounded-lg text-xs font-medium flex items-center justify-center gap-2 transition-colors active:scale-95 cursor-pointer"
+            class="w-full min-h-[44px] px-4 py-2 bg-stone-900 hover:bg-stone-800 text-stone-50 rounded-lg text-xs font-medium flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation cursor-pointer"
           >
             <span>跟读本句</span>
             <ChevronRight class="w-3.5 h-3.5" />
@@ -236,9 +239,9 @@
     >
       <div
         v-if="toastMsg"
-        class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-[#18181b] text-white text-xs font-mono rounded-full border border-[#e4e4e7]/30 flex items-center gap-2 pointer-events-none"
+        class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-stone-900 text-stone-100 text-xs font-mono rounded-full border border-[#e8ddd0]/30 flex items-center gap-2 pointer-events-none"
       >
-        <Sparkles class="w-3.5 h-3.5 text-[#2563eb]" />
+        <Sparkles class="w-3.5 h-3.5 text-amber-400" />
         <span>{{ toastMsg }}</span>
       </div>
     </Transition>
