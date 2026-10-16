@@ -303,6 +303,10 @@ function initPasscode() {
  * Re-generate current device passcode
  */
 function regeneratePasscode() {
+  if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+    const ok = window.confirm('重新生成通行码后，使用旧通行码的设备需重新配对。确认生成新通行码？')
+    if (!ok) return
+  }
   const newCode = generatePasscode()
   currentPasscode.value = newCode
   if (typeof localStorage !== 'undefined') {
@@ -511,6 +515,14 @@ async function handlePairDevice() {
     return
   }
 
+  if (code === currentPasscode.value) {
+    pairFeedback.value = {
+      message: '不能与本机配对，请输入其他设备的通行码',
+      isError: true
+    }
+    return
+  }
+
   isPairing.value = true
   pairFeedback.value = { message: '', isError: false }
 
@@ -557,6 +569,7 @@ function handleClose() {
  * Handle Escape key
  */
 function handleKeydown(e) {
+  if (!props.isOpen) return
   if (e.key === 'Escape' || e.code === 'Escape') {
     handleClose()
   }

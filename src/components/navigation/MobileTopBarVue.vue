@@ -83,6 +83,17 @@
       >
         <HardDrive :size="18" class="text-stone-700" />
       </button>
+
+      <!-- Cloud Sync Button -->
+      <button
+        type="button"
+        @click="handleCloudSyncClick"
+        class="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-white text-stone-600 hover:text-amber-950 active:scale-95 transition-all touch-manipulation cursor-pointer"
+        title="云端漫游"
+        aria-label="打开云端漫游"
+      >
+        <Cloud :size="18" class="text-stone-700" />
+      </button>
     </div>
   </header>
 </template>
@@ -96,7 +107,8 @@ import {
   BookMarked,
   BarChart2,
   HardDrive,
-  Flame
+  Flame,
+  Cloud
 } from 'lucide-vue-next'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
@@ -116,7 +128,8 @@ const emit = defineEmits([
   'open-analytics',
   'open-storage',
   'open-house-cup',
-  'open-badges'
+  'open-badges',
+  'open-cloud-sync'
 ])
 
 const navigationStore = useNavigationStore()
@@ -148,5 +161,9 @@ function handleAnalyticsClick() {
 function handleStorageClick() {
   navigationStore.setView('storage')
   emit('open-storage')
+}
+
+function handleCloudSyncClick() {
+  emit('open-cloud-sync')
 }
 </script>

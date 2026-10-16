@@ -174,6 +174,17 @@
         <span class="text-[10px] font-mono text-amber-700 mt-0.5 leading-tight">{{ unlockedCount }}</span>
       </button>
 
+      <!-- Cloud Roaming Button (Collapsed) -->
+      <button
+        type="button"
+        @click="handleOpenCloudSync"
+        class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer p-1.5 rounded-xl hover:bg-white text-amber-800 font-mono font-bold text-xs touch-manipulation transition-transform active:scale-95"
+        title="打开多设备云端漫游与通行码配对"
+        aria-label="云端漫游"
+      >
+        <Cloud :size="18" class="text-amber-800" />
+      </button>
+
       <!-- Sync Status Indicator Dot -->
       <button
         type="button"
@@ -262,6 +273,23 @@
         </div>
       </div>
 
+      <!-- Cloud Roaming Action Pill (Expanded) -->
+      <button
+        type="button"
+        @click="handleOpenCloudSync"
+        class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl border border-amber-200 bg-amber-50/70 hover:bg-amber-100/70 text-amber-950 transition-all cursor-pointer min-h-[44px] min-w-[44px] touch-manipulation active:scale-95 text-xs font-bold"
+        title="打开多设备云端漫游与通行码配对"
+        aria-label="打开云端漫游"
+      >
+        <span class="flex items-center gap-2">
+          <Cloud :size="16" class="text-amber-800 shrink-0" />
+          <span>云端漫游</span>
+        </span>
+        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-200/60 text-amber-900 border border-amber-300/60">
+          无损漫游
+        </span>
+      </button>
+
       <!-- Local-First Sync Indicator -->
       <div
         @click="handleAnalyticsClick"
@@ -325,7 +353,8 @@ import {
   Scale,
   Download,
   Award,
-  Trophy
+  Trophy,
+  Cloud
 } from 'lucide-vue-next'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
@@ -377,7 +406,8 @@ const emit = defineEmits([
   'open-legal',
   'install-pwa',
   'open-house-cup',
-  'open-badges'
+  'open-badges',
+  'open-cloud-sync'
 ])
 
 const navigationStore = useNavigationStore()
@@ -541,6 +571,10 @@ function handleOpenHouseCup() {
 
 function handleOpenBadges() {
   emit('open-badges')
+}
+
+function handleOpenCloudSync() {
+  emit('open-cloud-sync')
 }
 
 function handleAnalyticsClick() {

@@ -117,14 +117,24 @@
           </div>
         </div>
 
-        <!-- Chapter List -->
-        <div class="flex-1 overflow-y-auto p-4 space-y-2">
-          <div
-            v-if="filteredChapters.length === 0"
-            class="text-center py-12 px-4 text-xs text-[#71717a] font-serif"
-          >
-            未找到与 "{{ searchQuery }}" 匹配的章节
+        <!-- Chapter List & Recommendation Area -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+          <!-- Next-Step Recommendation Card -->
+          <div class="space-y-2">
+            <RecommendationCard
+              @open-chapter="onRecommendationChapter"
+              @open-ted="onRecommendationTed"
+            />
           </div>
+
+          <!-- Chapter List -->
+          <div class="space-y-2">
+            <div
+              v-if="filteredChapters.length === 0"
+              class="text-center py-12 px-4 text-xs text-[#71717a] font-serif"
+            >
+              未找到与 "{{ searchQuery }}" 匹配的章节
+            </div>
 
           <button
             v-for="(chapter, idx) in filteredChapters"
@@ -183,6 +193,7 @@
             </div>
           </button>
         </div>
+      </div>
 
         <!-- Footer -->
         <div class="px-4 py-3 border-t border-[#e4e4e7] bg-white flex items-center justify-between text-xs shrink-0">
@@ -198,11 +209,16 @@
 import { ref, computed } from 'vue'
 import { usePlayerStore } from '../stores/playerStore.js'
 import { useCatalogStore } from '../stores/catalogStore.js'
+import { useTedStore } from '../stores/tedStore.js'
+import { useNavigationStore } from '../stores/navigationStore.js'
 import { BOOKS, CEFR_LEVELS } from '../utils/booksData.js'
 import { BookMarked, X, Clock, ChevronRight, Volume2, Search } from 'lucide-vue-next'
+import RecommendationCard from './home/RecommendationCard.vue'
 
 const player = usePlayerStore()
 const catalog = useCatalogStore()
+const tedStore = useTedStore()
+const navStore = useNavigationStore()
 
 const searchQuery = ref('')
 const activeBookId = ref(player.currentBookId || 'book1')
@@ -290,6 +306,32 @@ function onSelectChapter(chapter) {
     catalog.selectChapter(chapter.id)
   }
   player.switchChapter(bookId, chapter.id)
+  player.toggleBookshelf(false)
+}
+
+function onRecommendationChapter(ch) {
+  if (ch && ch.bookId) {
+    const bookId = ch.bookId
+    activeBookId.value = bookId
+    const catBook = catalog.books.find(
+      (cb) => cb.id === bookId || BOOKS.find((b) => b.id === bookId)?.altIds?.includes(cb.id)
+    )
+    if (catBook) {
+      catalog.selectBook(catBook.id)
+      catalog.selectChapter(ch.chapterId || ch.id)
+    }
+    player.switchChapter(bookId, ch.chapterId || ch.id)
+    player.toggleBookshelf(false)
+  } else {
+    onSelectChapter(ch)
+  }
+}
+
+function onRecommendationTed(ted) {
+  if (ted?.id) {
+    tedStore.selectTalk(ted.id)
+  }
+  navStore.setCurrentView('ted')
   player.toggleBookshelf(false)
 }
 </script>

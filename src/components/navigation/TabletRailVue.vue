@@ -71,6 +71,17 @@
         <Award :size="18" class="text-amber-700" />
         <span class="text-[10px] font-mono text-amber-700">{{ unlockedCount }}</span>
       </button>
+
+      <!-- Cloud Roaming Button -->
+      <button
+        type="button"
+        @click="handleCloudSyncClick"
+        class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer p-1.5 rounded-xl hover:bg-white text-amber-800 font-mono font-bold text-xs touch-manipulation transition-transform active:scale-95"
+        title="云端漫游与通行码配对"
+        aria-label="打开云端漫游"
+      >
+        <Cloud :size="18" class="text-amber-800" />
+      </button>
     </div>
   </aside>
 </template>
@@ -88,7 +99,8 @@ import {
   BarChart2,
   HardDrive,
   Flame,
-  Award
+  Award,
+  Cloud
 } from 'lucide-vue-next'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
@@ -113,7 +125,8 @@ const emit = defineEmits([
   'open-analytics',
   'open-storage',
   'open-house-cup',
-  'open-badges'
+  'open-badges',
+  'open-cloud-sync'
 ])
 
 const navigationStore = useNavigationStore()
@@ -224,5 +237,9 @@ function handleStreakClick() {
 
 function handleBadgesClick() {
   emit('open-badges')
+}
+
+function handleCloudSyncClick() {
+  emit('open-cloud-sync')
 }
 </script>

@@ -10,6 +10,7 @@
       @open-storage="openStorage"
       @open-house-cup="openHouseCup"
       @open-badges="openBadges"
+      @open-cloud-sync="openCloudSync"
     />
 
     <!-- Step tab bar: HP sessions only, hidden on TED view -->
@@ -44,6 +45,7 @@
         @open-storage="openStorage"
         @open-house-cup="openHouseCup"
         @open-badges="openBadges"
+        @open-cloud-sync="openCloudSync"
         @change-study-mode="handleStudyModeChange"
       />
 
@@ -55,6 +57,7 @@
         @open-legal="handleOpenLegal"
         @open-house-cup="openHouseCup"
         @open-badges="openBadges"
+        @open-cloud-sync="openCloudSync"
         @change-study-mode="handleStudyModeChange"
       />
 
@@ -117,6 +120,12 @@
       @close="closeSorting"
       @sorted="closeSorting"
     />
+
+    <!-- Multi-Device Cloud Sync Modal -->
+    <CloudSyncModal
+      :is-open="isCloudSyncOpen"
+      @close="closeCloudSync"
+    />
   </div>
 </template>
 
@@ -146,6 +155,7 @@ import AssessmentHub from '../assessment/AssessmentHub.vue'
 import HouseCupModal from '../gamification/HouseCupModal.vue'
 import AchievementBadgesModal from '../gamification/AchievementBadgesModal.vue'
 import SortingCeremonyModal from '../gamification/SortingCeremonyModal.vue'
+import CloudSyncModal from '../sync/CloudSyncModal.vue'
 
 const props = defineProps({
   currentChapterTitle: {
@@ -168,6 +178,7 @@ const isShortcutsOpen = ref(false)
 const isHouseCupOpen = ref(false)
 const isBadgesOpen = ref(false)
 const isSortingOpen = ref(false)
+const isCloudSyncOpen = ref(false)
 
 let previousView = 'player'
 
@@ -272,6 +283,14 @@ function openSorting() {
 
 function closeSorting() {
   isSortingOpen.value = false
+}
+
+function openCloudSync() {
+  isCloudSyncOpen.value = true
+}
+
+function closeCloudSync() {
+  isCloudSyncOpen.value = false
 }
 
 watch(

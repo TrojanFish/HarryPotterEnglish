@@ -315,6 +315,14 @@
         </section>
 
       </div>
+
+      <!-- Dedicated Bottom Next-Step Recommendation Section -->
+      <section class="w-full pt-2" aria-label="校长推荐与能力进阶拓展">
+        <RecommendationCard
+          @open-chapter="handleOpenChapter"
+          @open-ted="handleOpenTed"
+        />
+      </section>
     </div>
 
     <!-- O.W.L.s Exam Modal -->
@@ -352,12 +360,21 @@ import {
 } from 'lucide-vue-next'
 import { useAnalyticsStore } from '../../stores/analyticsStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
+import { usePlayerStore } from '../../stores/playerStore.js'
+import { useCatalogStore } from '../../stores/catalogStore.js'
+import { useTedStore } from '../../stores/tedStore.js'
+import { useNavigationStore } from '../../stores/navigationStore.js'
 import OwlsExamModal from './OwlsExamModal.vue'
 import OwlsCertificateModal from './OwlsCertificateModal.vue'
+import RecommendationCard from '../home/RecommendationCard.vue'
 
 // Stores
 const analyticsStore = useAnalyticsStore()
 const vocabStore = useVocabStore()
+const playerStore = usePlayerStore()
+const catalogStore = useCatalogStore()
+const tedStore = useTedStore()
+const navStore = useNavigationStore()
 
 // Modal bindings & state toggles (OwlsExamModal and OwlsCertificateModal)
 const showExamModal = ref(false)
@@ -511,6 +528,22 @@ function handleExamCompleted(record) {
 function handleStartExamFromCert() {
   showCertModal.value = false
   showExamModal.value = true
+}
+
+function handleOpenChapter(ch) {
+  if (ch && ch.bookId) {
+    catalogStore.selectBook(ch.bookId)
+    catalogStore.selectChapter(ch.chapterId || ch.id)
+    playerStore.switchChapter(ch.bookId, ch.chapterId || ch.id)
+  }
+  navStore.setCurrentView('player')
+}
+
+function handleOpenTed(ted) {
+  if (ted?.id) {
+    tedStore.selectTalk(ted.id)
+  }
+  navStore.setCurrentView('ted')
 }
 </script>
 

@@ -20,6 +20,9 @@ export const useNavigationStore = defineStore('navigation', {
         this.currentView = view
       }
     },
+    setCurrentView(view) {
+      this.setView(view)
+    },
     toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed
       try {
