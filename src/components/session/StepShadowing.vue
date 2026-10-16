@@ -1,16 +1,42 @@
 <template>
-  <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-6 pb-32 sm:pb-36 bg-white overflow-y-auto">
+  <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-6 pb-32 sm:pb-36 bg-[#fbf9f5] overflow-y-auto">
     <div class="max-w-2xl w-full space-y-4 sm:space-y-5 my-auto py-2">
       <!-- Target Sentence Card -->
-      <div class="p-5 sm:p-6 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl text-center space-y-2.5">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#e4e4e7] text-[11px] font-mono text-[#71717a]">
-          <Mic class="w-3.5 h-3.5 text-[#2563eb]" />
-          <span>{{ cueNumber }} / {{ subtitleStore.cues.length || 1 }} 句</span>
+      <div class="p-5 sm:p-6 bg-[#f5efe6] border border-[#e8ddd0] rounded-2xl text-center space-y-2.5">
+        <div class="flex items-center justify-between">
+          <button
+            type="button"
+            @click="prevCue"
+            :disabled="subtitleStore.effectiveCueIndex <= 0"
+            class="min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-[#f2ece2] text-stone-800 flex items-center justify-center transition-colors active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed touch-manipulation cursor-pointer text-xs font-medium gap-1"
+            aria-label="上一句"
+            title="上一句"
+          >
+            <ChevronLeft class="w-4 h-4" />
+            <span class="hidden sm:inline">上一句</span>
+          </button>
+
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 border border-[#e8ddd0] text-[11px] font-mono text-stone-600">
+            <Mic class="w-3.5 h-3.5 text-amber-700" />
+            <span>{{ cueNumber }} / {{ subtitleStore.cues.length || 1 }} 句</span>
+          </div>
+
+          <button
+            type="button"
+            @click="nextCue"
+            :disabled="subtitleStore.effectiveCueIndex >= subtitleStore.cues.length - 1"
+            class="min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-[#f2ece2] text-stone-800 flex items-center justify-center transition-colors active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed touch-manipulation cursor-pointer text-xs font-medium gap-1"
+            aria-label="下一句"
+            title="下一句"
+          >
+            <span class="hidden sm:inline">下一句</span>
+            <ChevronRight class="w-4 h-4" />
+          </button>
         </div>
-        <h2 class="font-serif text-xl sm:text-2xl leading-[1.8] text-[#18181b] font-semibold select-text">
+        <h2 class="font-serif text-xl sm:text-2xl leading-[1.8] text-stone-900 font-semibold select-text">
           "{{ currentCue?.text || '正在准备跟读示范句...' }}"
         </h2>
-        <p class="text-xs text-[#52525b] leading-relaxed">
+        <p class="text-xs text-stone-600 leading-relaxed">
           {{ currentCue?.translation || '暂无释义' }}
         </p>
       </div>
@@ -18,45 +44,45 @@
       <!-- Dual Track Comparison Controls (原声示范 & 我的录音) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <!-- Track A: 原声示范 -->
-        <div class="p-5 sm:p-6 border border-[#e4e4e7] rounded-2xl bg-white space-y-3">
+        <div class="p-5 sm:p-6 border border-[#e8ddd0] rounded-2xl bg-white/70 space-y-3">
           <div class="flex items-center justify-between text-xs">
-            <span class="font-medium text-[#18181b] flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-[#2563eb]"></span>
+            <span class="font-medium text-stone-800 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-600"></span>
               <span>原声示范</span>
             </span>
-            <span class="text-[#71717a] font-mono">
+            <span class="text-stone-500 font-mono">
               {{ snippetDuration }}
             </span>
           </div>
           <button
             type="button"
             @click="playOriginalSnippet"
-            class="w-full min-h-[44px] px-4 py-2.5 bg-[#f8f8f6] hover:bg-[#f4f4f5] border border-[#e4e4e7] rounded-xl text-xs font-medium text-[#18181b] flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation cursor-pointer"
+            class="w-full min-h-[44px] px-4 py-2.5 bg-[#fbf9f5] hover:bg-[#f2ece2] border border-[#e8ddd0] rounded-xl text-xs font-medium text-stone-800 flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation cursor-pointer"
           >
-            <Play v-if="!isPlayingSnippet" class="w-4 h-4 text-[#2563eb]" />
-            <Pause v-else class="w-4 h-4 text-[#2563eb]" />
+            <Play v-if="!isPlayingSnippet" class="w-4 h-4 text-amber-700" />
+            <Pause v-else class="w-4 h-4 text-amber-700" />
             <span>{{ isPlayingSnippet ? '暂停' : '播放原声' }}</span>
           </button>
         </div>
 
         <!-- Track B: 我的录音 -->
-        <div class="p-5 sm:p-6 border border-[#e4e4e7] rounded-2xl bg-white space-y-3">
+        <div class="p-5 sm:p-6 border border-[#e8ddd0] rounded-2xl bg-white/70 space-y-3">
           <div class="flex items-center justify-between text-xs">
-            <span class="font-medium text-[#18181b] flex items-center gap-1.5">
-              <span :class="['w-2 h-2 rounded-full bg-[#dc2626]', isRecording ? 'animate-ping' : '']"></span>
+            <span class="font-medium text-stone-800 flex items-center gap-1.5">
+              <span :class="['w-2 h-2 rounded-full bg-rose-600', isRecording ? 'animate-ping' : '']"></span>
               <span>我的录音</span>
             </span>
-            <span class="text-[#71717a] font-mono">{{ formatTimer(recordingSeconds) }}</span>
+            <span class="text-stone-500 font-mono">{{ formatTimer(recordingSeconds) }}</span>
           </div>
           <div class="flex items-center gap-2">
             <button
               type="button"
               @click="toggleRecording"
               :class="[
-                'flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-medium flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation cursor-pointer',
+                'flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors active:scale-95 touch-manipulation cursor-pointer',
                 isRecording
-                  ? 'bg-[#dc2626] hover:bg-red-700 text-white'
-                  : 'bg-[#18181b] hover:bg-[#27272a] text-white'
+                  ? 'bg-rose-700 hover:bg-rose-800 text-white'
+                  : 'bg-amber-700 hover:bg-amber-800 text-amber-50'
               ]"
             >
               <Mic class="w-4 h-4" />
@@ -67,16 +93,16 @@
               type="button"
               @click="playUserRecording"
               :class="[
-                'min-h-[44px] px-3.5 py-2.5 border rounded-xl text-xs flex items-center justify-center transition-colors active:scale-95 cursor-pointer',
+                'min-h-[44px] min-w-[44px] px-3.5 py-2.5 border rounded-xl text-xs flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer',
                 isPlayingUserRecording
-                  ? 'border-blue-300 bg-blue-50 text-[#2563eb]'
-                  : 'border-[#e4e4e7] hover:bg-[#f4f4f5] text-[#71717a]'
+                  ? 'border-amber-300 bg-amber-50 text-amber-800'
+                  : 'border-[#e8ddd0] hover:bg-[#f2ece2] text-stone-600'
               ]"
               :title="isPlayingUserRecording ? '暂停回放' : '回放我的录音'"
               aria-label="回放我的录音"
             >
-              <Pause v-if="isPlayingUserRecording" class="w-4 h-4 text-[#2563eb]" />
-              <Play v-else class="w-4 h-4 text-[#2563eb]" />
+              <Pause v-if="isPlayingUserRecording" class="w-4 h-4 text-amber-700" />
+              <Play v-else class="w-4 h-4 text-amber-700" />
             </button>
           </div>
         </div>
@@ -85,15 +111,15 @@
       <!-- AI Evaluation Result -->
       <div
         v-if="evalResult"
-        class="p-5 sm:p-6 border border-emerald-200 bg-emerald-50/60 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        class="p-5 sm:p-6 border border-[#e8ddd0] bg-white/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-[#059669] text-white flex items-center justify-center font-mono font-bold text-lg shrink-0">
+          <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-300 text-amber-800 flex items-center justify-center font-mono font-bold text-lg shrink-0">
             {{ evalResult.score }}
           </div>
           <div>
-            <p class="text-xs font-bold text-emerald-900">{{ evalResult.grade }}</p>
-            <p class="text-[11px] text-emerald-700 mt-0.5 leading-relaxed">
+            <p class="text-xs font-bold text-stone-900">{{ evalResult.grade }}</p>
+            <p class="text-[11px] text-stone-600 mt-0.5 leading-relaxed">
               {{ evalResult.feedback }}
             </p>
           </div>
@@ -101,7 +127,7 @@
         <button
           type="button"
           @click="sessionStore.setStep(3)"
-          class="min-h-[44px] px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors shrink-0 active:scale-95 cursor-pointer"
+          class="min-h-[44px] min-w-[44px] px-4 py-2.5 bg-amber-700 hover:bg-amber-800 text-amber-50 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors shrink-0 active:scale-95 cursor-pointer touch-manipulation"
         >
           <span>进入听写</span>
           <ChevronRight class="w-3.5 h-3.5" />
@@ -111,9 +137,9 @@
       <!-- Fallback notification if SpeechRecognition not supported -->
       <div
         v-if="!isSpeechRecognitionSupported"
-        class="p-3 bg-blue-50/80 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-center gap-2"
+        class="p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center gap-2"
       >
-        <AlertCircle class="w-4 h-4 shrink-0 text-[#2563eb]" />
+        <AlertCircle class="w-4 h-4 shrink-0 text-amber-700" />
         <span>当前环境未检测到麦克风语音识别，跟读录音将启用启发式测评模式</span>
       </div>
     </div>
@@ -122,7 +148,7 @@
 
 <script setup>
 import { ref, computed, watch, onUnmounted } from 'vue'
-import { Mic, Play, Pause, ChevronRight, AlertCircle } from 'lucide-vue-next'
+import { Mic, Play, Pause, ChevronRight, ChevronLeft, AlertCircle } from 'lucide-vue-next'
 import { useSubtitleStore } from '../../stores/subtitleStore.js'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
@@ -395,6 +421,43 @@ function playUserRecording() {
       console.warn('[StepShadowing] User playback error:', err)
       isPlayingUserRecording.value = false
     })
+  }
+}
+
+function resetAudioStates() {
+  if (isPlayingSnippet.value) {
+    player.pause()
+    isPlayingSnippet.value = false
+  }
+  if (isPlayingUserRecording.value && userAudioPlayer) {
+    userAudioPlayer.pause()
+    isPlayingUserRecording.value = false
+  }
+  if (userAudioBlobUrl) {
+    URL.revokeObjectURL(userAudioBlobUrl)
+    userAudioBlobUrl = null
+  }
+  hasRecordingAudio.value = false
+  evalResult.value = null
+}
+
+function prevCue() {
+  resetAudioStates()
+  if (subtitleStore.activeCueIndex <= 0) {
+    subtitleStore.activeCueIndex = 0
+  } else {
+    subtitleStore.jumpToPrevCue()
+  }
+}
+
+function nextCue() {
+  resetAudioStates()
+  if (subtitleStore.activeCueIndex === -1) {
+    if (subtitleStore.cues.length > 1) {
+      subtitleStore.activeCueIndex = 1
+    }
+  } else {
+    subtitleStore.jumpToNextCue()
   }
 }
 
