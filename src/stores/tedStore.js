@@ -21,6 +21,8 @@ export const useTedStore = defineStore('ted', {
     // Catalog
     talks: TALKS,
     selectedTalkId: null,
+    isLoadingTalks: false,
+    talksSource: 'local',
 
     // Four-step progression (1: Vocab Preload, 2: Deep Viewing, 3: Task Studio, 4: Shadowing)
     currentStep: 1,
@@ -79,6 +81,32 @@ export const useTedStore = defineStore('ted', {
   },
 
   actions: {
+    async fetchRemoteTalks() {
+      if (typeof fetch === 'undefined') return
+      this.isLoadingTalks = true
+      try {
+        let res = null
+        try {
+          res = await fetch('/api/ted/talks')
+        } catch {}
+
+        if (res && res.ok) {
+          const data = await res.json()
+          if (data && Array.isArray(data.talks) && data.talks.length > 0) {
+            this.talks = data.talks
+            this.talksSource = 'api'
+            if (!this.selectedTalkId || !this.talks.some((t) => t.id === this.selectedTalkId)) {
+              this.selectTalk(this.talks[0].id)
+            }
+          }
+        }
+      } catch (err) {
+        // Silently preserve local talks on network or API error
+      } finally {
+        this.isLoadingTalks = false
+      }
+    },
+
     selectTalk(id) {
       const talk = this.talks.find((t) => t.id === id)
       if (!talk) return
@@ -87,7 +115,8 @@ export const useTedStore = defineStore('ted', {
       this.currentStep = 1
       this.maxStepReached = 1
       this.listenedVocabIds = new Set()
-      this.vocabUnlocked = false
+      const totalVocab = talk.vocabSet?.length || 0
+      this.vocabUnlocked = totalVocab === 0
       this.videoSrc = resolveVideoStreamUrl(talk.videoKey)
       this.vttSrc = resolveTedSubtitleUrl(talk.vttKey)
       this.videoCurrentTime = 0
@@ -117,7 +146,8 @@ export const useTedStore = defineStore('ted', {
 
     goToStep(step) {
       const targetStep = Math.max(1, Math.min(4, Math.floor(Number(step) || 1)))
-      if (targetStep > 1 && !this.vocabUnlocked) {
+      const totalVocab = this.currentTalk?.vocabSet?.length || 0
+      if (targetStep > 1 && totalVocab > 0 && !this.vocabUnlocked) {
         return
       }
       this.currentStep = targetStep

@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import { DEFAULT_CATALOG } from '../src/data/catalogData.js'
+import { TALKS } from '../src/data/tedData.js'
 
 dotenv.config()
 
@@ -31,6 +32,14 @@ export function r2DevPlugin() {
     if (url === '/api/catalog' || url.startsWith('/api/catalog?')) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8')
       res.end(JSON.stringify({ books: DEFAULT_CATALOG.books, cached: true }))
+      return
+    }
+
+    // 1b. TED Catalog Endpoint
+    if (url === '/api/ted/talks' || url.startsWith('/api/ted/talks?')) {
+      res.setHeader('Content-Type', 'application/json; charset=utf-8')
+      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+      res.end(JSON.stringify({ talks: TALKS, cached: true }))
       return
     }
 
@@ -100,6 +109,54 @@ export function r2DevPlugin() {
         console.warn('[Vite R2 Dev] Audio stream error for key:', key, err.message)
         res.statusCode = 404
         res.end(JSON.stringify({ error: 'Audio not found in R2', key }))
+        return
+      }
+    }
+
+    // 4. Video Streaming Endpoint with Range support
+    if (url.startsWith('/api/stream/video/')) {
+      if (!s3Client) return next()
+      let key = decodeURIComponent(url.replace('/api/stream/video/', '').split('?')[0])
+      key = key.replace(/^\/+/, '')
+
+      const contentType = /\.webm$/i.test(key)
+        ? 'video/webm'
+        : (/\.mp3$/i.test(key) ? 'audio/mpeg' : 'video/mp4')
+
+      try {
+        const range = req.headers.range
+        const command = new GetObjectCommand({
+          Bucket: bucketName,
+          Key: key,
+          Range: range
+        })
+
+        const response = await s3Client.send(command)
+
+        res.setHeader('Content-Type', contentType)
+        res.setHeader('Content-Disposition', 'inline; filename="stream.dat"')
+        res.setHeader('X-Content-Type-Options', 'nosniff')
+        res.setHeader('Accept-Ranges', 'bytes')
+        if (response.ContentLength) {
+          res.setHeader('Content-Length', response.ContentLength)
+        }
+        if (response.ContentRange) {
+          res.setHeader('Content-Range', response.ContentRange)
+        }
+        res.setHeader('Cache-Control', 'public, max-age=2592000, immutable')
+
+        res.statusCode = range ? 206 : 200
+
+        const stream = response.Body
+        stream.pipe(res)
+        res.on('close', () => {
+          if (stream.destroy) stream.destroy()
+        })
+        return
+      } catch (err) {
+        console.warn('[Vite R2 Dev] Video stream error for key:', key, err.message)
+        res.statusCode = 404
+        res.end(JSON.stringify({ error: 'Video not found in R2', key }))
         return
       }
     }

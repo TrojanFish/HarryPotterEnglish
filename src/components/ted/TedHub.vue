@@ -110,10 +110,11 @@ const tedStore = useTedStore()
 const navStore = useNavigationStore()
 const isTalkDrawerOpen = ref(false)
 
-onMounted(() => {
+onMounted(async () => {
   if (tedStore.talks && tedStore.talks.length > 0 && !tedStore.selectedTalkId) {
     tedStore.selectTalk(tedStore.talks[0].id)
   }
+  await tedStore.fetchRemoteTalks()
 })
 
 watch(() => tedStore.selectedTalkId, () => {

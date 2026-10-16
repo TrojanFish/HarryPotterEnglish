@@ -28,8 +28,8 @@
         class="flex flex-col items-center justify-center p-8 text-center text-stone-500 min-h-[200px]"
       >
         <BookOpen class="w-10 h-10 text-stone-400 mb-2 stroke-[1.5]" aria-hidden="true" />
-        <p class="text-sm font-medium">暂无预热词汇数据</p>
-        <p class="text-xs text-stone-400 mt-1">请从左侧选择一个 TED 演说开始学习</p>
+        <p class="text-sm font-medium">本篇演讲暂无预热词汇</p>
+        <p class="text-xs text-stone-400 mt-1">系统已为你自动解锁，可直接点击下方「前往精看」进入视频学习</p>
       </div>
 
       <!-- Vocab cards list -->

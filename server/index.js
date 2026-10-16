@@ -183,7 +183,14 @@ if (isConfigured) {
 // ==========================================
 let catalogCache = null;
 let catalogCacheTime = 0;
+let tedCatalogCache = null;
+let tedCatalogCacheTime = 0;
 const CACHE_TTL_MS = 60 * 1000; // 60 seconds auto-revalidation
+
+// Test helper to allow injecting mock S3 client in node tests
+function _setS3ClientForTest(client) {
+  s3Client = client;
+}
 
 // Hot Cache for Subtitles & JSON text (sub-1ms response!)
 const subtitleCache = new Map();
@@ -223,8 +230,9 @@ const KNOWN_TITLE_MAP = {
 // ==========================================
 // R2 Auto-Discovery Scanner
 // ==========================================
-// Audio extension regex
+// Audio & Video extension regexes
 const AUDIO_REGEX = /\.(mp3|m4a|wav|aac|ogg|flac)$/i;
+const VIDEO_EXT_REGEX = /\.(mp4|webm|m4v|mkv)$/i;
 
 function stripEmojis(str) {
   if (!str) return '';
@@ -391,11 +399,148 @@ async function scanR2Catalog(bypassCache = false) {
   }
 }
 
+async function scanR2TedCatalog(bypassCache = false) {
+  if (!s3Client) return [];
+  console.log(`[R2 Scanner] Scanning R2 bucket for TED talks... (bypass: ${bypassCache})`);
+
+  try {
+    const listCmd = new ListObjectsV2Command({
+      Bucket: bucketName,
+      Prefix: 'ted/',
+      MaxKeys: 1000,
+    });
+    const listRes = await s3Client.send(listCmd);
+    const keys = (listRes.Contents || []).map(c => c.Key);
+
+    const videoKeys = keys.filter(k => VIDEO_EXT_REGEX.test(k));
+    if (videoKeys.length === 0) {
+      tedCatalogCache = [];
+      tedCatalogCacheTime = Date.now();
+      return [];
+    }
+
+    const vttKeys = keys.filter(k => k.endsWith('.vtt'));
+    const imgKeys = keys.filter(k => /\.(jpg|jpeg|png|webp)$/i.test(k));
+    const jsonKeys = keys.filter(k => k.endsWith('.json'));
+
+    // Group video files by talk identifier
+    const talkGroups = new Map();
+
+    for (const vKey of videoKeys) {
+      const parts = vKey.split('/');
+      let talkId = '';
+      let isFolder = false;
+
+      if (parts.length >= 3) {
+        talkId = parts[1];
+        isFolder = true;
+      } else if (parts.length === 2) {
+        talkId = parts[1].replace(VIDEO_EXT_REGEX, '');
+        isFolder = false;
+      }
+
+      if (!talkId || talkId.startsWith('.')) continue;
+
+      if (!talkGroups.has(talkId)) {
+        talkGroups.set(talkId, {
+          talkId,
+          isFolder,
+          folderPrefix: isFolder ? `ted/${talkId}/` : null,
+          videoKeys: [],
+        });
+      }
+      talkGroups.get(talkId).videoKeys.push(vKey);
+    }
+
+    const talks = (await Promise.all([...talkGroups.values()].map(async (group) => {
+      const { talkId, isFolder, folderPrefix } = group;
+
+      // Select primary video key: prefer 'video.mp4', 'video.webm', or first in list
+      const primaryVideoKey = group.videoKeys.find(k => /(video\.mp4|video\.webm)$/i.test(k)) || group.videoKeys[0];
+
+      // Find subtitle key
+      let vttKey = null;
+      if (isFolder) {
+        vttKey = vttKeys.find(k => k.startsWith(folderPrefix) && (k.endsWith('/subtitle.vtt') || k.endsWith('.vtt'))) || null;
+      } else {
+        vttKey = vttKeys.find(k => k === `ted/${talkId}.vtt` || k.startsWith(`ted/${talkId}`)) || null;
+      }
+
+      // Find thumbnail/cover key
+      let thumbKey = null;
+      if (isFolder) {
+        thumbKey = imgKeys.find(k => k.startsWith(folderPrefix) && /(thumb|cover)\.(jpg|jpeg|png|webp)$/i.test(k)) || imgKeys.find(k => k.startsWith(folderPrefix)) || null;
+      } else {
+        thumbKey = imgKeys.find(k => k === `ted/${talkId}.jpg` || k === `ted/${talkId}.png`) || null;
+      }
+
+      // Find meta JSON key
+      let metaKey = null;
+      if (isFolder) {
+        metaKey = jsonKeys.find(k => k === `${folderPrefix}meta.json` || k === `${folderPrefix}talk.json`) || null;
+      } else {
+        metaKey = jsonKeys.find(k => k === `ted/${talkId}.json`) || null;
+      }
+
+      let metaData = {};
+      if (metaKey) {
+        const metaRaw = await getS3TextCached(metaKey, bypassCache);
+        try {
+          if (metaRaw) metaData = JSON.parse(metaRaw);
+        } catch (e) {
+          console.warn(`[TED Scanner] Failed to parse meta JSON for ${talkId}:`, e.message);
+        }
+      }
+
+      // Auto-generate title & speaker if missing in meta
+      const cleanRawName = talkId.replace(/^ted-/, '').replace(/[-_]+/g, ' ').trim();
+      const capitalizedTitle = cleanRawName
+        .split(' ')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+
+      const normalizedId = talkId.startsWith('ted-') ? talkId : `ted-${talkId}`;
+
+      return {
+        id: metaData.id || normalizedId,
+        title: stripEmojis(metaData.title) || capitalizedTitle || 'TED Talk',
+        titleCn: stripEmojis(metaData.titleCn) || '',
+        speaker: stripEmojis(metaData.speaker) || 'TED Speaker',
+        year: typeof metaData.year === 'number' ? metaData.year : (parseInt(talkId.match(/\b(19\d\d|20\d\d)\b/)?.[0], 10) || new Date().getFullYear()),
+        durationSeconds: metaData.durationSeconds || 0,
+        cefrLevel: metaData.cefrLevel || 'B1',
+        wpm: metaData.wpm || 140,
+        topicTags: Array.isArray(metaData.topicTags) ? metaData.topicTags : ['TED', 'English'],
+        videoKey: primaryVideoKey,
+        vttKey: vttKey || metaData.vttKey || '',
+        thumbnailKey: thumbKey || metaData.thumbnailKey || '',
+        vocabSet: Array.isArray(metaData.vocabSet) ? metaData.vocabSet : [],
+        tasks: metaData.tasks && typeof metaData.tasks === 'object' ? metaData.tasks : { cloze: [], matching: [] },
+        shadowingSegments: Array.isArray(metaData.shadowingSegments) ? metaData.shadowingSegments : [],
+      };
+    }))).filter(Boolean);
+
+    // Sort talks by year descending or title
+    talks.sort((a, b) => (b.year || 0) - (a.year || 0));
+
+    tedCatalogCache = talks;
+    tedCatalogCacheTime = Date.now();
+    console.log(`[TED Scanner] Done! ${talks.length} TED talks with video discovered.`);
+    return talks;
+  } catch (err) {
+    console.error('[TED Scanner Error]', err);
+    return tedCatalogCache || [];
+  }
+}
+
 // Background auto-refresh poller (Every 60 seconds)
 const scanTimer = setInterval(async () => {
   if (s3Client) {
     try {
-      await scanR2Catalog(true);
+      await Promise.all([
+        scanR2Catalog(true),
+        scanR2TedCatalog(true)
+      ]);
     } catch (e) {
       console.warn('Background scan warning:', e.message);
     }
@@ -424,6 +569,7 @@ app.get('/api/health', (req, res) => {
     r2Configured: isConfigured,
     r2Connected: Boolean(s3Client),
     cachedShowsCount: catalogCache ? catalogCache.length : 0,
+    cachedTedCount: tedCatalogCache ? tedCatalogCache.length : 0,
     subtitleCacheSize: subtitleCache.size,
     version: '1.3.0'
   });
@@ -446,6 +592,25 @@ app.get('/api/catalog', catalogLimiter, async (req, res) => {
   const books = await scanR2Catalog(forceRefresh);
   res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
   res.json({ books, cached: false });
+});
+
+// 1b. Dynamic TED Talks Catalog API with auto-discovery & ?refresh=1 support
+app.get('/api/ted/talks', catalogLimiter, async (req, res) => {
+  if (!s3Client) {
+    return res.status(503).json({ error: 'R2 not configured', talks: [] });
+  }
+
+  const forceRefresh = req.query.refresh === '1' || req.query.refresh === 'true';
+  const now = Date.now();
+
+  if (!forceRefresh && tedCatalogCache && (now - tedCatalogCacheTime < CACHE_TTL_MS)) {
+    res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+    return res.json({ talks: tedCatalogCache, cached: true });
+  }
+
+  const talks = await scanR2TedCatalog(forceRefresh);
+  res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+  res.json({ talks, cached: false });
 });
 
 // 2. High-speed Subtitle VTT endpoint (In-Memory Hot Cache < 1ms)
@@ -854,10 +1019,20 @@ if (!process.env.VERCEL && process.env.NODE_ENV !== 'test') {
     console.log(`Hogwarts R2 High-Concurrency Server running at http://localhost:${port}`);
     // Initial scan on boot
     scanR2Catalog(false);
+    scanR2TedCatalog(false);
   });
 }
 
-export { app, scanR2Catalog, requireAuth, requireAdmin, authRegisterLimiter, authLoginLimiter };
+export { 
+  app, 
+  scanR2Catalog, 
+  scanR2TedCatalog, 
+  _setS3ClientForTest, 
+  requireAuth, 
+  requireAdmin, 
+  authRegisterLimiter, 
+  authLoginLimiter 
+};
 export default app;
 
 

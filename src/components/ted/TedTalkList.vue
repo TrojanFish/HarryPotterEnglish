@@ -9,13 +9,41 @@
       <h3 class="text-sm font-bold font-magical text-amber-950 tracking-wider">
         TED 演讲精选
       </h3>
-      <span class="text-xs text-stone-500 font-mono">
-        {{ tedStore.talks.length }} 篇
-      </span>
+      <div class="flex items-center gap-1.5">
+        <button
+          type="button"
+          @click="refreshTalks"
+          class="min-h-[44px] min-w-[44px] -my-2 -mr-1 p-2 rounded-xl text-stone-500 hover:text-amber-800 hover:bg-amber-100/50 transition-colors flex items-center justify-center touch-manipulation cursor-pointer"
+          :title="tedStore.isLoadingTalks ? '正在识别R2视频...' : '刷新R2视频目录'"
+          :aria-label="tedStore.isLoadingTalks ? '正在识别R2视频...' : '刷新R2视频目录'"
+        >
+          <RotateCw
+            class="w-3.5 h-3.5"
+            :class="{ 'animate-spin text-amber-700': tedStore.isLoadingTalks }"
+            aria-hidden="true"
+          />
+        </button>
+        <span class="text-xs text-stone-500 font-mono">
+          {{ tedStore.talks.length }} 篇
+        </span>
+      </div>
+    </div>
+
+    <!-- Empty State in List -->
+    <div
+      v-if="tedStore.talks.length === 0"
+      class="p-6 text-center text-stone-400 text-xs flex flex-col items-center justify-center gap-2"
+    >
+      <VideoOff class="w-8 h-8 text-stone-300 stroke-[1.5]" aria-hidden="true" />
+      <span>R2 存储桶中暂未发现视频文件</span>
     </div>
 
     <!-- Talks List -->
-    <ul class="flex flex-col divide-y divide-[#e8ddd0]/60" role="list">
+    <ul
+      v-else
+      class="flex flex-col divide-y divide-[#e8ddd0]/60"
+      role="list"
+    >
       <li
         v-for="talk in tedStore.talks"
         :key="talk.id"
@@ -78,7 +106,7 @@
 </template>
 
 <script setup>
-import { CheckCircle2, Clock } from 'lucide-vue-next'
+import { CheckCircle2, Clock, RotateCw, VideoOff } from 'lucide-vue-next'
 import { useTedStore } from '../../stores/tedStore.js'
 
 const tedStore = useTedStore()
@@ -93,6 +121,10 @@ function isCompleted(id) {
 
 function selectTalk(id) {
   tedStore.selectTalk(id)
+}
+
+function refreshTalks() {
+  tedStore.fetchRemoteTalks()
 }
 
 function formatDuration(seconds) {

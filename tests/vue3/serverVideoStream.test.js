@@ -24,11 +24,19 @@ describe('getVideoContentType', () => {
   })
 })
 
-// Verify the route path is registered in server/index.js
+// Verify the route path is registered in server/index.js and server/viteR2Plugin.js
 describe('server route registration', () => {
-  it('server/index.js contains /api/stream/video route', async () => {
+  it('server/index.js contains /api/stream/video and /api/ted/talks routes', async () => {
     const fs = await import('node:fs/promises')
     const src = await fs.readFile('server/index.js', 'utf8')
     assert.ok(src.includes('/api/stream/video/'), 'Missing /api/stream/video/ route in server/index.js')
+    assert.ok(src.includes('/api/ted/talks'), 'Missing /api/ted/talks route in server/index.js')
+  })
+
+  it('server/viteR2Plugin.js contains /api/stream/video and /api/ted/talks routes', async () => {
+    const fs = await import('node:fs/promises')
+    const src = await fs.readFile('server/viteR2Plugin.js', 'utf8')
+    assert.ok(src.includes('/api/stream/video/'), 'Missing /api/stream/video/ route in server/viteR2Plugin.js')
+    assert.ok(src.includes('/api/ted/talks'), 'Missing /api/ted/talks route in server/viteR2Plugin.js')
   })
 })
