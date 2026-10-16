@@ -11,6 +11,8 @@ import {
   ListObjectsV2Command 
 } from '@aws-sdk/client-s3';
 import { processSync, processPairing } from './syncStore.js';
+import { registerUser, loginUser, verifyToken, getUserById, updateUserPro, updateUserAvatar } from './authStore.js';
+import { generateActivationCodes, redeemCode, listCodes, revokeCode } from './activationStore.js';
 
 dotenv.config();
 
@@ -64,14 +66,19 @@ app.use(express.json());
 // Lightweight in-memory rate limiter (zero external dependencies)
 function createRateLimiter({ windowMs = 60 * 1000, max = 60, message = '请求过于频繁，请稍候再试' }) {
   const requests = new Map();
-  setInterval(() => {
+  const cleanupTimer = setInterval(() => {
     const now = Date.now();
     for (const [ip, data] of requests.entries()) {
       if (now - data.resetTime > windowMs) requests.delete(ip);
     }
   }, 2 * 60 * 1000);
+  if (cleanupTimer.unref) cleanupTimer.unref();
 
-  return (req, res, next) => {
+  const middleware = (req, res, next) => {
+    if (process.env.NODE_ENV === 'test' && !req.headers['x-test-rate-limit']) {
+      return next();
+    }
+
     const ip = req.ip || req.connection?.remoteAddress || 'unknown';
     const now = Date.now();
     let record = requests.get(ip);
@@ -98,10 +105,55 @@ function createRateLimiter({ windowMs = 60 * 1000, max = 60, message = '请求�
     }
     next();
   };
+
+  middleware._reset = () => requests.clear();
+  return middleware;
 }
 
 const syncLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 60, message: '同步请求频次过高，请 1 分钟后重试' });
 const catalogLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 120, message: '书目请求频次过高，请稍后刷新' });
+const authRegisterLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 5, message: '注册过于频繁，请15分钟后再试' });
+const authLoginLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 10, message: '登录尝试过于频繁，请15分钟后再试' });
+
+// ==========================================
+// Auth & Admin Middlewares
+// ==========================================
+function requireAuth(req, res, next) {
+  if (!process.env.JWT_SECRET) {
+    return res.status(503).json({ error: 'AUTH_CONFIG_MISSING' });
+  }
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader || typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'MISSING_TOKEN' });
+  }
+
+  const token = authHeader.slice(7).trim();
+  if (!token) {
+    return res.status(401).json({ error: 'MISSING_TOKEN' });
+  }
+
+  try {
+    const decoded = verifyToken(token);
+    req.auth = { userId: decoded.userId };
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: err.code || 'INVALID_TOKEN' });
+  }
+}
+
+function requireAdmin(req, res, next) {
+  if (!process.env.ADMIN_SECRET_KEY) {
+    return res.status(503).json({ error: 'ADMIN_CONFIG_MISSING' });
+  }
+
+  if (req.headers['x-admin-key'] !== process.env.ADMIN_SECRET_KEY) {
+    return res.status(403).json({ error: 'INVALID_ADMIN_KEY' });
+  }
+
+  next();
+}
+
 
 // Initialize Cloudflare R2 Client (S3-compatible)
 const accountId = process.env.R2_ACCOUNT_ID;
@@ -340,7 +392,7 @@ async function scanR2Catalog(bypassCache = false) {
 }
 
 // Background auto-refresh poller (Every 60 seconds)
-setInterval(async () => {
+const scanTimer = setInterval(async () => {
   if (s3Client) {
     try {
       await scanR2Catalog(true);
@@ -349,6 +401,8 @@ setInterval(async () => {
     }
   }
 }, 60 * 1000);
+if (scanTimer.unref) scanTimer.unref();
+
 
 // ==========================================
 // API Endpoints
@@ -630,7 +684,149 @@ app.post('/api/sync/pair', syncLimiter, (req, res) => {
   }
 });
 
-// 7. Serve production static assets from dist/ if built (Docker / Production mode)
+// ==========================================
+// 7. Auth Endpoints
+// ==========================================
+app.post('/api/auth/register', authRegisterLimiter, (req, res) => {
+  try {
+    const { username, password, wizardName } = req.body || {};
+    const result = registerUser({ username, password, wizardName });
+    res.json(result);
+  } catch (err) {
+    const code = err.code || 'REGISTRATION_FAILED';
+    if (code === 'AUTH_CONFIG_MISSING') {
+      return res.status(503).json({ error: code, message: err.message });
+    }
+    if (code === 'USER_EXISTS') {
+      return res.status(409).json({ error: code, message: err.message });
+    }
+    return res.status(400).json({ error: code, message: err.message });
+  }
+});
+
+app.post('/api/auth/login', authLoginLimiter, (req, res) => {
+  try {
+    const { username, password } = req.body || {};
+    const result = loginUser({ username, password });
+    res.json(result);
+  } catch (err) {
+    const code = err.code || 'LOGIN_FAILED';
+    if (code === 'AUTH_CONFIG_MISSING') {
+      return res.status(503).json({ error: code, message: err.message });
+    }
+    if (code === 'INVALID_CREDENTIALS') {
+      return res.status(401).json({ error: code, message: err.message });
+    }
+    return res.status(400).json({ error: code, message: err.message });
+  }
+});
+
+app.get('/api/auth/me', requireAuth, (req, res) => {
+  const user = getUserById(req.auth.userId);
+  if (!user) {
+    return res.status(404).json({ error: 'USER_NOT_FOUND' });
+  }
+  res.json({
+    userId: user.userId,
+    username: user.username,
+    wizardName: user.wizardName,
+    avatar: user.avatar,
+    isPro: user.isPro,
+    proExpiresAt: user.proExpiresAt
+  });
+});
+
+app.patch('/api/auth/me', requireAuth, (req, res) => {
+  const { avatarId } = req.body || {};
+  if (!avatarId || typeof avatarId !== 'string') {
+    return res.status(400).json({ error: 'INVALID_AVATAR_ID' });
+  }
+  updateUserAvatar(req.auth.userId, avatarId);
+  const user = getUserById(req.auth.userId);
+  if (!user) {
+    return res.status(404).json({ error: 'USER_NOT_FOUND' });
+  }
+  res.json({
+    userId: user.userId,
+    username: user.username,
+    wizardName: user.wizardName,
+    avatar: user.avatar,
+    isPro: user.isPro,
+    proExpiresAt: user.proExpiresAt
+  });
+});
+
+// ==========================================
+// 8. Activation & Pro Endpoints
+// ==========================================
+app.post('/api/activation/redeem', requireAuth, (req, res) => {
+  try {
+    const { code } = req.body || {};
+    const safeCode = typeof code === 'string' ? code.trim().toUpperCase() : '';
+    if (!safeCode) {
+      return res.status(400).json({ error: 'INVALID_CODE', message: 'Activation code is required' });
+    }
+    const user = getUserById(req.auth.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'USER_NOT_FOUND' });
+    }
+    const result = redeemCode(safeCode, req.auth.userId, user);
+    if (user.isPro && user.proExpiresAt === null) {
+      result.proExpiresAt = null;
+    }
+    updateUserPro(req.auth.userId, result);
+    res.json({
+      ...result,
+      message: 'Pro activated'
+    });
+  } catch (err) {
+    const code = err.code || 'REDEEM_FAILED';
+    if (code === 'CODE_NOT_FOUND') {
+      return res.status(404).json({ error: code, message: err.message });
+    }
+    if (code === 'CODE_ALREADY_USED') {
+      return res.status(409).json({ error: code, message: err.message });
+    }
+    if (code === 'CODE_REVOKED') {
+      return res.status(410).json({ error: code, message: err.message });
+    }
+    return res.status(400).json({ error: code, message: err.message });
+  }
+});
+
+// ==========================================
+// 9. Admin Activation Management Endpoints
+// ==========================================
+app.post('/api/admin/activation/generate', requireAdmin, (req, res) => {
+  try {
+    const { type, count } = req.body || {};
+    const codes = generateActivationCodes(type, Number(count));
+    res.json({ codes });
+  } catch (err) {
+    res.status(400).json({ error: err.code || 'GENERATE_FAILED', message: err.message });
+  }
+});
+
+app.get('/api/admin/activation/list', requireAdmin, (req, res) => {
+  res.json({ codes: listCodes() });
+});
+
+app.post('/api/admin/activation/revoke', requireAdmin, (req, res) => {
+  try {
+    const { code } = req.body || {};
+    const safeCode = typeof code === 'string' ? code.trim().toUpperCase() : '';
+    revokeCode(safeCode);
+    res.json({ success: true });
+  } catch (err) {
+    const code = err.code || 'REVOKE_FAILED';
+    if (code === 'CODE_NOT_FOUND') {
+      return res.status(404).json({ error: code, message: err.message });
+    }
+    return res.status(400).json({ error: code, message: err.message });
+  }
+});
+
+// 10. Serve production static assets from dist/ if built (Docker / Production mode)
 const distPath = path.resolve(__dirname, '../dist');
 if (fs.existsSync(distPath)) {
   console.log(`[Static Assets] Serving production build from ${distPath}`);
@@ -652,8 +848,8 @@ if (fs.existsSync(distPath)) {
   });
 }
 
-// Start HTTP server only if not running in serverless environment (Vercel)
-if (!process.env.VERCEL) {
+// Start HTTP server only if not running in serverless environment (Vercel) or test suite
+if (!process.env.VERCEL && process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`Hogwarts R2 High-Concurrency Server running at http://localhost:${port}`);
     // Initial scan on boot
@@ -661,5 +857,7 @@ if (!process.env.VERCEL) {
   });
 }
 
-export { app, scanR2Catalog };
+export { app, scanR2Catalog, requireAuth, requireAdmin, authRegisterLimiter, authLoginLimiter };
 export default app;
+
+
