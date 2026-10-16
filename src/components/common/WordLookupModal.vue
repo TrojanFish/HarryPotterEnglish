@@ -226,6 +226,10 @@ const props = defineProps({
   contextQuote: {
     type: String,
     default: ''
+  },
+  source: {
+    type: String,
+    default: 'hp'
   }
 })
 
@@ -344,7 +348,7 @@ function playPronunciation() {
 function handleToggleVocab() {
   if (!wordData.value && !props.word) return
   const item = wordData.value || { word: props.word }
-  vocabStore.toggleWord(item, props.contextQuote)
+  vocabStore.toggleWord(item, props.contextQuote, { sourceType: props.source })
 }
 
 function handleKeyDown(e) {

@@ -213,7 +213,7 @@ export const useVocabStore = defineStore('vocab', {
       this.vocabList = this.vocabList.filter((w) => cleanWord(w.word) !== clean)
       this.saveVocab()
     },
-    toggleWord(wordData, contextQuote = '') {
+    toggleWord(wordData, contextQuote = '', meta = {}) {
       if (!wordData) return false
       const rawWord = typeof wordData === 'object' && wordData !== null ? wordData.word : wordData
       const clean = cleanWord(rawWord)
@@ -223,7 +223,7 @@ export const useVocabStore = defineStore('vocab', {
         this.removeWord(clean)
         return false
       } else {
-        this.addWord(wordData, contextQuote)
+        this.addWord(wordData, contextQuote, meta)
         return true
       }
     },

@@ -63,6 +63,17 @@
 
       <!-- Mobile In-Flow Subtitle Stream (Visible only on smaller screens) -->
       <div class="md:hidden flex-1 overflow-y-auto p-4 bg-[#fbf9f5] border-t border-[#e8ddd0]">
+        <!-- Mobile Subtitle Header with Speaker Badge -->
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-[#e8ddd0]/80">
+          <div class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-900 bg-amber-100/90 border border-amber-300 px-2.5 py-1 rounded-lg">
+            <Mic class="w-3.5 h-3.5 text-amber-800 shrink-0" aria-hidden="true" />
+            <span class="truncate">{{ currentSpeaker }}</span>
+          </div>
+          <span class="text-xs font-mono font-bold text-amber-900 bg-amber-100/80 px-2 py-0.5 rounded-md border border-amber-200">
+            {{ enCues.length }} 句
+          </span>
+        </div>
+
         <!-- Blind mode overlay for mobile -->
         <div
           v-if="tedStore.isBlindMode"
@@ -103,8 +114,8 @@
               <template v-for="(token, tIdx) in tokenizeSentence(cue.text)" :key="tIdx">
                 <span
                   v-if="token.isWord"
-                  @click.stop="setLookupWord(token.text)"
-                  class="cursor-pointer hover:underline hover:text-amber-700 active:text-amber-800 transition-colors inline"
+                  @click.stop="handleWordClick(token.text, cue.text)"
+                  class="cursor-pointer hover:underline hover:text-amber-700 active:text-amber-800 transition-colors inline word-token"
                 >{{ token.text }}</span>
                 <span v-else>{{ token.text }}</span>
               </template>
@@ -276,14 +287,20 @@
       class="hidden md:flex flex-col w-72 lg:w-80 shrink-0 overflow-y-auto border-l border-[#e8ddd0] bg-[#fbf9f5] relative"
     >
       <!-- Subtitle Panel Header -->
-      <div class="p-3 border-b border-[#e8ddd0]/80 bg-[#fbf9f5] flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
-        <div>
+      <div class="p-3 border-b border-[#e8ddd0]/80 bg-[#fbf9f5] flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm gap-2">
+        <div class="min-w-0">
           <h3 class="text-xs font-bold text-amber-950 uppercase tracking-wider">双语对齐字幕</h3>
           <p class="text-[11px] text-stone-500">点击句子循环 · 点击单词查词</p>
         </div>
-        <span class="text-xs font-mono font-bold text-amber-900 bg-amber-100/80 px-2 py-0.5 rounded-md border border-amber-200">
-          {{ enCues.length }} 句
-        </span>
+        <div class="flex items-center gap-2 shrink-0">
+          <div class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-900 bg-amber-100/90 border border-amber-300 px-2.5 py-1 rounded-lg">
+            <Mic class="w-3.5 h-3.5 text-amber-800 shrink-0" aria-hidden="true" />
+            <span class="truncate max-w-[120px]">{{ currentSpeaker }}</span>
+          </div>
+          <span class="text-xs font-mono font-bold text-amber-900 bg-amber-100/80 px-2 py-0.5 rounded-md border border-amber-200">
+            {{ enCues.length }} 句
+          </span>
+        </div>
       </div>
 
       <!-- Blind Mode Overlay for Desktop Subtitle Panel: v-if="isBlindMode" covering subtitle panel with bg-[#fbf9f5]/95 backdrop-blur-sm -->
@@ -360,8 +377,8 @@
             <template v-for="(token, tIdx) in tokenizeSentence(cue.text)" :key="tIdx">
               <span
                 v-if="token.isWord"
-                @click.stop="setLookupWord(token.text)"
-                class="cursor-pointer hover:underline hover:text-amber-700 active:text-amber-800 transition-colors inline"
+                @click.stop="handleWordClick(token.text, cue.text)"
+                class="cursor-pointer hover:underline hover:text-amber-700 active:text-amber-800 transition-colors inline word-token"
               >{{ token.text }}</span>
               <span v-else>{{ token.text }}</span>
             </template>
@@ -395,7 +412,9 @@
     <WordLookupModal
       :is-open="Boolean(tedStore.lookupWord)"
       :word="tedStore.lookupWord || ''"
-      @close="tedStore.setLookupWord(null)"
+      :context-quote="activeContextQuote"
+      :source="'ted'"
+      @close="closeLookupModal"
     />
   </div>
 </template>
@@ -414,7 +433,8 @@ import {
   Minimize,
   Repeat,
   ArrowRight,
-  Headphones
+  Headphones,
+  Mic
 } from 'lucide-vue-next'
 import { useTedStore } from '../../stores/tedStore.js'
 import { parseBilingualVtt } from '../../data/tedData.js'
@@ -422,6 +442,12 @@ import { tokenizeSentence, formatTime } from '../../utils/vttParser.js'
 import WordLookupModal from '../common/WordLookupModal.vue'
 
 const tedStore = useTedStore()
+
+const activeContextQuote = ref('')
+
+const currentSpeaker = computed(() => {
+  return tedStore.selectedTalk?.speaker || '演讲者'
+})
 
 const videoRef = ref(null)
 const playerContainerRef = ref(null)
@@ -635,9 +661,19 @@ function toggleBlindMode() {
   tedStore.toggleBlindMode()
 }
 
-function setLookupWord(word) {
+function handleWordClick(word, contextQuote = '') {
   if (!word) return
+  activeContextQuote.value = (contextQuote || '').trim()
   tedStore.setLookupWord(word)
+}
+
+function setLookupWord(word, contextQuote = '') {
+  handleWordClick(word, contextQuote)
+}
+
+function closeLookupModal() {
+  tedStore.setLookupWord(null)
+  activeContextQuote.value = ''
 }
 
 function goToStep(step) {
