@@ -51,7 +51,7 @@
 
       <!-- Desktop sidebar: >= 1024px (hidden on mobile and tablet) -->
       <DesktopSidebarVue
-        @open-vocab="openVocab"
+        @open-vocab="handleToggleVocab"
         @open-analytics="openAnalytics"
         @open-storage="openStorage"
         @open-legal="handleOpenLegal"
@@ -59,6 +59,15 @@
         @open-badges="openBadges"
         @open-cloud-sync="openCloudSync"
         @change-study-mode="handleStudyModeChange"
+      />
+
+      <!-- Bookshelf Drawer (Desktop in-flow sub-sidebar / Mobile teleported to body) -->
+      <BookshelfDrawer />
+
+      <!-- Ebbinghaus 5-Box Vocabulary Drawer (Desktop in-flow sub-sidebar / Mobile teleported to body) -->
+      <VocabularyDrawer
+        :is-open="isVocabOpen"
+        @close="closeVocab"
       />
 
       <!-- Main content stage slot -->
@@ -73,15 +82,6 @@
 
     <!-- Persistent smart audio player bar -->
     <SmartAudioPlayer class="mb-[calc(56px+env(safe-area-inset-bottom,0px))] md:mb-0" />
-
-    <!-- Bookshelf Drawer -->
-    <BookshelfDrawer />
-
-    <!-- Ebbinghaus 5-Box Vocabulary Drawer -->
-    <VocabularyDrawer
-      :is-open="isVocabOpen"
-      @close="closeVocab"
-    />
 
     <!-- Magic Analytics Dashboard Modal -->
     <AnalyticsDashboard
@@ -208,6 +208,9 @@ function handleStudyModeChange(mode) {
 }
 
 function handleOpenBookshelf() {
+  if (isVocabOpen.value) {
+    isVocabOpen.value = false
+  }
   player.toggleBookshelf(true)
 }
 
@@ -215,7 +218,18 @@ function handleOpenLegal() {
   isShortcutsOpen.value = true
 }
 
+function handleToggleVocab() {
+  if (isVocabOpen.value) {
+    closeVocab()
+  } else {
+    openVocab()
+  }
+}
+
 function openVocab() {
+  if (player.isBookshelfOpen) {
+    player.toggleBookshelf(false)
+  }
   if (navStore.currentView && !['vocab', 'analytics', 'storage'].includes(navStore.currentView)) {
     previousView = navStore.currentView
   }

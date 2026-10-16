@@ -1,5 +1,5 @@
 <template>
-  <Teleport to="body">
+  <Teleport to="body" :disabled="isDesktop">
     <!-- Backdrop -->
     <Transition
       enter-active-class="transition-opacity duration-300 ease-out"
@@ -11,24 +11,24 @@
     >
       <div
         v-if="player.isBookshelfOpen"
-        class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+        class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
         @click="player.toggleBookshelf(false)"
         aria-hidden="true"
       ></div>
     </Transition>
 
-    <!-- Drawer Panel -->
+    <!-- Drawer Panel / Desktop Sub-sidebar -->
     <Transition
       enter-active-class="transition-transform duration-300 ease-out"
-      enter-from-class="translate-x-full"
+      enter-from-class="-translate-x-full"
       enter-to-class="translate-x-0"
       leave-active-class="transition-transform duration-200 ease-in"
       leave-from-class="translate-x-0"
-      leave-to-class="translate-x-full"
+      leave-to-class="-translate-x-full"
     >
       <aside
         v-if="player.isBookshelfOpen"
-        class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-[#fbf9f5] border-l border-[#e8ddd0] flex flex-col"
+        class="fixed top-0 left-0 bottom-0 z-50 w-full max-w-md lg:max-w-[360px] xl:max-w-[400px] lg:static lg:z-auto lg:h-full bg-[#fbf9f5] border-r border-[#e8ddd0] flex flex-col shrink-0"
         role="dialog"
         aria-modal="true"
         aria-label="霍格沃茨书架与章节目录"
@@ -211,6 +211,7 @@ import { usePlayerStore } from '../stores/playerStore.js'
 import { useCatalogStore } from '../stores/catalogStore.js'
 import { useTedStore } from '../stores/tedStore.js'
 import { useNavigationStore } from '../stores/navigationStore.js'
+import { useBreakpointVue } from '../utils/useBreakpointVue.js'
 import { BOOKS, CEFR_LEVELS } from '../utils/booksData.js'
 import { BookMarked, X, Clock, ChevronRight, Volume2, Search } from 'lucide-vue-next'
 import RecommendationCard from './home/RecommendationCard.vue'
@@ -219,6 +220,8 @@ const player = usePlayerStore()
 const catalog = useCatalogStore()
 const tedStore = useTedStore()
 const navStore = useNavigationStore()
+const breakpoint = useBreakpointVue()
+const isDesktop = computed(() => breakpoint.isDesktop.value)
 
 const searchQuery = ref('')
 const activeBookId = ref(player.currentBookId || 'book1')

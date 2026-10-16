@@ -1,5 +1,5 @@
 <template>
-  <Teleport to="body">
+  <Teleport to="body" :disabled="isDesktop">
     <!-- Backdrop -->
     <Transition
       enter-active-class="transition-opacity duration-300 ease-out"
@@ -11,25 +11,25 @@
     >
       <div
         v-if="isOpen"
-        class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+        class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
         @click="handleClose"
         aria-hidden="true"
       ></div>
     </Transition>
 
-    <!-- Drawer Panel -->
+    <!-- Drawer Panel / Desktop Sub-sidebar -->
     <Transition
       enter-active-class="transition-transform duration-300 ease-out"
-      enter-from-class="translate-x-full"
+      enter-from-class="-translate-x-full"
       enter-to-class="translate-x-0"
       leave-active-class="transition-transform duration-200 ease-in"
       leave-from-class="translate-x-0"
-      leave-to-class="translate-x-full"
+      leave-to-class="-translate-x-full"
     >
       <aside
         v-if="isOpen"
-        class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-lg bg-[#fbf9f5] border-l border-[#e8ddd0] flex flex-col"
-        :style="sheetStyle"
+        class="fixed top-0 left-0 bottom-0 z-50 w-full max-w-lg lg:max-w-[380px] xl:max-w-[420px] lg:static lg:z-auto lg:h-full bg-[#fbf9f5] border-r border-[#e8ddd0] flex flex-col shrink-0"
+        :style="isDesktop ? undefined : sheetStyle"
         role="dialog"
         aria-modal="true"
         aria-label="艾宾浩斯生词本"
@@ -318,6 +318,7 @@ import { getTagBadgeClass } from '../utils/tagTheme.js'
 import { generateAnkiTSV, downloadAnkiFile } from '../utils/ankiExport.js'
 import { generatePrintableParchmentHTML } from '../utils/parchmentPdfGenerator.js'
 import { useBottomSheet } from '../composables/useBottomSheet.js'
+import { useBreakpointVue } from '../utils/useBreakpointVue.js'
 import VocabDepthMeter from './common/VocabDepthMeter.vue'
 import {
   BookMarked,
@@ -339,6 +340,9 @@ defineProps({
 })
 
 const emit = defineEmits(['close'])
+
+const breakpoint = useBreakpointVue()
+const isDesktop = computed(() => breakpoint.isDesktop.value)
 
 const vocabStore = useVocabStore()
 const activeBox = ref(null)
