@@ -36,6 +36,8 @@
         @open-badges="openBadges"
         @open-cloud-sync="openCloudSync"
         @change-study-mode="handleStudyModeChange"
+        @open-auth="isAuthOpen = true"
+        @open-settings="isSettingsOpen = true"
       />
 
       <!-- Bookshelf Drawer (Desktop in-flow sub-sidebar / Mobile teleported to body) -->
@@ -129,6 +131,19 @@
       :is-open="isCloudSyncOpen"
       @close="closeCloudSync"
     />
+
+    <!-- User Authentication Modal -->
+    <AuthModal
+      :is-open="isAuthOpen"
+      @close="isAuthOpen = false"
+      @logged-in="isAuthOpen = false"
+    />
+
+    <!-- User Settings & Activation Modal -->
+    <SettingsModal
+      :is-open="isSettingsOpen"
+      @close="isSettingsOpen = false"
+    />
   </div>
 </template>
 
@@ -158,6 +173,8 @@ import AssessmentHub from '../assessment/AssessmentHub.vue'
 import AchievementBadgesModal from '../gamification/AchievementBadgesModal.vue'
 import SortingCeremonyModal from '../gamification/SortingCeremonyModal.vue'
 import CloudSyncModal from '../sync/CloudSyncModal.vue'
+import AuthModal from '../auth/AuthModal.vue'
+import SettingsModal from '../settings/SettingsModal.vue'
 import BookshelfPageView from '../views/BookshelfPageView.vue'
 import VocabularyPageView from '../views/VocabularyPageView.vue'
 import AnalyticsPageView from '../views/AnalyticsPageView.vue'
@@ -165,6 +182,7 @@ import StoragePageView from '../views/StoragePageView.vue'
 import BadgesPageView from '../views/BadgesPageView.vue'
 import CloudSyncPageView from '../views/CloudSyncPageView.vue'
 import HouseCupPageView from '../views/HouseCupPageView.vue'
+import { useAuthStore } from '../../stores/authStore.js'
 
 const props = defineProps({
   currentChapterTitle: {
@@ -179,6 +197,7 @@ const catalogStore = useCatalogStore()
 const sessionStore = useSessionStore()
 const gamificationStore = useGamificationStore()
 const breakpoint = useBreakpointVue()
+const authStore = useAuthStore()
 
 const isVocabOpen = ref(false)
 const isAnalyticsOpen = ref(false)
@@ -187,6 +206,8 @@ const isShortcutsOpen = ref(false)
 const isBadgesOpen = ref(false)
 const isSortingOpen = ref(false)
 const isCloudSyncOpen = ref(false)
+const isAuthOpen = ref(false)
+const isSettingsOpen = ref(false)
 
 let previousView = 'player'
 

@@ -82,6 +82,7 @@ import BadgeUnlockedToast from './components/gamification/BadgeUnlockedToast.vue
 import { useSessionStore } from './stores/sessionStore.js'
 import { useNavigationStore } from './stores/navigationStore.js'
 import { useGamificationStore } from './stores/gamificationStore.js'
+import { useAuthStore } from './stores/authStore.js'
 import {
   Sparkles,
   BookOpen,
@@ -105,6 +106,7 @@ const vocabStore = useVocabStore()
 const sessionStore = useSessionStore()
 const navStore = useNavigationStore()
 const gamificationStore = useGamificationStore()
+const authStore = useAuthStore()
 
 // Native HTMLAudioElement held in shallowRef to avoid Proxy traps
 const audioRef = shallowRef(null)
@@ -416,6 +418,7 @@ function onKeyDown(e) {
 }
 
 onMounted(() => {
+  authStore.init()
   setupMediaSession()
   window.addEventListener('keydown', onKeyDown)
 })
