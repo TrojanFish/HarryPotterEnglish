@@ -13,29 +13,6 @@
       @open-cloud-sync="openCloudSync"
     />
 
-    <!-- Step tab bar: HP sessions only, hidden on Bookshelf, TED, Vocab, Analytics, Storage views -->
-    <StepTabBar v-if="navStore.currentView === 'player'" />
-
-    <!-- Global audio error notice banner (shared) -->
-    <div
-      v-if="player.audioError"
-      class="mx-3 sm:mx-4 mt-2 px-3 py-1.5 bg-rose-50 border border-rose-200 rounded-lg flex items-center justify-between text-xs text-rose-800 shrink-0 transition-all z-10"
-      role="alert"
-    >
-      <div class="flex items-center gap-2 min-w-0">
-        <AlertCircle class="w-4 h-4 text-rose-600 shrink-0" />
-        <span class="truncate">{{ player.audioError }}</span>
-      </div>
-      <button
-        type="button"
-        @click="player.setAudioError(null)"
-        class="p-1 rounded-lg text-rose-800 hover:bg-rose-100 min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0 cursor-pointer touch-manipulation"
-        aria-label="关闭提示"
-      >
-        <X class="w-4 h-4" />
-      </button>
-    </div>
-
     <!-- Middle flex: sidebar navigation + main content stage -->
     <div class="flex-1 min-h-0 flex overflow-hidden">
       <!-- Tablet icon rail: 768px - 1023px (hidden on mobile and desktop) -->
@@ -72,11 +49,35 @@
 
       <!-- Main content stage slot -->
       <main class="flex-1 min-w-0 overflow-hidden relative flex flex-col" role="main">
+        <!-- Step tab bar: HP sessions only, docked in right-side main stage header so left sidebar stays full height -->
+        <StepTabBar v-if="navStore.currentView === 'player'" />
+
+        <!-- Global audio error notice banner (shared) -->
+        <div
+          v-if="player.audioError"
+          class="mx-3 sm:mx-4 mt-2 px-3 py-1.5 bg-rose-50 border border-rose-200 rounded-lg flex items-center justify-between text-xs text-rose-800 shrink-0 transition-all z-10"
+          role="alert"
+        >
+          <div class="flex items-center gap-2 min-w-0">
+            <AlertCircle class="w-4 h-4 text-rose-600 shrink-0" />
+            <span class="truncate">{{ player.audioError }}</span>
+          </div>
+          <button
+            type="button"
+            @click="player.setAudioError(null)"
+            class="p-1 rounded-lg text-rose-800 hover:bg-rose-100 min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0 cursor-pointer touch-manipulation"
+            aria-label="关闭提示"
+          >
+            <X class="w-4 h-4" />
+          </button>
+        </div>
+
         <AssessmentHub v-if="navStore.currentView === 'assessment'" />
         <BookshelfPageView v-else-if="navStore.currentView === 'bookshelf'" />
         <VocabularyPageView v-else-if="navStore.currentView === 'vocab'" />
         <AnalyticsPageView v-else-if="navStore.currentView === 'analytics'" />
         <StoragePageView v-else-if="navStore.currentView === 'storage'" />
+        <BadgesPageView v-else-if="navStore.currentView === 'badges'" />
         <slot v-else />
       </main>
     </div>
@@ -164,6 +165,7 @@ import BookshelfPageView from '../views/BookshelfPageView.vue'
 import VocabularyPageView from '../views/VocabularyPageView.vue'
 import AnalyticsPageView from '../views/AnalyticsPageView.vue'
 import StoragePageView from '../views/StoragePageView.vue'
+import BadgesPageView from '../views/BadgesPageView.vue'
 
 const props = defineProps({
   currentChapterTitle: {
@@ -297,11 +299,21 @@ function closeHouseCup() {
 }
 
 function openBadges() {
-  isBadgesOpen.value = true
+  if (player.isBookshelfOpen) {
+    player.toggleBookshelf(false)
+  }
+  if (navStore.currentView && !['vocab', 'analytics', 'storage', 'bookshelf', 'badges'].includes(navStore.currentView)) {
+    previousView = navStore.currentView
+  }
+  isBadgesOpen.value = false
+  navStore.setView('badges')
 }
 
 function closeBadges() {
   isBadgesOpen.value = false
+  if (navStore.currentView === 'badges') {
+    navStore.setView(previousView || 'player')
+  }
 }
 
 function openSorting() {
@@ -323,7 +335,7 @@ function closeCloudSync() {
 watch(
   () => navStore.currentView,
   (newView, oldView) => {
-    if (oldView && !['vocab', 'analytics', 'storage', 'bookshelf'].includes(oldView)) {
+    if (oldView && !['vocab', 'analytics', 'storage', 'bookshelf', 'badges'].includes(oldView)) {
       previousView = oldView
     }
     if (newView !== 'player') {

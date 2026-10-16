@@ -570,6 +570,7 @@ function handleOpenHouseCup() {
 }
 
 function handleOpenBadges() {
+  handleSelectView('badges')
   emit('open-badges')
 }
 

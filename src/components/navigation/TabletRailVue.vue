@@ -236,6 +236,7 @@ function handleStreakClick() {
 }
 
 function handleBadgesClick() {
+  handleSelectView('badges')
   emit('open-badges')
 }
 
