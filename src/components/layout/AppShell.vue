@@ -73,6 +73,9 @@
       <!-- Main content stage slot -->
       <main class="flex-1 min-w-0 overflow-hidden relative flex flex-col" role="main">
         <AssessmentHub v-if="navStore.currentView === 'assessment'" />
+        <VocabularyPageView v-else-if="navStore.currentView === 'vocab'" />
+        <AnalyticsPageView v-else-if="navStore.currentView === 'analytics'" />
+        <StoragePageView v-else-if="navStore.currentView === 'storage'" />
         <slot v-else />
       </main>
     </div>
@@ -156,6 +159,9 @@ import HouseCupModal from '../gamification/HouseCupModal.vue'
 import AchievementBadgesModal from '../gamification/AchievementBadgesModal.vue'
 import SortingCeremonyModal from '../gamification/SortingCeremonyModal.vue'
 import CloudSyncModal from '../sync/CloudSyncModal.vue'
+import VocabularyPageView from '../views/VocabularyPageView.vue'
+import AnalyticsPageView from '../views/AnalyticsPageView.vue'
+import StoragePageView from '../views/StoragePageView.vue'
 
 const props = defineProps({
   currentChapterTitle: {
@@ -219,8 +225,9 @@ function handleOpenLegal() {
 }
 
 function handleToggleVocab() {
-  if (isVocabOpen.value) {
-    closeVocab()
+  if (navStore.currentView === 'vocab') {
+    navStore.setView(previousView || 'player')
+    isVocabOpen.value = false
   } else {
     openVocab()
   }
@@ -233,21 +240,24 @@ function openVocab() {
   if (navStore.currentView && !['vocab', 'analytics', 'storage'].includes(navStore.currentView)) {
     previousView = navStore.currentView
   }
-  isVocabOpen.value = true
+  isVocabOpen.value = false
+  navStore.setView('vocab')
 }
 
 function openAnalytics() {
   if (navStore.currentView && !['vocab', 'analytics', 'storage'].includes(navStore.currentView)) {
     previousView = navStore.currentView
   }
-  isAnalyticsOpen.value = true
+  isAnalyticsOpen.value = false
+  navStore.setView('analytics')
 }
 
 function openStorage() {
   if (navStore.currentView && !['vocab', 'analytics', 'storage'].includes(navStore.currentView)) {
     previousView = navStore.currentView
   }
-  isStorageOpen.value = true
+  isStorageOpen.value = false
+  navStore.setView('storage')
 }
 
 function closeVocab() {

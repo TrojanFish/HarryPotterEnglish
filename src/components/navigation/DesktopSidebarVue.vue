@@ -23,11 +23,11 @@
         <button
           type="button"
           @click="handleToggleCollapse"
-          class="min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-400 hover:bg-amber-50 text-stone-600 hover:text-amber-950 flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0 touch-manipulation"
+          class="min-w-[44px] min-h-[44px] rounded-xl text-stone-500 hover:text-stone-900 hover:bg-[#f5efe6] border border-transparent flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0 touch-manipulation"
           title="展开侧边栏 (Ctrl+B)"
           aria-label="展开侧边栏"
         >
-          <PanelLeftOpen :size="16" />
+          <PanelLeftOpen :size="18" />
         </button>
       </div>
 
@@ -63,11 +63,11 @@
           <button
             type="button"
             @click="handleToggleCollapse"
-            class="min-w-[44px] min-h-[44px] rounded-xl border border-[#e8ddd0] bg-white hover:border-amber-400 hover:bg-amber-50 text-stone-500 hover:text-amber-950 flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0 touch-manipulation"
+            class="min-w-[44px] min-h-[44px] rounded-xl text-stone-500 hover:text-stone-900 hover:bg-[#f5efe6] border border-transparent flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0 touch-manipulation"
             title="收起侧边栏 (Ctrl+B)"
             aria-label="收起侧边栏"
           >
-            <PanelLeftClose :size="16" />
+            <PanelLeftClose :size="18" />
           </button>
         </div>
       </div>
