@@ -1,36 +1,36 @@
 <template>
-  <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-6 pb-32 sm:pb-36 bg-white overflow-y-auto">
+  <div class="h-full w-full flex flex-col items-center justify-start p-4 sm:p-6 pb-32 sm:pb-36 bg-[#fbf9f5] overflow-y-auto">
     <div class="max-w-2xl w-full space-y-4 sm:space-y-5 my-auto py-2">
 
       <!-- Header & Game Mode Switcher -->
-      <div class="p-5 sm:p-6 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl space-y-3.5">
+      <div class="p-5 sm:p-6 bg-[#f5efe6] border border-[#e8ddd0] rounded-2xl space-y-3.5">
         <!-- Top bar: sentence index & game badge -->
         <div class="flex items-center justify-between">
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#e4e4e7] text-[11px] font-mono text-[#71717a]">
-            <Gamepad2 class="w-3.5 h-3.5 text-[#2563eb]" />
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 border border-[#e8ddd0] text-[11px] font-mono text-stone-600">
+            <Gamepad2 class="w-3.5 h-3.5 text-amber-700" />
             <span>{{ cueNumber }} / {{ subtitleStore.cues.length || 1 }} 句</span>
           </div>
 
           <!-- Combo Badge -->
           <div
             v-if="comboCount > 1"
-            class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[11px] font-mono font-semibold text-[#2563eb]"
+            class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-[11px] font-mono font-semibold text-amber-900"
           >
-            <Sparkles class="w-3 h-3 text-[#2563eb]" />
+            <Sparkles class="w-3 h-3 text-amber-700" />
             <span>{{ comboCount }} 连胜</span>
           </div>
         </div>
 
         <!-- 3-Tier Game Mode Tabs -->
-        <div class="grid grid-cols-3 gap-1.5 p-1 bg-white border border-[#e4e4e7] rounded-xl text-xs">
+        <div class="grid grid-cols-3 gap-1.5 p-1 bg-[#e8ddd0]/50 border border-[#e8ddd0] rounded-xl text-xs">
           <button
             type="button"
             @click="switchMode('scramble')"
             :class="[
-              'min-h-[44px] py-2 px-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer',
+              'min-h-[44px] py-2 px-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation',
               activeMode === 'scramble'
-                ? 'bg-[#18181b] text-white'
-                : 'text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5]'
+                ? 'bg-amber-700 text-amber-50 font-bold'
+                : 'text-stone-600 hover:text-stone-900 hover:bg-[#f2ece2]'
             ]"
           >
             <Puzzle class="w-3.5 h-3.5" />
@@ -41,10 +41,10 @@
             type="button"
             @click="switchMode('cloze')"
             :class="[
-              'min-h-[44px] py-2 px-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer',
+              'min-h-[44px] py-2 px-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation',
               activeMode === 'cloze'
-                ? 'bg-[#18181b] text-white'
-                : 'text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5]'
+                ? 'bg-amber-700 text-amber-50 font-bold'
+                : 'text-stone-600 hover:text-stone-900 hover:bg-[#f2ece2]'
             ]"
           >
             <PenLine class="w-3.5 h-3.5" />
@@ -55,10 +55,10 @@
             type="button"
             @click="switchMode('full')"
             :class="[
-              'min-h-[44px] py-2 px-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer',
+              'min-h-[44px] py-2 px-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation',
               activeMode === 'full'
-                ? 'bg-[#18181b] text-white'
-                : 'text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5]'
+                ? 'bg-amber-700 text-amber-50 font-bold'
+                : 'text-stone-600 hover:text-stone-900 hover:bg-[#f2ece2]'
             ]"
           >
             <FileText class="w-3.5 h-3.5" />
@@ -68,7 +68,7 @@
 
         <!-- Audio Snippet Controller (Single sentence loop guard) -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
-          <p class="text-xs text-[#71717a] leading-relaxed">
+          <p class="text-xs text-stone-600 leading-relaxed">
             {{ modeDescription }}
           </p>
 
@@ -78,14 +78,14 @@
               type="button"
               @click="togglePlaySnippet(1.0)"
               :class="[
-                'flex-1 sm:flex-initial min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-medium border flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer',
+                'flex-1 sm:flex-initial min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-medium border flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer touch-manipulation',
                 isPlayingSnippet && currentSnippetRate === 1.0
-                  ? 'bg-blue-50 border-[#2563eb] text-[#2563eb]'
-                  : 'bg-white border-[#e4e4e7] hover:bg-[#f4f4f5] text-[#18181b]'
+                  ? 'bg-amber-50 border-amber-600 text-amber-900 font-semibold'
+                  : 'bg-white/80 border-[#e8ddd0] hover:bg-[#f2ece2] text-stone-800'
               ]"
               aria-label="播放原声单句"
             >
-              <Volume2 :class="['w-4 h-4 text-[#2563eb]', isPlayingSnippet && currentSnippetRate === 1.0 ? 'animate-pulse' : '']" />
+              <Volume2 :class="['w-4 h-4 text-amber-700', isPlayingSnippet && currentSnippetRate === 1.0 ? 'animate-pulse' : '']" />
               <span>单句原速</span>
             </button>
 
@@ -94,14 +94,14 @@
               type="button"
               @click="togglePlaySnippet(0.8)"
               :class="[
-                'flex-1 sm:flex-initial min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-medium border flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer',
+                'flex-1 sm:flex-initial min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-medium border flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer touch-manipulation',
                 isPlayingSnippet && currentSnippetRate === 0.8
-                  ? 'bg-blue-50 border-[#2563eb] text-[#2563eb]'
-                  : 'bg-white border-[#e4e4e7] hover:bg-[#f4f4f5] text-[#18181b]'
+                  ? 'bg-amber-50 border-amber-600 text-amber-900 font-semibold'
+                  : 'bg-white/80 border-[#e8ddd0] hover:bg-[#f2ece2] text-stone-800'
               ]"
               aria-label="0.8x 慢放辨音"
             >
-              <RotateCcw :class="['w-4 h-4 text-[#2563eb]', isPlayingSnippet && currentSnippetRate === 0.8 ? 'animate-spin' : '']" />
+              <RotateCcw :class="['w-4 h-4 text-amber-700', isPlayingSnippet && currentSnippetRate === 0.8 ? 'animate-spin' : '']" />
               <span>0.8x 慢放</span>
             </button>
           </div>
@@ -113,14 +113,14 @@
       <!-- ========================================================= -->
       <div v-if="activeMode === 'scramble'" class="space-y-4">
         <!-- Answer Construction Area -->
-        <div class="p-5 sm:p-6 bg-white border border-[#e4e4e7] rounded-2xl min-h-[96px] space-y-2">
-          <div class="text-[11px] font-mono text-[#a1a1aa] flex items-center justify-between">
+        <div class="p-5 sm:p-6 bg-white/70 border border-[#e8ddd0] rounded-2xl min-h-[96px] space-y-2">
+          <div class="text-[11px] font-mono text-stone-500 flex items-center justify-between">
             <span>点击词块组装句子：</span>
             <button
               v-if="scramblePlaced.length > 0 && !hasChecked"
               type="button"
               @click="resetScramble"
-              class="text-xs text-[#71717a] hover:text-[#18181b] underline cursor-pointer"
+              class="text-xs text-stone-600 hover:text-stone-900 underline cursor-pointer touch-manipulation"
             >
               清空
             </button>
@@ -130,7 +130,7 @@
           <div class="flex flex-wrap gap-2 min-h-[44px] items-center">
             <span
               v-if="scramblePlaced.length === 0"
-              class="text-xs text-[#a1a1aa] italic"
+              class="text-xs text-stone-400 italic"
             >
               点选下方词块...
             </span>
@@ -140,17 +140,17 @@
               type="button"
               @click="unplaceToken(idx)"
               :disabled="hasChecked"
-              class="min-h-[44px] px-3.5 py-2 bg-[#f4f4f5] hover:bg-[#e4e4e7] border border-[#e4e4e7] rounded-xl text-sm font-serif text-[#18181b] flex items-center gap-1 cursor-pointer transition-all active:scale-95 disabled:cursor-default"
+              class="min-h-[44px] px-3.5 py-2 bg-[#f5efe6] hover:bg-[#f2ece2] border border-[#e8ddd0] rounded-xl text-sm font-serif text-stone-900 flex items-center gap-1 cursor-pointer transition-all active:scale-95 disabled:cursor-default touch-manipulation"
             >
               <span>{{ tok.raw }}</span>
-              <X v-if="!hasChecked" class="w-3 h-3 text-[#71717a]" />
+              <X v-if="!hasChecked" class="w-3 h-3 text-stone-500" />
             </button>
           </div>
         </div>
 
         <!-- Available Token Bank -->
-        <div class="p-5 sm:p-6 bg-[#f8f8f6] border border-[#e4e4e7] rounded-2xl space-y-2">
-          <div class="text-[11px] font-mono text-[#71717a]">
+        <div class="p-5 sm:p-6 bg-[#f5efe6] border border-[#e8ddd0] rounded-2xl space-y-2">
+          <div class="text-[11px] font-mono text-stone-600">
             候选词块：
           </div>
 
@@ -161,7 +161,7 @@
               type="button"
               @click="placeToken(tok)"
               :disabled="hasChecked"
-              class="min-h-[44px] px-3.5 py-2 bg-white hover:bg-[#f4f4f5] border border-[#e4e4e7] rounded-xl text-sm font-serif text-[#18181b] cursor-pointer transition-all active:scale-95 disabled:opacity-40"
+              class="min-h-[44px] px-3.5 py-2 bg-white/90 hover:bg-[#f2ece2] border border-[#e8ddd0] rounded-xl text-sm font-serif text-stone-900 cursor-pointer transition-all active:scale-95 disabled:opacity-40 touch-manipulation"
             >
               {{ tok.raw }}
             </button>
@@ -174,7 +174,7 @@
             type="button"
             @click="checkScramble"
             :disabled="scramblePlaced.length === 0 || hasChecked"
-            class="min-h-[44px] px-6 py-2.5 bg-[#2563eb] hover:bg-blue-700 disabled:opacity-40 text-white rounded-xl font-medium transition-all active:scale-95 cursor-pointer"
+            class="min-h-[44px] px-6 py-2.5 bg-amber-700 hover:bg-amber-800 disabled:opacity-40 text-amber-50 rounded-xl font-bold transition-all active:scale-95 cursor-pointer touch-manipulation"
           >
             提交
           </button>
@@ -185,13 +185,13 @@
       <!-- GAME 2: CLOZE KEY WORDS (进阶难度: 重点词挖空)            -->
       <!-- ========================================================= -->
       <div v-if="activeMode === 'cloze'" class="space-y-4">
-        <div class="p-5 sm:p-6 bg-white border border-[#e4e4e7] rounded-2xl space-y-4">
-          <div class="text-[11px] font-mono text-[#a1a1aa] flex items-center justify-between">
+        <div class="p-5 sm:p-6 bg-white/70 border border-[#e8ddd0] rounded-2xl space-y-4">
+          <div class="text-[11px] font-mono text-stone-500 flex items-center justify-between">
             <span>补全生词：</span>
             <button
               type="button"
               @click="showClozeHint = !showClozeHint"
-              class="text-xs text-[#2563eb] hover:underline flex items-center gap-1 cursor-pointer"
+              class="text-xs text-amber-700 hover:underline flex items-center gap-1 cursor-pointer touch-manipulation"
             >
               <HelpCircle class="w-3.5 h-3.5" />
               <span>{{ showClozeHint ? '隐藏' : '提示' }}</span>
@@ -199,7 +199,7 @@
           </div>
 
           <!-- Sentence with interactive input blanks -->
-          <div class="font-serif text-base sm:text-lg leading-loose text-[#18181b]">
+          <div class="font-serif text-base sm:text-lg leading-loose text-stone-900">
             <template v-for="(tok, idx) in clozeTokens" :key="idx">
               <span v-if="!tok.isBlank" class="mr-1.5">{{ tok.raw }}</span>
               <span v-else class="inline-block mr-1.5 align-middle">
@@ -208,7 +208,7 @@
                   type="text"
                   :placeholder="showClozeHint ? `${tok.clean[0]}...` : '____'"
                   :disabled="hasChecked"
-                  class="min-h-[44px] px-2.5 py-1 text-center font-serif text-base bg-[#f8f8f6] border border-[#e4e4e7] focus:border-[#2563eb] focus:bg-white rounded-lg outline-none w-28 text-[#18181b]"
+                  class="min-h-[44px] px-2.5 py-1 text-center font-serif text-base bg-white border border-[#e8ddd0] focus:border-amber-600 focus:ring-2 focus:ring-amber-200 focus:bg-white rounded-lg outline-none w-28 text-stone-900 touch-manipulation"
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck="false"
@@ -226,7 +226,7 @@
             type="button"
             @click="checkCloze"
             :disabled="hasChecked"
-            class="min-h-[44px] px-6 py-2.5 bg-[#2563eb] hover:bg-blue-700 disabled:opacity-40 text-white rounded-xl font-medium transition-all active:scale-95 cursor-pointer"
+            class="min-h-[44px] px-6 py-2.5 bg-amber-700 hover:bg-amber-800 disabled:opacity-40 text-amber-50 rounded-xl font-bold transition-all active:scale-95 cursor-pointer touch-manipulation"
           >
             提交
           </button>
@@ -236,27 +236,30 @@
       <!-- ========================================================= -->
       <!-- GAME 3: FULL DICTATION (大师难度: 全句精听)               -->
       <!-- ========================================================= -->
-      <div v-if="activeMode === 'full'" class="space-y-3">
-        <textarea
-          ref="inputRef"
-          v-model="userInput"
-          rows="3"
-          placeholder="盲听单句原声，键入完整英文句子..."
-          :disabled="hasChecked"
-          @keydown.enter.prevent="checkFullDictation"
-          class="w-full p-4 border border-[#e4e4e7] focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb] rounded-2xl font-serif text-base sm:text-lg leading-relaxed outline-none transition-all resize-none text-[#18181b] bg-white disabled:bg-[#f8f8f6]"
-          autocapitalize="none"
-          autoCorrect="off"
-          autocomplete="off"
-          spellcheck="false"
-        ></textarea>
+      <div v-if="activeMode === 'full'" class="space-y-4">
+        <div class="p-5 sm:p-6 bg-white/70 border border-[#e8ddd0] rounded-2xl space-y-3">
+          <div class="text-[11px] font-mono text-stone-500">盲听辨音输入：</div>
+          <textarea
+            ref="inputRef"
+            v-model="userInput"
+            rows="3"
+            placeholder="盲听单句原声，键入完整英文句子..."
+            :disabled="hasChecked"
+            @keydown.enter.prevent="checkFullDictation"
+            class="w-full p-4 border border-[#e8ddd0] focus:border-amber-600 focus:ring-2 focus:ring-amber-200 rounded-xl font-serif text-base sm:text-lg leading-relaxed outline-none transition-all resize-none text-stone-900 bg-white disabled:bg-[#f5efe6] touch-manipulation"
+            autocapitalize="none"
+            autoCorrect="off"
+            autocomplete="off"
+            spellcheck="false"
+          ></textarea>
+        </div>
 
         <div class="flex items-center justify-end">
           <button
             type="button"
             @click="checkFullDictation"
             :disabled="!userInput.trim() || hasChecked"
-            class="min-h-[44px] px-6 py-2.5 bg-[#2563eb] hover:bg-blue-700 disabled:opacity-40 text-white rounded-xl font-medium transition-all active:scale-95 cursor-pointer"
+            class="min-h-[44px] px-6 py-2.5 bg-amber-700 hover:bg-amber-800 disabled:opacity-40 text-amber-50 rounded-xl font-bold transition-all active:scale-95 cursor-pointer touch-manipulation"
           >
             提交
           </button>
@@ -268,14 +271,14 @@
       <!-- ========================================================= -->
       <div
         v-if="hasChecked"
-        class="p-5 sm:p-6 border border-[#e4e4e7] rounded-2xl bg-[#f8f8f6] space-y-4"
+        class="p-5 sm:p-6 border border-amber-300 rounded-2xl bg-amber-50/60 space-y-4"
       >
         <!-- Result Header with Stars -->
         <div class="flex items-center justify-between text-xs">
           <div class="flex items-center gap-1.5 font-medium">
-            <CheckCircle2 v-if="isAnswerCorrect" class="w-4 h-4 text-[#059669]" />
-            <XCircle v-else class="w-4 h-4 text-[#dc2626]" />
-            <span :class="isAnswerCorrect ? 'text-[#059669]' : 'text-[#dc2626]'">
+            <CheckCircle2 v-if="isAnswerCorrect" class="w-4 h-4 text-emerald-600" />
+            <XCircle v-else class="w-4 h-4 text-rose-600" />
+            <span :class="isAnswerCorrect ? 'text-emerald-700 font-bold' : 'text-rose-700 font-bold'">
               {{ isAnswerCorrect ? '完全正确！' : '存在差异，对照原句巩固：' }}
             </span>
           </div>
@@ -287,20 +290,20 @@
               :key="s"
               :class="[
                 'w-4 h-4',
-                s <= starRating ? 'text-[#2563eb] fill-[#2563eb]' : 'text-[#d4d4d8]'
+                s <= starRating ? 'text-amber-600 fill-amber-500' : 'text-[#e8ddd0]'
               ]"
             />
           </div>
         </div>
 
         <!-- Tokenized Diff (shown in Full or when error) -->
-        <div v-if="diffTokens.length > 0" class="p-3 bg-white border border-[#e4e4e7] rounded-xl font-serif text-base leading-relaxed select-text">
+        <div v-if="diffTokens.length > 0" class="p-3 bg-white/80 border border-[#e8ddd0] rounded-xl font-serif text-base leading-relaxed select-text">
           <span
             v-for="(tok, idx) in diffTokens"
             :key="idx"
             :class="[
               'inline-block mr-1.5',
-              tok.matched ? 'text-[#059669] font-medium' : 'text-[#dc2626] line-through decoration-1'
+              tok.matched ? 'text-emerald-700 font-medium' : 'text-rose-700 line-through decoration-1'
             ]"
           >
             {{ tok.text }}
@@ -308,23 +311,23 @@
         </div>
 
         <!-- Target Standard Sentence -->
-        <div class="text-xs text-[#52525b] space-y-1">
-          <p class="font-serif text-sm text-[#18181b] italic">
+        <div class="text-xs text-stone-600 space-y-1">
+          <p class="font-serif text-sm text-stone-900 font-medium italic">
             "{{ targetSentence }}"
           </p>
-          <p v-if="subtitleStore.effectiveCue?.translation" class="text-xs text-[#71717a]">
+          <p v-if="subtitleStore.effectiveCue?.translation" class="text-xs text-stone-600">
             {{ subtitleStore.effectiveCue.translation }}
           </p>
         </div>
 
         <!-- Bottom Controls: Retry / Next Sentence -->
-        <div class="flex items-center justify-between pt-2 border-t border-[#e4e4e7]/60">
+        <div class="flex items-center justify-between pt-2 border-t border-[#e8ddd0]">
           <button
             type="button"
             @click="retryCurrentSentence"
-            class="min-h-[44px] px-3.5 py-1.5 border border-[#e4e4e7] rounded-lg text-xs text-[#71717a] hover:text-[#18181b] hover:bg-white flex items-center gap-1.5 transition-colors cursor-pointer"
+            class="min-h-[44px] px-3.5 py-1.5 border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-[#f2ece2] rounded-xl text-xs text-stone-800 font-medium flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer touch-manipulation"
           >
-            <RotateCcw class="w-3.5 h-3.5" />
+            <RotateCcw class="w-3.5 h-3.5 text-amber-700" />
             <span>重练</span>
           </button>
 
@@ -333,7 +336,7 @@
               v-if="subtitleStore.activeCueIndex < subtitleStore.cues.length - 1"
               type="button"
               @click="nextSentence"
-              class="min-h-[44px] px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer"
+              class="min-h-[44px] px-4 py-2 bg-amber-700 hover:bg-amber-800 text-amber-50 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer touch-manipulation"
             >
               <span>下一句</span>
               <ChevronRight class="w-3.5 h-3.5" />
@@ -341,7 +344,7 @@
             <button
               type="button"
               @click="sessionStore.setStep(4)"
-              class="min-h-[44px] px-4 py-2 bg-[#18181b] hover:bg-[#27272a] text-white rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+              class="min-h-[44px] px-4 py-2 bg-stone-900 hover:bg-stone-800 text-amber-50 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer touch-manipulation"
             >
               <span>词汇复习</span>
               <ChevronRight class="w-3.5 h-3.5" />
