@@ -109,6 +109,7 @@
             :key="badge.id"
             @click="openDetail(badge)"
             @keydown.enter="openDetail(badge)"
+            @keydown.space.prevent="openDetail(badge)"
             tabindex="0"
             role="button"
             :aria-label="`查看徽章详情: ${badge.name}`"
@@ -454,13 +455,13 @@ function closeModal() {
 }
 
 function formatUnlockDate(ts) {
-  if (!ts) return ''
+  if (!ts) return '已授勋'
   try {
     const d = new Date(ts)
-    if (isNaN(d.getTime())) return ''
+    if (isNaN(d.getTime())) return '已授勋'
     return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
   } catch {
-    return ''
+    return '已授勋'
   }
 }
 

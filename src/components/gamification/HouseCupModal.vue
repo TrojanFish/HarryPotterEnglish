@@ -82,7 +82,7 @@
                 </div>
 
                 <!-- Hourglass Body Visual -->
-                <div class="relative w-16 sm:w-20 h-44 flex flex-col items-center justify-between py-1">
+                <div class="relative w-16 sm:w-20 h-52 flex flex-col items-center justify-between py-1">
                   <!-- Brass Cap -->
                   <div class="w-14 sm:w-16 h-2 rounded-t-md bg-gradient-to-r from-amber-800 via-amber-600 to-amber-800 border-b border-amber-950/40 shadow-xs" />
 
@@ -105,7 +105,7 @@
                     </div>
 
                     <!-- Lower Chamber with Dynamic Gemstone Column -->
-                    <div class="relative w-full h-24 flex flex-col justify-end overflow-hidden bg-stone-50/60 border-t border-stone-200/30">
+                    <div class="relative w-full h-32 flex flex-col justify-end overflow-hidden bg-stone-50/60 border-t border-stone-200/30">
                       <!-- Gemstone fill column (height dynamic math formula) -->
                       <div
                         class="w-full rounded-b-xl transition-all duration-700 ease-out relative overflow-hidden shadow-sm"
@@ -178,7 +178,7 @@
                 <div class="flex items-center gap-3">
                   <!-- Rank Indicator -->
                   <div
-                    class="w-8 h-8 rounded-lg flex items-center justify-center font-serif font-black text-sm shadow-2xs border"
+                    class="w-8 h-8 rounded-lg flex items-center justify-center font-serif font-black text-sm shadow-xs border"
                     :class="getRankBadgeClasses(item.rank)"
                   >
                     <Trophy v-if="item.rank === 1" class="w-4 h-4 text-amber-800 stroke-[2.2]" />
@@ -198,7 +198,7 @@
                       </span>
                       <span
                         v-if="item.isUserHouse"
-                        class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-900 border border-amber-300"
+                        class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300"
                       >
                         我的学院
                       </span>
@@ -247,7 +247,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               <!-- Card 1: Total Points Contributed -->
-              <div class="p-3.5 rounded-xl bg-white border border-[#e8ddd0] shadow-2xs flex items-center gap-3">
+              <div class="p-3.5 rounded-xl bg-white border border-[#e8ddd0] shadow-xs flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-900 border border-amber-200 flex items-center justify-center shrink-0">
                   <Sparkles class="w-5 h-5 text-amber-700 stroke-[2]" />
                 </div>
@@ -262,7 +262,7 @@
               </div>
 
               <!-- Card 2: Streak Days -->
-              <div class="p-3.5 rounded-xl bg-white border border-[#e8ddd0] shadow-2xs flex items-center gap-3">
+              <div class="p-3.5 rounded-xl bg-white border border-[#e8ddd0] shadow-xs flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-900 border border-orange-200 flex items-center justify-center shrink-0">
                   <Flame class="w-5 h-5 text-orange-600 stroke-[2]" />
                 </div>
@@ -277,7 +277,7 @@
               </div>
 
               <!-- Card 3: Streak Freezes -->
-              <div class="p-3.5 rounded-xl bg-white border border-[#e8ddd0] shadow-2xs flex items-center gap-3">
+              <div class="p-3.5 rounded-xl bg-white border border-[#e8ddd0] shadow-xs flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-900 border border-sky-200 flex items-center justify-center shrink-0">
                   <Shield class="w-5 h-5 text-sky-700 stroke-[2]" />
                 </div>
@@ -306,14 +306,14 @@
             </div>
 
             <!-- List or Empty State -->
-            <div class="bg-white/70 border border-[#e8ddd0] rounded-xl overflow-hidden shadow-2xs">
+            <div class="bg-white/70 border border-[#e8ddd0] rounded-xl overflow-hidden shadow-xs">
               <div
                 v-if="gamificationStore.pointHistory && gamificationStore.pointHistory.length > 0"
                 class="divide-y divide-[#e8ddd0]/60 max-h-48 overflow-y-auto"
               >
                 <div
-                  v-for="record in gamificationStore.pointHistory"
-                  :key="record.id || record.timestamp"
+                  v-for="(record, rIdx) in gamificationStore.pointHistory"
+                  :key="record.id || `${record.timestamp}-${rIdx}`"
                   class="p-2.5 sm:p-3 flex items-center justify-between text-xs hover:bg-stone-50/80 transition-colors"
                 >
                   <div class="flex items-center gap-2.5">
@@ -355,7 +355,7 @@
             type="button"
             @click="onOpenSorting"
             aria-label="重新分院或更换学院"
-            class="w-full sm:w-auto min-h-[44px] min-w-[44px] px-4 py-2.5 rounded-xl border border-stone-300 bg-white/90 hover:bg-stone-100 text-stone-700 font-medium text-xs sm:text-sm flex items-center justify-center gap-2 touch-manipulation active:scale-95 transition-all shadow-2xs"
+            class="w-full sm:w-auto min-h-[44px] min-w-[44px] px-4 py-2.5 rounded-xl border border-stone-300 bg-white/90 hover:bg-stone-100 text-stone-700 font-medium text-xs sm:text-sm flex items-center justify-center gap-2 touch-manipulation active:scale-95 transition-all shadow-xs"
           >
             <RotateCcw class="w-4 h-4 text-stone-500" />
             <span>重新分院 / 更换学院</span>

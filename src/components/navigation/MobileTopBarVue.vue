@@ -96,13 +96,12 @@ import {
   BookMarked,
   BarChart2,
   HardDrive,
-  Flame,
-  Trophy,
-  Award
+  Flame
 } from 'lucide-vue-next'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useGamificationStore } from '../../stores/gamificationStore.js'
+import { useAnalyticsStore } from '../../stores/analyticsStore.js'
 
 const props = defineProps({
   currentChapterTitle: {
@@ -123,9 +122,10 @@ const emit = defineEmits([
 const navigationStore = useNavigationStore()
 const vocabStore = useVocabStore()
 const gamificationStore = useGamificationStore()
+const analyticsStore = useAnalyticsStore()
 
 const vocabCount = computed(() => vocabStore.vocabList?.length || 0)
-const streakDays = computed(() => gamificationStore.streakDays || 0)
+const streakDays = computed(() => gamificationStore.streakDays || analyticsStore.streakDays || 0)
 
 function handleChapterClick() {
   emit('open-chapter-drawer')

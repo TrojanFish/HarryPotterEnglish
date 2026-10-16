@@ -221,7 +221,7 @@
           <button
             type="button"
             @click="handleOpenBadges"
-            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 font-medium text-xs hover:bg-amber-100 transition-colors cursor-pointer min-h-[44px] touch-manipulation shrink-0"
+            class="inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 font-medium text-xs hover:bg-amber-100 transition-colors cursor-pointer min-h-[44px] min-w-[44px] touch-manipulation shrink-0"
             title="查看魔法成就徽章图鉴"
             aria-label="查看魔法成就徽章"
           >

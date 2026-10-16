@@ -194,8 +194,14 @@
             <div
               v-for="house in HOUSE_LIST"
               :key="house.id"
+              role="button"
+              tabindex="0"
+              :aria-pressed="selectedHouseId === house.id"
+              :aria-label="`选择${house.name}`"
               @click="handleDirectSelect(house.id)"
-              class="relative p-4 rounded-2xl border-2 cursor-pointer transition-all touch-manipulation active:scale-[0.98] min-h-[44px] flex flex-col justify-between"
+              @keydown.enter="handleDirectSelect(house.id)"
+              @keydown.space.prevent="handleDirectSelect(house.id)"
+              class="relative p-4 rounded-2xl border-2 cursor-pointer transition-all touch-manipulation active:scale-[0.98] min-h-[44px] flex flex-col justify-between focus:outline-none focus:ring-2 focus:ring-amber-500"
               :class="selectedHouseId === house.id
                 ? `${house.borderClass} ${house.bgClass} ring-2 ring-amber-400/40 shadow-sm`
                 : 'border-[#e8ddd0] bg-white/70 hover:border-amber-400 hover:bg-white'"

@@ -553,6 +553,29 @@ export const useGamificationStore = defineStore('gamification', {
       }
     },
 
+    loadFromStorage() {
+      const loaded = loadFromStorage() || {}
+      if (loaded.userHouse !== undefined) this.userHouse = loaded.userHouse
+      if (loaded.sortedAt !== undefined) this.sortedAt = loaded.sortedAt
+      if (loaded.housePoints && typeof loaded.housePoints === 'object') {
+        this.housePoints = {
+          gryffindor: Number(loaded.housePoints.gryffindor) || 180,
+          ravenclaw: Number(loaded.housePoints.ravenclaw) || 175,
+          hufflepuff: Number(loaded.housePoints.hufflepuff) || 165,
+          slytherin: Number(loaded.housePoints.slytherin) || 190
+        }
+      }
+      if (typeof loaded.studentContribution === 'number') this.studentContribution = loaded.studentContribution
+      if (Array.isArray(loaded.pointHistory)) this.pointHistory = loaded.pointHistory
+      if (typeof loaded.streakDays === 'number') this.streakDays = loaded.streakDays
+      if (loaded.lastActiveDate !== undefined) this.lastActiveDate = loaded.lastActiveDate
+      if (typeof loaded.dailyGoalSeconds === 'number') this.dailyGoalSeconds = loaded.dailyGoalSeconds
+      if (typeof loaded.streakFreezes === 'number') this.streakFreezes = loaded.streakFreezes
+      if (Array.isArray(loaded.streakFrozenDates)) this.streakFrozenDates = loaded.streakFrozenDates
+      if (loaded.unlockedBadges && typeof loaded.unlockedBadges === 'object') this.unlockedBadges = loaded.unlockedBadges
+      if (typeof loaded.todayListeningSeconds === 'number') this.todayListeningSeconds = loaded.todayListeningSeconds
+    },
+
     saveToStorage() {
       if (typeof localStorage === 'undefined') return
       try {
@@ -567,7 +590,8 @@ export const useGamificationStore = defineStore('gamification', {
           dailyGoalSeconds: this.dailyGoalSeconds,
           streakFreezes: this.streakFreezes,
           streakFrozenDates: this.streakFrozenDates,
-          unlockedBadges: this.unlockedBadges
+          unlockedBadges: this.unlockedBadges,
+          todayListeningSeconds: this.todayListeningSeconds
         }
         localStorage.setItem(STORAGE_KEY_GAMIFICATION, JSON.stringify(data))
       } catch (e) {

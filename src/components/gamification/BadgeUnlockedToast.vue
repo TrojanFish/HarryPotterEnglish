@@ -9,6 +9,8 @@
           v-if="activeToast"
           role="status"
           aria-live="polite"
+          @mouseenter="pauseTimer"
+          @mouseleave="resumeTimer"
           class="pointer-events-auto relative flex items-center gap-3.5 bg-[#faf6ee] border-2 rounded-2xl shadow-lg p-3.5 sm:p-4 text-stone-900 transition-all duration-300 active:scale-[0.98] ring-1 ring-amber-400/20"
           :class="houseBorderClass"
         >
@@ -127,6 +129,21 @@ function showNextToast() {
   timer = setTimeout(() => {
     dismissToast()
   }, 3500)
+}
+
+function pauseTimer() {
+  if (timer) {
+    clearTimeout(timer)
+    timer = null
+  }
+}
+
+function resumeTimer() {
+  if (!timer && activeToast.value) {
+    timer = setTimeout(() => {
+      dismissToast()
+    }, 2000)
+  }
 }
 
 function dismissToast() {
