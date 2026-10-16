@@ -8,24 +8,14 @@
   >
     <!-- Top Brand & Navigation -->
     <div :class="['w-full space-y-4', isCollapsed ? 'flex flex-col items-center' : '']">
-      <!-- Brand Row (Collapsed) -->
-      <div v-if="isCollapsed" class="flex flex-col items-center gap-2.5 w-full">
-        <button
-          type="button"
-          @click="handleSelectView('bookshelf')"
-          class="w-11 h-11 rounded-2xl bg-amber-500 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer shrink-0 touch-manipulation"
-          title="霍格沃茨魔法英语 · 点击返回书架"
-          aria-label="霍格沃茨魔法英语 · 点击返回书架"
-        >
-          <Sparkles :size="20" class="text-white stroke-[2.5]" />
-        </button>
-
+      <!-- Brand / Collapse Row (Collapsed) -->
+      <div v-if="isCollapsed" class="flex flex-col items-center gap-3 w-full">
         <button
           type="button"
           @click="handleToggleCollapse"
-          class="min-w-[44px] min-h-[44px] rounded-xl text-stone-500 hover:text-stone-900 hover:bg-[#f5efe6] border border-transparent flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0 touch-manipulation"
-          title="展开侧边栏 (Ctrl+B)"
-          aria-label="展开侧边栏"
+          class="w-10 h-10 rounded-full bg-stone-200/80 hover:bg-stone-300 text-stone-700 flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0 touch-manipulation shadow-none border border-stone-300/40"
+          title="展开边栏 (Ctrl+B)"
+          aria-label="展开边栏"
         >
           <PanelLeftOpen :size="18" />
         </button>
@@ -63,9 +53,9 @@
           <button
             type="button"
             @click="handleToggleCollapse"
-            class="min-w-[44px] min-h-[44px] rounded-xl text-stone-500 hover:text-stone-900 hover:bg-[#f5efe6] border border-transparent flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0 touch-manipulation"
-            title="收起侧边栏 (Ctrl+B)"
-            aria-label="收起侧边栏"
+            class="w-10 h-10 rounded-full hover:bg-stone-200/80 text-stone-600 hover:text-stone-900 flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0 touch-manipulation shadow-none"
+            title="关闭边栏 (Ctrl+B)"
+            aria-label="关闭边栏"
           >
             <PanelLeftClose :size="18" />
           </button>
@@ -342,8 +332,6 @@ import {
   Library,
   Video,
   Headphones,
-  EyeOff,
-  Zap,
   Bookmark,
   BarChart2,
   HardDrive,
@@ -496,22 +484,6 @@ const navItems = [
     studyMode: 'normal'
   },
   {
-    id: 'player_blind',
-    label: '魔法磨耳朵',
-    desc: '迷雾遮罩盲听精进',
-    icon: EyeOff,
-    view: 'player',
-    studyMode: 'blind'
-  },
-  {
-    id: 'player_dictation',
-    label: '拼写大闯关',
-    desc: '魔咒打字趣味通关',
-    icon: Zap,
-    view: 'player',
-    studyMode: 'dictation'
-  },
-  {
     id: 'vocab',
     label: '生词本',
     desc: '难词收藏与复习',
@@ -575,6 +547,7 @@ function handleOpenBadges() {
 }
 
 function handleOpenCloudSync() {
+  handleSelectView('sync')
   emit('open-cloud-sync')
 }
 

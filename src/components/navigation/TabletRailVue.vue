@@ -93,8 +93,6 @@ import {
   Headphones,
   Library,
   Video,
-  EyeOff,
-  Zap,
   Bookmark,
   BarChart2,
   HardDrive,
@@ -172,20 +170,6 @@ const navItems = [
     studyMode: 'normal'
   },
   {
-    id: 'player_blind',
-    title: '魔法磨耳朵',
-    icon: EyeOff,
-    view: 'player',
-    studyMode: 'blind'
-  },
-  {
-    id: 'player_dictation',
-    title: '拼写大闯关',
-    icon: Zap,
-    view: 'player',
-    studyMode: 'dictation'
-  },
-  {
     id: 'vocab',
     title: '生词本',
     icon: Bookmark,
@@ -241,6 +225,7 @@ function handleBadgesClick() {
 }
 
 function handleCloudSyncClick() {
+  handleSelectView('sync')
   emit('open-cloud-sync')
 }
 </script>

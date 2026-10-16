@@ -78,6 +78,7 @@
         <AnalyticsPageView v-else-if="navStore.currentView === 'analytics'" />
         <StoragePageView v-else-if="navStore.currentView === 'storage'" />
         <BadgesPageView v-else-if="navStore.currentView === 'badges'" />
+        <CloudSyncPageView v-else-if="navStore.currentView === 'sync'" />
         <slot v-else />
       </main>
     </div>
@@ -166,6 +167,7 @@ import VocabularyPageView from '../views/VocabularyPageView.vue'
 import AnalyticsPageView from '../views/AnalyticsPageView.vue'
 import StoragePageView from '../views/StoragePageView.vue'
 import BadgesPageView from '../views/BadgesPageView.vue'
+import CloudSyncPageView from '../views/CloudSyncPageView.vue'
 
 const props = defineProps({
   currentChapterTitle: {
@@ -325,17 +327,27 @@ function closeSorting() {
 }
 
 function openCloudSync() {
-  isCloudSyncOpen.value = true
+  if (player.isBookshelfOpen) {
+    player.toggleBookshelf(false)
+  }
+  if (navStore.currentView && !['vocab', 'analytics', 'storage', 'bookshelf', 'badges', 'sync'].includes(navStore.currentView)) {
+    previousView = navStore.currentView
+  }
+  isCloudSyncOpen.value = false
+  navStore.setView('sync')
 }
 
 function closeCloudSync() {
   isCloudSyncOpen.value = false
+  if (navStore.currentView === 'sync') {
+    navStore.setView(previousView || 'player')
+  }
 }
 
 watch(
   () => navStore.currentView,
   (newView, oldView) => {
-    if (oldView && !['vocab', 'analytics', 'storage', 'bookshelf', 'badges'].includes(oldView)) {
+    if (oldView && !['vocab', 'analytics', 'storage', 'bookshelf', 'badges', 'sync'].includes(oldView)) {
       previousView = oldView
     }
     if (newView !== 'player') {

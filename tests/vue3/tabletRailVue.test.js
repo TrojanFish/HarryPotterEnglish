@@ -41,8 +41,6 @@ describe('TabletRailVue Component Tests', () => {
     assert.ok(source.includes('Headphones'), 'Must use Headphones icon for player_reader')
     assert.ok(source.includes('Library'), 'Must use Library icon for bookshelf')
     assert.ok(source.includes('Video'), 'Must use Video icon for ted')
-    assert.ok(source.includes('EyeOff'), 'Must use EyeOff icon for player_blind')
-    assert.ok(source.includes('Zap'), 'Must use Zap icon for player_dictation')
     assert.ok(source.includes('Bookmark'), 'Must use Bookmark icon for vocab')
     assert.ok(source.includes('BarChart2'), 'Must use BarChart2 icon for analytics')
     assert.ok(source.includes('HardDrive'), 'Must use HardDrive icon for storage')
@@ -62,7 +60,7 @@ describe('TabletRailVue Component Tests', () => {
     assert.ok(source.includes('h-full'), 'Must take full container height h-full')
   })
 
-  it('configures 8 icon navigation items and top brand icon', () => {
+  it('configures clean icon navigation items without blind or dictation duplicates', () => {
     const filePath = path.resolve('src/components/navigation/TabletRailVue.vue')
     assert.ok(fs.existsSync(filePath), 'TabletRailVue.vue must exist')
 
@@ -70,8 +68,8 @@ describe('TabletRailVue Component Tests', () => {
     assert.ok(source.includes('bookshelf'), 'Must define bookshelf item')
     assert.ok(source.includes('ted'), 'Must define ted item')
     assert.ok(source.includes('player_reader'), 'Must define player_reader item')
-    assert.ok(source.includes('player_blind'), 'Must define player_blind item')
-    assert.ok(source.includes('player_dictation'), 'Must define player_dictation item')
+    assert.ok(!source.includes("id: 'player_blind'"), 'Must remove player_blind duplicate')
+    assert.ok(!source.includes("id: 'player_dictation'"), 'Must remove player_dictation duplicate')
     assert.ok(source.includes('vocab'), 'Must define vocab item')
     assert.ok(source.includes('analytics'), 'Must define analytics item')
     assert.ok(source.includes('storage'), 'Must define storage item')

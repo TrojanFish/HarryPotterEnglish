@@ -41,8 +41,6 @@ describe('DesktopSidebarVue Component Tests', () => {
     assert.ok(source.includes('Library'), 'Must use Library icon for bookshelf')
     assert.ok(source.includes('Video'), 'Must use Video icon for ted')
     assert.ok(source.includes('Headphones'), 'Must use Headphones icon for player_reader')
-    assert.ok(source.includes('EyeOff'), 'Must use EyeOff icon for player_blind')
-    assert.ok(source.includes('Zap'), 'Must use Zap icon for player_dictation')
     assert.ok(source.includes('Bookmark'), 'Must use Bookmark icon for vocab')
     assert.ok(source.includes('BarChart2'), 'Must use BarChart2 icon for analytics')
     assert.ok(source.includes('HardDrive'), 'Must use HardDrive icon for storage')
@@ -77,7 +75,7 @@ describe('DesktopSidebarVue Component Tests', () => {
     assert.ok(source.includes('PanelLeftOpen'), 'Must include PanelLeftOpen toggle button')
   })
 
-  it('configures 8 navigation items with K12 text-sm font-bold labels', () => {
+  it('configures clean core navigation items without blind or dictation duplicates', () => {
     const filePath = path.resolve('src/components/navigation/DesktopSidebarVue.vue')
     assert.ok(fs.existsSync(filePath), 'DesktopSidebarVue.vue must exist')
 
@@ -85,8 +83,8 @@ describe('DesktopSidebarVue Component Tests', () => {
     assert.ok(source.includes('bookshelf'), 'Must define bookshelf item')
     assert.ok(source.includes('ted'), 'Must define ted item')
     assert.ok(source.includes('player_reader'), 'Must define player_reader item')
-    assert.ok(source.includes('player_blind'), 'Must define player_blind item')
-    assert.ok(source.includes('player_dictation'), 'Must define player_dictation item')
+    assert.ok(!source.includes("id: 'player_blind'"), 'Must remove player_blind duplicate from navItems')
+    assert.ok(!source.includes("id: 'player_dictation'"), 'Must remove player_dictation duplicate from navItems')
     assert.ok(source.includes('vocab'), 'Must define vocab item')
     assert.ok(source.includes('analytics'), 'Must define analytics item')
     assert.ok(source.includes('storage'), 'Must define storage item')
@@ -129,7 +127,7 @@ describe('DesktopSidebarVue Component Tests', () => {
     assert.ok(source.includes('touch-manipulation'), 'Must include touch-manipulation')
     assert.ok(source.includes('active:scale-95'), 'Must include active:scale-95 feedback')
     assert.ok(source.includes('min-h-[44px]') || source.includes('w-11 h-11'), 'Must enforce minimum touch targets')
-    assert.ok(source.includes('w-11 h-11 rounded-2xl bg-amber-500'), 'Collapsed brand button must enforce 44x44px (w-11 h-11)')
+    assert.ok(source.includes('PanelLeftOpen') && source.includes('rounded-full bg-stone-200'), 'Collapsed rail must enforce Gemini circular expand button')
   })
 
   it('handleKeydown ignores Ctrl+B when typing in input or textarea', () => {
