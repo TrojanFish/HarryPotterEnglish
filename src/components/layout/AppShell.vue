@@ -8,6 +8,8 @@
       @open-vocab="openVocab"
       @open-analytics="openAnalytics"
       @open-storage="openStorage"
+      @open-house-cup="openHouseCup"
+      @open-badges="openBadges"
     />
 
     <!-- Step tab bar: HP sessions only, hidden on TED view -->
@@ -40,6 +42,8 @@
         @open-vocab="openVocab"
         @open-analytics="openAnalytics"
         @open-storage="openStorage"
+        @open-house-cup="openHouseCup"
+        @open-badges="openBadges"
         @change-study-mode="handleStudyModeChange"
       />
 
@@ -49,6 +53,8 @@
         @open-analytics="openAnalytics"
         @open-storage="openStorage"
         @open-legal="handleOpenLegal"
+        @open-house-cup="openHouseCup"
+        @open-badges="openBadges"
         @change-study-mode="handleStudyModeChange"
       />
 
@@ -91,6 +97,26 @@
       :is-open="isShortcutsOpen"
       @close="closeShortcuts"
     />
+
+    <!-- Hogwarts House Cup Modal -->
+    <HouseCupModal
+      :is-open="isHouseCupOpen"
+      @close="closeHouseCup"
+      @open-sorting="openSorting(); closeHouseCup()"
+    />
+
+    <!-- Achievement Badges Gallery Modal -->
+    <AchievementBadgesModal
+      :is-open="isBadgesOpen"
+      @close="closeBadges"
+    />
+
+    <!-- Sorting Ceremony Modal -->
+    <SortingCeremonyModal
+      :is-open="isSortingOpen"
+      @close="closeSorting"
+      @sorted="closeSorting"
+    />
   </div>
 </template>
 
@@ -101,6 +127,7 @@ import { useNavigationStore } from '../../stores/navigationStore.js'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useCatalogStore } from '../../stores/catalogStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
+import { useGamificationStore } from '../../stores/gamificationStore.js'
 import { useBreakpointVue } from '../../utils/useBreakpointVue.js'
 
 import MobileTopBarVue from '../navigation/MobileTopBarVue.vue'
@@ -116,6 +143,9 @@ import AnalyticsDashboard from '../AnalyticsDashboard.vue'
 import StorageManagerModal from '../StorageManagerModal.vue'
 import ShortcutsModal from '../ShortcutsModal.vue'
 import AssessmentHub from '../assessment/AssessmentHub.vue'
+import HouseCupModal from '../gamification/HouseCupModal.vue'
+import AchievementBadgesModal from '../gamification/AchievementBadgesModal.vue'
+import SortingCeremonyModal from '../gamification/SortingCeremonyModal.vue'
 
 const props = defineProps({
   currentChapterTitle: {
@@ -128,12 +158,16 @@ const navStore = useNavigationStore()
 const player = usePlayerStore()
 const catalogStore = useCatalogStore()
 const sessionStore = useSessionStore()
+const gamificationStore = useGamificationStore()
 const breakpoint = useBreakpointVue()
 
 const isVocabOpen = ref(false)
 const isAnalyticsOpen = ref(false)
 const isStorageOpen = ref(false)
 const isShortcutsOpen = ref(false)
+const isHouseCupOpen = ref(false)
+const isBadgesOpen = ref(false)
+const isSortingOpen = ref(false)
 
 let previousView = 'player'
 
@@ -214,6 +248,30 @@ function closeStorage() {
 
 function closeShortcuts() {
   isShortcutsOpen.value = false
+}
+
+function openHouseCup() {
+  isHouseCupOpen.value = true
+}
+
+function closeHouseCup() {
+  isHouseCupOpen.value = false
+}
+
+function openBadges() {
+  isBadgesOpen.value = true
+}
+
+function closeBadges() {
+  isBadgesOpen.value = false
+}
+
+function openSorting() {
+  isSortingOpen.value = true
+}
+
+function closeSorting() {
+  isSortingOpen.value = false
 }
 
 watch(

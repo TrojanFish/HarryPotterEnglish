@@ -31,8 +31,20 @@
       <ChevronDown :size="14" class="text-stone-400 shrink-0" />
     </button>
 
-    <!-- Right: Quick Tools (Vocab, Analytics, Storage) -->
+    <!-- Right: Quick Tools (Streak/House Cup, Vocab, Analytics, Storage) -->
     <div class="flex items-center gap-1.5 shrink-0">
+      <!-- Streak Flame Pill Button -->
+      <button
+        type="button"
+        @click="handleStreakClick"
+        class="min-h-[44px] min-w-[44px] px-2 flex items-center justify-center gap-1 rounded-xl border border-[#e8ddd0] bg-[#fbf9f5] hover:bg-white text-orange-600 active:scale-95 transition-all touch-manipulation cursor-pointer"
+        :title="`连续打卡 ${streakDays} 天 · 点击查看学院杯`"
+        :aria-label="`连续打卡 ${streakDays} 天`"
+      >
+        <Flame :size="16" class="fill-orange-500 text-orange-500 shrink-0" />
+        <span class="text-xs font-mono font-bold text-orange-600 leading-none">{{ streakDays }}d</span>
+      </button>
+
       <!-- Vocabulary Button with K12 text-xs Badge -->
       <button
         type="button"
@@ -83,10 +95,14 @@ import {
   ChevronDown,
   BookMarked,
   BarChart2,
-  HardDrive
+  HardDrive,
+  Flame,
+  Trophy,
+  Award
 } from 'lucide-vue-next'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
+import { useGamificationStore } from '../../stores/gamificationStore.js'
 
 const props = defineProps({
   currentChapterTitle: {
@@ -99,16 +115,24 @@ const emit = defineEmits([
   'open-chapter-drawer',
   'open-vocab',
   'open-analytics',
-  'open-storage'
+  'open-storage',
+  'open-house-cup',
+  'open-badges'
 ])
 
 const navigationStore = useNavigationStore()
 const vocabStore = useVocabStore()
+const gamificationStore = useGamificationStore()
 
 const vocabCount = computed(() => vocabStore.vocabList?.length || 0)
+const streakDays = computed(() => gamificationStore.streakDays || 0)
 
 function handleChapterClick() {
   emit('open-chapter-drawer')
+}
+
+function handleStreakClick() {
+  emit('open-house-cup')
 }
 
 function handleVocabClick() {

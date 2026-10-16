@@ -48,17 +48,30 @@
       </nav>
     </div>
 
-    <!-- Bottom: Flame streak badge -->
-    <button
-      type="button"
-      @click="handleStreakClick"
-      class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer p-1.5 rounded-xl hover:bg-white text-orange-600 font-mono font-bold text-xs touch-manipulation transition-transform active:scale-95"
-      :title="`连续打卡 ${streakDays} 天`"
-      :aria-label="`连续打卡 ${streakDays} 天`"
-    >
-      <Flame :size="18" class="fill-orange-500 text-orange-500" />
-      <span class="text-[11px] font-mono text-orange-600">{{ streakDays }}d</span>
-    </button>
+    <!-- Bottom: Flame streak badge & Badges button -->
+    <div class="flex flex-col items-center gap-2">
+      <button
+        type="button"
+        @click="handleStreakClick"
+        class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer p-1.5 rounded-xl hover:bg-white text-orange-600 font-mono font-bold text-xs touch-manipulation transition-transform active:scale-95"
+        :title="`连续打卡 ${streakDays} 天 · 查看学院杯`"
+        :aria-label="`连续打卡 ${streakDays} 天`"
+      >
+        <Flame :size="18" class="fill-orange-500 text-orange-500" />
+        <span class="text-[11px] font-mono text-orange-600">{{ streakDays }}d</span>
+      </button>
+
+      <button
+        type="button"
+        @click="handleBadgesClick"
+        class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer p-1.5 rounded-xl hover:bg-white text-amber-700 font-mono font-bold text-xs touch-manipulation transition-transform active:scale-95"
+        title="魔法成就徽章"
+        aria-label="查看魔法成就徽章"
+      >
+        <Award :size="18" class="text-amber-700" />
+        <span class="text-[10px] font-mono text-amber-700">{{ unlockedCount }}</span>
+      </button>
+    </div>
   </aside>
 </template>
 
@@ -80,6 +93,7 @@ import {
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useAnalyticsStore } from '../../stores/analyticsStore.js'
+import { useGamificationStore } from '../../stores/gamificationStore.js'
 
 const props = defineProps({
   studyMode: {
@@ -97,15 +111,19 @@ const emit = defineEmits([
   'change-study-mode',
   'open-vocab',
   'open-analytics',
-  'open-storage'
+  'open-storage',
+  'open-house-cup',
+  'open-badges'
 ])
 
 const navigationStore = useNavigationStore()
 const vocabStore = useVocabStore()
 const analyticsStore = useAnalyticsStore()
+const gamificationStore = useGamificationStore()
 
 const vocabCount = computed(() => vocabStore.vocabList?.length || 0)
-const streakDays = computed(() => analyticsStore.streakDays || 0)
+const streakDays = computed(() => gamificationStore.streakDays || analyticsStore.streakDays || 0)
+const unlockedCount = computed(() => gamificationStore.unlockedCount || 0)
 const todayListeningSeconds = computed(() => {
   if (typeof analyticsStore.todayListeningSeconds === 'number') {
     return analyticsStore.todayListeningSeconds
@@ -201,7 +219,10 @@ function handleItemClick(item) {
 }
 
 function handleStreakClick() {
-  handleSelectView('analytics')
-  emit('open-analytics')
+  emit('open-house-cup')
+}
+
+function handleBadgesClick() {
+  emit('open-badges')
 }
 </script>

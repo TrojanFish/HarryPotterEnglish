@@ -153,13 +153,25 @@
     <div v-if="isCollapsed" class="flex flex-col items-center gap-2 pt-3 border-t border-[#e8ddd0] w-full">
       <button
         type="button"
-        @click="handleAnalyticsClick"
+        @click="handleOpenHouseCup"
         class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer p-1.5 rounded-xl hover:bg-white text-orange-600 font-mono font-bold text-xs touch-manipulation transition-transform active:scale-95"
-        :title="`连续打卡 ${streakDays} 天 · 今日已完成 ${goalMinutes}/5 分钟 (${goalPercent}%)`"
+        :title="`连续打卡 ${streakDays} 天 · 查看学院杯`"
         :aria-label="`连续打卡 ${streakDays} 天`"
       >
         <Flame :size="18" class="fill-orange-500 text-orange-500" />
         <span class="text-[11px] font-mono text-orange-600 mt-0.5 leading-tight">{{ streakDays }}d</span>
+      </button>
+
+      <!-- House Cup / Badges Icon Button in Collapsed state -->
+      <button
+        type="button"
+        @click="handleOpenBadges"
+        class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer p-1.5 rounded-xl hover:bg-white text-amber-700 font-mono font-bold text-xs touch-manipulation transition-transform active:scale-95"
+        title="魔法成就徽章"
+        aria-label="查看魔法成就徽章"
+      >
+        <Award :size="18" class="text-amber-700" />
+        <span class="text-[10px] font-mono text-amber-700 mt-0.5 leading-tight">{{ unlockedCount }}</span>
       </button>
 
       <!-- Sync Status Indicator Dot -->
@@ -188,34 +200,65 @@
 
     <!-- Expanded Bottom -->
     <div v-else class="space-y-3 pt-4 border-t border-[#e8ddd0] w-full">
-      <!-- Habit Progress Card -->
+      <!-- Habit Progress & Gamification Card -->
       <div
-        @click="handleAnalyticsClick"
-        class="duo-card p-3.5 space-y-2 cursor-pointer hover:border-amber-400 transition-colors bg-white rounded-2xl border border-[#e8ddd0] touch-manipulation active:scale-95"
-        title="点击查看学业罗盘与听力分布"
-        role="button"
-        tabindex="0"
-        @keydown.enter="handleAnalyticsClick"
-        @keydown.space.prevent="handleAnalyticsClick"
+        class="duo-card p-3.5 space-y-2.5 bg-white rounded-2xl border border-[#e8ddd0]"
       >
-        <div class="flex items-center justify-between text-sm font-bold text-amber-950">
-          <span class="flex items-center gap-1.5 text-orange-600">
-            <Flame :size="16" class="fill-orange-500 text-orange-500" />
-            <span>连续打卡</span>
-          </span>
-          <span class="font-mono font-bold text-orange-600">{{ streakDays }} 天</span>
+        <!-- House Status & Badges Quick Action Row -->
+        <div class="flex items-center justify-between text-xs pb-1 border-b border-stone-100">
+          <button
+            type="button"
+            @click="handleOpenHouseCup"
+            class="flex items-center gap-1.5 text-stone-800 font-bold hover:text-amber-800 transition-colors cursor-pointer min-h-[44px] touch-manipulation text-left"
+            :title="currentHouseInfo ? `${currentHouseInfo.name} · 贡献 ${studentContribution} 分` : '未分院 · 前往分院仪式'"
+          >
+            <Trophy :size="15" class="text-amber-600 shrink-0" />
+            <span class="truncate max-w-[120px]">
+              {{ currentHouseInfo ? `${currentHouseInfo.name} · ${studentContribution}分` : '未分院 · 前往分院' }}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            @click="handleOpenBadges"
+            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 font-medium text-xs hover:bg-amber-100 transition-colors cursor-pointer min-h-[44px] touch-manipulation shrink-0"
+            title="查看魔法成就徽章图鉴"
+            aria-label="查看魔法成就徽章"
+          >
+            <Award :size="14" class="text-amber-700" />
+            <span class="font-mono font-bold">{{ unlockedCount }}</span>
+          </button>
         </div>
 
-        <div class="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
-          <div
-            class="bg-gradient-to-r from-amber-500 to-amber-600 h-full rounded-full transition-all duration-700"
-            :style="{ width: `${goalPercent}%` }"
-          />
-        </div>
+        <!-- Streak and Today Habit Target (Clickable to Analytics) -->
+        <div
+          @click="handleAnalyticsClick"
+          class="space-y-2 cursor-pointer touch-manipulation"
+          role="button"
+          tabindex="0"
+          title="点击查看学业罗盘与听力分布"
+          @keydown.enter="handleAnalyticsClick"
+          @keydown.space.prevent="handleAnalyticsClick"
+        >
+          <div class="flex items-center justify-between text-sm font-bold text-amber-950">
+            <span class="flex items-center gap-1.5 text-orange-600">
+              <Flame :size="16" class="fill-orange-500 text-orange-500" />
+              <span>连续打卡</span>
+            </span>
+            <span class="font-mono font-bold text-orange-600">{{ streakDays }} 天</span>
+          </div>
 
-        <div class="flex items-center justify-between text-sm text-stone-500 font-reading">
-          <span>今日契约: {{ goalMinutes }} / 5 分钟</span>
-          <span class="font-mono font-bold text-amber-900">{{ goalPercent }}%</span>
+          <div class="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+            <div
+              class="bg-gradient-to-r from-amber-500 to-amber-600 h-full rounded-full transition-all duration-700"
+              :style="{ width: `${goalPercent}%` }"
+            />
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-stone-500 font-reading">
+            <span>今日契约: {{ goalMinutes }} / 5 分钟</span>
+            <span class="font-mono font-bold text-amber-900">{{ goalPercent }}%</span>
+          </div>
         </div>
       </div>
 
@@ -281,11 +324,13 @@ import {
   Flame,
   Scale,
   Download,
-  Award
+  Award,
+  Trophy
 } from 'lucide-vue-next'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useAnalyticsStore } from '../../stores/analyticsStore.js'
+import { useGamificationStore } from '../../stores/gamificationStore.js'
 
 const props = defineProps({
   studyMode: {
@@ -330,12 +375,15 @@ const emit = defineEmits([
   'open-analytics',
   'open-storage',
   'open-legal',
-  'install-pwa'
+  'install-pwa',
+  'open-house-cup',
+  'open-badges'
 ])
 
 const navigationStore = useNavigationStore()
 const vocabStore = useVocabStore()
 const analyticsStore = useAnalyticsStore()
+const gamificationStore = useGamificationStore()
 
 const isCollapsed = computed(() => {
   if (typeof props.collapsed === 'boolean') {
@@ -365,8 +413,12 @@ const streakDays = computed(() => {
   if (typeof props.streakDays === 'number') {
     return props.streakDays
   }
-  return analyticsStore.streakDays || 0
+  return gamificationStore.streakDays || analyticsStore.streakDays || 0
 })
+
+const currentHouseInfo = computed(() => gamificationStore.currentHouseInfo)
+const studentContribution = computed(() => gamificationStore.studentContribution || 0)
+const unlockedCount = computed(() => gamificationStore.unlockedCount || 0)
 
 const todayListeningSeconds = computed(() => {
   if (typeof props.todayListeningSeconds === 'number') {
@@ -481,6 +533,14 @@ function handleItemClick(item) {
 function handleToggleCollapse() {
   navigationStore.toggleCollapsed()
   emit('toggle-collapse', navigationStore.isCollapsed)
+}
+
+function handleOpenHouseCup() {
+  emit('open-house-cup')
+}
+
+function handleOpenBadges() {
+  emit('open-badges')
 }
 
 function handleAnalyticsClick() {
