@@ -546,6 +546,7 @@ function handleToggleCollapse() {
 }
 
 function handleOpenHouseCup() {
+  handleSelectView('house_cup')
   emit('open-house-cup')
 }
 

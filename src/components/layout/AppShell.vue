@@ -80,6 +80,7 @@
           <StoragePageView v-else-if="navStore.currentView === 'storage'" />
           <BadgesPageView v-else-if="navStore.currentView === 'badges'" />
           <CloudSyncPageView v-else-if="navStore.currentView === 'sync'" />
+          <HouseCupPageView v-else-if="navStore.currentView === 'house_cup'" @open-sorting="openSorting" @back="closeHouseCup" />
           <slot v-else />
         </main>
 
@@ -170,6 +171,7 @@ import AnalyticsPageView from '../views/AnalyticsPageView.vue'
 import StoragePageView from '../views/StoragePageView.vue'
 import BadgesPageView from '../views/BadgesPageView.vue'
 import CloudSyncPageView from '../views/CloudSyncPageView.vue'
+import HouseCupPageView from '../views/HouseCupPageView.vue'
 
 const props = defineProps({
   currentChapterTitle: {
@@ -295,11 +297,21 @@ function closeShortcuts() {
 }
 
 function openHouseCup() {
-  isHouseCupOpen.value = true
+  if (player.isBookshelfOpen) {
+    player.toggleBookshelf(false)
+  }
+  if (navStore.currentView && !['vocab', 'analytics', 'storage', 'bookshelf', 'badges', 'sync', 'house_cup'].includes(navStore.currentView)) {
+    previousView = navStore.currentView
+  }
+  isHouseCupOpen.value = false
+  navStore.setView('house_cup')
 }
 
 function closeHouseCup() {
   isHouseCupOpen.value = false
+  if (navStore.currentView === 'house_cup') {
+    navStore.setView(previousView || 'player')
+  }
 }
 
 function openBadges() {

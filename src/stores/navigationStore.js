@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-export const VALID_VIEWS = ['bookshelf', 'player', 'ted', 'vocab', 'analytics', 'storage', 'assessment', 'badges', 'sync']
+export const VALID_VIEWS = ['bookshelf', 'player', 'ted', 'vocab', 'analytics', 'storage', 'assessment', 'badges', 'sync', 'house_cup']
 export const COLLAPSED_KEY = 'hp_sidebar_collapsed'
 
 export const useNavigationStore = defineStore('navigation', {

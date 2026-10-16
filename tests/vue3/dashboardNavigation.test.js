@@ -44,10 +44,24 @@ describe('Dashboard Navigation Architecture Verification', () => {
       const emojiMatches = content.match(/\p{Extended_Pictographic}/gu)
       assert.strictEqual(emojiMatches, null, 'Must contain zero Unicode emoji characters')
     })
+
+    test('HouseCupPageView.vue exists, renders gemstone hourglasses, leaderboard, personal contribution, and Apple HIG touch targets', () => {
+      const content = readComponent('src/components/views/HouseCupPageView.vue')
+      assert.ok(content.includes('bg-[#fbf9f5]'), 'Must declare warm parchment canvas')
+      assert.ok(content.includes('border-[#e8ddd0]'), 'Must declare standard parchment border')
+      assert.ok(content.includes('霍格沃茨学院杯'), 'Must declare House Cup title')
+      assert.ok(content.includes('fourHourglasses'), 'Must compute gemstone hourglasses')
+      assert.ok(content.includes('houseRankings'), 'Must render house rankings')
+      assert.ok(content.includes('studentContribution'), 'Must render student contribution')
+      assert.ok(content.includes('min-h-[44px]'), 'Must enforce Apple HIG 44px touch targets')
+      assert.ok(content.includes('touch-manipulation'), 'Must include touch-manipulation')
+      const emojiMatches = content.match(/\p{Extended_Pictographic}/gu)
+      assert.strictEqual(emojiMatches, null, 'Must contain zero Unicode emoji characters')
+    })
   })
 
   describe('2. AppShell clean page view routing without redundant popups', () => {
-    test('AppShell renders BookshelfPageView, VocabularyPageView, AnalyticsPageView, StoragePageView, BadgesPageView, CloudSyncPageView without modal watcher triggers', () => {
+    test('AppShell renders BookshelfPageView, VocabularyPageView, AnalyticsPageView, StoragePageView, BadgesPageView, CloudSyncPageView, HouseCupPageView without modal watcher triggers', () => {
       const content = readComponent('src/components/layout/AppShell.vue')
       
       // Main stage view mounting
@@ -57,6 +71,8 @@ describe('Dashboard Navigation Architecture Verification', () => {
       assert.ok(content.includes('<StoragePageView'), 'AppShell must mount StoragePageView')
       assert.ok(content.includes('<BadgesPageView'), 'AppShell must mount BadgesPageView')
       assert.ok(content.includes('<CloudSyncPageView'), 'AppShell must mount CloudSyncPageView')
+      assert.ok(content.includes('<HouseCupPageView'), 'AppShell must mount HouseCupPageView')
+      assert.ok(content.includes("navStore.currentView === 'house_cup'"), 'AppShell must route house_cup to HouseCupPageView')
       
       // StepTabBar only for player view
       assert.ok(
