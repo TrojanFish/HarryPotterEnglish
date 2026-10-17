@@ -433,12 +433,16 @@ export function parseBilingualVtt(vttText) {
 
   const normalized = vttText.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n')
   const blocks = normalized.split(/\n\s*\n/)
-  const allCues = []
 
   const timeRegex = /((?:(\d{1,2}):)?(\d{2}):(\d{2})[.,](\d{3}))\s*-->\s*((?:(\d{1,2}):)?(\d{2}):(\d{2})[.,](\d{3}))/
+  const chineseRegex = /[\u4e00-\u9fff]/
+
+  const enCues = []
+  const zhCues = []
+  const singleLangCues = []
 
   for (const block of blocks) {
-    const lines = block.split('\n').map(l => l.trim()).filter(Boolean)
+    const lines = block.split('\n').map((l) => l.trim()).filter(Boolean)
     if (!lines.length) continue
     if (lines[0].startsWith('WEBVTT') || lines[0].startsWith('NOTE')) continue
 
@@ -454,42 +458,54 @@ export function parseBilingualVtt(vttText) {
     const match = lines[timeIndex].match(timeRegex)
     const startTime = parseVttTime(match[1])
     const endTime = parseVttTime(match[6])
-    const textLines = lines.slice(timeIndex + 1)
-    const text = textLines.join(' ').replace(/<\/?[^>]+(>|$)/g, '').trim()
-    if (text) {
-      allCues.push({ startTime, endTime, text })
+    const textLines = lines
+      .slice(timeIndex + 1)
+      .map((l) => l.replace(/<\/?[^>]+(>|$)/g, '').trim())
+      .filter(Boolean)
+
+    if (!textLines.length) continue
+
+    const zhLines = textLines.filter((l) => chineseRegex.test(l))
+    const enLines = textLines.filter((l) => !chineseRegex.test(l))
+
+    // Case 1: The block itself contains BOTH English and Chinese lines (Standard TED / Whisper bilingual format)
+    if (zhLines.length > 0 && enLines.length > 0) {
+      const enText = enLines.join(' ')
+      const zhText = zhLines.join(' ')
+      enCues.push({ startTime, endTime, text: enText, zh: zhText })
+      zhCues.push({ startTime, endTime, text: zhText })
+    } else if (zhLines.length > 0) {
+      singleLangCues.push({ startTime, endTime, text: zhLines.join(' '), isZh: true })
+    } else {
+      singleLangCues.push({ startTime, endTime, text: enLines.join(' '), isZh: false })
     }
   }
 
-  const enCues = []
-  const zhCues = []
-  const chineseRegex = /[\u4e00-\u9fff]/
-
+  // Case 2: Process separate consecutive single-language cues (Separate blocks with matching timestamps)
   let i = 0
-  while (i < allCues.length) {
-    const current = allCues[i]
-    const next = allCues[i + 1]
+  while (i < singleLangCues.length) {
+    const current = singleLangCues[i]
+    const next = singleLangCues[i + 1]
 
-    if (next && Math.abs(current.startTime - next.startTime) < 0.1 && Math.abs(current.endTime - next.endTime) < 0.1) {
-      const currentIsZh = chineseRegex.test(current.text)
-      const nextIsZh = chineseRegex.test(next.text)
-
-      if (currentIsZh && !nextIsZh) {
-        zhCues.push(current)
-        enCues.push(next)
-      } else if (!currentIsZh && nextIsZh) {
-        enCues.push(current)
-        zhCues.push(next)
+    if (next && Math.abs(current.startTime - next.startTime) < 0.2) {
+      if (current.isZh && !next.isZh) {
+        zhCues.push({ startTime: current.startTime, endTime: current.endTime, text: current.text })
+        enCues.push({ startTime: next.startTime, endTime: next.endTime, text: next.text, zh: current.text })
+      } else if (!current.isZh && next.isZh) {
+        enCues.push({ startTime: current.startTime, endTime: current.endTime, text: current.text, zh: next.text })
+        zhCues.push({ startTime: next.startTime, endTime: next.endTime, text: next.text })
       } else {
-        enCues.push(current)
-        zhCues.push(next)
+        if (current.isZh) zhCues.push(current)
+        else enCues.push(current)
+        if (next.isZh) zhCues.push(next)
+        else enCues.push(next)
       }
       i += 2
     } else {
-      if (chineseRegex.test(current.text)) {
-        zhCues.push(current)
+      if (current.isZh) {
+        zhCues.push({ startTime: current.startTime, endTime: current.endTime, text: current.text })
       } else {
-        enCues.push(current)
+        enCues.push({ startTime: current.startTime, endTime: current.endTime, text: current.text })
       }
       i += 1
     }

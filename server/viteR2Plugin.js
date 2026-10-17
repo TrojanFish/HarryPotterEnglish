@@ -73,10 +73,25 @@ export function r2DevPlugin() {
 
     // 2. Subtitle VTT Endpoint
     if (url.startsWith('/api/subtitles/')) {
-      if (!s3Client) return next()
       let key = decodeURIComponent(url.replace('/api/subtitles/', '').split('?')[0])
       if (!key.endsWith('.vtt')) key = `${key}.vtt`
       key = key.replace(/^\/+/, '')
+
+      // Local content fallback: check local filesystem first
+      const localFilePath = path.resolve(process.cwd(), 'content', key)
+      if (fs.existsSync(localFilePath)) {
+        try {
+          const text = fs.readFileSync(localFilePath, 'utf8')
+          res.setHeader('Content-Type', 'text/vtt; charset=utf-8')
+          res.setHeader('Cache-Control', 'public, max-age=86400')
+          res.end(text)
+          return
+        } catch (readErr) {
+          console.warn('[Vite R2 Dev] Error reading local subtitle:', localFilePath, readErr.message)
+        }
+      }
+
+      if (!s3Client) return next()
 
       try {
         const command = new GetObjectCommand({ Bucket: bucketName, Key: key })

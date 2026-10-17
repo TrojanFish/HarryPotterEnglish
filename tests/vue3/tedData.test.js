@@ -67,4 +67,29 @@ describe('parseBilingualVtt', () => {
     assert.equal(zhCues.length, 1)
     assert.equal(zhCues[0].text, 'BOM测试')
   })
+
+  it('correctly parses single-block bilingual cues with English and Chinese on separate lines', () => {
+    const vtt = `WEBVTT\n\n00:00:01.000 --> 00:00:04.000\n400 years ago, modern-day Tokyo was known as Edo\n400 年前，现代的东京被称为江户\n`
+    const { enCues, zhCues } = parseBilingualVtt(vtt)
+    assert.equal(enCues.length, 1, 'Must extract English cue')
+    assert.equal(zhCues.length, 1, 'Must extract Chinese cue')
+    assert.equal(enCues[0].text, '400 years ago, modern-day Tokyo was known as Edo')
+    assert.equal(zhCues[0].text, '400 年前，现代的东京被称为江户')
+    assert.equal(enCues[0].zh, '400 年前，现代的东京被称为江户')
+  })
+
+  it('correctly parses full Japan Collapse TED talk VTT with 69 bilingual cues', async () => {
+    const fs = await import('node:fs')
+    const path = await import('node:path')
+    const vttPath = path.resolve('content/ted/20260106-how-japan-saved-its-biggest-city-from-collapse-roman/subtitle.vtt')
+    if (fs.existsSync(vttPath)) {
+      const vtt = fs.readFileSync(vttPath, 'utf-8')
+      const { enCues, zhCues } = parseBilingualVtt(vtt)
+      assert.equal(enCues.length, 69, 'Must parse all 69 English cues')
+      assert.equal(zhCues.length, 69, 'Must parse all 69 Chinese cues')
+      assert.ok(enCues[0].text.includes('400 years ago'), 'First English cue matches')
+      assert.ok(zhCues[0].text.includes('400 年前'), 'First Chinese cue matches')
+      assert.ok(enCues[0].zh.includes('400 年前'), 'English cue holds direct zh field')
+    }
+  })
 })

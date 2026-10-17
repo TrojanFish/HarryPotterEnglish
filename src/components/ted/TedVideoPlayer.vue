@@ -559,6 +559,9 @@ watch(
 
 function getZhText(index, cue) {
   if (!cue) return ''
+  // 0. Direct bilingual cue property if parsed together
+  if (cue.zh) return cue.zh
+  if (cue.translation) return cue.translation
   // 1. Proximity matching
   const match = zhCues.value.find(
     (zh) => Math.abs(zh.startTime - cue.startTime) < 0.35

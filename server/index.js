@@ -679,10 +679,6 @@ app.get('/api/ted/talks', catalogLimiter, async (req, res) => {
 
 // 2. High-speed Subtitle VTT endpoint (In-Memory Hot Cache < 1ms)
 app.get('/api/subtitles/*', async (req, res) => {
-  if (!s3Client) {
-    return res.status(503).json({ error: 'R2 not configured' });
-  }
-
   let key = req.params[0];
   if (!key.endsWith('.vtt')) key = `${key}.vtt`;
 
@@ -694,6 +690,27 @@ app.get('/api/subtitles/*', async (req, res) => {
       'X-Cache': 'HIT-MEMORY',
     });
     return res.send(subtitleCache.get(key));
+  }
+
+  // Local filesystem content fallback (e.g. content/ted/...)
+  const localFilePath = path.resolve(process.cwd(), 'content', key);
+  if (fs.existsSync(localFilePath)) {
+    try {
+      const vttContent = fs.readFileSync(localFilePath, 'utf8');
+      subtitleCache.set(key, vttContent);
+      res.set({
+        'Content-Type': 'text/vtt; charset=utf-8',
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=3600',
+        'X-Cache': 'HIT-LOCAL',
+      });
+      return res.send(vttContent);
+    } catch (readErr) {
+      console.warn('[Server Subtitles] Error reading local file:', localFilePath, readErr);
+    }
+  }
+
+  if (!s3Client) {
+    return res.status(503).json({ error: 'R2 not configured' });
   }
 
   try {
