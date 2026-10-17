@@ -105,7 +105,7 @@ class TestAppModule(unittest.TestCase):
         device, badge = app.detect_device()
         self.assertIn(device, ["cuda", "cpu"])
         self.assertTrue(badge.startswith("[") and badge.endswith("]"), f"Badge should be bracketed text: {badge}")
-        self.assertFalse(any(char in badge for char in ["⚡", "💻", "🚀", "⚠️", "❌", "✅"]))
+        self.assertIsNone(EMOJI_PATTERN.search(badge), f"Badge should contain no emojis: {badge}")
 
     def test_derive_id_and_title(self):
         """Verify derive_id and derive_title functions produce clean strings."""

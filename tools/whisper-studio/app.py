@@ -503,7 +503,9 @@ def build_ui(mock_mode: bool = False) -> gr.Blocks:
                             label="Force Overwrite Existing Items",
                             value=False
                         )
-                        start_batch_btn = gr.Button("Start Batch Processing", variant="primary")
+                        with gr.Row():
+                            start_batch_btn = gr.Button("Start Batch Processing", variant="primary")
+                            stop_batch_btn = gr.Button("Stop Batch Processing", variant="stop")
 
                     with gr.Column(scale=1):
                         batch_log_box = gr.Textbox(
@@ -530,7 +532,7 @@ def build_ui(mock_mode: bool = False) -> gr.Blocks:
                         mock_mode=mock_mode
                     )
 
-                start_batch_btn.click(
+                batch_event = start_batch_btn.click(
                     fn=_run_batch,
                     inputs=[
                         folder_path_input,
@@ -542,6 +544,7 @@ def build_ui(mock_mode: bool = False) -> gr.Blocks:
                     ],
                     outputs=[batch_log_box]
                 )
+                stop_batch_btn.click(fn=None, cancels=[batch_event])
 
     return demo
 
