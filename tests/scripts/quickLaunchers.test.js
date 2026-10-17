@@ -2,7 +2,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,7 +23,16 @@ describe('Windows Quick Launcher Suite', () => {
     assert.ok(content.includes('http://localhost:7860'), 'Must reference Gradio port 7860');
     assert.ok(content.includes('tools/whisper-studio/app.py') || content.includes('tools\\whisper-studio\\app.py'), 'Must reference whisper app');
     assert.ok(content.includes('runLauncher'), 'Must export or define runLauncher function');
+    assert.ok(content.includes('findPythonCommand'), 'Must implement findPythonCommand');
     assert.equal(EMOJI_REGEX.test(content), false, 'Must contain zero Unicode emojis');
+  });
+
+  test('scripts/launcher.js findPythonCommand dynamically finds python with gradio', async () => {
+    const { findPythonCommand } = await import(pathToFileURL(launcherJs).href);
+    assert.equal(typeof findPythonCommand, 'function', 'findPythonCommand must be a function');
+    const pythonCmd = findPythonCommand();
+    assert.ok(pythonCmd && typeof pythonCmd === 'string', 'Must return a valid python command string');
+    assert.ok(pythonCmd.length > 0, 'Python command must not be empty');
   });
 
   test('启动器.bat is pure ASCII wrapper to avoid CMD CP936 encoding bugs', async () => {
