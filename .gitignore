@@ -46,3 +46,9 @@ tools/whisper-studio/**/__pycache__/
 tools/whisper-studio/**/*.pyc
 tools/whisper-studio/models/
 tools/whisper-studio/temp/
+
+# Content media & local generated content suites (synced to Cloudflare R2, not stored in git)
+content/ted/*
+content/podcasts/*
+
+

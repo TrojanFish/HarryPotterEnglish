@@ -65,6 +65,11 @@ except ImportError:
     mock_gr.Dropdown = MockComponent
     mock_gr.Checkbox = MockComponent
     mock_gr.Button = MockComponent
+    mock_gr.Video = MockComponent
+    mock_gr.Audio = MockComponent
+    mock_gr.JSON = MockComponent
+    mock_gr.Accordion = MockComponent
+    mock_gr.Group = MockComponent
     mock_gr.update = lambda **kwargs: kwargs
 
     sys.modules["gradio"] = mock_gr
@@ -255,6 +260,54 @@ class TestAppModule(unittest.TestCase):
         ]
         for elem in expected_elements:
             self.assertIn(elem, content, f"app.py must contain Tab 3 element: {elem}")
+
+    def test_transcribe_and_export_single_with_artifacts_preview(self):
+        """Verify transcribe_and_export_single returns artifacts dictionary when return_artifacts=True."""
+        import app
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            content_root = os.path.join(tmp_dir, "content")
+            dummy_media = os.path.join(tmp_dir, "sample_talk.mp4")
+            with open(dummy_media, "wb") as f:
+                f.write(b"\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00isommp42")
+
+            log_output, summary_output, artifacts = app.transcribe_and_export_single(
+                media_file=dummy_media,
+                target_type="ted",
+                content_id="sample-talk",
+                title="Sample Talk",
+                model_size="base",
+                translation_engine="none",
+                mock_mode=True,
+                content_root=content_root,
+                return_artifacts=True
+            )
+            self.assertIn("[SUCCESS]", summary_output)
+            self.assertIsInstance(artifacts, dict)
+            self.assertIn("target_dir", artifacts)
+            self.assertIn("media_path", artifacts)
+            self.assertIn("vtt_path", artifacts)
+            self.assertIn("vtt_content", artifacts)
+            self.assertIn("meta_json", artifacts)
+            self.assertTrue(os.path.exists(artifacts["media_path"]))
+            self.assertIn("WEBVTT", artifacts["vtt_content"])
+            self.assertEqual(artifacts["meta_json"]["id"], "sample-talk")
+
+    def test_app_source_contains_preview_components(self):
+        """Verify app.py source includes artifacts preview components and bilingual VTT viewer."""
+        app_path = os.path.join(STUDIO_ROOT, "app.py")
+        with open(app_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        preview_keywords = [
+            "本地生成产物实时预览窗",
+            "生成双语 WebVTT 字幕",
+            "元数据规格预览",
+            "preview_vtt",
+            "preview_video",
+            "preview_audio"
+        ]
+        for kw in preview_keywords:
+            self.assertIn(kw, content, f"app.py must contain preview element: {kw}")
 
 
 if __name__ == "__main__":

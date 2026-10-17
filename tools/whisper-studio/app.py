@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import json
 import argparse
 from typing import Optional, List, Dict, Any, Tuple, Generator
 
@@ -97,18 +98,22 @@ def transcribe_and_export_single(
     gemini_api_key: str = "",
     force_overwrite: bool = False,
     mock_mode: bool = False,
-    content_root: str = "content"
-) -> Tuple[str, str]:
+    content_root: str = "content",
+    return_artifacts: bool = False
+) -> Tuple[Any, ...]:
     """
     Processes a single media file: runs faster-whisper, sentence splitting,
     bilingual translation, and exports standard Hogwarts suite.
+    Optionally returns artifacts dictionary containing media_path, vtt_content, and meta_json.
     """
     if not media_file:
-        return "[ERROR] 未提供任何媒体文件。", "[ERROR] 转写终止：缺少媒体文件。"
+        err_res = ("[ERROR] 未提供任何媒体文件。", "[ERROR] 转写终止：缺少媒体文件。")
+        return (*err_res, {}) if return_artifacts else err_res
 
     media_path = media_file.name if hasattr(media_file, "name") else str(media_file)
     if not os.path.exists(media_path):
-        return f"[ERROR] 找不到媒体文件: {media_path}", "[ERROR] 转写终止：文件不存在。"
+        err_res = (f"[ERROR] 找不到媒体文件: {media_path}", "[ERROR] 转写终止：文件不存在。")
+        return (*err_res, {}) if return_artifacts else err_res
 
     type_key = "ted" if "ted" in str(target_type).lower() else "podcast"
     content_id = (content_id or "").strip() or derive_id(media_path)
@@ -137,7 +142,8 @@ def transcribe_and_export_single(
     except Exception as exc:
         err_msg = f"[ERROR] 语音识别失败: {str(exc)}"
         logs.append(err_msg)
-        return "\n".join(logs), f"[ERROR] 转写阶段发生异常:\n{str(exc)}"
+        err_res = ("\n".join(logs), f"[ERROR] 转写阶段发生异常:\n{str(exc)}")
+        return (*err_res, {}) if return_artifacts else err_res
 
     # Step 2: Translation
     if engine_key != "none":
@@ -178,7 +184,8 @@ def transcribe_and_export_single(
     except Exception as exc:
         err_msg = f"[ERROR] 套件导出失败: {str(exc)}"
         logs.append(err_msg)
-        return "\n".join(logs), f"[ERROR] 导出过程发生异常:\n{str(exc)}"
+        err_res = ("\n".join(logs), f"[ERROR] 导出过程发生异常:\n{str(exc)}")
+        return (*err_res, {}) if return_artifacts else err_res
 
     if result.get("success"):
         logs.append("[INFO] 内容入库全部完成！")
@@ -194,6 +201,43 @@ def transcribe_and_export_single(
             summary_lines.append(f"  + {path}")
         summary_lines.append("全站内容清单重编: [OK]")
 
+        # Assemble artifacts dictionary for UI preview
+        artifacts: Dict[str, Any] = {
+            "target_dir": target_dir,
+            "media_path": "",
+            "media_type": "video" if type_key == "ted" else "audio",
+            "vtt_path": "",
+            "vtt_content": "",
+            "meta_path": "",
+            "meta_json": {}
+        }
+        for file_path in created_files:
+            lower = file_path.lower()
+            if lower.endswith((".mp4", ".webm", ".mkv")):
+                artifacts["media_path"] = file_path
+                artifacts["media_type"] = "video"
+            elif lower.endswith((".mp3", ".m4a", ".wav", ".aac", ".ogg", ".flac")):
+                artifacts["media_path"] = file_path
+                artifacts["media_type"] = "audio"
+            elif lower.endswith(".vtt"):
+                artifacts["vtt_path"] = file_path
+                try:
+                    with open(file_path, "r", encoding="utf-8") as vf:
+                        artifacts["vtt_content"] = vf.read()
+                except Exception:
+                    pass
+            elif lower.endswith("meta.json"):
+                is_in_target = os.path.normcase(os.path.abspath(os.path.dirname(file_path))) == os.path.normcase(os.path.abspath(target_dir))
+                if is_in_target or not artifacts["meta_path"]:
+                    artifacts["meta_path"] = file_path
+                    try:
+                        with open(file_path, "r", encoding="utf-8") as mf:
+                            artifacts["meta_json"] = json.load(mf)
+                    except Exception:
+                        pass
+
+        if return_artifacts:
+            return "\n".join(logs), "\n".join(summary_lines), artifacts
         return "\n".join(logs), "\n".join(summary_lines)
     else:
         logs.append("[ERROR] 套件合成出现错误。")
@@ -202,7 +246,8 @@ def transcribe_and_export_single(
             "[ERROR] 套件导出失败:",
             *[f"  - {err}" for err in err_list]
         ]
-        return "\n".join(logs), "\n".join(summary_lines)
+        err_res = ("\n".join(logs), "\n".join(summary_lines))
+        return (*err_res, {}) if return_artifacts else err_res
 
 
 def scan_batch_folder(folder_path: str) -> str:
@@ -513,18 +558,44 @@ def build_ui(mock_mode: bool = False) -> gr.Blocks:
                             variant="primary"
                         )
 
-                    # Right Column: Output Logs & Summary
+                    # Right Column: Output Logs & Summary & Artifacts Previewer
                     with gr.Column(scale=1):
                         single_log_box = gr.Textbox(
                             label="实时转写与处理日志",
-                            lines=14,
+                            lines=10,
                             interactive=False
                         )
                         single_summary_box = gr.Textbox(
                             label="内容入库结果摘要",
-                            lines=6,
+                            lines=4,
                             interactive=False
                         )
+
+                        with gr.Accordion("本地生成产物实时预览窗", open=True):
+                            preview_video = gr.Video(
+                                label="生成媒体在线预览 (视频)",
+                                visible=False,
+                                interactive=False,
+                                elem_id="preview_video"
+                            )
+                            preview_audio = gr.Audio(
+                                label="生成媒体在线预览 (音频)",
+                                visible=False,
+                                interactive=False,
+                                elem_id="preview_audio"
+                            )
+                            preview_vtt = gr.Textbox(
+                                label="生成双语 WebVTT 字幕实时预览 (中英双语对照)",
+                                lines=10,
+                                interactive=False,
+                                visible=False,
+                                elem_id="preview_vtt"
+                            )
+                            preview_meta = gr.JSON(
+                                label="元数据规格预览 (meta.json)",
+                                visible=False,
+                                elem_id="preview_meta"
+                            )
 
                 # Tab 1 Event Bindings
                 media_input.change(
@@ -558,7 +629,7 @@ def build_ui(mock_mode: bool = False) -> gr.Blocks:
                 )
 
                 def _run_single(media, t_type, c_id, ttl, spk, chp, aut, nar, mdl, cmp, trn, g_key, frc):
-                    return transcribe_and_export_single(
+                    log_res, summary_res, artifacts = transcribe_and_export_single(
                         media_file=media,
                         target_type=t_type,
                         content_id=c_id,
@@ -572,7 +643,38 @@ def build_ui(mock_mode: bool = False) -> gr.Blocks:
                         translation_engine=trn,
                         gemini_api_key=g_key,
                         force_overwrite=frc,
-                        mock_mode=mock_mode
+                        mock_mode=mock_mode,
+                        return_artifacts=True
+                    )
+
+                    video_update = gr.update(value=None, visible=False)
+                    audio_update = gr.update(value=None, visible=False)
+                    vtt_update = gr.update(value="", visible=False)
+                    meta_update = gr.update(value=None, visible=False)
+
+                    if artifacts and artifacts.get("target_dir"):
+                        m_type = artifacts.get("media_type")
+                        m_path = artifacts.get("media_path")
+                        if m_type == "video" and m_path and os.path.exists(m_path):
+                            video_update = gr.update(value=m_path, visible=True)
+                        elif m_path and os.path.exists(m_path):
+                            audio_update = gr.update(value=m_path, visible=True)
+
+                        vtt_content = artifacts.get("vtt_content", "")
+                        if vtt_content:
+                            vtt_update = gr.update(value=vtt_content, visible=True)
+
+                        meta_obj = artifacts.get("meta_json")
+                        if meta_obj:
+                            meta_update = gr.update(value=meta_obj, visible=True)
+
+                    return (
+                        log_res,
+                        summary_res,
+                        video_update,
+                        audio_update,
+                        vtt_update,
+                        meta_update
                     )
 
                 start_single_btn.click(
@@ -592,7 +694,14 @@ def build_ui(mock_mode: bool = False) -> gr.Blocks:
                         gemini_api_key_input,
                         force_checkbox
                     ],
-                    outputs=[single_log_box, single_summary_box]
+                    outputs=[
+                        single_log_box,
+                        single_summary_box,
+                        preview_video,
+                        preview_audio,
+                        preview_vtt,
+                        preview_meta
+                    ]
                 )
 
             # Tab 2: Batch Folder Studio
