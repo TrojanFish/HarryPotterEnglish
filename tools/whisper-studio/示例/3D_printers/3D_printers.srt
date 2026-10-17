@@ -1,0 +1,392 @@
+1
+00:00:00,000 --> 00:00:02,819
+This is a download from BBC Learning English.
+
+2
+00:00:03,100 --> 00:00:05,419
+To find out more, visit our website.
+
+3
+00:00:12,099 --> 00:00:15,539
+Hello, this is 6 Minute English from BBC Learning English.
+
+4
+00:00:15,640 --> 00:00:16,440
+I'm Sam.
+
+5
+00:00:16,500 --> 00:00:17,379
+And I'm Neil.
+
+6
+00:00:17,679 --> 00:00:23,379
+In 1436 in Germany, Johannes Gutenberg invented the printing press,
+
+7
+00:00:23,579 --> 00:00:28,399
+a machine capable of making many copies of the same page of text.
+
+8
+00:00:28,399 --> 00:00:32,920
+Ever since, printing has been used around the world to produce books,
+
+9
+00:00:33,299 --> 00:00:34,960
+newspapers and magazines.
+
+10
+00:00:35,240 --> 00:00:38,960
+Printing technology has come a long way since Gutenberg's time,
+
+11
+00:00:39,140 --> 00:00:44,259
+but even today's most advanced laser printers have only printed flat,
+
+12
+00:00:44,560 --> 00:00:47,320
+two-dimensional objects until now.
+
+13
+00:00:47,460 --> 00:00:52,240
+In this programme, we're discussing 3D printers, printers which can build solid,
+
+14
+00:00:52,259 --> 00:00:57,000
+three-dimensional objects out of a variety of materials, including plastic,
+
+15
+00:00:57,299 --> 00:00:58,420
+concrete and metal.
+
+16
+00:00:58,619 --> 00:01:03,060
+Now, Neil, when you say a printer that can make solid objects,
+
+17
+00:01:03,259 --> 00:01:06,040
+I guess you're not talking about a normal printer.
+
+18
+00:01:06,280 --> 00:01:07,200
+That's right, Sam.
+
+19
+00:01:07,420 --> 00:01:12,359
+These large and complex 3D printers work in a completely different way.
+
+20
+00:01:12,579 --> 00:01:17,939
+Unlike a sculptor who chips away at a block of stone to reveal a shape underneath,
+
+21
+00:01:17,939 --> 00:01:24,239
+3D printers work in the opposite way, building up physical objects by adding material
+
+22
+00:01:24,239 --> 00:01:25,640
+layer on layer.
+
+23
+00:01:25,879 --> 00:01:31,519
+And the ability to print objects in this way is providing solutions to many problems,
+
+24
+00:01:31,519 --> 00:01:33,280
+as we'll be finding out.
+
+25
+00:01:33,400 --> 00:01:35,299
+But first I have a question for you, Neil.
+
+26
+00:01:35,640 --> 00:01:41,260
+Before Johannes Gutenberg invented his printing press, copies of texts were made by block
+
+27
+00:01:41,260 --> 00:01:45,060
+printing, using hand-carved wooden blocks pressed into ink.
+
+28
+00:01:45,060 --> 00:01:49,500
+So, what was the oldest known text to be printed this way?
+
+29
+00:01:49,659 --> 00:01:55,239
+Was it A, a religious teaching, B, a cooking recipe, or C, a love letter?
+
+30
+00:01:55,400 --> 00:01:57,519
+I think it might have been a recipe.
+
+31
+00:01:57,859 --> 00:02:00,780
+OK, Neil, I'll reveal the answer later in the programme.
+
+32
+00:02:01,019 --> 00:02:06,359
+The idea of printing solid objects is not new, but it was only after the millennium that
+
+33
+00:02:06,359 --> 00:02:09,300
+tech companies began to realise how it could be done.
+
+34
+00:02:09,620 --> 00:02:14,580
+Here's Professor Mark Miodovnik, a material scientist at University College London,
+
+35
+00:02:15,159 --> 00:02:19,259
+explaining more to BBC World Service programme, People Fixing the World.
+
+36
+00:02:19,879 --> 00:02:24,500
+As the millennium turned, patents expired, and that meant people started making really
+
+37
+00:02:24,500 --> 00:02:27,740
+cheap 3D printers, and people started mucking about with them
+
+38
+00:02:27,740 --> 00:02:30,419
+and going, hold on a minute, it's not just an industrial tool,
+
+39
+00:02:30,620 --> 00:02:33,560
+you can put them in schools, you can put them in universities.
+
+40
+00:02:33,780 --> 00:02:36,219
+Oh, it's actually really great for prototyping.
+
+41
+00:02:36,460 --> 00:02:39,599
+And then people got excited about it, and it became the answer to everything.
+
+42
+00:02:40,319 --> 00:02:41,680
+Was going to be 3D printed.
+
+43
+00:02:41,680 --> 00:02:46,120
+After the year 2000, 3D printers suddenly got much cheaper,
+
+44
+00:02:46,120 --> 00:02:51,539
+and tech companies started mucking about with them, spending time playing with them in
+
+45
+00:02:51,539 --> 00:02:52,340
+a fun way.
+
+46
+00:02:52,379 --> 00:02:55,379
+They realised that 3D printers had many uses.
+
+47
+00:02:55,740 --> 00:03:00,259
+For example, they discovered that 3D printers were great at making prototypes,
+
+48
+00:03:00,680 --> 00:03:05,620
+models of a product that can be tested, improved and used to develop better products.
+
+49
+00:03:05,620 --> 00:03:09,659
+Professor Miodovnik thinks these tech companies were surprised at how
+
+50
+00:03:09,659 --> 00:03:11,419
+useful 3D printing was.
+
+51
+00:03:11,699 --> 00:03:17,360
+He uses the phrase, hold on a minute, to express this surprise or disbelief.
+
+52
+00:03:17,520 --> 00:03:22,680
+In fact, it turned out that 3D printers were excellent at making bespoke things,
+
+53
+00:03:23,080 --> 00:03:26,259
+objects which are made specially for a particular person.
+
+54
+00:03:26,900 --> 00:03:31,819
+One area which 3D printing dramatically improved was medical prosthetics,
+
+55
+00:03:31,819 --> 00:03:36,680
+artificial body parts made specially for someone who has lost an arm,
+
+56
+00:03:36,819 --> 00:03:38,680
+a leg or a foot, for example.
+
+57
+00:03:38,900 --> 00:03:43,560
+In 2021, Stephen Verz, who lost an eye in a childhood accident,
+
+58
+00:03:43,879 --> 00:03:48,780
+became the first person to be fitted with a 3D printed prosthetic eye.
+
+59
+00:03:49,039 --> 00:03:53,099
+It's prosthetic, so the new eye doesn't restore Stephen's sight,
+
+60
+00:03:53,280 --> 00:03:55,719
+but it has boosted his confidence.
+
+61
+00:03:56,379 --> 00:04:02,219
+Surgeon Mandeep Sagu led the team at Morsefield Hospital that operated on Stephen's eye.
+
+62
+00:04:02,479 --> 00:04:07,400
+Here he is explaining more to BBC World Service's People Fixing the World.
+
+63
+00:04:07,620 --> 00:04:11,680
+In many countries, particularly in the developed world, there are facilities for custom
+
+64
+00:04:11,680 --> 00:04:14,460
+making a prosthetic eye to match the other eye.
+
+65
+00:04:14,620 --> 00:04:19,180
+And that's an artisan process which is very time consuming
+
+66
+00:04:19,180 --> 00:04:22,699
+and requires real artistry on the part of the ocularist.
+
+67
+00:04:22,699 --> 00:04:25,959
+Is the person who fits the prosthetic eye.
+
+68
+00:04:26,120 --> 00:04:32,180
+And so what we have been developing is a technique to automate the whole process.
+
+69
+00:04:32,360 --> 00:04:36,379
+Even before 3D printers, prosthetic eyes were custom made,
+
+70
+00:04:36,560 --> 00:04:42,339
+a word similar to bespoke, which means specially made according to a particular person's
+
+71
+00:04:42,339 --> 00:04:43,139
+requirements.
+
+72
+00:04:43,379 --> 00:04:48,680
+But the traditional way of making artificial eyes by hand is very time consuming.
+
+73
+00:04:48,980 --> 00:04:50,939
+It takes a lot of time to do.
+
+74
+00:04:50,939 --> 00:04:55,980
+Nowadays, 3D printing can complete the whole process in just 30 minutes.
+
+75
+00:04:56,180 --> 00:04:58,540
+It's great to see technology helping people.
+
+76
+00:04:58,779 --> 00:05:03,279
+And amazing how far new inventions like 3D printers have come since
+
+77
+00:05:03,279 --> 00:05:05,120
+the days of Johannes Gutenberg.
+
+78
+00:05:05,279 --> 00:05:09,439
+Speaking of which, Neil, it's time to reveal the answer to my question.
+
+79
+00:05:09,699 --> 00:05:10,500
+Right.
+
+80
+00:05:10,199 --> 00:05:14,759
+You asked me about the earliest known text to have been printed using wooden blocks.
+
+81
+00:05:14,899 --> 00:05:17,779
+And I guessed it was a cooking recipe.
+
+82
+00:05:17,779 --> 00:05:18,939
+So was I right?
+
+83
+00:05:18,939 --> 00:05:21,519
+You were wrong, I'm afraid, Neil.
+
+84
+00:05:21,740 --> 00:05:25,959
+The oldest known wooden block print was actually a religious text,
+
+85
+00:05:26,220 --> 00:05:27,860
+the Buddha's Diamond Sutra.
+
+86
+00:05:28,180 --> 00:05:33,339
+OK, let's recap the vocabulary from this programme, starting with mucking about,
+
+87
+00:05:33,399 --> 00:05:38,420
+an informal way to say playing with something carelessly, not for a serious reason.
+
+88
+00:05:38,600 --> 00:05:42,740
+A prototype is a model of a product that can be tested, improved
+
+89
+00:05:42,740 --> 00:05:44,800
+and used to develop a better product.
+
+90
+00:05:44,800 --> 00:05:49,379
+The phrase hold on a minute can be used to express surprise or disbelief.
+
+91
+00:05:49,600 --> 00:05:53,740
+Prosthetics refer to artificial body parts such as arms, legs,
+
+92
+00:05:53,899 --> 00:05:57,860
+feet or eyes, which are used to replace a missing natural part.
+
+93
+00:05:58,000 --> 00:06:03,540
+The words bespoke and custom made describe something specially made for a particular
+
+94
+00:06:03,540 --> 00:06:04,340
+person.
+
+95
+00:06:04,379 --> 00:06:08,899
+And finally, if something is time consuming, it takes a lot of time to do.
+
+96
+00:06:09,199 --> 00:06:10,220
+Goodbye for now.
+
+97
+00:06:10,220 --> 00:06:11,020
+Goodbye.
+
+98
+00:06:11,459 --> 00:06:14,339
+Six Minute English from the BBC.
+

@@ -39,3 +39,10 @@ tests/*.compiled.js
 
 # Superpowers temporary workspace
 .superpowers/
+
+# Tools - Whisper Studio local secrets and caches
+tools/whisper-studio/api_keys.json
+tools/whisper-studio/**/__pycache__/
+tools/whisper-studio/**/*.pyc
+tools/whisper-studio/models/
+tools/whisper-studio/temp/
