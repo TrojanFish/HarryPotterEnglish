@@ -74,8 +74,9 @@ def format_bilingual_vtt(cues: List[Dict[str, Any]]) -> str:
     lines = ["WEBVTT - Hogwarts Audio Bilingual Subtitles", ""]
 
     for cue in cues:
-        start_sec = max(0.0, float(cue.get("start", 0.0)))
-        raw_end = float(cue.get("end", start_sec + 0.8))
+        start_sec = max(0.0, float(cue.get("start", 0.0) or 0.0))
+        cue_end = cue.get("end")
+        raw_end = float(cue_end) if cue_end is not None else (start_sec + 0.8)
         end_sec = max(raw_end, start_sec + 0.8)
 
         text = strip_emojis(cue.get("text", ""))
