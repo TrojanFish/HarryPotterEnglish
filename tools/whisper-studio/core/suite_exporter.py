@@ -67,20 +67,55 @@ def format_timestamp(seconds: float, force_hours: bool = False) -> str:
 def format_bilingual_vtt(cues: List[Dict[str, Any]]) -> str:
     """
     Assembles cue dictionaries into a compliant bilingual WebVTT subtitle stream.
-    Enforces minimum 0.8s duration per cue and strips any Unicode emojis.
+    Enforces minimum 0.8s duration per cue, merges orphan fragments, and strips any Unicode emojis.
     Line 1: English transcription
     Line 2: Chinese translation
     """
-    lines = ["WEBVTT - Hogwarts Audio Bilingual Subtitles", ""]
+    # Clean and merge orphan fragments (e.g. <= 2 words that continue previous sentence)
+    merged_cues: List[Dict[str, Any]] = []
+    sentence_end_punct = (".", "!", "?", "。", "！", "？")
 
     for cue in cues:
+        raw_text = strip_emojis(cue.get("text", "")).strip()
+        raw_trans = strip_emojis(cue.get("translation", "")).strip()
+        if not raw_text and not raw_trans:
+            continue
+
+        cue_copy = dict(cue)
+        cue_copy["text"] = raw_text
+        cue_copy["translation"] = raw_trans
+
+        if not merged_cues:
+            merged_cues.append(cue_copy)
+            continue
+
+        prev = merged_cues[-1]
+        prev_text = prev.get("text", "").strip()
+        prev_ends_sentence = prev_text.endswith(sentence_end_punct)
+        curr_words = raw_text.split()
+        curr_dur = float(cue.get("end", 0.0) or 0.0) - float(cue.get("start", 0.0) or 0.0)
+
+        # Merge trailing orphan fragment
+        if not prev_ends_sentence and (len(curr_words) <= 2 or (len(raw_text) < 16 and curr_dur < 1.6)):
+            prev["text"] = f"{prev_text} {raw_text}".strip()
+            prev["end"] = max(float(prev.get("end", 0.0) or 0.0), float(cue.get("end", 0.0) or 0.0))
+            if raw_trans:
+                p_trans = prev.get("translation", "").strip()
+                prev["translation"] = f"{p_trans} {raw_trans}".strip() if p_trans else raw_trans
+            merged_cues[-1] = prev
+        else:
+            merged_cues.append(cue_copy)
+
+    lines = ["WEBVTT - Hogwarts Audio Bilingual Subtitles", ""]
+
+    for cue in merged_cues:
         start_sec = max(0.0, float(cue.get("start", 0.0) or 0.0))
         cue_end = cue.get("end")
         raw_end = float(cue_end) if cue_end is not None else (start_sec + 0.8)
         end_sec = max(raw_end, start_sec + 0.8)
 
-        text = strip_emojis(cue.get("text", ""))
-        trans = strip_emojis(cue.get("translation", ""))
+        text = cue.get("text", "")
+        trans = cue.get("translation", "")
 
         # If both text and translation are empty, skip cue
         if not text and not trans:

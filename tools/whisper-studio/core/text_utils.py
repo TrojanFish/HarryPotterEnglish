@@ -236,23 +236,57 @@ def advanced_split(words_list: List[Any], target_chars: int = 58, max_chars: int
                         break
 
                     chunk_len_so_far = sum(len(getattr(chunk[i], "word", str(chunk[i]))) for i in range(current_chunk_start, curr_w_idx + 1))
+                    words_in_current_chunk = curr_w_idx - current_chunk_start + 1
+
+                    # Lookahead: count remaining words and characters in this sentence after curr_w_idx
+                    remaining_words = end_w_idx - (curr_w_idx + 1)
+                    remaining_chars = sum(len(getattr(chunk[i], "word", str(chunk[i]))) for i in range(curr_w_idx + 1, end_w_idx))
 
                     is_split_point = False
-                    if chunk_len_so_far > target_chars:
+                    halfway = current_length // 2
+                    is_in_balance_zone = (chunk_len_so_far >= max(28, halfway - 20))
+
+                    if words_in_current_chunk >= 3 and remaining_words >= 3 and remaining_chars >= 15:
                         if token.text in [",", ";", ":"]:
-                            is_split_point = True
+                            if chunk_len_so_far > target_chars or is_in_balance_zone:
+                                is_split_point = True
                         elif token.pos_ in ["CCONJ", "SCONJ"] or token.dep_ in ["mark", "cc"]:
-                            is_split_point = True
+                            if chunk_len_so_far > target_chars or is_in_balance_zone:
+                                is_split_point = True
 
                     if chunk_len_so_far >= max_chars:
-                        is_split_point = True
+                        if remaining_words >= 3 and remaining_chars >= 15:
+                            is_split_point = True
+                        elif remaining_words <= 2 and chunk_len_so_far + remaining_chars <= max_chars + 30:
+                            # Avoid chopping off the last 1-2 words; allow the sentence to stretch slightly
+                            is_split_point = False
+                        else:
+                            is_split_point = True
 
                     if is_split_point:
                         split_idx = curr_w_idx + 1
                         if token.text in [",", ";", ":", ".", "!", "?"]:
                             split_idx = curr_w_idx + 1
-                        elif token.text.lower() in ["and", "but", "or", "because", "when", "if"]:
+                        elif token.text.lower() in ["and", "but", "or", "because", "when", "if", "while", "since", "although"]:
                             split_idx = curr_w_idx
+
+                        # Roll back if preceding word is a weak ending (e.g. 'on', 'of', 'in', 'to', 'for', 'the', 'a')
+                        while split_idx > current_chunk_start + 3:
+                            last_word_text = getattr(chunk[split_idx - 1], "word", str(chunk[split_idx - 1])).strip().lower()
+                            if is_weak_ending(last_word_text):
+                                split_idx -= 1
+                            else:
+                                break
+
+                        # Ensure both chunk sides have at least 3 words and 15 chars
+                        words_left = end_w_idx - split_idx
+                        chars_left = sum(len(getattr(chunk[i], "word", str(chunk[i]))) for i in range(split_idx, end_w_idx))
+                        words_committed = split_idx - current_chunk_start
+                        chars_committed = sum(len(getattr(chunk[i], "word", str(chunk[i]))) for i in range(current_chunk_start, split_idx))
+
+                        if words_left < 3 or chars_left < 15 or words_committed < 3 or chars_committed < 15:
+                            # Never leave an orphan on either side
+                            continue
 
                         if split_idx > current_chunk_start:
                             commit_range(current_chunk_start, split_idx)
@@ -317,7 +351,7 @@ def _advanced_split_v2_fallback(words_list: List[Any], target_chars: int, max_ch
                     break
 
             if remaining_words <= 2 or sentence_ending_soon:
-                if new_len < max_chars:
+                if new_len <= max_chars + 30:
                     current_line_words.append(word)
                     i += 1
                     continue
@@ -342,6 +376,11 @@ def _advanced_split_v2_fallback(words_list: List[Any], target_chars: int, max_ch
 
             if split_idx < 3:
                 split_idx = len(current_line_words)
+
+            if len(current_line_words) - split_idx + (len(words_list) - i) < 3 and new_len <= max_chars + 30:
+                current_line_words.append(word)
+                i += 1
+                continue
 
             line_to_commit = current_line_words[:split_idx]
             next_line_start = current_line_words[split_idx:]
@@ -556,7 +595,85 @@ def clean_subtitles(raw_subtitles: List[Dict[str, Any]]) -> List[Dict[str, Any]]
 
         final_subtitles.append(current_sub)
 
-    return final_subtitles
+    return merge_orphan_subtitles(final_subtitles)
+
+
+def merge_orphan_subtitles(subtitles: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Merges dangling orphan fragments (<= 2 words or < 16 chars) into their parent cue.
+    Guarantees no orphan single words like 'world?', 'and culture.', 'from leaving.'.
+    """
+    if len(subtitles) <= 1:
+        return subtitles
+
+    merged: List[Dict[str, Any]] = []
+    sentence_end_punct = (".", "!", "?", "。", "！", "？")
+
+    for cue in subtitles:
+        text = str(cue.get("text", "")).strip()
+        if not text:
+            continue
+
+        if not merged:
+            merged.append(dict(cue))
+            continue
+
+        prev = merged[-1]
+        prev_text = str(prev.get("text", "")).strip()
+
+        prev_ends_sentence = prev_text.endswith(sentence_end_punct)
+        curr_words = text.split()
+        curr_duration = float(cue.get("end", 0.0)) - float(cue.get("start", 0.0))
+
+        # Condition for an orphan fragment that belongs to the preceding sentence
+        is_trailing_orphan = (
+            not prev_ends_sentence and (
+                len(curr_words) <= 2 or
+                (len(text) < 16 and curr_duration < 1.6)
+            )
+        )
+
+        # Condition for a leading orphan (e.g. single word 'And' / 'So' / 'However,' left on its own)
+        prev_words = prev_text.split()
+        prev_duration = float(prev.get("end", 0.0)) - float(prev.get("start", 0.0))
+        is_leading_orphan = (
+            not prev_ends_sentence and (
+                len(prev_words) <= 1 and prev_duration < 1.2
+            )
+        )
+
+        if is_trailing_orphan:
+            # Merge current orphan into previous cue
+            prev["text"] = f"{prev_text} {text}".strip()
+            prev["end"] = max(float(prev.get("end", 0.0)), float(cue.get("end", 0.0)))
+            if "words" in prev and "words" in cue:
+                prev["words"] = (prev.get("words") or []) + (cue.get("words") or [])
+            if "translation" in prev or "translation" in cue:
+                p_trans = str(prev.get("translation", "")).strip()
+                c_trans = str(cue.get("translation", "")).strip()
+                if p_trans and c_trans:
+                    prev["translation"] = f"{p_trans} {c_trans}".strip()
+                elif c_trans:
+                    prev["translation"] = c_trans
+            merged[-1] = prev
+        elif is_leading_orphan:
+            # Merge previous single word forward into current cue
+            cue["text"] = f"{prev_text} {text}".strip()
+            cue["start"] = min(float(prev.get("start", 0.0)), float(cue.get("start", 0.0)))
+            if "words" in prev and "words" in cue:
+                cue["words"] = (prev.get("words") or []) + (cue.get("words") or [])
+            if "translation" in prev or "translation" in cue:
+                p_trans = str(prev.get("translation", "")).strip()
+                c_trans = str(cue.get("translation", "")).strip()
+                if p_trans and c_trans:
+                    cue["translation"] = f"{p_trans} {c_trans}".strip()
+                elif p_trans:
+                    cue["translation"] = p_trans
+            merged[-1] = dict(cue)
+        else:
+            merged.append(dict(cue))
+
+    return merged
 
 
 def generate_cloze_md(filename: str, paragraphs: List[Dict[str, Any]], path: str, blank_ratio: float = 0.25) -> None:
