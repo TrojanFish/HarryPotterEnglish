@@ -185,11 +185,20 @@ let catalogCache = null;
 let catalogCacheTime = 0;
 let tedCatalogCache = null;
 let tedCatalogCacheTime = 0;
+let cachedFeedEtag = null;
 const CACHE_TTL_MS = 60 * 1000; // 60 seconds auto-revalidation
 
 // Test helper to allow injecting mock S3 client in node tests
 function _setS3ClientForTest(client) {
   s3Client = client;
+}
+
+function _clearFeedCacheForTest() {
+  catalogCache = null;
+  catalogCacheTime = 0;
+  tedCatalogCache = null;
+  tedCatalogCacheTime = 0;
+  cachedFeedEtag = null;
 }
 
 // Hot Cache for Subtitles & JSON text (sub-1ms response!)
@@ -241,6 +250,43 @@ function stripEmojis(str) {
     .replace(/\b([A-Za-z]+)\s+([stmd]|ll|ve|re)\b/g, "$1'$2")
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+// Feed-first loader for R2 unified catalog (feed.json)
+async function loadR2Feed(bypassCache = false) {
+  if (!s3Client) return null;
+
+  if (!bypassCache && cachedFeedEtag && catalogCache && tedCatalogCache && (Date.now() - catalogCacheTime < CACHE_TTL_MS)) {
+    return { podcasts: catalogCache, ted: tedCatalogCache, fromFeed: true };
+  }
+
+  try {
+    const cmd = new GetObjectCommand({ Bucket: bucketName, Key: 'feed.json' });
+    const res = await s3Client.send(cmd);
+    let content;
+    if (typeof res.Body?.transformToString === 'function') {
+      content = await res.Body.transformToString();
+    } else if (typeof res.Body === 'string') {
+      content = res.Body;
+    } else {
+      content = String(res.Body);
+    }
+
+    const feed = JSON.parse(content);
+    if (feed && Array.isArray(feed.podcasts) && Array.isArray(feed.ted)) {
+      catalogCache = feed.podcasts;
+      catalogCacheTime = Date.now();
+      tedCatalogCache = feed.ted;
+      tedCatalogCacheTime = Date.now();
+      cachedFeedEtag = res.ETag || null;
+      return { podcasts: feed.podcasts, ted: feed.ted, fromFeed: true };
+    }
+    console.warn('[R2 Feed] Invalid feed structure: missing podcasts or ted array');
+    return null;
+  } catch (err) {
+    console.warn('[R2 Feed] Failed to load feed.json, falling back to scanner:', err.message || err);
+    return null;
+  }
 }
 
 async function scanR2Catalog(bypassCache = false) {
@@ -537,10 +583,13 @@ async function scanR2TedCatalog(bypassCache = false) {
 const scanTimer = setInterval(async () => {
   if (s3Client) {
     try {
-      await Promise.all([
-        scanR2Catalog(true),
-        scanR2TedCatalog(true)
-      ]);
+      const feedLoaded = await loadR2Feed(true);
+      if (!feedLoaded) {
+        await Promise.all([
+          scanR2Catalog(true),
+          scanR2TedCatalog(true)
+        ]);
+      }
     } catch (e) {
       console.warn('Background scan warning:', e.message);
     }
@@ -589,9 +638,15 @@ app.get('/api/catalog', catalogLimiter, async (req, res) => {
     return res.json({ books: catalogCache, cached: true });
   }
 
+  const feedResult = await loadR2Feed(forceRefresh);
+  if (feedResult && feedResult.podcasts) {
+    res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+    return res.json({ books: feedResult.podcasts, cached: false, source: 'feed' });
+  }
+
   const books = await scanR2Catalog(forceRefresh);
   res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
-  res.json({ books, cached: false });
+  res.json({ books, cached: false, source: 'scanner' });
 });
 
 // 1b. Dynamic TED Talks Catalog API with auto-discovery & ?refresh=1 support
@@ -608,9 +663,15 @@ app.get('/api/ted/talks', catalogLimiter, async (req, res) => {
     return res.json({ talks: tedCatalogCache, cached: true });
   }
 
+  const feedResult = await loadR2Feed(forceRefresh);
+  if (feedResult && feedResult.ted) {
+    res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+    return res.json({ talks: feedResult.ted, cached: false, source: 'feed' });
+  }
+
   const talks = await scanR2TedCatalog(forceRefresh);
   res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
-  res.json({ talks, cached: false });
+  res.json({ talks, cached: false, source: 'scanner' });
 });
 
 // 2. High-speed Subtitle VTT endpoint (In-Memory Hot Cache < 1ms)
@@ -1015,19 +1076,24 @@ if (fs.existsSync(distPath)) {
 
 // Start HTTP server only if not running in serverless environment (Vercel) or test suite
 if (!process.env.VERCEL && process.env.NODE_ENV !== 'test') {
-  app.listen(port, () => {
+  app.listen(port, async () => {
     console.log(`Hogwarts R2 High-Concurrency Server running at http://localhost:${port}`);
-    // Initial scan on boot
-    scanR2Catalog(false);
-    scanR2TedCatalog(false);
+    // Initial scan on boot: try feed first, fall back to directory scan
+    const feedLoaded = await loadR2Feed(false);
+    if (!feedLoaded) {
+      scanR2Catalog(false);
+      scanR2TedCatalog(false);
+    }
   });
 }
 
 export { 
   app, 
+  loadR2Feed,
   scanR2Catalog, 
   scanR2TedCatalog, 
   _setS3ClientForTest, 
+  _clearFeedCacheForTest,
   requireAuth, 
   requireAdmin, 
   authRegisterLimiter, 

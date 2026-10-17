@@ -1,3 +1,5 @@
+import fs from 'fs'
+import path from 'path'
 import dotenv from 'dotenv'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import { DEFAULT_CATALOG } from '../src/data/catalogData.js'
@@ -6,6 +8,22 @@ import { TALKS } from '../src/data/tedData.js'
 dotenv.config()
 
 const AUDIO_REGEX = /\.(mp3|m4a|wav|aac|ogg|flac)$/i
+
+function readLocalFeed() {
+  try {
+    const feedPath = path.resolve(process.cwd(), 'content/feed.json')
+    if (fs.existsSync(feedPath)) {
+      const content = fs.readFileSync(feedPath, 'utf8')
+      const parsed = JSON.parse(content)
+      if (parsed && typeof parsed === 'object') {
+        return parsed
+      }
+    }
+  } catch (err) {
+    console.warn('[Vite R2 Dev] Error reading local content/feed.json:', err.message)
+  }
+  return null
+}
 
 export function r2DevPlugin() {
   const accountId = process.env.R2_ACCOUNT_ID
@@ -31,6 +49,11 @@ export function r2DevPlugin() {
     // 1. Catalog Endpoint
     if (url === '/api/catalog' || url.startsWith('/api/catalog?')) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8')
+      const localFeed = readLocalFeed()
+      if (localFeed && Array.isArray(localFeed.podcasts)) {
+        res.end(JSON.stringify({ books: localFeed.podcasts, cached: true, source: 'local-feed' }))
+        return
+      }
       res.end(JSON.stringify({ books: DEFAULT_CATALOG.books, cached: true }))
       return
     }
@@ -39,6 +62,11 @@ export function r2DevPlugin() {
     if (url === '/api/ted/talks' || url.startsWith('/api/ted/talks?')) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8')
       res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+      const localFeed = readLocalFeed()
+      if (localFeed && Array.isArray(localFeed.ted)) {
+        res.end(JSON.stringify({ talks: localFeed.ted, cached: true, source: 'local-feed' }))
+        return
+      }
       res.end(JSON.stringify({ talks: TALKS, cached: true }))
       return
     }
