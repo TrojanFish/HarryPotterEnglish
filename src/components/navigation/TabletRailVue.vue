@@ -1,23 +1,25 @@
 <template>
   <aside
-    class="hidden md:flex lg:hidden w-16 shrink-0 flex-col items-center justify-between border-r border-[#e8ddd0] bg-[#fbf9f5] py-4 px-2 select-none h-full"
+    class="hidden md:flex lg:hidden w-16 shrink-0 flex-col items-center justify-between border-r border-[#e8ddd0] bg-[#fbf9f5] select-none h-full"
     aria-label="平板端侧边导航"
   >
-    <!-- Top Section: Brand Icon & Vertical Navigation -->
-    <div class="flex flex-col items-center gap-4 w-full">
-      <!-- Brand amber icon -->
-      <button
-        type="button"
-        @click="handleSelectView('bookshelf')"
-        class="w-11 h-11 rounded-2xl bg-amber-500 flex items-center justify-center text-white active:scale-95 cursor-pointer touch-manipulation transition-transform"
-        title="霍格沃茨魔法英语"
-        aria-label="霍格沃茨魔法英语"
-      >
-        <Sparkles :size="20" class="text-white stroke-[2.5]" />
-      </button>
+    <!-- Top Section: Brand Icon (Unified h-16 baseline) & Vertical Navigation -->
+    <div class="flex flex-col items-center w-full">
+      <!-- Brand Row (Unified h-16 baseline) -->
+      <div class="h-16 flex items-center justify-center w-full border-b border-[#e8ddd0] shrink-0">
+        <button
+          type="button"
+          @click="handleSelectView('bookshelf')"
+          class="w-11 h-11 rounded-2xl bg-amber-500 flex items-center justify-center text-white active:scale-95 cursor-pointer touch-manipulation transition-transform"
+          title="霍格沃茨魔法英语"
+          aria-label="霍格沃茨魔法英语"
+        >
+          <Sparkles :size="20" class="text-white stroke-[2.5]" />
+        </button>
+      </div>
 
       <!-- Vertical nav of 8 icon buttons -->
-      <nav class="flex flex-col items-center gap-2 w-full" aria-label="快捷导航">
+      <nav class="flex flex-col items-center gap-2 w-full p-2 pt-3" aria-label="快捷导航">
         <button
           v-for="item in navItems"
           :key="item.id"
@@ -49,7 +51,7 @@
     </div>
 
     <!-- Bottom: Flame streak badge & Badges button -->
-    <div class="flex flex-col items-center gap-2">
+    <div class="flex flex-col items-center gap-2 p-2 pb-3.5 border-t border-[#e8ddd0] w-full">
       <button
         type="button"
         @click="handleStreakClick"

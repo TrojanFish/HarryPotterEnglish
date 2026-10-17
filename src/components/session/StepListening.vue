@@ -82,7 +82,7 @@
     </div>
 
     <!-- Right Column: Focus Insight & Word Details (Desktop only) -->
-    <div class="hidden md:flex md:w-80 lg:w-72 shrink-0 flex-col p-6 bg-[#f5efe6] border-l border-[#e8ddd0] overflow-y-auto space-y-5">
+    <div class="hidden md:flex md:w-80 lg:w-72 shrink-0 flex-col p-6 bg-[#f5efe6] overflow-y-auto space-y-5">
       <!-- Section: Core Vocabulary of Current Cue -->
       <div>
         <div class="flex items-center justify-between mb-2">

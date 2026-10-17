@@ -142,7 +142,7 @@
 
     <!-- Bottom Section: Habit progress & Sync indicators -->
     <!-- Collapsed Bottom -->
-    <div v-if="isCollapsed" class="flex flex-col items-center gap-2 pt-3 border-t border-[#e8ddd0] w-full">
+    <div v-if="isCollapsed" class="flex flex-col items-center gap-2 pt-3 pb-3.5 border-t border-[#e8ddd0] w-full">
       <button
         type="button"
         @click="handleOpenHouseCup"
@@ -234,8 +234,8 @@
       </button>
     </div>
 
-    <!-- Expanded Bottom -->
-    <div v-else class="space-y-2.5 pt-3 border-t border-[#e8ddd0] w-full">
+    <!-- Expanded Bottom (Unified p-3.5 baseline aligning with top navigation) -->
+    <div v-else class="space-y-2.5 p-3.5 pt-3 border-t border-[#e8ddd0] w-full">
       <!-- Habit Progress & Gamification Card -->
       <div
         class="duo-card p-3 space-y-2 bg-white rounded-xl border border-[#e8ddd0]"
@@ -328,7 +328,7 @@
       </button>
 
       <!-- Utility Footer: Local-First Sync Indicator & Keyboard Shortcuts SVG Button -->
-      <div class="flex items-center justify-between px-1 text-xs text-stone-500 pt-0.5">
+      <div class="flex items-center justify-between text-xs text-stone-500 pt-0.5">
         <div
           @click="handleAnalyticsClick"
           class="flex items-center gap-1.5 hover:text-stone-800 cursor-pointer transition-colors min-h-[44px] touch-manipulation"
@@ -354,7 +354,7 @@
       </div>
 
       <!-- Gemini-style User Card -->
-      <div class="mt-2 pt-2 border-t border-[#e8ddd0]">
+      <div class="-mx-3.5 px-3.5 pt-2 border-t border-[#e8ddd0]">
         <div class="flex items-center gap-2 px-1 py-1 rounded-xl hover:bg-white/60 transition-colors">
           <!-- Avatar -->
           <button
