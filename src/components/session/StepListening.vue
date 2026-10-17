@@ -6,23 +6,6 @@
       class="flex-1 flex flex-col min-w-0 overflow-y-auto p-4 sm:p-6 pb-32 sm:pb-36"
     >
       <div class="max-w-3xl w-full mx-auto space-y-3 sm:space-y-3.5">
-        <!-- Subtitle Control Strip -->
-        <div class="flex items-center justify-between pb-3 border-b border-[#e8ddd0] text-xs text-stone-600 shrink-0">
-          <span class="px-2 py-0.5 bg-[#f5efe6] rounded-md border border-[#e8ddd0] font-mono text-[11px] text-stone-700">
-            共 {{ subtitleStore.cues.length }} 句
-          </span>
-          <button
-            type="button"
-            @click="toggleBlindMode"
-            class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-[#f2ece2] flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer"
-            :title="player.isBlindMode ? '盲听模式开启中（点击取消模糊）' : '开启盲听模式（模糊字幕专注听力）'"
-            :aria-label="player.isBlindMode ? '取消盲听模式' : '开启盲听模式'"
-          >
-            <EyeOff v-if="player.isBlindMode" class="w-5 h-5 text-amber-700" />
-            <Eye v-else class="w-5 h-5 text-stone-500 hover:text-stone-800" />
-          </button>
-        </div>
-
         <!-- Empty state when no cues loaded -->
         <div
           v-if="subtitleStore.cues.length === 0"
@@ -121,8 +104,8 @@
     >
       <!-- Section: Core Vocabulary of Current Cue -->
       <div>
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="text-xs font-mono font-bold tracking-wider text-stone-800 uppercase flex items-center gap-1.5">
+        <div class="flex items-center justify-between mb-2 gap-2">
+          <h3 class="text-xs font-mono font-bold tracking-wider text-stone-800 uppercase flex items-center gap-1.5 shrink-0">
             <span>当前精听句核心词汇</span>
             <span
               v-if="currentCueVocab.length > 0"
@@ -132,12 +115,17 @@
             </span>
           </h3>
 
-          <span
-            v-if="savedVocabCountInCurrentCue > 0"
-            class="text-[11px] font-mono text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300"
-          >
-            已收录 {{ savedVocabCountInCurrentCue }}/{{ currentCueVocab.length }}
-          </span>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span
+              v-if="savedVocabCountInCurrentCue > 0"
+              class="text-[11px] font-mono text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300"
+            >
+              已收录 {{ savedVocabCountInCurrentCue }}/{{ currentCueVocab.length }}
+            </span>
+            <span class="px-2 py-0.5 bg-white/80 rounded-md border border-[#e8ddd0] font-mono text-[11px] text-stone-600">
+              共 {{ subtitleStore.cues.length }} 句
+            </span>
+          </div>
         </div>
 
         <!-- Vocabulary Cards List -->
@@ -295,8 +283,6 @@
 <script setup>
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import {
-  Eye,
-  EyeOff,
   BookOpen,
   ChevronRight,
   Sparkles,

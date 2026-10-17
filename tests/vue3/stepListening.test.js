@@ -60,6 +60,21 @@ describe('StepListening component', () => {
     // Must use getTagBadgeClass for curriculum badges
     assert.ok(content.includes('getTagBadgeClass'), 'Must import and use getTagBadgeClass for curriculum badges')
   })
+
+  test('StepListening relocates sentence count pill to right vocabulary header and eliminates redundant blind mode button', () => {
+    const filePath = path.resolve('src/components/session/StepListening.vue')
+    const content = fs.readFileSync(filePath, 'utf-8')
+
+    // Must not have Subtitle Control Strip or redundant toggleBlindMode button in template
+    assert.ok(!content.includes('<!-- Subtitle Control Strip -->'), 'Must remove subtitle control strip')
+    assert.ok(!content.includes('aria-label="开启盲听模式"'), 'Must remove redundant blind mode toggle button')
+
+    // Right column core vocab header must contain total cues counter
+    assert.ok(content.includes('共 {{ subtitleStore.cues.length }} 句') || content.includes('共 {{ subtitleStore.cues?.length'), 'Must render sentence count in header')
+
+    // Subtitle cards stream still supports blind mode blur via player.isBlindMode
+    assert.ok(content.includes('player.isBlindMode'), 'Must respect player.isBlindMode for blur effect')
+  })
 })
 
 
