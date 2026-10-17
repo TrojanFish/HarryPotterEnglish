@@ -65,6 +65,15 @@ describe('TedVideoPlayer.vue', () => {
     assert.ok(src.includes('goToStep(3)') || src.includes("goToStep('3')") || src.includes('goToStep'), 'Missing goToStep CTA')
   })
 
+  it('supports draggable resizer between video stage and subtitle panel', () => {
+    assert.ok(src.includes('role="separator"'), 'Missing role="separator" on resizer')
+    assert.ok(src.includes('cursor-col-resize'), 'Missing cursor-col-resize cursor')
+    assert.ok(src.includes('subtitlePanelWidth'), 'Missing subtitlePanelWidth binding')
+    assert.ok(src.includes('startDragging'), 'Missing startDragging handler')
+    assert.ok(src.includes('resetPanelWidth'), 'Missing resetPanelWidth handler')
+    assert.ok(src.includes('GripVertical'), 'Missing GripVertical icon')
+  })
+
   it('is a valid Vue 3 SFC', () => {
     assert.ok(existsSync(FILE_PATH), 'TedVideoPlayer.vue must exist')
     const { descriptor, errors } = parse(src)

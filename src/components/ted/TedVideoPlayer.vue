@@ -3,8 +3,8 @@
     ref="playerContainerRef"
     class="flex flex-col md:flex-row h-full w-full bg-[#fbf9f5] overflow-hidden select-none"
   >
-    <!-- Left panel: Video Stage + Mobile Subtitle Flow -->
-    <div class="flex-[3] flex flex-col min-w-0 h-full bg-stone-950 relative overflow-hidden md:justify-center md:items-center">
+    <!-- Left panel: Video Stage + Mobile Subtitle Flow (Flexible on desktop) -->
+    <div class="flex-1 flex flex-col min-w-0 h-full bg-stone-950 relative overflow-hidden md:justify-center md:items-center">
       <!-- Video Container with 16:9 Aspect Ratio centered vertically & horizontally -->
       <div class="relative w-full aspect-video bg-black flex items-center justify-center shrink-0">
         <video
@@ -157,10 +157,42 @@
       </div>
     </div>
 
-    <!-- Right panel subtitle list (Desktop and Tablet): hidden md:flex flex-col w-72 lg:w-80 shrink-0 overflow-y-auto border-l border-[#e8ddd0] -->
+    <!-- Draggable Resizer Splitter (Desktop/Tablet md:flex only) -->
+    <div
+      role="separator"
+      tabindex="0"
+      aria-orientation="vertical"
+      :aria-valuenow="Math.round(subtitlePanelWidth)"
+      aria-valuemin="280"
+      aria-valuemax="640"
+      aria-label="拖拽调整TED字幕栏宽度 (左右方向键微调，双击恢复默认)"
+      title="拖拽调节宽度 (双击恢复默认)"
+      @mousedown="startDragging"
+      @touchstart="startDraggingTouch"
+      @dblclick="resetPanelWidth"
+      @keydown.left.prevent="adjustWidth(20)"
+      @keydown.right.prevent="adjustWidth(-20)"
+      class="hidden md:flex relative shrink-0 w-2.5 hover:w-2.5 cursor-col-resize items-center justify-center group touch-none select-none transition-colors border-l border-[#e8ddd0] z-20"
+      :class="isDragging ? 'bg-amber-500/25' : 'hover:bg-amber-500/15'"
+    >
+      <!-- Center subtle visual grip line & handle -->
+      <div
+        class="w-[2px] h-full transition-colors"
+        :class="isDragging ? 'bg-amber-600' : 'bg-transparent group-hover:bg-amber-400'"
+      ></div>
+      <div
+        class="absolute w-4 h-9 rounded-full bg-white border border-[#e8ddd0] group-hover:border-amber-400 flex items-center justify-center shadow-xs transition-opacity opacity-0 group-hover:opacity-100 pointer-events-none"
+        :class="{ 'opacity-100 border-amber-600': isDragging }"
+      >
+        <GripVertical class="w-2.5 h-2.5 text-stone-400 group-hover:text-amber-700" />
+      </div>
+    </div>
+
+    <!-- Right panel subtitle list (Desktop and Tablet): resizable width -->
     <div
       ref="subtitleListContainerRef"
-      class="hidden md:flex flex-col w-72 lg:w-80 shrink-0 overflow-y-auto border-l border-[#e8ddd0] bg-[#fbf9f5] relative"
+      class="hidden md:flex flex-col shrink-0 overflow-y-auto bg-[#fbf9f5] relative"
+      :style="{ width: `${subtitlePanelWidth}px` }"
     >
       <!-- Subtitle Panel Header -->
       <div class="p-3 border-b border-[#e8ddd0]/80 bg-[#fbf9f5] flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm gap-2">
@@ -310,7 +342,8 @@ import {
   Repeat,
   ArrowRight,
   Headphones,
-  Mic
+  Mic,
+  GripVertical
 } from 'lucide-vue-next'
 import { useTedStore } from '../../stores/tedStore.js'
 import { parseBilingualVtt } from '../../data/tedData.js'
@@ -329,6 +362,111 @@ const videoRef = ref(null)
 const playerContainerRef = ref(null)
 const subtitleListContainerRef = ref(null)
 const cueElementRefs = ref([])
+
+// --- Draggable Splitter Width Management ---
+const DEFAULT_PANEL_WIDTH = 360
+const MIN_PANEL_WIDTH = 280
+const MAX_PANEL_WIDTH = 640
+
+function getInitialPanelWidth() {
+  if (typeof window === 'undefined') return DEFAULT_PANEL_WIDTH
+  try {
+    const saved = localStorage.getItem('hogwarts_ted_subtitle_panel_width')
+    if (saved) {
+      const parsed = Number(saved)
+      if (!isNaN(parsed) && parsed >= MIN_PANEL_WIDTH && parsed <= MAX_PANEL_WIDTH) {
+        return parsed
+      }
+    }
+  } catch (err) {}
+  return DEFAULT_PANEL_WIDTH
+}
+
+const subtitlePanelWidth = ref(getInitialPanelWidth())
+const isDragging = ref(false)
+let startX = 0
+let startWidth = DEFAULT_PANEL_WIDTH
+
+function startDragging(e) {
+  isDragging.value = true
+  startX = e.clientX
+  startWidth = subtitlePanelWidth.value
+  document.body.style.cursor = 'col-resize'
+  document.body.style.userSelect = 'none'
+
+  window.addEventListener('mousemove', onDragging)
+  window.addEventListener('mouseup', stopDragging)
+}
+
+function onDragging(e) {
+  if (!isDragging.value) return
+  const deltaX = startX - e.clientX
+  const containerWidth = playerContainerRef.value?.clientWidth || window.innerWidth || 1200
+  const maxAllowed = Math.min(MAX_PANEL_WIDTH, Math.max(MIN_PANEL_WIDTH, containerWidth - 420))
+  const newWidth = Math.max(MIN_PANEL_WIDTH, Math.min(maxAllowed, startWidth + deltaX))
+  subtitlePanelWidth.value = newWidth
+}
+
+function stopDragging() {
+  if (!isDragging.value) return
+  isDragging.value = false
+  document.body.style.cursor = ''
+  document.body.style.userSelect = ''
+  try {
+    localStorage.setItem('hogwarts_ted_subtitle_panel_width', String(Math.round(subtitlePanelWidth.value)))
+  } catch (err) {}
+
+  window.removeEventListener('mousemove', onDragging)
+  window.removeEventListener('mouseup', stopDragging)
+}
+
+function startDraggingTouch(e) {
+  if (!e.touches || e.touches.length === 0) return
+  isDragging.value = true
+  startX = e.touches[0].clientX
+  startWidth = subtitlePanelWidth.value
+
+  window.addEventListener('touchmove', onDraggingTouch, { passive: false })
+  window.addEventListener('touchend', stopDraggingTouch)
+}
+
+function onDraggingTouch(e) {
+  if (!isDragging.value || !e.touches || e.touches.length === 0) return
+  e.preventDefault()
+  const deltaX = startX - e.touches[0].clientX
+  const containerWidth = playerContainerRef.value?.clientWidth || window.innerWidth || 1200
+  const maxAllowed = Math.min(MAX_PANEL_WIDTH, Math.max(MIN_PANEL_WIDTH, containerWidth - 420))
+  const newWidth = Math.max(MIN_PANEL_WIDTH, Math.min(maxAllowed, startWidth + deltaX))
+  subtitlePanelWidth.value = newWidth
+}
+
+function stopDraggingTouch() {
+  if (!isDragging.value) return
+  isDragging.value = false
+  try {
+    localStorage.setItem('hogwarts_ted_subtitle_panel_width', String(Math.round(subtitlePanelWidth.value)))
+  } catch (err) {}
+
+  window.removeEventListener('touchmove', onDraggingTouch)
+  window.removeEventListener('touchend', stopDraggingTouch)
+}
+
+function resetPanelWidth() {
+  subtitlePanelWidth.value = DEFAULT_PANEL_WIDTH
+  try {
+    localStorage.setItem('hogwarts_ted_subtitle_panel_width', String(DEFAULT_PANEL_WIDTH))
+  } catch (err) {}
+}
+
+function adjustWidth(delta) {
+  const containerWidth = playerContainerRef.value?.clientWidth || window.innerWidth || 1200
+  const maxAllowed = Math.min(MAX_PANEL_WIDTH, Math.max(MIN_PANEL_WIDTH, containerWidth - 420))
+  const newWidth = Math.max(MIN_PANEL_WIDTH, Math.min(maxAllowed, subtitlePanelWidth.value + delta))
+  subtitlePanelWidth.value = newWidth
+  try {
+    localStorage.setItem('hogwarts_ted_subtitle_panel_width', String(Math.round(newWidth)))
+  } catch (err) {}
+}
 
 const enCues = ref([])
 const zhCues = ref([])
@@ -653,6 +791,12 @@ onBeforeUnmount(() => {
   if (typeof document !== 'undefined') {
     document.removeEventListener('fullscreenchange', onFullscreenChange)
     document.removeEventListener('webkitfullscreenchange', onFullscreenChange)
+  }
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('mousemove', onDragging)
+    window.removeEventListener('mouseup', stopDragging)
+    window.removeEventListener('touchmove', onDraggingTouch)
+    window.removeEventListener('touchend', stopDraggingTouch)
   }
   if (videoRef.value && !videoRef.value.paused) {
     try {
