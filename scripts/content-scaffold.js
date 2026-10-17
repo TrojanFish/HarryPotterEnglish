@@ -133,7 +133,7 @@ export async function scaffoldContent(contentDir, options = {}) {
 
       const authorName = (options.author || '').trim() || 'J.K. Rowling';
       const narratorName = (options.narrator || '').trim() || 'Stephen Fry';
-      const chapterNum = parseInt(options.chapter, 10) || 1;
+      const chapterNum = Math.max(1, parseInt(options.chapter, 10) || 1);
       const epFolder = `ep${String(chapterNum).padStart(2, '0')}`;
       const epDir = path.join(targetDir, 'episodes', epFolder);
       await fs.mkdir(epDir, { recursive: true });

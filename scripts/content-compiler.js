@@ -1,5 +1,4 @@
 import fs from 'node:fs/promises';
-import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -222,7 +221,7 @@ export async function compileContentFeed(contentDir, options = {}) {
       });
     }
 
-    // Sort podcasts: canonical HP order first, then others
+    // Sort podcasts: canonical HP order first, then others sorted by id
     const order = [
       'hp-book-1', 'hp-book-2', 'hp-book-3', 'hp-book-4',
       'hp-book-5', 'hp-book-6', 'hp-book-7',
@@ -231,7 +230,10 @@ export async function compileContentFeed(contentDir, options = {}) {
     podcasts.sort((a, b) => {
       const aIdx = order.indexOf(a.id);
       const bIdx = order.indexOf(b.id);
-      return (aIdx !== -1 ? aIdx : 99) - (bIdx !== -1 ? bIdx : 99);
+      if (aIdx !== -1 || bIdx !== -1) {
+        return (aIdx !== -1 ? aIdx : 999) - (bIdx !== -1 ? bIdx : 999);
+      }
+      return a.id.localeCompare(b.id);
     });
   }
 
