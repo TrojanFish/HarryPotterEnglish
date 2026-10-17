@@ -13,6 +13,7 @@
     "content:build": "node scripts/content-compiler.js",
     "content:sync": "node scripts/content-sync.js",
     "content:scaffold": "node scripts/content-scaffold.js",
+    "content:transcribe": "python tools/whisper-studio/cli.py",
     "check-emojis": "node scripts/scan_emojis.js",
     "verify-security": "node scripts/verify-security.js",
     "test:simulation": "node scripts/comprehensive_local_simulation.js",

@@ -46,6 +46,11 @@ class TestFormatBilingualVtt(unittest.TestCase):
         vtt = format_bilingual_vtt(cues)
         self.assertIn("01:01:05.250 --> 01:01:10.800", vtt)
 
+    def test_timestamp_formatting_rollover(self):
+        cues = [{"start": 59.9996, "end": 60.5, "text": "Rollover", "translation": "进位"}]
+        vtt = format_bilingual_vtt(cues)
+        self.assertIn("01:00.000 --> 01:00.800", vtt)
+
     def test_minimum_duration_enforced(self):
         # Duration is only 0.2s, must be extended to at least 0.8s
         cues = [{"start": 1.0, "end": 1.2, "text": "Quick", "translation": "快"}]

@@ -51,15 +51,17 @@ def format_timestamp(seconds: float, force_hours: bool = False) -> str:
     """
     Formats a floating-point seconds value into WebVTT timestamp format.
     Format: MM:SS.mmm or HH:MM:SS.mmm (when force_hours is True or hours > 0).
+    Uses integer millisecond divmod to guarantee no second/minute rollover overflow.
     """
     seconds = max(0.0, float(seconds))
-    hours = int(seconds // 3600)
-    minutes = int((seconds % 3600) // 60)
-    secs = seconds % 60
+    total_ms = int(round(seconds * 1000))
+    total_seconds, ms = divmod(total_ms, 1000)
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, secs = divmod(remainder, 60)
     if hours > 0 or force_hours:
-        return f"{hours:02d}:{minutes:02d}:{secs:06.3f}"
+        return f"{hours:02d}:{minutes:02d}:{secs:02d}.{ms:03d}"
     else:
-        return f"{minutes:02d}:{secs:06.3f}"
+        return f"{minutes:02d}:{secs:02d}.{ms:03d}"
 
 
 def format_bilingual_vtt(cues: List[Dict[str, Any]]) -> str:
