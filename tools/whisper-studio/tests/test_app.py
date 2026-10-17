@@ -232,8 +232,33 @@ class TestAppModule(unittest.TestCase):
         self.assertIn("查看明文", content, "app.py must contain 查看明文 button label")
         self.assertIn("batch_toggle_gemini_key_btn", content, "app.py must contain batch_toggle_gemini_key_btn")
 
+    def test_r2_sync_tab_and_functions(self):
+        """Verify R2 sync tab functions and controls are exposed and functional."""
+        import app
+        self.assertTrue(hasattr(app, "get_r2_sync_status"), "app.py must expose get_r2_sync_status()")
+        badge, overview = app.get_r2_sync_status()
+        self.assertTrue(badge.startswith("[") and badge.endswith("]"), f"R2 badge must be bracketed: {badge}")
+        self.assertIn("本地内容概况", overview)
+
+        self.assertTrue(hasattr(app, "run_r2_sync_stream"), "app.py must expose run_r2_sync_stream()")
+
+        app_path = os.path.join(STUDIO_ROOT, "app.py")
+        with open(app_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        expected_elements = [
+            "云端增量同步",
+            "开始增量同步至 Cloudflare R2",
+            "仅模拟预览 (--dry-run)",
+            "强制覆盖上传 (--force)",
+            "中断同步"
+        ]
+        for elem in expected_elements:
+            self.assertIn(elem, content, f"app.py must contain Tab 3 element: {elem}")
+
 
 if __name__ == "__main__":
     unittest.main()
+
 
 

@@ -5,6 +5,7 @@ import argparse
 from typing import Optional, List, Dict, Any, Tuple, Generator
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(CURRENT_DIR))
 if CURRENT_DIR not in sys.path:
     sys.path.insert(0, CURRENT_DIR)
 
@@ -308,6 +309,93 @@ def process_batch_folder(
 
     current_logs.append(f"\n[INFO] 批量处理完毕！成功: {success_count}，失败: {failure_count}，总计: {total}。")
     yield "\n".join(current_logs)
+
+
+def get_r2_sync_status() -> Tuple[str, str]:
+    """
+    Checks R2 configuration in environment and scans local content directory.
+    Returns (config_status_badge, content_overview_text) without emojis.
+    """
+    dotenv_path = os.path.join(PROJECT_ROOT, ".env")
+    if os.path.exists(dotenv_path):
+        try:
+            from dotenv import load_dotenv
+            load_dotenv(dotenv_path)
+        except Exception:
+            pass
+
+    bucket = os.environ.get("CLOUDFLARE_R2_BUCKET_NAME") or os.environ.get("R2_BUCKET_NAME") or ""
+    if bucket:
+        badge = f"[R2 已就绪: 存储桶={bucket}]"
+    else:
+        badge = "[R2 未连接: 请检查根目录 .env 的 R2 存储桶配置]"
+
+    content_dir = os.path.join(PROJECT_ROOT, "content")
+    ted_dir = os.path.join(content_dir, "ted")
+    podcast_dir = os.path.join(content_dir, "podcasts")
+
+    ted_count = len([d for d in os.listdir(ted_dir) if os.path.isdir(os.path.join(ted_dir, d))]) if os.path.exists(ted_dir) else 0
+    pod_count = len([d for d in os.listdir(podcast_dir) if os.path.isdir(os.path.join(podcast_dir, d))]) if os.path.exists(podcast_dir) else 0
+
+    overview = (
+        f"本地内容概况: TED 演讲 {ted_count} 部 | 播客有声书 {pod_count} 专辑\n"
+        f"本地存储路径: {content_dir}"
+    )
+    return badge, overview
+
+
+def run_r2_sync_stream(
+    dry_run: bool = False,
+    force_upload: bool = False,
+    content_dir: str = ""
+) -> Generator[str, None, None]:
+    """
+    Runs node scripts/content-sync.js and streams logs for Gradio display.
+    """
+    import subprocess
+    target_dir = os.path.abspath(content_dir or os.path.join(PROJECT_ROOT, "content"))
+    sync_script = os.path.join(PROJECT_ROOT, "scripts", "content-sync.js")
+
+    if not os.path.exists(sync_script):
+        yield f"[ERROR] 找不到同步脚本: {sync_script}"
+        return
+
+    cmd = ["node", sync_script, f"--content-dir={target_dir}"]
+    if dry_run:
+        cmd.append("--dry-run")
+    if force_upload:
+        cmd.append("--force")
+
+    mode_desc = "仅模拟预览 (Dry Run)" if dry_run else ("强制全量上传" if force_upload else "智能增量上传")
+    logs = [
+        "[INFO] 正在启动 Cloudflare R2 增量同步流水线...",
+        f"[INFO] 运行模式: {mode_desc}",
+        f"[INFO] 目标目录: {target_dir}",
+        "[INFO] ------------------------------------------------------------"
+    ]
+    yield "\n".join(logs)
+
+    try:
+        proc = subprocess.Popen(
+            cmd,
+            cwd=PROJECT_ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1
+        )
+        for line in proc.stdout:
+            logs.append(line.rstrip())
+            yield "\n".join(logs)
+        proc.wait()
+        if proc.returncode == 0:
+            logs.append("\n[SUCCESS] Cloudflare R2 增量同步流水线执行完毕！")
+        else:
+            logs.append(f"\n[ERROR] 同步进程异常退出，状态码: {proc.returncode}")
+        yield "\n".join(logs)
+    except Exception as exc:
+        logs.append(f"\n[ERROR] 启动同步子进程失败: {str(exc)}")
+        yield "\n".join(logs)
 
 
 def build_ui(mock_mode: bool = False) -> gr.Blocks:
@@ -626,6 +714,61 @@ def build_ui(mock_mode: bool = False) -> gr.Blocks:
                     outputs=[batch_log_box]
                 )
                 stop_batch_btn.click(fn=None, cancels=[batch_event])
+
+            # Tab 3: Cloudflare R2 Sync Studio
+            with gr.Tab("云端增量同步 (Cloudflare R2)"):
+                r2_badge, r2_overview = get_r2_sync_status()
+                with gr.Row():
+                    with gr.Column(scale=1):
+                        r2_badge_box = gr.Textbox(
+                            label="R2 存储桶接入状态",
+                            value=r2_badge,
+                            interactive=False
+                        )
+                        r2_overview_box = gr.Textbox(
+                            label="本地内容库概况",
+                            value=r2_overview,
+                            lines=3,
+                            interactive=False
+                        )
+                        refresh_r2_btn = gr.Button("刷新本地与云端状态")
+                        r2_dry_run_check = gr.Checkbox(
+                            label="仅模拟预览 (--dry-run)",
+                            value=True,
+                            info="仅比对文件哈希与大小，计算待上传清单，不实际消耗上传写次数"
+                        )
+                        r2_force_check = gr.Checkbox(
+                            label="强制覆盖上传 (--force)",
+                            value=False,
+                            info="忽略云端缓存，强制重新上传所有音视频及字幕"
+                        )
+                        with gr.Row():
+                            start_sync_btn = gr.Button("开始增量同步至 Cloudflare R2", variant="primary")
+                            stop_sync_btn = gr.Button("中断同步", variant="stop")
+
+                    with gr.Column(scale=1):
+                        sync_log_box = gr.Textbox(
+                            label="云端同步流水线实时日志",
+                            lines=18,
+                            interactive=False
+                        )
+
+                # Tab 3 Event Bindings
+                refresh_r2_btn.click(
+                    fn=get_r2_sync_status,
+                    inputs=[],
+                    outputs=[r2_badge_box, r2_overview_box]
+                )
+
+                def _run_sync(is_dry, is_force):
+                    yield from run_r2_sync_stream(dry_run=is_dry, force_upload=is_force)
+
+                sync_event = start_sync_btn.click(
+                    fn=_run_sync,
+                    inputs=[r2_dry_run_check, r2_force_check],
+                    outputs=[sync_log_box]
+                )
+                stop_sync_btn.click(fn=None, cancels=[sync_event])
 
     return demo
 
