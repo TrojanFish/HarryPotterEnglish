@@ -16,6 +16,14 @@ function getInitialCompletedTalks() {
   return []
 }
 
+function matchTalkId(a, b) {
+  if (!a || !b) return false
+  if (a === b) return true
+  const normA = String(a).replace(/^ted-/, '')
+  const normB = String(b).replace(/^ted-/, '')
+  return normA === normB
+}
+
 export const useTedStore = defineStore('ted', {
   state: () => ({
     // Catalog
@@ -62,17 +70,17 @@ export const useTedStore = defineStore('ted', {
 
   getters: {
     currentTalk: (state) => {
-      return state.talks.find((t) => t.id === state.selectedTalkId) || null
+      return state.talks.find((t) => matchTalkId(t.id, state.selectedTalkId)) || null
     },
     currentShadowingSegment: (state) => {
-      const talk = state.talks.find((t) => t.id === state.selectedTalkId)
+      const talk = state.talks.find((t) => matchTalkId(t.id, state.selectedTalkId))
       return talk?.shadowingSegments?.[state.shadowingSegmentIndex] || null
     },
     isCurrentTalkCompleted: (state) => {
-      return Boolean(state.selectedTalkId && state.completedTalkIds.includes(state.selectedTalkId))
+      return Boolean(state.selectedTalkId && state.completedTalkIds.some((id) => matchTalkId(id, state.selectedTalkId)))
     },
     vocabProgress: (state) => {
-      const talk = state.talks.find((t) => t.id === state.selectedTalkId)
+      const talk = state.talks.find((t) => matchTalkId(t.id, state.selectedTalkId))
       const total = talk?.vocabSet?.length || 0
       if (total === 0) return { listened: 0, total: 0, percent: 0 }
       return {
@@ -96,9 +104,31 @@ export const useTedStore = defineStore('ted', {
         if (res && res.ok) {
           const data = await res.json()
           if (data && Array.isArray(data.talks) && data.talks.length > 0) {
-            this.talks = data.talks
+            // Enrich remote talks with local fallback data if remote lacks vocabSet, tasks or shadowingSegments
+            const enrichedTalks = data.talks.map((remoteTalk) => {
+              const localMatch = TALKS.find((lt) => matchTalkId(lt.id, remoteTalk.id))
+              if (!localMatch) return remoteTalk
+              return {
+                ...localMatch,
+                ...remoteTalk,
+                vocabSet:
+                  Array.isArray(remoteTalk.vocabSet) && remoteTalk.vocabSet.length > 0
+                    ? remoteTalk.vocabSet
+                    : localMatch.vocabSet,
+                tasks:
+                  remoteTalk.tasks && Array.isArray(remoteTalk.tasks.cloze) && remoteTalk.tasks.cloze.length > 0
+                    ? remoteTalk.tasks
+                    : localMatch.tasks,
+                shadowingSegments:
+                  Array.isArray(remoteTalk.shadowingSegments) && remoteTalk.shadowingSegments.length > 0
+                    ? remoteTalk.shadowingSegments
+                    : localMatch.shadowingSegments
+              }
+            })
+
+            this.talks = enrichedTalks
             this.talksSource = 'api'
-            if (!this.selectedTalkId || !this.talks.some((t) => t.id === this.selectedTalkId)) {
+            if (!this.selectedTalkId || !this.talks.some((t) => matchTalkId(t.id, this.selectedTalkId))) {
               this.selectTalk(this.talks[0].id)
             }
           }
@@ -111,7 +141,7 @@ export const useTedStore = defineStore('ted', {
     },
 
     selectTalk(id) {
-      const talk = this.talks.find((t) => t.id === id)
+      const talk = this.talks.find((t) => matchTalkId(t.id, id))
       if (!talk) return
 
       this.selectedTalkId = talk.id

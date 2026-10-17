@@ -13,6 +13,7 @@ import {
 import { processSync, processPairing } from './syncStore.js';
 import { registerUser, loginUser, verifyToken, getUserById, updateUserPro, updateUserAvatar } from './authStore.js';
 import { generateActivationCodes, redeemCode, listCodes, revokeCode } from './activationStore.js';
+import { TALKS } from '../src/data/tedData.js';
 
 dotenv.config();
 
@@ -547,22 +548,24 @@ async function scanR2TedCatalog(bypassCache = false) {
 
       const normalizedId = talkId.startsWith('ted-') ? talkId : `ted-${talkId}`;
 
+      const localMatch = TALKS.find(t => t.id === metaData.id || t.id === normalizedId || t.id === talkId || `ted-${t.id}` === normalizedId);
+
       return {
         id: metaData.id || normalizedId,
-        title: stripEmojis(metaData.title) || capitalizedTitle || 'TED Talk',
-        titleCn: stripEmojis(metaData.titleCn) || '',
-        speaker: stripEmojis(metaData.speaker) || 'TED Speaker',
-        year: typeof metaData.year === 'number' ? metaData.year : (parseInt(talkId.match(/\b(19\d\d|20\d\d)\b/)?.[0], 10) || new Date().getFullYear()),
-        durationSeconds: metaData.durationSeconds || 0,
-        cefrLevel: metaData.cefrLevel || 'B1',
-        wpm: metaData.wpm || 140,
-        topicTags: Array.isArray(metaData.topicTags) ? metaData.topicTags : ['TED', 'English'],
+        title: stripEmojis(metaData.title) || (localMatch?.title ? stripEmojis(localMatch.title) : capitalizedTitle) || 'TED Talk',
+        titleCn: stripEmojis(metaData.titleCn) || (localMatch?.titleCn ? stripEmojis(localMatch.titleCn) : ''),
+        speaker: stripEmojis(metaData.speaker) || (localMatch?.speaker ? stripEmojis(localMatch.speaker) : 'TED Speaker'),
+        year: typeof metaData.year === 'number' ? metaData.year : (parseInt(talkId.match(/\b(19\d\d|20\d\d)\b/)?.[0], 10) || localMatch?.year || new Date().getFullYear()),
+        durationSeconds: metaData.durationSeconds || localMatch?.durationSeconds || 0,
+        cefrLevel: metaData.cefrLevel || localMatch?.cefrLevel || 'B1',
+        wpm: metaData.wpm || localMatch?.wpm || 140,
+        topicTags: Array.isArray(metaData.topicTags) ? metaData.topicTags : (localMatch?.topicTags || ['TED', 'English']),
         videoKey: primaryVideoKey,
-        vttKey: vttKey || metaData.vttKey || '',
-        thumbnailKey: thumbKey || metaData.thumbnailKey || '',
-        vocabSet: Array.isArray(metaData.vocabSet) ? metaData.vocabSet : [],
-        tasks: metaData.tasks && typeof metaData.tasks === 'object' ? metaData.tasks : { cloze: [], matching: [] },
-        shadowingSegments: Array.isArray(metaData.shadowingSegments) ? metaData.shadowingSegments : [],
+        vttKey: vttKey || metaData.vttKey || localMatch?.vttKey || '',
+        thumbnailKey: thumbKey || metaData.thumbnailKey || localMatch?.thumbnailKey || '',
+        vocabSet: Array.isArray(metaData.vocabSet) && metaData.vocabSet.length > 0 ? metaData.vocabSet : (localMatch?.vocabSet || []),
+        tasks: metaData.tasks && Array.isArray(metaData.tasks.cloze) && metaData.tasks.cloze.length > 0 ? metaData.tasks : (localMatch?.tasks || { cloze: [], matching: [] }),
+        shadowingSegments: Array.isArray(metaData.shadowingSegments) && metaData.shadowingSegments.length > 0 ? metaData.shadowingSegments : (localMatch?.shadowingSegments || []),
       };
     }))).filter(Boolean);
 
