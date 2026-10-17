@@ -66,7 +66,27 @@
       <!-- Navigation Items (Collapsed) -->
       <nav v-if="isCollapsed" class="flex flex-col items-center gap-1.5 w-full" aria-label="桌面精简导航">
         <button
-          v-for="item in navItems"
+          v-for="item in learningItems"
+          :key="item.id"
+          type="button"
+          @click="handleItemClick(item)"
+          :title="`${item.label} · ${item.desc}`"
+          :aria-label="item.label"
+          :aria-current="isItemActive(item) ? 'page' : undefined"
+          class="relative w-11 h-11 rounded-xl flex items-center justify-center transition-all cursor-pointer touch-manipulation active:scale-95 border"
+          :class="isItemActive(item)
+            ? 'bg-amber-100/90 text-amber-950 border-amber-300/80 shadow-none'
+            : 'text-stone-600 hover:text-stone-900 hover:bg-white/80 border-transparent hover:border-[#e8ddd0]'"
+        >
+          <span :class="[isItemActive(item) ? 'text-amber-800' : 'text-stone-500 hover:text-stone-700', 'transition-colors']">
+            <component :is="item.icon" :size="20" class="shrink-0" />
+          </span>
+        </button>
+
+        <div class="w-6 border-t border-[#e8ddd0] my-1 shrink-0"></div>
+
+        <button
+          v-for="item in toolItems"
           :key="item.id"
           type="button"
           @click="handleItemClick(item)"
@@ -97,45 +117,80 @@
       </nav>
 
       <!-- Navigation Items (Expanded) -->
-      <nav v-else class="space-y-1 w-full" aria-label="桌面主导航">
-        <button
-          v-for="item in navItems"
-          :key="item.id"
-          type="button"
-          @click="handleItemClick(item)"
-          :title="item.desc"
-          :aria-label="item.label"
-          :aria-current="isItemActive(item) ? 'page' : undefined"
-          class="w-full flex items-center justify-between px-3 h-11 min-h-[44px] max-h-[44px] rounded-xl text-sm font-bold transition-all text-left cursor-pointer group touch-manipulation active:scale-95 border"
-          :class="isItemActive(item)
-            ? 'bg-amber-100/90 text-amber-950 border-amber-300/80 shadow-none'
-            : 'text-stone-600 hover:text-stone-900 hover:bg-white/80 border-transparent hover:border-[#e8ddd0]'"
-        >
-          <div class="flex items-center gap-2.5 min-w-0">
-            <span :class="[isItemActive(item) ? 'text-amber-800' : 'text-stone-500 group-hover:text-stone-700', 'transition-colors shrink-0']">
-              <component :is="item.icon" :size="18" />
-            </span>
-            <span class="truncate">{{ item.label }}</span>
+      <nav v-else class="space-y-3 w-full" aria-label="桌面主导航">
+        <!-- 研学工坊分组 -->
+        <div class="space-y-1">
+          <div class="px-3 pt-0.5 pb-1 text-[11px] font-bold text-stone-400 tracking-wider">
+            研学工坊
           </div>
-          <span
-            v-if="item.id === 'vocab' && vocabCount > 0"
-            :class="[
-              'text-[10px] h-5 min-w-[20px] px-1.5 rounded-full font-mono font-bold flex items-center justify-center shrink-0 border leading-none',
-              isItemActive(item) ? 'bg-amber-200/90 text-amber-950 border-amber-300' : 'bg-amber-50 text-amber-800 border-amber-200'
-            ]"
+          <button
+            v-for="item in learningItems"
+            :key="item.id"
+            type="button"
+            @click="handleItemClick(item)"
+            :title="item.desc"
+            :aria-label="item.label"
+            :aria-current="isItemActive(item) ? 'page' : undefined"
+            class="w-full flex items-center justify-between px-3 h-11 min-h-[44px] max-h-[44px] rounded-xl text-sm font-bold transition-all text-left cursor-pointer group touch-manipulation active:scale-95 border"
+            :class="isItemActive(item)
+              ? 'bg-amber-100/90 text-amber-950 border-amber-300/80 shadow-none'
+              : 'text-stone-600 hover:text-stone-900 hover:bg-white/80 border-transparent hover:border-[#e8ddd0]'"
           >
-            {{ vocabCount > 99 ? '99+' : vocabCount }}
-          </span>
-          <span
-            v-else-if="item.id === 'storage' && cachedCount > 0"
-            :class="[
-              'text-[10px] h-5 min-w-[20px] px-1.5 rounded-full font-mono font-bold flex items-center justify-center shrink-0 border leading-none',
-              isItemActive(item) ? 'bg-amber-200/90 text-amber-950 border-amber-300' : 'bg-amber-50 text-amber-800 border-amber-200'
-            ]"
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span :class="[isItemActive(item) ? 'text-amber-800' : 'text-stone-500 group-hover:text-stone-700', 'transition-colors shrink-0']">
+                <component :is="item.icon" :size="18" />
+              </span>
+              <span class="truncate">{{ item.label }}</span>
+            </div>
+          </button>
+        </div>
+
+        <div class="border-t border-[#e8ddd0] mx-1"></div>
+
+        <!-- 学业与工具分组 -->
+        <div class="space-y-1">
+          <div class="px-3 pt-0.5 pb-1 text-[11px] font-bold text-stone-400 tracking-wider">
+            学业与工具
+          </div>
+          <button
+            v-for="item in toolItems"
+            :key="item.id"
+            type="button"
+            @click="handleItemClick(item)"
+            :title="item.desc"
+            :aria-label="item.label"
+            :aria-current="isItemActive(item) ? 'page' : undefined"
+            class="w-full flex items-center justify-between px-3 h-11 min-h-[44px] max-h-[44px] rounded-xl text-sm font-bold transition-all text-left cursor-pointer group touch-manipulation active:scale-95 border"
+            :class="isItemActive(item)
+              ? 'bg-amber-100/90 text-amber-950 border-amber-300/80 shadow-none'
+              : 'text-stone-600 hover:text-stone-900 hover:bg-white/80 border-transparent hover:border-[#e8ddd0]'"
           >
-            {{ cachedCount > 99 ? '99+' : cachedCount }}
-          </span>
-        </button>
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span :class="[isItemActive(item) ? 'text-amber-800' : 'text-stone-500 group-hover:text-stone-700', 'transition-colors shrink-0']">
+                <component :is="item.icon" :size="18" />
+              </span>
+              <span class="truncate">{{ item.label }}</span>
+            </div>
+            <span
+              v-if="item.id === 'vocab' && vocabCount > 0"
+              :class="[
+                'text-[10px] h-5 min-w-[20px] px-1.5 rounded-full font-mono font-bold flex items-center justify-center shrink-0 border leading-none',
+                isItemActive(item) ? 'bg-amber-200/90 text-amber-950 border-amber-300' : 'bg-amber-50 text-amber-800 border-amber-200'
+              ]"
+            >
+              {{ vocabCount > 99 ? '99+' : vocabCount }}
+            </span>
+            <span
+              v-else-if="item.id === 'storage' && cachedCount > 0"
+              :class="[
+                'text-[10px] h-5 min-w-[20px] px-1.5 rounded-full font-mono font-bold flex items-center justify-center shrink-0 border leading-none',
+                isItemActive(item) ? 'bg-amber-200/90 text-amber-950 border-amber-300' : 'bg-amber-50 text-amber-800 border-amber-200'
+              ]"
+            >
+              {{ cachedCount > 99 ? '99+' : cachedCount }}
+            </span>
+          </button>
+        </div>
       </nav>
       </div>
     </div>
@@ -550,28 +605,7 @@ const targetSeconds = 300 // 5-minute daily habit goal
 const goalPercent = computed(() => Math.min(100, Math.round((todayListeningSeconds.value / targetSeconds) * 100)))
 const goalMinutes = computed(() => (todayListeningSeconds.value / 60).toFixed(1))
 
-const navItems = [
-  {
-    id: 'bookshelf',
-    label: '魔法书架',
-    desc: '原著书库与章节精选',
-    icon: Library,
-    view: 'bookshelf'
-  },
-  {
-    id: 'ted',
-    label: 'TED演讲',
-    desc: '双语演讲与名家视界',
-    icon: Video,
-    view: 'ted'
-  },
-  {
-    id: 'assessment',
-    label: '能力评定',
-    desc: 'CEFR定级与巫师等级考',
-    icon: Award,
-    view: 'assessment'
-  },
+const learningItems = [
   {
     id: 'player_reader',
     label: '原著精听',
@@ -581,11 +615,35 @@ const navItems = [
     studyMode: 'normal'
   },
   {
+    id: 'ted',
+    label: 'TED演讲',
+    desc: '双语演讲与名家视界',
+    icon: Video,
+    view: 'ted'
+  },
+  {
+    id: 'bookshelf',
+    label: '魔法书架',
+    desc: '原著书库与章节精选',
+    icon: Library,
+    view: 'bookshelf'
+  }
+]
+
+const toolItems = [
+  {
     id: 'vocab',
     label: '生词本',
     desc: '难词收藏与复习',
     icon: Bookmark,
     view: 'vocab'
+  },
+  {
+    id: 'assessment',
+    label: '能力评定',
+    desc: 'CEFR定级与巫师等级考',
+    icon: Award,
+    view: 'assessment'
   },
   {
     id: 'analytics',
@@ -602,6 +660,8 @@ const navItems = [
     view: 'storage'
   }
 ]
+
+const navItems = [...learningItems, ...toolItems]
 
 function isItemActive(item) {
   if (item.view !== navigationStore.currentView) {
