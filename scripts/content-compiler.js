@@ -106,10 +106,12 @@ export async function compileContentFeed(contentDir, options = {}) {
       let bookMeta = {};
       const bookJsonPath = path.join(bookDirPath, 'book.json');
       const showJsonPath = path.join(bookDirPath, 'show.json');
+      const metaJsonPath = path.join(bookDirPath, 'meta.json');
       let targetMetaPath = null;
 
       if (await pathExists(bookJsonPath)) targetMetaPath = bookJsonPath;
       else if (await pathExists(showJsonPath)) targetMetaPath = showJsonPath;
+      else if (await pathExists(metaJsonPath)) targetMetaPath = metaJsonPath;
 
       if (targetMetaPath) {
         try {
@@ -183,7 +185,7 @@ export async function compileContentFeed(contentDir, options = {}) {
             }
           }
 
-          const epNum = parseInt(epMeta.episode || epId.replace(/^[^\d]*/, ''), 10) || (chapters.length + 1);
+          const epNum = parseInt(epMeta.episode || epMeta.chapter || epId.replace(/^[^\d]*/, ''), 10) || (chapters.length + 1);
           const rawTitle = epMeta.title || `Chapter ${epNum}`;
 
           chapters.push({
