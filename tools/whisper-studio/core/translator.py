@@ -52,18 +52,28 @@ def google_translate_text(text: str, target_lang: str = "zh-CN", timeout: int = 
     return ""
 
 
-def gemini_translate_text(text: str, target_lang: str = "zh-CN", timeout: int = 15) -> str:
+def get_gemini_api_key() -> str:
+    """Returns detected Gemini API key from environment or api_keys.json."""
+    return _get_api_key("gemini")
+
+
+def gemini_translate_text(
+    text: str,
+    target_lang: str = "zh-CN",
+    timeout: int = 15,
+    api_key: Optional[str] = None
+) -> str:
     """Translates single text using Google Gemini API endpoint."""
     text = text.strip()
     if not text:
         return ""
 
-    api_key = _get_api_key("gemini")
-    if not api_key:
+    resolved_key = (api_key or "").strip() or _get_api_key("gemini")
+    if not resolved_key:
         logger.warning("[WARN] GEMINI_API_KEY is not set. Falling back to empty translation.")
         return ""
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={resolved_key}"
     payload = {
         "contents": [{
             "parts": [{
@@ -86,7 +96,11 @@ def gemini_translate_text(text: str, target_lang: str = "zh-CN", timeout: int = 
     return ""
 
 
-def translate_subtitles(cues: List[Dict[str, Any]], engine: str = "google") -> List[Dict[str, Any]]:
+def translate_subtitles(
+    cues: List[Dict[str, Any]],
+    engine: str = "google",
+    api_key: Optional[str] = None
+) -> List[Dict[str, Any]]:
     """
     Translates English text in each cue into Chinese translation field.
     Returns list of {'start': float, 'end': float, 'text': str, 'translation': str}
@@ -109,8 +123,8 @@ def translate_subtitles(cues: List[Dict[str, Any]], engine: str = "google") -> L
 
     # Batch translation function
     def _translate_item(item_text: str) -> str:
-        if engine_clean == "gemini":
-            return gemini_translate_text(item_text)
+        if "gemini" in engine_clean:
+            return gemini_translate_text(item_text, api_key=api_key)
         else:
             return google_translate_text(item_text)
 

@@ -171,6 +171,58 @@ class TestAppModule(unittest.TestCase):
             self.assertNotIn("❌", log_output)
             self.assertNotIn("✅", summary_output)
 
+    def test_chinese_ui_labels_and_gemini_api_key_in_source(self):
+        """Verify app.py source contains comprehensive Chinese labels and Gemini API Key controls."""
+        app_path = os.path.join(STUDIO_ROOT, "app.py")
+        with open(app_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        expected_labels = [
+            "媒体文件上传",
+            "发布目标类型",
+            "内容唯一标识 ID",
+            "前端展示标题",
+            "主讲人姓名",
+            "章节序号",
+            "原著作者",
+            "朗读主播",
+            "Whisper 语音模型",
+            "计算精度",
+            "字幕翻译引擎",
+            "Gemini API 密钥",
+            "实时转写与处理日志",
+            "内容入库结果摘要",
+            "目标媒体文件夹绝对路径",
+            "扫描文件夹",
+            "开始批量转写与导出",
+            "停止批量处理"
+        ]
+        for label in expected_labels:
+            self.assertIn(label, content, f"app.py must contain Chinese label: {label}")
+
+    def test_transcribe_accepts_gemini_api_key(self):
+        """Verify transcribe_and_export_single accepts gemini_api_key argument without error."""
+        import app
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            content_root = os.path.join(tmp_dir, "content")
+            dummy_media = os.path.join(tmp_dir, "sample_talk.mp4")
+            with open(dummy_media, "wb") as f:
+                f.write(b"\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00isommp42")
+
+            log_output, summary_output = app.transcribe_and_export_single(
+                media_file=dummy_media,
+                target_type="ted",
+                content_id="sample-talk",
+                title="Sample Talk",
+                model_size="base",
+                translation_engine="none",
+                gemini_api_key="mock-key-12345",
+                mock_mode=True,
+                content_root=content_root
+            )
+            self.assertIn("[SUCCESS]", summary_output)
+
 
 if __name__ == "__main__":
     unittest.main()
+
