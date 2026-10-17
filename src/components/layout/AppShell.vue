@@ -183,6 +183,7 @@ import BadgesPageView from '../views/BadgesPageView.vue'
 import CloudSyncPageView from '../views/CloudSyncPageView.vue'
 import HouseCupPageView from '../views/HouseCupPageView.vue'
 import { useAuthStore } from '../../stores/authStore.js'
+import { useTedStore } from '../../stores/tedStore.js'
 
 const props = defineProps({
   currentChapterTitle: {
@@ -193,6 +194,7 @@ const props = defineProps({
 
 const navStore = useNavigationStore()
 const player = usePlayerStore()
+const tedStore = useTedStore()
 const catalogStore = useCatalogStore()
 const sessionStore = useSessionStore()
 const gamificationStore = useGamificationStore()
@@ -378,6 +380,16 @@ watch(
     if (newView !== 'player') {
       player.toggleBookshelf(false)
       isVocabOpen.value = false
+    }
+    // Prevent audio contention between TED video and HP audio
+    if (newView === 'ted') {
+      if (player.isPlaying) {
+        player.pause()
+      }
+    } else if (oldView === 'ted') {
+      if (tedStore.isVideoPlaying) {
+        tedStore.pauseVideo()
+      }
     }
   }
 )

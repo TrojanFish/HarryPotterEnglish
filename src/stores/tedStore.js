@@ -38,11 +38,14 @@ export const useTedStore = defineStore('ted', {
     videoCurrentTime: 0,
     videoDuration: 0,
     isVideoPlaying: false,
+    playbackRate: 1,
+    subtitleMode: 'bilingual',
     isBlindMode: false,
     loopCueIndex: null,
     showChineseSubs: true,
     activeCueIndex: 0,
     lookupWord: null,
+    videoController: null,
 
     // Step 3 Task Studio
     clozeAnswers: {},
@@ -149,6 +152,9 @@ export const useTedStore = defineStore('ted', {
       const totalVocab = this.currentTalk?.vocabSet?.length || 0
       if (targetStep > 1 && totalVocab > 0 && !this.vocabUnlocked) {
         return
+      }
+      if (this.currentStep === 2 && targetStep !== 2 && this.isVideoPlaying) {
+        this.pauseVideo()
       }
       this.currentStep = targetStep
       this.maxStepReached = Math.max(this.maxStepReached, targetStep)
@@ -270,6 +276,103 @@ export const useTedStore = defineStore('ted', {
 
     setShadowingPhase(phase) {
       this.shadowingPhase = phase
+    },
+
+    setVideoController(ctrl) {
+      this.videoController = ctrl
+    },
+
+    togglePlayVideo() {
+      if (this.videoController?.togglePlay) {
+        this.videoController.togglePlay()
+      } else {
+        this.isVideoPlaying = !this.isVideoPlaying
+      }
+    },
+
+    playVideo() {
+      if (this.videoController?.play) {
+        this.videoController.play()
+      } else {
+        this.isVideoPlaying = true
+      }
+    },
+
+    pauseVideo() {
+      if (this.videoController?.pause) {
+        this.videoController.pause()
+      } else {
+        this.isVideoPlaying = false
+      }
+    },
+
+    seekVideo(target) {
+      if (this.videoController?.seek) {
+        this.videoController.seek(target)
+      } else {
+        this.videoCurrentTime = target
+      }
+    },
+
+    skipVideo(seconds) {
+      if (this.videoController?.skip) {
+        this.videoController.skip(seconds)
+      } else {
+        this.videoCurrentTime = Math.max(0, Math.min(this.videoDuration, this.videoCurrentTime + seconds))
+      }
+    },
+
+    setPlaybackRate(rate) {
+      this.playbackRate = rate
+      if (this.videoController?.setRate) {
+        this.videoController.setRate(rate)
+      }
+    },
+
+    cyclePlaybackRate() {
+      const rates = [0.75, 1, 1.25, 1.5, 2]
+      const current = this.playbackRate || 1
+      const idx = rates.findIndex((r) => Math.abs(r - current) < 0.05)
+      const nextRate = rates[(idx + 1) % rates.length]
+      this.setPlaybackRate(nextRate)
+      return nextRate
+    },
+
+    setSubtitleMode(mode) {
+      const validModes = ['bilingual', 'en', 'zh', 'off']
+      if (validModes.includes(mode)) {
+        this.subtitleMode = mode
+        this.showChineseSubs = mode === 'bilingual' || mode === 'zh'
+        if (this.videoController?.setSubtitleMode) {
+          this.videoController.setSubtitleMode(mode)
+        }
+      }
+    },
+
+    cycleSubtitleMode() {
+      const modes = ['bilingual', 'en', 'zh', 'off']
+      const currentIndex = modes.indexOf(this.subtitleMode)
+      const nextMode = modes[(currentIndex + 1) % modes.length]
+      this.setSubtitleMode(nextMode)
+      return nextMode
+    },
+
+    toggleFullscreen() {
+      if (this.videoController?.toggleFullscreen) {
+        this.videoController.toggleFullscreen()
+      }
+    },
+
+    jumpCue(delta) {
+      if (this.videoController?.jumpCue) {
+        this.videoController.jumpCue(delta)
+      }
+    },
+
+    toggleLoop() {
+      if (this.videoController?.toggleLoop) {
+        this.videoController.toggleLoop()
+      }
     }
   }
 })

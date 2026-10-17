@@ -1,5 +1,6 @@
 <template>
   <footer
+    v-if="shouldShowPlayer"
     class="shrink-0 w-full bg-[#fbf9f5] border-t border-[#e8ddd0] px-3 sm:px-6 pt-2 pb-[calc(env(safe-area-inset-bottom,0px)+8px)] flex flex-col justify-center z-20"
     role="region"
     aria-label="音频智能控制台"
@@ -7,11 +8,11 @@
     <!-- Top Progress Bar (Scrubber) -->
     <div class="w-full flex items-center gap-2 sm:gap-3 mb-1">
       <span class="text-[11px] font-mono text-stone-500 w-10 text-right shrink-0">
-        {{ formatTime(player.currentTime) }}
+        {{ formatTime(activeCurrentTime) }}
       </span>
       <div
         ref="progressBarRef"
-        @click="seekAudio"
+        @click="handleSeekAudio"
         class="flex-1 h-1.5 sm:h-2 bg-[#e8ddd0] rounded-full overflow-hidden cursor-pointer relative touch-manipulation group"
         role="slider"
         :aria-valuenow="progressPercent"
@@ -25,7 +26,7 @@
         ></div>
       </div>
       <span class="text-[11px] font-mono text-stone-500 w-10 shrink-0">
-        {{ formatTime(player.duration) }}
+        {{ formatTime(activeDuration) }}
       </span>
     </div>
 
@@ -35,14 +36,14 @@
       <div class="flex items-center justify-start gap-1 sm:gap-2 min-w-0">
         <button
           type="button"
-          @click="toggleLoop"
+          @click="handleToggleLoop"
           :class="[
             'min-h-[44px] px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 touch-manipulation active:scale-95 cursor-pointer',
-            isLooping
+            activeIsLooping
               ? 'bg-amber-100 text-amber-900 border border-amber-300 font-semibold'
               : 'text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6]'
           ]"
-          :title="isLooping ? '单句循环锁定已开启' : '开启单句循环锁定'"
+          :title="activeIsLooping ? '单句循环锁定已开启' : '开启单句循环锁定'"
           aria-label="单句循环"
         >
           <Repeat1 class="w-4 h-4 shrink-0" />
@@ -51,12 +52,12 @@
 
         <button
           type="button"
-          @click="cycleRate"
+          @click="handleCycleRate"
           class="min-h-[44px] px-2.5 py-1 text-xs font-mono font-medium text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] rounded-lg transition-colors touch-manipulation active:scale-95 cursor-pointer"
           title="切换播放倍速"
           aria-label="切换播放倍速"
         >
-          {{ player.playbackRate.toFixed(2).replace(/\.00$/, '') }}x
+          {{ activePlaybackRate.toFixed(2).replace(/\.00$/, '') }}x
         </button>
       </div>
 
@@ -65,7 +66,7 @@
         <!-- Prev Cue -->
         <button
           type="button"
-          @click="jumpToPrevCue"
+          @click="handleJumpPrev"
           class="min-h-[44px] min-w-[44px] p-2 text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] rounded-full transition-colors flex items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
           title="上一句"
           aria-label="上一句"
@@ -73,13 +74,13 @@
           <SkipBack class="w-5 h-5" />
         </button>
 
-        <!-- Seek -10s (Hidden on small mobile to give breathing room to CTA button) -->
+        <!-- Seek -5s/-10s (Hidden on small mobile to give breathing room to CTA button) -->
         <button
           type="button"
-          @click="player.seekRel(-10)"
+          @click="handleSeekRel(isTedMode ? -5 : -10)"
           class="hidden sm:flex min-h-[44px] min-w-[44px] p-2 text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] rounded-full transition-colors items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
-          title="快退 10 秒"
-          aria-label="快退 10 秒"
+          :title="isTedMode ? '快退 5 秒' : '快退 10 秒'"
+          :aria-label="isTedMode ? '快退 5 秒' : '快退 10 秒'"
         >
           <RotateCcw class="w-4 h-4" />
         </button>
@@ -87,22 +88,22 @@
         <!-- Play / Pause Main CTA Button -->
         <button
           type="button"
-          @click="player.togglePlay()"
+          @click="handleTogglePlay"
           class="w-11 h-11 min-h-[44px] min-w-[44px] rounded-full bg-amber-700 hover:bg-amber-800 text-amber-50 shadow-sm flex items-center justify-center transition-all active:scale-95 touch-manipulation cursor-pointer shrink-0"
-          :title="player.isPlaying ? '暂停' : '播放'"
-          :aria-label="player.isPlaying ? '暂停' : '播放'"
+          :title="activeIsPlaying ? '暂停' : '播放'"
+          :aria-label="activeIsPlaying ? '暂停' : '播放'"
         >
-          <Pause v-if="player.isPlaying" class="w-5 h-5 fill-current" />
+          <Pause v-if="activeIsPlaying" class="w-5 h-5 fill-current" />
           <Play v-else class="w-5 h-5 fill-current ml-0.5" />
         </button>
 
-        <!-- Seek +10s (Hidden on small mobile to give breathing room to CTA button) -->
+        <!-- Seek +5s/+10s (Hidden on small mobile to give breathing room to CTA button) -->
         <button
           type="button"
-          @click="player.seekRel(10)"
+          @click="handleSeekRel(isTedMode ? 5 : 10)"
           class="hidden sm:flex min-h-[44px] min-w-[44px] p-2 text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] rounded-full transition-colors items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
-          title="快进 10 秒"
-          aria-label="快进 10 秒"
+          :title="isTedMode ? '快进 5 秒' : '快进 10 秒'"
+          :aria-label="isTedMode ? '快进 5 秒' : '快进 10 秒'"
         >
           <RotateCw class="w-4 h-4" />
         </button>
@@ -110,7 +111,7 @@
         <!-- Next Cue -->
         <button
           type="button"
-          @click="jumpToNextCue"
+          @click="handleJumpNext"
           class="min-h-[44px] min-w-[44px] p-2 text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6] rounded-full transition-colors flex items-center justify-center active:scale-95 touch-manipulation cursor-pointer"
           title="下一句"
           aria-label="下一句"
@@ -119,28 +120,55 @@
         </button>
       </div>
 
-      <!-- Right: Auxiliary controls (Blind Mode & Sleep Timer, Symmetrical to Left) -->
+      <!-- Right: Auxiliary controls (Symmetrical to Left) -->
       <div class="flex items-center justify-end gap-1 sm:gap-2 min-w-0">
-        <!-- Blind Mode Toggle -->
+        <!-- TED Mode: Subtitle Mode Toggle -->
+        <button
+          v-if="isTedMode"
+          type="button"
+          @click="handleCycleSubtitleMode"
+          class="min-h-[44px] px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1.5 touch-manipulation active:scale-95 cursor-pointer text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6]"
+          :title="`切换字幕模式：当前为${currentSubtitleLabel}`"
+          aria-label="切换字幕模式"
+        >
+          <Subtitles class="w-4 h-4 shrink-0 text-amber-800" />
+          <span class="font-mono text-xs font-semibold">{{ currentSubtitleLabel }}</span>
+        </button>
+
+        <!-- Blind Mode Toggle (Shared for both HP and TED) -->
         <button
           type="button"
-          @click="player.toggleBlindMode()"
+          @click="handleToggleBlindMode"
           :class="[
             'min-h-[44px] px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 touch-manipulation active:scale-95 cursor-pointer',
-            player.isBlindMode
+            activeIsBlindMode
               ? 'bg-amber-100 text-amber-900 border border-amber-300 font-semibold'
               : 'text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6]'
           ]"
-          :title="player.isBlindMode ? '盲听模式开启中（点击取消模糊）' : '开启盲听模式（专注听力输入）'"
-          :aria-label="player.isBlindMode ? '取消盲听模式' : '开启盲听模式'"
+          :title="activeIsBlindMode ? '盲听模式开启中（点击取消模糊）' : '开启盲听模式（专注听力输入）'"
+          :aria-label="activeIsBlindMode ? '取消盲听模式' : '开启盲听模式'"
         >
-          <EyeOff v-if="player.isBlindMode" class="w-4 h-4 shrink-0 text-amber-800" />
+          <EyeOff v-if="activeIsBlindMode" class="w-4 h-4 shrink-0 text-amber-800" />
           <Eye v-else class="w-4 h-4 shrink-0" />
-          <span class="hidden md:inline">{{ player.isBlindMode ? '盲听中' : '盲听' }}</span>
+          <span class="hidden md:inline">{{ activeIsBlindMode ? '盲听中' : '盲听' }}</span>
         </button>
 
-        <!-- Sleep Timer -->
+        <!-- TED Mode: Fullscreen Toggle -->
         <button
+          v-if="isTedMode"
+          type="button"
+          @click="handleToggleFullscreen"
+          class="min-h-[44px] min-w-[44px] px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center justify-center gap-1.5 touch-manipulation active:scale-95 cursor-pointer text-stone-600 hover:text-stone-900 hover:bg-[#f5efe6]"
+          title="全屏切换"
+          aria-label="全屏切换"
+        >
+          <Maximize class="w-4 h-4 shrink-0" />
+          <span class="hidden md:inline">全屏</span>
+        </button>
+
+        <!-- HP Mode: Sleep Timer -->
+        <button
+          v-if="!isTedMode"
           type="button"
           @click="isSleepMenuOpen = true"
           :class="[
@@ -273,20 +301,70 @@ import {
   Moon,
   Eye,
   EyeOff,
+  Subtitles,
+  Maximize,
+  Minimize,
   X,
   Check
 } from 'lucide-vue-next'
 import { usePlayerStore } from '../../stores/playerStore.js'
 import { useSubtitleStore } from '../../stores/subtitleStore.js'
+import { useNavigationStore } from '../../stores/navigationStore.js'
+import { useTedStore } from '../../stores/tedStore.js'
 import { useBottomSheet } from '../../composables/useBottomSheet.js'
 
 const player = usePlayerStore()
 const subtitleStore = useSubtitleStore()
+const navStore = useNavigationStore()
+const tedStore = useTedStore()
 
 const progressBarRef = ref(null)
 const isLooping = ref(false)
 const lockedLoopCue = ref(null)
 const isSleepMenuOpen = ref(false)
+
+const isTedMode = computed(() => navStore.currentView === 'ted')
+const shouldShowPlayer = computed(() => {
+  if (isTedMode.value) {
+    return tedStore.currentStep === 2
+  }
+  return true
+})
+
+const activeCurrentTime = computed(() => {
+  return isTedMode.value ? tedStore.videoCurrentTime : player.currentTime
+})
+
+const activeDuration = computed(() => {
+  return isTedMode.value ? tedStore.videoDuration : player.duration
+})
+
+const activeIsPlaying = computed(() => {
+  return isTedMode.value ? tedStore.isVideoPlaying : player.isPlaying
+})
+
+const activeIsLooping = computed(() => {
+  return isTedMode.value ? tedStore.loopCueIndex !== null : isLooping.value
+})
+
+const activePlaybackRate = computed(() => {
+  return isTedMode.value ? (tedStore.playbackRate || 1) : player.playbackRate
+})
+
+const activeIsBlindMode = computed(() => {
+  return isTedMode.value ? tedStore.isBlindMode : player.isBlindMode
+})
+
+const SUBTITLE_LABELS = {
+  bilingual: '双语',
+  en: '英文',
+  zh: '中文',
+  off: '关闭'
+}
+
+const currentSubtitleLabel = computed(() => {
+  return SUBTITLE_LABELS[tedStore.subtitleMode] || '双语'
+})
 
 const {
   sheetStyle,
@@ -351,15 +429,73 @@ function formatTime(seconds) {
 }
 
 const progressPercent = computed(() => {
-  if (!player.duration || player.duration === 0) return 0
-  return Math.min(100, Math.max(0, (player.currentTime / player.duration) * 100))
+  const dur = activeDuration.value
+  if (!dur || dur === 0) return 0
+  return Math.min(100, Math.max(0, (activeCurrentTime.value / dur) * 100))
 })
 
-function seekAudio(e) {
-  if (!progressBarRef.value || !player.duration) return
+function handleSeekAudio(e) {
+  if (!progressBarRef.value || !activeDuration.value) return
   const rect = progressBarRef.value.getBoundingClientRect()
   const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
-  player.seek(pct * player.duration)
+  const targetTime = pct * activeDuration.value
+  if (isTedMode.value) {
+    tedStore.seekVideo(targetTime)
+  } else {
+    player.seek(targetTime)
+  }
+}
+
+function seekAudio(e) {
+  handleSeekAudio(e)
+}
+
+function handleTogglePlay() {
+  if (isTedMode.value) {
+    tedStore.togglePlayVideo()
+  } else {
+    player.togglePlay()
+  }
+}
+
+function handleSeekRel(delta) {
+  if (isTedMode.value) {
+    tedStore.skipVideo(delta)
+  } else {
+    player.seekRel(delta)
+  }
+}
+
+function handleJumpPrev() {
+  if (isTedMode.value) {
+    tedStore.jumpCue(-1)
+  } else {
+    jumpToPrevCue()
+  }
+}
+
+function handleJumpNext() {
+  if (isTedMode.value) {
+    tedStore.jumpCue(1)
+  } else {
+    jumpToNextCue()
+  }
+}
+
+function handleToggleLoop() {
+  if (isTedMode.value) {
+    tedStore.toggleLoop()
+  } else {
+    toggleLoop()
+  }
+}
+
+function handleCycleRate() {
+  if (isTedMode.value) {
+    tedStore.cyclePlaybackRate()
+  } else {
+    cycleRate()
+  }
 }
 
 function cycleRate() {
@@ -376,6 +512,26 @@ function toggleLoop() {
     lockedLoopCue.value = subtitleStore.effectiveCue || subtitleStore.cues?.[0] || null
   } else {
     lockedLoopCue.value = null
+  }
+}
+
+function handleToggleBlindMode() {
+  if (isTedMode.value) {
+    tedStore.toggleBlindMode()
+  } else {
+    player.toggleBlindMode()
+  }
+}
+
+function handleToggleFullscreen() {
+  if (isTedMode.value) {
+    tedStore.toggleFullscreen()
+  }
+}
+
+function handleCycleSubtitleMode() {
+  if (isTedMode.value) {
+    tedStore.cycleSubtitleMode()
   }
 }
 
@@ -397,11 +553,11 @@ function jumpToNextCue() {
   }
 }
 
-// Single sentence loop watcher: cleanly loops locked cue before sentence boundary
+// Single sentence loop watcher: cleanly loops locked cue before sentence boundary (HP mode)
 watch(
   () => player.currentTime,
   (t) => {
-    if (isLooping.value) {
+    if (!isTedMode.value && isLooping.value) {
       if (!lockedLoopCue.value && subtitleStore.effectiveCue) {
         lockedLoopCue.value = subtitleStore.effectiveCue
       }

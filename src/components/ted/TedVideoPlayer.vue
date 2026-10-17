@@ -5,11 +5,13 @@
   >
     <!-- Left panel: Video + Controls + Mobile Subtitle Flow -->
     <div class="flex-[3] flex flex-col min-w-0 h-full bg-stone-950/95 relative overflow-hidden">
-      <!-- Video Container with 16:9 Aspect Ratio -->
-      <div class="relative w-full aspect-video bg-black flex items-center justify-center shrink-0">
+      <!-- Video Container with 16:9 Aspect Ratio and Floating Hover Controls -->
+      <div class="relative w-full aspect-video bg-black flex items-center justify-center shrink-0 group">
         <video
           ref="videoRef"
           :src="tedStore.videoSrc"
+          @click="togglePlay"
+          @dblclick="toggleFullscreen"
           @timeupdate="onTimeUpdate"
           @loadedmetadata="onMetadata"
           @play="tedStore.setIsVideoPlaying(true)"
@@ -17,7 +19,7 @@
           @ended="onEnded"
           preload="metadata"
           playsinline
-          class="w-full aspect-video bg-black object-contain"
+          class="w-full aspect-video bg-black object-contain cursor-pointer"
         ></video>
 
         <!-- Loop Sentinel Badge Overlay when Looping -->
@@ -30,11 +32,80 @@
           <button
             type="button"
             @click.stop="clearLoop"
-            class="ml-1 text-amber-200 hover:text-white text-[11px] underline"
+            class="ml-1 text-amber-200 hover:text-white text-[11px] underline min-h-[44px] min-w-[44px] inline-flex items-center justify-center touch-manipulation cursor-pointer"
             aria-label="取消循环"
           >
             取消
           </button>
+        </div>
+
+        <!-- Floating On-Video Quick Controls (Visible on hover, disappears during playback) -->
+        <div
+          v-if="!tedStore.isBlindMode"
+          class="absolute bottom-2 inset-x-3 py-1.5 px-3 rounded-xl bg-black/75 backdrop-blur-md border border-white/10 flex items-center justify-between text-xs text-amber-100 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none group-hover:pointer-events-auto"
+        >
+          <div class="flex items-center gap-1">
+            <button
+              type="button"
+              @click.stop="skip(-5)"
+              class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-white/10 text-amber-200 active:scale-95 transition-all touch-manipulation cursor-pointer"
+              aria-label="后退5秒"
+            >
+              <SkipBack class="w-4 h-4 stroke-[2]" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              @click.stop="togglePlay"
+              class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-white/10 text-amber-300 font-bold active:scale-95 transition-all touch-manipulation cursor-pointer"
+              :aria-label="tedStore.isVideoPlaying ? '暂停视频' : '播放视频'"
+            >
+              <Pause v-if="tedStore.isVideoPlaying" class="w-4 h-4 stroke-[2.2]" aria-hidden="true" />
+              <Play v-else class="w-4 h-4 stroke-[2.2] ml-0.5" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              @click.stop="skip(5)"
+              class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-white/10 text-amber-200 active:scale-95 transition-all touch-manipulation cursor-pointer"
+              aria-label="快进5秒"
+            >
+              <SkipForward class="w-4 h-4 stroke-[2]" aria-hidden="true" />
+            </button>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <select
+              :value="playbackRate"
+              @change="onChangeSpeed"
+              class="min-h-[44px] bg-black/60 text-amber-200 border border-amber-900/60 rounded-xl px-2 text-xs font-mono font-bold hover:bg-[#34261e] focus:outline-none cursor-pointer transition-colors touch-manipulation"
+              aria-label="播放倍速"
+            >
+              <option value="0.75">0.75x</option>
+              <option value="1">1.0x</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+              <option value="2">2.0x</option>
+            </select>
+
+            <button
+              type="button"
+              @click.stop="cycleSubtitleMode"
+              class="min-h-[44px] px-2.5 rounded-xl flex items-center justify-center gap-1.5 bg-black/50 hover:bg-white/10 text-amber-200 transition-all touch-manipulation cursor-pointer"
+              :aria-label="`切换字幕模式：当前为${currentSubtitleModeLabel}`"
+            >
+              <Subtitles class="w-4 h-4 stroke-[2]" aria-hidden="true" />
+              <span class="text-xs font-mono font-bold">{{ currentSubtitleModeLabel }}</span>
+            </button>
+
+            <button
+              type="button"
+              @click.stop="toggleFullscreen"
+              class="min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-amber-200 hover:text-white hover:bg-white/10 active:scale-95 transition-all touch-manipulation cursor-pointer"
+              :aria-label="isFullscreen ? '退出全屏' : '全屏显示'"
+            >
+              <Minimize v-if="isFullscreen" class="w-4 h-4 stroke-[2]" aria-hidden="true" />
+              <Maximize v-else class="w-4 h-4 stroke-[2]" aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
         <!-- Immersive Blind Mode Frosted Glass Overlay on Video Container -->
@@ -140,143 +211,6 @@
             <span>前往任务</span>
             <ArrowRight class="w-4 h-4 stroke-[2.2]" aria-hidden="true" />
           </button>
-        </div>
-      </div>
-
-      <!-- Video Control Bar (Fixed/sticky bottom with dark theme bg-[#1e1610]/90) -->
-      <div class="mt-auto bg-[#1e1610]/90 backdrop-blur-md border-t border-amber-900/40 p-3 sm:p-4 z-20 flex flex-col gap-2">
-        <!-- Progress Bar and Timestamps -->
-        <div class="flex items-center gap-3">
-          <span class="text-[11px] font-mono text-amber-200/80 w-11 text-right shrink-0">
-            {{ formatTime(tedStore.videoCurrentTime) }}
-          </span>
-          <input
-            type="range"
-            min="0"
-            :max="tedStore.videoDuration || 100"
-            step="0.1"
-            :value="tedStore.videoCurrentTime"
-            @input="onSeek"
-            class="flex-1 h-1.5 accent-amber-500 cursor-pointer rounded-lg bg-stone-700"
-            aria-label="视频播放进度"
-          />
-          <span class="text-[11px] font-mono text-stone-400 w-11 shrink-0">
-            {{ formatTime(tedStore.videoDuration) }}
-          </span>
-        </div>
-
-        <!-- Controls Row -->
-        <div class="flex items-center justify-between gap-2 flex-wrap">
-          <!-- Left Controls: SkipBack, Play/Pause, SkipForward, Speed -->
-          <div class="flex items-center gap-1.5 sm:gap-2">
-            <!-- SkipBack (Seek back 5 seconds) -->
-            <button
-              type="button"
-              @click="skip(-5)"
-              class="min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-amber-200 hover:text-white hover:bg-white/10 active:scale-95 transition-all touch-manipulation focus:outline-none"
-              aria-label="后退5秒"
-            >
-              <SkipBack class="w-5 h-5 stroke-[2]" aria-hidden="true" />
-            </button>
-
-            <!-- Play / Pause Button -->
-            <button
-              type="button"
-              @click="togglePlay"
-              class="min-h-[44px] min-w-[44px] w-11 h-11 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 flex items-center justify-center active:scale-95 transition-all touch-manipulation focus:outline-none shadow-none"
-              :aria-label="tedStore.isVideoPlaying ? '暂停视频' : '播放视频'"
-            >
-              <Pause v-if="tedStore.isVideoPlaying" class="w-5 h-5 stroke-[2.2]" aria-hidden="true" />
-              <Play v-else class="w-5 h-5 stroke-[2.2] ml-0.5" aria-hidden="true" />
-            </button>
-
-            <!-- SkipForward (Seek forward 5 seconds) -->
-            <button
-              type="button"
-              @click="skip(5)"
-              class="min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-amber-200 hover:text-white hover:bg-white/10 active:scale-95 transition-all touch-manipulation focus:outline-none"
-              aria-label="快进5秒"
-            >
-              <SkipForward class="w-5 h-5 stroke-[2]" aria-hidden="true" />
-            </button>
-
-            <!-- Playback Speed Selector -->
-            <div class="relative flex items-center">
-              <select
-                :value="playbackRate"
-                @change="onChangeSpeed"
-                class="min-h-[44px] min-w-[44px] bg-[#2a1f18] text-amber-200 border border-amber-900/60 rounded-xl px-2 text-xs font-mono font-bold hover:bg-[#34261e] focus:outline-none cursor-pointer transition-colors touch-manipulation"
-                aria-label="播放倍速"
-              >
-                <option value="0.75">0.75x</option>
-                <option value="1">1.0x</option>
-                <option value="1.25">1.25x</option>
-                <option value="1.5">1.5x</option>
-                <option value="2">2.0x</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Right Controls: Loop state, Subtitles, Blind Mode, Maximize -->
-          <div class="flex items-center gap-1.5 sm:gap-2">
-            <!-- Single sentence loop toggle for active cue -->
-            <button
-              type="button"
-              @click="toggleActiveCueLoop"
-              class="min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center transition-all touch-manipulation focus:outline-none"
-              :class="[
-                tedStore.loopCueIndex !== null
-                  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/50'
-                  : 'text-amber-200/70 hover:text-white hover:bg-white/10'
-              ]"
-              :aria-label="tedStore.loopCueIndex !== null ? '退出单句循环' : '开启当前句循环'"
-            >
-              <Repeat class="w-5 h-5 stroke-[2]" aria-hidden="true" />
-            </button>
-
-            <!-- Multi-state Subtitle Mode Toggle Button -->
-            <button
-              type="button"
-              @click="cycleSubtitleMode"
-              class="min-h-[44px] min-w-[44px] px-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all touch-manipulation focus:outline-none"
-              :class="[
-                subtitleMode !== 'off'
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50'
-                  : 'text-stone-400 hover:text-stone-200 hover:bg-white/10 border border-transparent'
-              ]"
-              :aria-label="`切换字幕模式：当前为${currentSubtitleModeLabel}`"
-            >
-              <Subtitles class="w-5 h-5 stroke-[2]" aria-hidden="true" />
-              <span class="text-xs font-mono font-bold">{{ currentSubtitleModeLabel }}</span>
-            </button>
-
-            <!-- Blind mode toggle -->
-            <button
-              type="button"
-              @click="toggleBlindMode"
-              class="min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center transition-all touch-manipulation focus:outline-none"
-              :class="[
-                tedStore.isBlindMode
-                  ? 'bg-indigo-500/30 text-indigo-300 border border-indigo-400/50'
-                  : 'text-amber-200/70 hover:text-white hover:bg-white/10'
-              ]"
-              :aria-label="tedStore.isBlindMode ? '退出盲听模式' : '开启盲听模式'"
-            >
-              <EyeOff v-if="tedStore.isBlindMode" class="w-5 h-5 stroke-[2]" aria-hidden="true" />
-              <Eye v-else class="w-5 h-5 stroke-[2]" aria-hidden="true" />
-            </button>
-
-            <!-- Fullscreen / Maximize toggle -->
-            <button
-              type="button"
-              @click="toggleFullscreen"
-              class="min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-amber-200 hover:text-white hover:bg-white/10 active:scale-95 transition-all touch-manipulation focus:outline-none"
-              :aria-label="isFullscreen ? '退出全屏' : '全屏显示'"
-            >
-              <Minimize v-if="isFullscreen" class="w-5 h-5 stroke-[2]" aria-hidden="true" />
-              <Maximize v-else class="w-5 h-5 stroke-[2]" aria-hidden="true" />
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -709,14 +643,65 @@ function toggleFullscreen() {
   }
 }
 
+// Sync store speed with local video
+watch(
+  () => tedStore.playbackRate,
+  (newRate) => {
+    if (newRate && newRate !== playbackRate.value) {
+      playbackRate.value = newRate
+      if (videoRef.value) {
+        videoRef.value.playbackRate = newRate
+      }
+    }
+  }
+)
+
+// Sync store subtitle mode with local player
+watch(
+  () => tedStore.subtitleMode,
+  (newMode) => {
+    if (newMode && newMode !== subtitleMode.value) {
+      setSubtitleMode(newMode)
+    }
+  }
+)
+
 onMounted(() => {
   if (typeof document !== 'undefined') {
     document.addEventListener('fullscreenchange', onFullscreenChange)
     document.addEventListener('webkitfullscreenchange', onFullscreenChange)
   }
+  tedStore.setVideoController({
+    play: () => videoRef.value?.play()?.catch(() => {}),
+    pause: () => videoRef.value?.pause(),
+    togglePlay,
+    seek: (target) => {
+      if (videoRef.value) {
+        videoRef.value.currentTime = target
+      }
+      tedStore.setVideoCurrentTime(target)
+    },
+    skip,
+    setRate: (rate) => {
+      playbackRate.value = rate
+      if (videoRef.value) {
+        videoRef.value.playbackRate = rate
+      }
+    },
+    setSubtitleMode,
+    toggleFullscreen,
+    jumpCue: (delta) => {
+      const nextIdx = tedStore.activeCueIndex + delta
+      if (nextIdx >= 0 && nextIdx < enCues.value.length) {
+        setLoopCue(nextIdx)
+      }
+    },
+    toggleLoop: toggleActiveCueLoop
+  })
 })
 
 onBeforeUnmount(() => {
+  tedStore.setVideoController(null)
   if (typeof document !== 'undefined') {
     document.removeEventListener('fullscreenchange', onFullscreenChange)
     document.removeEventListener('webkitfullscreenchange', onFullscreenChange)
