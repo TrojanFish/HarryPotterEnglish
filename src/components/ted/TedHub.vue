@@ -30,8 +30,16 @@
     role="region"
     aria-label="TED 学习工坊"
   >
-    <!-- Desktop talk list sidebar (hidden below lg) -->
-    <TedTalkList class="hidden lg:flex w-60 shrink-0 h-full border-r border-[#e8ddd0]" />
+    <!-- Desktop talk list sidebar (hidden below lg) with collapsible transition -->
+    <div
+      class="hidden lg:flex shrink-0 h-full border-r border-[#e8ddd0] bg-[#fbf9f5] transition-all duration-200 overflow-hidden"
+      :class="isTalkListCollapsed ? 'w-0 border-r-0' : 'w-60'"
+    >
+      <TedTalkList
+        class="w-60 h-full border-r-0"
+        @toggle-collapse="isTalkListCollapsed = true"
+      />
+    </div>
 
     <!-- Mobile / Tablet Talk Drawer Trigger Bar (hidden on lg) -->
     <div class="lg:hidden flex items-center justify-between px-4 py-2 bg-[#fbf9f5] border-b border-[#e8ddd0]/60 shrink-0">
@@ -80,8 +88,23 @@
 
     <!-- Main Learning Stage -->
     <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
-      <!-- Four-step progress bar -->
-      <TedStepBar class="shrink-0" />
+      <!-- Four-step progress bar with optional expand button when talk list is collapsed -->
+      <div class="flex items-center shrink-0 border-b border-[#e8ddd0] bg-[#fbf9f5]">
+        <!-- Expand Button for Desktop when Talk List is Collapsed -->
+        <button
+          v-if="isTalkListCollapsed"
+          type="button"
+          @click="isTalkListCollapsed = false"
+          class="hidden lg:flex min-h-[44px] px-3 py-1.5 ml-3 rounded-xl border border-amber-300/80 bg-amber-500/10 hover:bg-amber-500/20 text-amber-950 font-bold text-xs items-center gap-2 active:scale-95 transition-all touch-manipulation cursor-pointer shrink-0"
+          title="展开TED演讲精选目录"
+          aria-label="展开TED演讲精选目录"
+        >
+          <PanelLeftOpen class="w-4 h-4 text-amber-800" aria-hidden="true" />
+          <span>演讲精选</span>
+        </button>
+
+        <TedStepBar class="flex-1 !border-b-0" />
+      </div>
 
       <!-- Step Views Routing -->
       <div class="flex-1 overflow-y-auto">
@@ -96,7 +119,7 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { Video, List, ChevronDown, X } from 'lucide-vue-next'
+import { Video, List, ChevronDown, X, PanelLeftOpen } from 'lucide-vue-next'
 import { useTedStore } from '../../stores/tedStore.js'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import TedTalkList from './TedTalkList.vue'
@@ -109,6 +132,7 @@ import TedShadowing from './TedShadowing.vue'
 const tedStore = useTedStore()
 const navStore = useNavigationStore()
 const isTalkDrawerOpen = ref(false)
+const isTalkListCollapsed = ref(false)
 
 onMounted(async () => {
   if (tedStore.talks && tedStore.talks.length > 0 && !tedStore.selectedTalkId) {

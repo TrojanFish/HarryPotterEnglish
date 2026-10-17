@@ -62,4 +62,22 @@ describe('SmartAudioPlayer & TedVideoPlayer Unified Dock Integration', () => {
     assert.ok(smartPlayerContent.includes('min-h-[44px]'), 'SmartAudioPlayer must retain min-h-[44px]')
     assert.ok(smartPlayerContent.includes('touch-manipulation'), 'SmartAudioPlayer must retain touch-manipulation')
   })
+
+  it('9. TedHub and TedTalkList support collapsible desktop sidebar', () => {
+    const tedHubPath = path.resolve('src/components/ted/TedHub.vue')
+    const tedTalkListPath = path.resolve('src/components/ted/TedTalkList.vue')
+    const tedHubContent = fs.existsSync(tedHubPath) ? fs.readFileSync(tedHubPath, 'utf-8') : ''
+    const tedTalkListContent = fs.existsSync(tedTalkListPath) ? fs.readFileSync(tedTalkListPath, 'utf-8') : ''
+
+    assert.ok(tedHubContent.includes('isTalkListCollapsed'), 'TedHub must maintain isTalkListCollapsed state')
+    assert.ok(tedHubContent.includes('PanelLeftOpen'), 'TedHub must render PanelLeftOpen expand trigger when collapsed')
+    assert.ok(tedTalkListContent.includes('PanelLeftClose'), 'TedTalkList must render PanelLeftClose collapse trigger')
+    assert.ok(tedTalkListContent.includes('toggle-collapse'), 'TedTalkList must emit toggle-collapse')
+  })
+
+  it('10. TedVideoPlayer centers video vertically on desktop without redundant floating hover bar', () => {
+    assert.ok(tedVideoContent.includes('justify-center'), 'TedVideoPlayer must center video in stage')
+    assert.ok(!tedVideoContent.includes('Floating On-Video Quick Controls'), 'Redundant floating on-video controls must be removed')
+  })
 })
+

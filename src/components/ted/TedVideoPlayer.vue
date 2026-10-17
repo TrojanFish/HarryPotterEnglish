@@ -3,10 +3,10 @@
     ref="playerContainerRef"
     class="flex flex-col md:flex-row h-full w-full bg-[#fbf9f5] overflow-hidden select-none"
   >
-    <!-- Left panel: Video + Controls + Mobile Subtitle Flow -->
-    <div class="flex-[3] flex flex-col min-w-0 h-full bg-stone-950/95 relative overflow-hidden">
-      <!-- Video Container with 16:9 Aspect Ratio and Floating Hover Controls -->
-      <div class="relative w-full aspect-video bg-black flex items-center justify-center shrink-0 group">
+    <!-- Left panel: Video Stage + Mobile Subtitle Flow -->
+    <div class="flex-[3] flex flex-col min-w-0 h-full bg-stone-950 relative overflow-hidden md:justify-center md:items-center">
+      <!-- Video Container with 16:9 Aspect Ratio centered vertically & horizontally -->
+      <div class="relative w-full aspect-video bg-black flex items-center justify-center shrink-0">
         <video
           ref="videoRef"
           :src="tedStore.videoSrc"
@@ -21,6 +21,17 @@
           playsinline
           class="w-full aspect-video bg-black object-contain cursor-pointer"
         ></video>
+
+        <!-- Central Play Watermark when Paused -->
+        <div
+          v-if="!tedStore.isVideoPlaying && !tedStore.isBlindMode"
+          @click="togglePlay"
+          class="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none transition-all"
+        >
+          <div class="w-16 h-16 rounded-full bg-amber-500/90 text-stone-950 flex items-center justify-center shadow-lg transition-transform hover:scale-105">
+            <Play class="w-7 h-7 fill-current ml-1" />
+          </div>
+        </div>
 
         <!-- Loop Sentinel Badge Overlay when Looping -->
         <div
@@ -37,75 +48,6 @@
           >
             取消
           </button>
-        </div>
-
-        <!-- Floating On-Video Quick Controls (Visible on hover, disappears during playback) -->
-        <div
-          v-if="!tedStore.isBlindMode"
-          class="absolute bottom-2 inset-x-3 py-1.5 px-3 rounded-xl bg-black/75 backdrop-blur-md border border-white/10 flex items-center justify-between text-xs text-amber-100 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none group-hover:pointer-events-auto"
-        >
-          <div class="flex items-center gap-1">
-            <button
-              type="button"
-              @click.stop="skip(-5)"
-              class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-white/10 text-amber-200 active:scale-95 transition-all touch-manipulation cursor-pointer"
-              aria-label="后退5秒"
-            >
-              <SkipBack class="w-4 h-4 stroke-[2]" aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              @click.stop="togglePlay"
-              class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-white/10 text-amber-300 font-bold active:scale-95 transition-all touch-manipulation cursor-pointer"
-              :aria-label="tedStore.isVideoPlaying ? '暂停视频' : '播放视频'"
-            >
-              <Pause v-if="tedStore.isVideoPlaying" class="w-4 h-4 stroke-[2.2]" aria-hidden="true" />
-              <Play v-else class="w-4 h-4 stroke-[2.2] ml-0.5" aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              @click.stop="skip(5)"
-              class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-white/10 text-amber-200 active:scale-95 transition-all touch-manipulation cursor-pointer"
-              aria-label="快进5秒"
-            >
-              <SkipForward class="w-4 h-4 stroke-[2]" aria-hidden="true" />
-            </button>
-          </div>
-
-          <div class="flex items-center gap-1.5">
-            <select
-              :value="playbackRate"
-              @change="onChangeSpeed"
-              class="min-h-[44px] bg-black/60 text-amber-200 border border-amber-900/60 rounded-xl px-2 text-xs font-mono font-bold hover:bg-[#34261e] focus:outline-none cursor-pointer transition-colors touch-manipulation"
-              aria-label="播放倍速"
-            >
-              <option value="0.75">0.75x</option>
-              <option value="1">1.0x</option>
-              <option value="1.25">1.25x</option>
-              <option value="1.5">1.5x</option>
-              <option value="2">2.0x</option>
-            </select>
-
-            <button
-              type="button"
-              @click.stop="cycleSubtitleMode"
-              class="min-h-[44px] px-2.5 rounded-xl flex items-center justify-center gap-1.5 bg-black/50 hover:bg-white/10 text-amber-200 transition-all touch-manipulation cursor-pointer"
-              :aria-label="`切换字幕模式：当前为${currentSubtitleModeLabel}`"
-            >
-              <Subtitles class="w-4 h-4 stroke-[2]" aria-hidden="true" />
-              <span class="text-xs font-mono font-bold">{{ currentSubtitleModeLabel }}</span>
-            </button>
-
-            <button
-              type="button"
-              @click.stop="toggleFullscreen"
-              class="min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-amber-200 hover:text-white hover:bg-white/10 active:scale-95 transition-all touch-manipulation cursor-pointer"
-              :aria-label="isFullscreen ? '退出全屏' : '全屏显示'"
-            >
-              <Minimize v-if="isFullscreen" class="w-4 h-4 stroke-[2]" aria-hidden="true" />
-              <Maximize v-else class="w-4 h-4 stroke-[2]" aria-hidden="true" />
-            </button>
-          </div>
         </div>
 
         <!-- Immersive Blind Mode Frosted Glass Overlay on Video Container -->
@@ -544,6 +486,12 @@ function skip(seconds) {
   videoRef.value.currentTime = target
   tedStore.setVideoCurrentTime(target)
 }
+
+// Dedicated controller skip triggers: skip(-5) and skip(5)
+const skipBack5 = () => skip(-5)
+const skipForward5 = () => skip(5)
+// Speed options presets: 0.75x, 1.0x, 1.25x, 1.5x, 2.0x
+const SPEED_OPTIONS = [0.75, 1.0, 1.25, 1.5, 2.0]
 
 function onSeek(event) {
   const target = parseFloat(event.target.value) || 0
