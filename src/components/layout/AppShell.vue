@@ -148,7 +148,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, toRefs, computed, watch, onMounted, onUnmounted } from 'vue'
 import { AlertCircle, X } from 'lucide-vue-next'
 import { useNavigationStore } from '../../stores/navigationStore.js'
 import { usePlayerStore } from '../../stores/playerStore.js'
@@ -156,6 +156,7 @@ import { useCatalogStore } from '../../stores/catalogStore.js'
 import { useSessionStore } from '../../stores/sessionStore.js'
 import { useGamificationStore } from '../../stores/gamificationStore.js'
 import { useBreakpointVue } from '../../utils/useBreakpointVue.js'
+import { useModalManager } from '../../composables/useModalManager.js'
 
 import MobileTopBarVue from '../navigation/MobileTopBarVue.vue'
 import TabletRailVue from '../navigation/TabletRailVue.vue'
@@ -201,13 +202,16 @@ const gamificationStore = useGamificationStore()
 const breakpoint = useBreakpointVue()
 const authStore = useAuthStore()
 
-const isVocabOpen = ref(false)
-const isAnalyticsOpen = ref(false)
-const isStorageOpen = ref(false)
-const isShortcutsOpen = ref(false)
-const isBadgesOpen = ref(false)
-const isSortingOpen = ref(false)
-const isCloudSyncOpen = ref(false)
+const { modals, open: openModal, close: closeModal, toggle: toggleModal, closeAll: closeAllModals } = useModalManager()
+const {
+  vocab: isVocabOpen,
+  analytics: isAnalyticsOpen,
+  storage: isStorageOpen,
+  shortcuts: isShortcutsOpen,
+  badges: isBadgesOpen,
+  sorting: isSortingOpen,
+  cloudSync: isCloudSyncOpen
+} = toRefs(modals)
 const isAuthOpen = ref(false)
 const isSettingsOpen = ref(false)
 
