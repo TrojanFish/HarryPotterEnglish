@@ -400,13 +400,21 @@ def build_ui(mock_mode: bool = False) -> gr.Blocks:
                             value="Google 免费翻译",
                             label="字幕翻译引擎"
                         )
-                        gemini_api_key_input = gr.Textbox(
-                            label="Gemini API 密钥",
-                            placeholder="输入您的 Gemini API Key（支持自动从环境变量或 .env 读取）",
-                            value=default_gemini_key,
-                            type="password",
-                            visible=False
-                        )
+                        with gr.Row(visible=False) as gemini_key_row:
+                            gemini_api_key_input = gr.Textbox(
+                                label="Gemini API 密钥",
+                                placeholder="输入您的 Gemini API Key（支持自动从环境变量或 .env 读取）",
+                                value=default_gemini_key,
+                                type="password",
+                                scale=8,
+                                elem_id="gemini_key_input"
+                            )
+                            toggle_gemini_key_btn = gr.Button(
+                                "查看明文",
+                                variant="secondary",
+                                scale=2,
+                                elem_id="toggle_gemini_key_btn"
+                            )
                         force_checkbox = gr.Checkbox(
                             label="强制覆盖已存在的目录",
                             value=False
@@ -444,7 +452,21 @@ def build_ui(mock_mode: bool = False) -> gr.Blocks:
                 translation_radio.change(
                     fn=on_translation_engine_change,
                     inputs=[translation_radio],
-                    outputs=[gemini_api_key_input]
+                    outputs=[gemini_key_row]
+                )
+                toggle_gemini_key_btn.click(
+                    fn=None,
+                    js="""() => {
+                        const el = document.querySelector('#gemini_key_input input') || document.querySelector('#gemini_key_input textarea');
+                        const btn = document.querySelector('#toggle_gemini_key_btn');
+                        if (el) {
+                            const isPwd = el.type === 'password';
+                            el.type = isPwd ? 'text' : 'password';
+                            if (btn) {
+                                btn.innerText = isPwd ? '隐藏明文' : '查看明文';
+                            }
+                        }
+                    }"""
                 )
 
                 def _run_single(media, t_type, c_id, ttl, spk, chp, aut, nar, mdl, cmp, trn, g_key, frc):
@@ -522,13 +544,21 @@ def build_ui(mock_mode: bool = False) -> gr.Blocks:
                             value="Google 免费翻译",
                             label="字幕翻译引擎"
                         )
-                        batch_gemini_key_input = gr.Textbox(
-                            label="Gemini API 密钥",
-                            placeholder="输入您的 Gemini API Key",
-                            value=default_gemini_key,
-                            type="password",
-                            visible=False
-                        )
+                        with gr.Row(visible=False) as batch_gemini_key_row:
+                            batch_gemini_key_input = gr.Textbox(
+                                label="Gemini API 密钥",
+                                placeholder="输入您的 Gemini API Key",
+                                value=default_gemini_key,
+                                type="password",
+                                scale=8,
+                                elem_id="batch_gemini_key_input"
+                            )
+                            batch_toggle_gemini_key_btn = gr.Button(
+                                "查看明文",
+                                variant="secondary",
+                                scale=2,
+                                elem_id="batch_toggle_gemini_key_btn"
+                            )
                         batch_force_checkbox = gr.Checkbox(
                             label="强制覆盖已存在的目录",
                             value=False
@@ -553,7 +583,21 @@ def build_ui(mock_mode: bool = False) -> gr.Blocks:
                 batch_trans_radio.change(
                     fn=on_translation_engine_change,
                     inputs=[batch_trans_radio],
-                    outputs=[batch_gemini_key_input]
+                    outputs=[batch_gemini_key_row]
+                )
+                batch_toggle_gemini_key_btn.click(
+                    fn=None,
+                    js="""() => {
+                        const el = document.querySelector('#batch_gemini_key_input input') || document.querySelector('#batch_gemini_key_input textarea');
+                        const btn = document.querySelector('#batch_toggle_gemini_key_btn');
+                        if (el) {
+                            const isPwd = el.type === 'password';
+                            el.type = isPwd ? 'text' : 'password';
+                            if (btn) {
+                                btn.innerText = isPwd ? '隐藏明文' : '查看明文';
+                            }
+                        }
+                    }"""
                 )
 
                 def _run_batch(f_path, b_type, b_mdl, b_cmp, b_trn, b_key, b_frc):

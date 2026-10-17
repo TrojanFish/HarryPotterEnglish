@@ -222,7 +222,18 @@ class TestAppModule(unittest.TestCase):
             )
             self.assertIn("[SUCCESS]", summary_output)
 
+    def test_gemini_key_visibility_toggle_button(self):
+        """Verify app.py source contains eye/toggle buttons to preview Gemini API key in plain text."""
+        app_path = os.path.join(STUDIO_ROOT, "app.py")
+        with open(app_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        self.assertIn("toggle_gemini_key_btn", content, "app.py must contain toggle_gemini_key_btn")
+        self.assertIn("查看明文", content, "app.py must contain 查看明文 button label")
+        self.assertIn("batch_toggle_gemini_key_btn", content, "app.py must contain batch_toggle_gemini_key_btn")
+
 
 if __name__ == "__main__":
     unittest.main()
+
 
