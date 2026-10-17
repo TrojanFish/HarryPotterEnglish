@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="h-12 shrink-0 bg-[#fbf9f5] border-b border-[#e8ddd0] px-3 sm:px-6 flex items-center justify-center z-10"
+    class="h-16 shrink-0 bg-[#fbf9f5] border-b border-[#e8ddd0] px-3 sm:px-6 flex items-center justify-center z-10"
     role="navigation"
     aria-label="学习步骤流程"
   >

@@ -44,8 +44,8 @@
           <div class="w-10 h-1.5 rounded-full bg-[#e8ddd0]"></div>
         </div>
 
-        <!-- Header -->
-        <div class="p-4 border-b border-[#e8ddd0] bg-white/70 flex items-center justify-between shrink-0">
+        <!-- Header (Unified h-16 baseline) -->
+        <div class="h-16 px-4 border-b border-[#e8ddd0] bg-white/70 flex items-center justify-between shrink-0">
           <div class="flex items-center gap-2">
             <BookMarked class="w-5 h-5 text-amber-700" />
             <h2 class="font-serif text-base font-semibold text-stone-900">
