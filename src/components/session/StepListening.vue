@@ -1,88 +1,124 @@
 <template>
-  <div class="h-full w-full flex flex-col md:flex-row overflow-hidden bg-[#fbf9f5]">
-    <!-- Left Column: Reading Subtitle Stream (Full width on mobile, 65% on desktop) -->
+  <div ref="containerRef" class="h-full w-full flex flex-col md:flex-row overflow-hidden bg-[#fbf9f5]">
+    <!-- Left Column: Reading Subtitle Stream (Full width on mobile, flexible resizable on desktop) -->
     <div
       ref="scrollContainerRef"
-      class="flex-1 md:flex-[1.2] max-w-3xl flex flex-col min-w-0 border-r border-[#e8ddd0] overflow-y-auto p-4 sm:p-6 pb-32 sm:pb-36 space-y-3 sm:space-y-3.5"
+      class="flex-1 flex flex-col min-w-0 overflow-y-auto p-4 sm:p-6 pb-32 sm:pb-36"
     >
-      <!-- Subtitle Control Strip -->
-      <div class="flex items-center justify-between pb-3 border-b border-[#e8ddd0] text-xs text-stone-600 shrink-0">
-        <span class="px-2 py-0.5 bg-[#f5efe6] rounded-md border border-[#e8ddd0] font-mono text-[11px] text-stone-700">
-          共 {{ subtitleStore.cues.length }} 句
-        </span>
-        <button
-          type="button"
-          @click="toggleBlindMode"
-          class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-[#f2ece2] flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer"
-          :title="player.isBlindMode ? '盲听模式开启中（点击取消模糊）' : '开启盲听模式（模糊字幕专注听力）'"
-          :aria-label="player.isBlindMode ? '取消盲听模式' : '开启盲听模式'"
-        >
-          <EyeOff v-if="player.isBlindMode" class="w-5 h-5 text-amber-700" />
-          <Eye v-else class="w-5 h-5 text-stone-500 hover:text-stone-800" />
-        </button>
-      </div>
-
-      <!-- Empty state when no cues loaded -->
-      <div
-        v-if="subtitleStore.cues.length === 0"
-        class="flex-1 flex flex-col items-center justify-center p-8 text-center text-stone-500"
-      >
-        <BookOpen class="w-8 h-8 text-stone-400 mb-2" />
-        <p class="text-sm font-medium text-stone-900">正在加载原版音频字幕...</p>
-        <p class="text-xs text-stone-400 mt-1">请稍候或检查网络连接</p>
-      </div>
-
-      <!-- Cue Cards Stream -->
-      <div
-        v-for="(cue, idx) in subtitleStore.cues"
-        :key="cue.id || idx"
-        :id="'cue-' + idx"
-        @click="jumpToCue(cue, idx)"
-        :class="[
-          'cue-card group p-4 sm:p-5 rounded-xl border transition-all cursor-pointer select-text touch-manipulation',
-          idx === subtitleStore.activeCueIndex
-            ? 'border-l-4 border-l-amber-600 border-[#e8ddd0] bg-amber-500/10'
-            : 'border-[#e8ddd0] hover:border-amber-300 bg-white/75'
-        ]"
-      >
-        <!-- Time and Index -->
-        <div class="flex items-center justify-between text-[11px] font-mono mb-2">
-          <span :class="idx === subtitleStore.activeCueIndex ? 'text-amber-800 font-semibold' : 'text-stone-400 font-mono'">
-            {{ formatTime(cue.start) }} - {{ formatTime(cue.end) }} · #{{ String(idx + 1).padStart(2, '0') }}
+      <div class="max-w-3xl w-full mx-auto space-y-3 sm:space-y-3.5">
+        <!-- Subtitle Control Strip -->
+        <div class="flex items-center justify-between pb-3 border-b border-[#e8ddd0] text-xs text-stone-600 shrink-0">
+          <span class="px-2 py-0.5 bg-[#f5efe6] rounded-md border border-[#e8ddd0] font-mono text-[11px] text-stone-700">
+            共 {{ subtitleStore.cues.length }} 句
           </span>
+          <button
+            type="button"
+            @click="toggleBlindMode"
+            class="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-[#f2ece2] flex items-center justify-center transition-colors active:scale-95 touch-manipulation cursor-pointer"
+            :title="player.isBlindMode ? '盲听模式开启中（点击取消模糊）' : '开启盲听模式（模糊字幕专注听力）'"
+            :aria-label="player.isBlindMode ? '取消盲听模式' : '开启盲听模式'"
+          >
+            <EyeOff v-if="player.isBlindMode" class="w-5 h-5 text-amber-700" />
+            <Eye v-else class="w-5 h-5 text-stone-500 hover:text-stone-800" />
+          </button>
         </div>
 
-        <!-- English Sentence with word-level tap (supports Blind Mode Blur) -->
-        <p
-          :class="[
-            'text-lg sm:text-xl leading-[2.0] tracking-wide transition-all',
-            idx === subtitleStore.activeCueIndex ? 'text-stone-900 font-medium font-serif' : 'text-stone-800 font-serif',
-            player.isBlindMode ? 'filter blur-[7px] select-none opacity-40 group-hover:filter-none group-hover:opacity-100' : ''
-          ]"
+        <!-- Empty state when no cues loaded -->
+        <div
+          v-if="subtitleStore.cues.length === 0"
+          class="flex-1 flex flex-col items-center justify-center p-8 text-center text-stone-500"
         >
-          <span
-            v-for="(token, tIdx) in tokenizeText(cue.text)"
-            :key="tIdx"
-            @click.stop="handleWordClick(token, cue.text)"
-            class="token hover:text-amber-700 hover:underline cursor-pointer inline-block mr-[0.35em] transition-colors touch-manipulation"
-          >{{ token }}</span>
-        </p>
+          <BookOpen class="w-8 h-8 text-stone-400 mb-2" />
+          <p class="text-sm font-medium text-stone-900">正在加载原版音频字幕...</p>
+          <p class="text-xs text-stone-400 mt-1">请稍候或检查网络连接</p>
+        </div>
 
-        <!-- Chinese Translation (supports Blind Mode Blur) -->
-        <p
-          v-if="cue.translation"
+        <!-- Cue Cards Stream -->
+        <div
+          v-for="(cue, idx) in subtitleStore.cues"
+          :key="cue.id || idx"
+          :id="'cue-' + idx"
+          @click="jumpToCue(cue, idx)"
           :class="[
-            'text-sm sm:text-base text-stone-600 mt-2 pt-2 border-t border-[#e8ddd0]/60 leading-relaxed font-sans transition-all',
-            player.isBlindMode ? 'filter blur-[7px] select-none opacity-40 group-hover:filter-none group-hover:opacity-100' : ''
+            'cue-card group p-4 sm:p-5 rounded-xl border transition-all cursor-pointer select-text touch-manipulation',
+            idx === subtitleStore.activeCueIndex
+              ? 'border-l-4 border-l-amber-600 border-[#e8ddd0] bg-amber-500/10'
+              : 'border-[#e8ddd0] hover:border-amber-300 bg-white/75'
           ]"
         >
-          {{ cue.translation }}
-        </p>
+          <!-- Time and Index -->
+          <div class="flex items-center justify-between text-[11px] font-mono mb-2">
+            <span :class="idx === subtitleStore.activeCueIndex ? 'text-amber-800 font-semibold' : 'text-stone-400 font-mono'">
+              {{ formatTime(cue.start) }} - {{ formatTime(cue.end) }} · #{{ String(idx + 1).padStart(2, '0') }}
+            </span>
+          </div>
+
+          <!-- English Sentence with word-level tap (supports Blind Mode Blur) -->
+          <p
+            :class="[
+              'text-lg sm:text-xl leading-[2.0] tracking-wide transition-all',
+              idx === subtitleStore.activeCueIndex ? 'text-stone-900 font-medium font-serif' : 'text-stone-800 font-serif',
+              player.isBlindMode ? 'filter blur-[7px] select-none opacity-40 group-hover:filter-none group-hover:opacity-100' : ''
+            ]"
+          >
+            <span
+              v-for="(token, tIdx) in tokenizeText(cue.text)"
+              :key="tIdx"
+              @click.stop="handleWordClick(token, cue.text)"
+              class="token hover:text-amber-700 hover:underline cursor-pointer inline-block mr-[0.35em] transition-colors touch-manipulation"
+            >{{ token }}</span>
+          </p>
+
+          <!-- Chinese Translation (supports Blind Mode Blur) -->
+          <p
+            v-if="cue.translation"
+            :class="[
+              'text-sm sm:text-base text-stone-600 mt-2 pt-2 border-t border-[#e8ddd0]/60 leading-relaxed font-sans transition-all',
+              player.isBlindMode ? 'filter blur-[7px] select-none opacity-40 group-hover:filter-none group-hover:opacity-100' : ''
+            ]"
+          >
+            {{ cue.translation }}
+          </p>
+        </div>
       </div>
     </div>
 
-    <!-- Right Column: Focus Insight & Word Details (Desktop only) -->
-    <div class="hidden md:flex md:w-80 lg:w-72 shrink-0 flex-col p-6 bg-[#f5efe6] overflow-y-auto space-y-5">
+    <!-- Draggable Resizer Splitter (Desktop/Tablet md:flex only) -->
+    <div
+      role="separator"
+      tabindex="0"
+      aria-orientation="vertical"
+      :aria-valuenow="Math.round(rightPanelWidth)"
+      aria-valuemin="260"
+      aria-valuemax="560"
+      aria-label="拖拽调整词汇栏宽度 (左右方向键微调，双击恢复默认)"
+      title="拖拽调节宽度 (双击恢复默认)"
+      @mousedown="startDragging"
+      @touchstart="startDraggingTouch"
+      @dblclick="resetPanelWidth"
+      @keydown.left.prevent="adjustWidth(20)"
+      @keydown.right.prevent="adjustWidth(-20)"
+      class="hidden md:flex relative shrink-0 w-2.5 hover:w-2.5 cursor-col-resize items-center justify-center group touch-none select-none transition-colors border-l border-[#e8ddd0]"
+      :class="isDragging ? 'bg-amber-500/25' : 'hover:bg-amber-500/15'"
+    >
+      <!-- Center subtle visual grip line & handle -->
+      <div
+        class="w-[2px] h-full transition-colors"
+        :class="isDragging ? 'bg-amber-600' : 'bg-transparent group-hover:bg-amber-400'"
+      ></div>
+      <div
+        class="absolute w-4 h-9 rounded-full bg-white border border-[#e8ddd0] group-hover:border-amber-400 flex items-center justify-center shadow-xs transition-opacity opacity-0 group-hover:opacity-100 pointer-events-none"
+        :class="{ 'opacity-100 border-amber-600': isDragging }"
+      >
+        <GripVertical class="w-2.5 h-2.5 text-stone-400 group-hover:text-amber-700" />
+      </div>
+    </div>
+
+    <!-- Right Column: Focus Insight & Word Details (Desktop only, resizable width) -->
+    <div
+      class="hidden md:flex shrink-0 flex-col p-6 bg-[#f5efe6] overflow-y-auto space-y-5"
+      :style="{ width: `${rightPanelWidth}px` }"
+    >
       <!-- Section: Core Vocabulary of Current Cue -->
       <div>
         <div class="flex items-center justify-between mb-2">
@@ -257,7 +293,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import {
   Eye,
   EyeOff,
@@ -266,7 +302,8 @@ import {
   Sparkles,
   Volume2,
   BookMarked,
-  BookmarkCheck
+  BookmarkCheck,
+  GripVertical
 } from 'lucide-vue-next'
 import { useSubtitleStore } from '../../stores/subtitleStore.js'
 import { usePlayerStore } from '../../stores/playerStore.js'
@@ -285,6 +322,7 @@ const sessionStore = useSessionStore()
 const analyticsStore = useAnalyticsStore()
 const gamificationStore = useGamificationStore()
 
+const containerRef = ref(null)
 const scrollContainerRef = ref(null)
 const toastMsg = ref('')
 let toastTimer = null
@@ -292,6 +330,124 @@ let toastTimer = null
 const isLookupOpen = ref(false)
 const lookupWordTarget = ref('')
 const lookupQuote = ref('')
+
+// --- Draggable Splitter Width Management ---
+const DEFAULT_PANEL_WIDTH = 340
+const MIN_PANEL_WIDTH = 260
+const MAX_PANEL_WIDTH = 560
+
+function getInitialPanelWidth() {
+  if (typeof window === 'undefined') return DEFAULT_PANEL_WIDTH
+  try {
+    const saved = localStorage.getItem('hogwarts_listening_panel_width')
+    if (saved) {
+      const parsed = Number(saved)
+      if (!isNaN(parsed) && parsed >= MIN_PANEL_WIDTH && parsed <= MAX_PANEL_WIDTH) {
+        return parsed
+      }
+    }
+  } catch (err) {
+    // Graceful fallback on storage access error
+  }
+  return DEFAULT_PANEL_WIDTH
+}
+
+const rightPanelWidth = ref(getInitialPanelWidth())
+const isDragging = ref(false)
+let startX = 0
+let startWidth = DEFAULT_PANEL_WIDTH
+
+function startDragging(e) {
+  isDragging.value = true
+  startX = e.clientX
+  startWidth = rightPanelWidth.value
+  document.body.style.cursor = 'col-resize'
+  document.body.style.userSelect = 'none'
+
+  window.addEventListener('mousemove', onDragging)
+  window.addEventListener('mouseup', stopDragging)
+}
+
+function onDragging(e) {
+  if (!isDragging.value) return
+  const deltaX = startX - e.clientX
+  const containerWidth = containerRef.value?.clientWidth || window.innerWidth || 1200
+  const maxAllowed = Math.min(MAX_PANEL_WIDTH, Math.max(MIN_PANEL_WIDTH, containerWidth - 380))
+  const newWidth = Math.max(MIN_PANEL_WIDTH, Math.min(maxAllowed, startWidth + deltaX))
+  rightPanelWidth.value = newWidth
+}
+
+function stopDragging() {
+  if (!isDragging.value) return
+  isDragging.value = false
+  document.body.style.cursor = ''
+  document.body.style.userSelect = ''
+  try {
+    localStorage.setItem('hogwarts_listening_panel_width', String(Math.round(rightPanelWidth.value)))
+  } catch (err) {
+    // Ignore storage quota error
+  }
+
+  window.removeEventListener('mousemove', onDragging)
+  window.removeEventListener('mouseup', stopDragging)
+}
+
+function startDraggingTouch(e) {
+  if (!e.touches || e.touches.length === 0) return
+  isDragging.value = true
+  startX = e.touches[0].clientX
+  startWidth = rightPanelWidth.value
+
+  window.addEventListener('touchmove', onDraggingTouch, { passive: false })
+  window.addEventListener('touchend', stopDraggingTouch)
+}
+
+function onDraggingTouch(e) {
+  if (!isDragging.value || !e.touches || e.touches.length === 0) return
+  e.preventDefault()
+  const deltaX = startX - e.touches[0].clientX
+  const containerWidth = containerRef.value?.clientWidth || window.innerWidth || 1200
+  const maxAllowed = Math.min(MAX_PANEL_WIDTH, Math.max(MIN_PANEL_WIDTH, containerWidth - 380))
+  const newWidth = Math.max(MIN_PANEL_WIDTH, Math.min(maxAllowed, startWidth + deltaX))
+  rightPanelWidth.value = newWidth
+}
+
+function stopDraggingTouch() {
+  if (!isDragging.value) return
+  isDragging.value = false
+  try {
+    localStorage.setItem('hogwarts_listening_panel_width', String(Math.round(rightPanelWidth.value)))
+  } catch (err) {
+    // Ignore storage quota error
+  }
+
+  window.removeEventListener('touchmove', onDraggingTouch)
+  window.removeEventListener('touchend', stopDraggingTouch)
+}
+
+function resetPanelWidth() {
+  rightPanelWidth.value = DEFAULT_PANEL_WIDTH
+  try {
+    localStorage.setItem('hogwarts_listening_panel_width', String(DEFAULT_PANEL_WIDTH))
+  } catch (err) {}
+}
+
+function adjustWidth(delta) {
+  const containerWidth = containerRef.value?.clientWidth || window.innerWidth || 1200
+  const maxAllowed = Math.min(MAX_PANEL_WIDTH, Math.max(MIN_PANEL_WIDTH, containerWidth - 380))
+  const newWidth = Math.max(MIN_PANEL_WIDTH, Math.min(maxAllowed, rightPanelWidth.value + delta))
+  rightPanelWidth.value = newWidth
+  try {
+    localStorage.setItem('hogwarts_listening_panel_width', String(Math.round(newWidth)))
+  } catch (err) {}
+}
+
+onUnmounted(() => {
+  window.removeEventListener('mousemove', onDragging)
+  window.removeEventListener('mouseup', stopDragging)
+  window.removeEventListener('touchmove', onDraggingTouch)
+  window.removeEventListener('touchend', stopDraggingTouch)
+})
 
 function formatTime(seconds) {
   if (isNaN(seconds) || seconds === null) return '00:00'
