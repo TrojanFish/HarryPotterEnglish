@@ -106,6 +106,7 @@ import { useNavigationStore } from '../../stores/navigationStore.js'
 import { useVocabStore } from '../../stores/vocabStore.js'
 import { useAnalyticsStore } from '../../stores/analyticsStore.js'
 import { useGamificationStore } from '../../stores/gamificationStore.js'
+import { STUDY_MODULES } from '../../config/studyModules.js'
 
 const props = defineProps({
   studyMode: {
@@ -145,51 +146,8 @@ const todayListeningSeconds = computed(() => {
   return Number(analyticsStore.dailyListening?.[todayStr]) || 0
 })
 
-const navItems = [
-  {
-    id: 'bookshelf',
-    title: '魔法书架',
-    icon: Library,
-    view: 'bookshelf'
-  },
-  {
-    id: 'ted',
-    title: 'TED演讲',
-    icon: Video,
-    view: 'ted'
-  },
-  {
-    id: 'assessment',
-    title: '能力评定',
-    icon: Award,
-    view: 'assessment'
-  },
-  {
-    id: 'player_reader',
-    title: '原著精听',
-    icon: Headphones,
-    view: 'player',
-    studyMode: 'normal'
-  },
-  {
-    id: 'vocab',
-    title: '生词本',
-    icon: Bookmark,
-    view: 'vocab'
-  },
-  {
-    id: 'analytics',
-    title: '学业罗盘',
-    icon: BarChart2,
-    view: 'analytics'
-  },
-  {
-    id: 'storage',
-    title: '离线管理',
-    icon: HardDrive,
-    view: 'storage'
-  }
-]
+// Centralized study modules: bookshelf, ted, assessment (with Award icon), player_reader, vocab, analytics, storage
+const navItems = STUDY_MODULES
 
 function isItemActive(item) {
   if (item.view !== navigationStore.currentView) {
