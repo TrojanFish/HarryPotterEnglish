@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="flex items-center gap-2 px-4 py-3 border-b border-[#e8ddd0] bg-[#fbf9f5] w-full select-none"
+    class="flex items-center gap-1 sm:gap-2 select-none bg-[#fbf9f5] border-[#e8ddd0]"
     aria-label="TED 学习步骤"
   >
     <template v-for="(step, index) in STEPS" :key="step.id">
@@ -9,29 +9,29 @@
         type="button"
         :disabled="isLocked(step.id)"
         @click="goToStep(step.id)"
-        class="min-h-[44px] min-w-[44px] px-3 py-1 flex flex-col items-center justify-center gap-1 transition-all duration-200 touch-manipulation focus:outline-none"
+        class="min-h-[44px] min-w-[44px] px-2.5 sm:px-3 py-1.5 flex items-center justify-center gap-1.5 rounded-xl transition-all duration-200 touch-manipulation focus:outline-none cursor-pointer"
         :class="[
           isActive(step.id)
-            ? 'bg-amber-700 text-white rounded-2xl font-bold shadow-none'
+            ? 'bg-amber-700 text-white rounded-xl font-bold shadow-none'
             : isLocked(step.id)
             ? 'text-stone-400 opacity-50 cursor-not-allowed'
             : isCompleted(step.id)
-            ? 'text-stone-700 hover:text-stone-900 rounded-2xl hover:bg-stone-100/60'
-            : 'text-stone-600 hover:text-stone-900 rounded-2xl hover:bg-stone-100/60'
+            ? 'text-stone-700 hover:text-stone-900 rounded-xl hover:bg-stone-100/70'
+            : 'text-stone-600 hover:text-stone-900 rounded-xl hover:bg-stone-100/70'
         ]"
         :aria-current="isActive(step.id) ? 'step' : undefined"
         :aria-label="`步骤 ${step.id}: ${step.label}${isActive(step.id) ? ' (当前)' : isCompleted(step.id) ? ' (已完成)' : isLocked(step.id) ? ' (已锁定)' : ''}`"
       >
         <!-- Icon / Badge -->
-        <div class="flex items-center justify-center">
+        <div class="flex items-center justify-center shrink-0">
           <CheckCircle2
             v-if="isCompleted(step.id)"
-            class="w-4 h-4 text-emerald-600 stroke-[2.2]"
+            class="w-3.5 h-3.5 text-emerald-600 stroke-[2.2]"
             aria-hidden="true"
           />
           <Lock
             v-else-if="isLocked(step.id)"
-            class="w-4 h-4 text-stone-400 stroke-[2]"
+            class="w-3.5 h-3.5 text-stone-400 stroke-[2]"
             aria-hidden="true"
           />
           <span
@@ -56,7 +56,7 @@
       <!-- Connector Line between steps -->
       <div
         v-if="index < STEPS.length - 1"
-        class="flex-1 h-0.5 transition-colors duration-200"
+        class="w-2.5 sm:w-4 h-0.5 transition-colors duration-200 shrink-0"
         :class="isConnectorCompleted(step.id) ? 'bg-amber-400' : 'bg-[#e8ddd0]'"
         aria-hidden="true"
       />

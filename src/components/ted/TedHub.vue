@@ -88,22 +88,42 @@
 
     <!-- Main Learning Stage -->
     <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
-      <!-- Four-step progress bar with optional expand button when talk list is collapsed -->
-      <div class="flex items-center shrink-0 border-b border-[#e8ddd0] bg-[#fbf9f5]">
-        <!-- Expand Button for Desktop when Talk List is Collapsed -->
-        <button
-          v-if="isTalkListCollapsed"
-          type="button"
-          @click="isTalkListCollapsed = false"
-          class="hidden lg:flex min-h-[44px] px-3 py-1.5 ml-3 rounded-xl border border-amber-300/80 bg-amber-500/10 hover:bg-amber-500/20 text-amber-950 font-bold text-xs items-center gap-2 active:scale-95 transition-all touch-manipulation cursor-pointer shrink-0"
-          title="展开TED演讲精选目录"
-          aria-label="展开TED演讲精选目录"
-        >
-          <PanelLeftOpen class="w-4 h-4 text-amber-800" aria-hidden="true" />
-          <span>演讲精选</span>
-        </button>
+      <!-- Unified Top Header Bar (matches h-16 baseline across 3 columns) -->
+      <div class="h-16 px-4 border-b border-[#e8ddd0] bg-[#fbf9f5] flex items-center justify-between gap-3 shrink-0">
+        <!-- Left: Collapsed Expand Button + Current Talk Title & CEFR Badge -->
+        <div class="flex items-center gap-2.5 min-w-0 flex-1">
+          <!-- Expand Button for Desktop when Talk List is Collapsed -->
+          <button
+            v-if="isTalkListCollapsed"
+            type="button"
+            @click="isTalkListCollapsed = false"
+            class="hidden lg:flex min-h-[44px] px-3 py-1.5 rounded-xl border border-amber-300/80 bg-amber-500/10 hover:bg-amber-500/20 text-amber-950 font-bold text-xs items-center gap-2 active:scale-95 transition-all touch-manipulation cursor-pointer shrink-0"
+            title="展开TED演讲精选目录"
+            aria-label="展开TED演讲精选目录"
+          >
+            <PanelLeftOpen class="w-4 h-4 text-amber-800" aria-hidden="true" />
+            <span>演讲精选</span>
+          </button>
 
-        <TedStepBar class="flex-1 !border-b-0" />
+          <!-- Current Talk Title & CEFR Badge -->
+          <div v-if="tedStore.currentTalk" class="flex items-center gap-2 min-w-0">
+            <span
+              v-if="tedStore.currentTalk.cefrLevel"
+              class="text-[11px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-300/80 shrink-0"
+            >
+              {{ tedStore.currentTalk.cefrLevel }}
+            </span>
+            <h2
+              class="text-sm font-bold text-amber-950 truncate"
+              :title="tedStore.currentTalk.titleCn ? `${tedStore.currentTalk.titleCn} (${tedStore.currentTalk.title})` : tedStore.currentTalk.title"
+            >
+              {{ tedStore.currentTalk.titleCn || tedStore.currentTalk.title }}
+            </h2>
+          </div>
+        </div>
+
+        <!-- Right: Four-step progress bar -->
+        <TedStepBar class="shrink-0" />
       </div>
 
       <!-- Step Views Routing -->

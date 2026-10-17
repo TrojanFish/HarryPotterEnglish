@@ -1,24 +1,14 @@
 <template>
   <div class="flex flex-col h-full bg-[#fbf9f5] select-none">
-    <!-- Header banner / Intro -->
-    <header class="px-4 pt-4 pb-2 border-b border-[#e8ddd0]/60 bg-[#fbf9f5]">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-base font-bold text-amber-950">
-            {{ tedStore.currentTalk?.title || '词汇预热' }}
-          </h2>
-          <p class="text-xs text-stone-500 mt-0.5">
-            听完下方所有重点词汇读音，即可解锁视频精听
-          </p>
-        </div>
-        <div class="text-right">
-          <span class="text-xs font-mono font-bold text-amber-900">
-            {{ progress.listened }} / {{ progress.total }}
-          </span>
-          <span class="text-[11px] text-stone-500 block">已预热</span>
-        </div>
+    <!-- Sub-status bar inside content (compact and subtle, eliminates double header) -->
+    <div class="px-4 py-2.5 bg-amber-500/5 border-b border-[#e8ddd0]/50 flex items-center justify-between shrink-0">
+      <p class="text-xs text-stone-600 font-medium">
+        听完下方所有重点词汇读音，即可解锁视频精看
+      </p>
+      <div class="flex items-center gap-2 text-xs font-mono font-bold text-amber-900 shrink-0">
+        <span>已预热 {{ progress.listened }} / {{ progress.total }}</span>
       </div>
-    </header>
+    </div>
 
     <!-- Scrollable card flow -->
     <div class="flex-1 flex flex-col gap-4 p-4 overflow-y-auto">

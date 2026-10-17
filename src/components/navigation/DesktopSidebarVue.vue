@@ -1,15 +1,15 @@
 <template>
   <aside
     :class="[
-      'hidden lg:flex shrink-0 flex-col justify-between border-r border-[#e8ddd0] bg-[#fbf9f5] select-none h-full overflow-y-auto transition-all duration-200',
-      isCollapsed ? 'w-18 py-4 px-2 items-center' : 'w-64 p-3.5'
+      'hidden lg:flex shrink-0 flex-col justify-between border-r border-[#e8ddd0] bg-[#fbf9f5] select-none h-full overflow-hidden transition-all duration-200',
+      isCollapsed ? 'w-18' : 'w-64'
     ]"
     aria-label="桌面端侧边导航"
   >
     <!-- Top Brand & Navigation -->
-    <div :class="['w-full space-y-4', isCollapsed ? 'flex flex-col items-center' : '']">
+    <div class="w-full flex-1 flex flex-col min-h-0">
       <!-- Brand / Collapse Row (Collapsed) -->
-      <div v-if="isCollapsed" class="flex flex-col items-center gap-3 w-full">
+      <div v-if="isCollapsed" class="h-16 flex items-center justify-center w-full border-b border-[#e8ddd0] shrink-0">
         <button
           type="button"
           @click="handleToggleCollapse"
@@ -22,45 +22,46 @@
       </div>
 
       <!-- Brand Row (Expanded) -->
-      <div v-else class="space-y-2.5">
-        <div class="flex items-center justify-between gap-2 px-1">
-          <button
-            type="button"
-            @click="handleSelectView('bookshelf')"
-            class="flex items-center gap-2.5 cursor-pointer group min-w-0 text-left bg-transparent border-0 p-0 touch-manipulation"
-            title="返回魔法书架"
-            aria-label="返回魔法书架"
-          >
-            <div class="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center text-white group-hover:scale-105 active:scale-95 transition-transform shrink-0">
-              <Sparkles :size="20" class="text-white stroke-[2.5]" />
+      <div v-else class="h-16 flex items-center justify-between gap-2 px-3.5 border-b border-[#e8ddd0] shrink-0">
+        <button
+          type="button"
+          @click="handleSelectView('bookshelf')"
+          class="flex items-center gap-2.5 cursor-pointer group min-w-0 text-left bg-transparent border-0 p-0 touch-manipulation"
+          title="返回魔法书架"
+          aria-label="返回魔法书架"
+        >
+          <div class="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center text-white group-hover:scale-105 active:scale-95 transition-transform shrink-0">
+            <Sparkles :size="20" class="text-white stroke-[2.5]" />
+          </div>
+          <div class="flex flex-col min-w-0">
+            <div class="flex items-center gap-1.5">
+              <h1 class="font-magical font-bold text-base text-amber-950 tracking-tight whitespace-nowrap">
+                霍格沃茨英语
+              </h1>
+              <span class="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-red-800 text-amber-100 font-sans font-bold shrink-0">
+                <GraduationCap :size="10" />
+                <span>原版</span>
+              </span>
             </div>
-            <div class="flex flex-col min-w-0">
-              <div class="flex items-center gap-1.5">
-                <h1 class="font-magical font-bold text-base text-amber-950 tracking-tight whitespace-nowrap">
-                  霍格沃茨英语
-                </h1>
-                <span class="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-red-800 text-amber-100 font-sans font-bold shrink-0">
-                  <GraduationCap :size="10" />
-                  <span>原版</span>
-                </span>
-              </div>
-              <p class="text-[11px] font-medium text-stone-500 font-reading leading-tight mt-0.5 truncate">
-                听魔法小说 · 学地道英语
-              </p>
-            </div>
-          </button>
+            <p class="text-[11px] font-medium text-stone-500 font-reading leading-tight mt-0.5 truncate">
+              听魔法小说 · 学地道英语
+            </p>
+          </div>
+        </button>
 
-          <button
-            type="button"
-            @click="handleToggleCollapse"
-            class="w-10 h-10 rounded-full hover:bg-stone-200/80 text-stone-600 hover:text-stone-900 flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0 touch-manipulation shadow-none"
-            title="关闭边栏 (Ctrl+B)"
-            aria-label="关闭边栏"
-          >
-            <PanelLeftClose :size="18" />
-          </button>
-        </div>
+        <button
+          type="button"
+          @click="handleToggleCollapse"
+          class="w-10 h-10 rounded-full hover:bg-stone-200/80 text-stone-600 hover:text-stone-900 flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0 touch-manipulation shadow-none"
+          title="关闭边栏 (Ctrl+B)"
+          aria-label="关闭边栏"
+        >
+          <PanelLeftClose :size="18" />
+        </button>
       </div>
+
+      <!-- Navigation Scrollable Area -->
+      <div :class="['w-full flex-1 overflow-y-auto space-y-4', isCollapsed ? 'flex flex-col items-center py-3 px-2' : 'p-3.5']">
 
       <!-- Navigation Items (Collapsed) -->
       <nav v-if="isCollapsed" class="flex flex-col items-center gap-1.5 w-full" aria-label="桌面精简导航">
@@ -136,6 +137,7 @@
           </span>
         </button>
       </nav>
+      </div>
     </div>
 
     <!-- Bottom Section: Habit progress & Sync indicators -->

@@ -4,17 +4,17 @@
     role="region"
     aria-label="TED 演讲列表"
   >
-    <!-- Header / Title -->
-    <div class="p-3.5 border-b border-[#e8ddd0] flex items-center justify-between shrink-0">
+    <!-- Header / Title (Unified h-16 baseline) -->
+    <div class="h-16 px-3.5 border-b border-[#e8ddd0] flex items-center justify-between shrink-0 bg-[#fbf9f5]">
       <div class="flex items-center gap-2 min-w-0">
         <h3 class="text-sm font-bold font-magical text-amber-950 tracking-wider truncate">
-          TED 演讲精选
+          TED 精选
         </h3>
-        <span class="text-xs text-stone-500 font-mono shrink-0">
+        <span class="text-xs text-stone-500 font-mono shrink-0 px-1.5 py-0.5 rounded-full bg-amber-100/60 border border-amber-300/60">
           {{ tedStore.talks.length }} 篇
         </span>
       </div>
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-0.5">
         <button
           type="button"
           @click="refreshTalks"

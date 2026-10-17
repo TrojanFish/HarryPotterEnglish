@@ -1,15 +1,11 @@
 <template>
   <div class="h-full w-full flex flex-col bg-[#fbf9f5] select-none overflow-y-auto">
-    <!-- Header / Segment Navigation Bar -->
-    <header class="px-4 py-3.5 border-b border-[#e8ddd0]/70 bg-[#fbf9f5]/90 backdrop-blur-sm sticky top-0 z-10">
+    <!-- Sub-toolbar / Segment Navigation Bar -->
+    <header class="px-4 py-2.5 border-b border-[#e8ddd0]/70 bg-amber-500/5 sticky top-0 z-10">
       <div class="max-w-2xl mx-auto flex items-center justify-between gap-3">
-        <div>
-          <h2 class="text-sm font-bold text-amber-950 truncate max-w-[200px] sm:max-w-md">
-            {{ currentTalk?.title ? `${currentTalk.title} · 跟读工坊` : '跟读工坊' }}
-          </h2>
-          <p class="text-xs text-stone-500 mt-0.5">
-            双轨原声对照 · 模拟母语发音抑扬顿挫
-          </p>
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="text-xs font-bold text-amber-950">跟读工坊</span>
+          <span class="text-xs text-stone-500 hidden sm:inline">双轨原声对照 · 模拟母语抑扬顿挫</span>
         </div>
 
         <!-- Segment Navigator -->

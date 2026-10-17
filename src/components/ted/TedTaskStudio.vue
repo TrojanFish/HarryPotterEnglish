@@ -1,36 +1,13 @@
 <template>
   <div class="flex flex-col h-full bg-[#fbf9f5] select-none">
-    <!-- Header banner -->
-    <header class="px-4 pt-4 pb-3 border-b border-[#e8ddd0]/60 bg-[#fbf9f5]">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-base font-bold text-amber-950">
-            {{ currentTalk?.title ? `${currentTalk.title} · 理解练习` : '理解练习' }}
-          </h2>
-          <p class="text-xs text-stone-500 mt-0.5">
-            完成关键句填空与时间轴观点匹配，检验听力理解成效
-          </p>
-        </div>
-        <div v-if="hasSubmitted" class="text-right">
-          <span
-            class="text-sm font-mono font-bold px-2.5 py-1 rounded-lg border"
-            :class="[
-              (taskScore ?? 0) >= 80
-                ? 'bg-amber-100/80 text-amber-900 border-amber-300'
-                : 'bg-stone-100 text-stone-800 border-stone-300'
-            ]"
-          >
-            得分: {{ taskScore }}分
-          </span>
-        </div>
-      </div>
-
+    <!-- Task Navigation Toolbar (Subtle sub-toolbar inside Studio) -->
+    <div class="px-4 py-2.5 border-b border-[#e8ddd0]/60 bg-amber-500/5 flex flex-wrap items-center justify-between gap-3 shrink-0">
       <!-- Navigation tabs between Cloze and Matching -->
-      <div class="flex items-center gap-2 mt-3">
+      <div class="flex items-center gap-2">
         <button
           type="button"
           @click="activeSection = 'all'"
-          class="min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-xl text-xs font-semibold transition-all touch-manipulation focus:outline-none flex items-center gap-1.5"
+          class="min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-xl text-xs font-semibold transition-all touch-manipulation focus:outline-none flex items-center gap-1.5 cursor-pointer"
           :class="[
             activeSection === 'all'
               ? 'bg-amber-900 text-amber-50'
@@ -43,7 +20,7 @@
         <button
           type="button"
           @click="activeSection = 'cloze'"
-          class="min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-xl text-xs font-semibold transition-all touch-manipulation focus:outline-none flex items-center gap-1.5"
+          class="min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-xl text-xs font-semibold transition-all touch-manipulation focus:outline-none flex items-center gap-1.5 cursor-pointer"
           :class="[
             activeSection === 'cloze'
               ? 'bg-amber-900 text-amber-50'
@@ -56,7 +33,7 @@
         <button
           type="button"
           @click="activeSection = 'matching'"
-          class="min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-xl text-xs font-semibold transition-all touch-manipulation focus:outline-none flex items-center gap-1.5"
+          class="min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-xl text-xs font-semibold transition-all touch-manipulation focus:outline-none flex items-center gap-1.5 cursor-pointer"
           :class="[
             activeSection === 'matching'
               ? 'bg-amber-900 text-amber-50'
@@ -67,7 +44,20 @@
           <span class="text-[10px] opacity-80">({{ matchingList.length }})</span>
         </button>
       </div>
-    </header>
+
+      <div v-if="hasSubmitted" class="text-right">
+        <span
+          class="text-xs font-mono font-bold px-2.5 py-1 rounded-lg border"
+          :class="[
+            (taskScore ?? 0) >= 80
+              ? 'bg-amber-100/80 text-amber-900 border-amber-300'
+              : 'bg-stone-100 text-stone-800 border-stone-300'
+          ]"
+        >
+          得分: {{ taskScore }}分
+        </span>
+      </div>
+    </div>
 
     <!-- Scrollable content -->
     <div class="flex-1 overflow-y-auto p-4 space-y-6">

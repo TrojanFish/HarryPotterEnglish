@@ -1,6 +1,6 @@
 {
   "version": "hogwarts-feed-v1",
-  "generatedAt": "2026-10-17T04:23:47.419Z",
+  "generatedAt": "2026-10-17T07:26:15.846Z",
   "stats": {
     "booksCount": 0,
     "episodesCount": 0,
@@ -11,8 +11,8 @@
     {
       "id": "20260106-how-japan-saved-its-biggest-city-from-collapse-roman",
       "title": "20260106 How Japan Saved Its Biggest City From Collapse Roman",
-      "titleCn": "",
-      "speaker": "TED Speaker",
+      "titleCn": "江户启示录：日本如何拯救其最大城市免于崩溃",
+      "speaker": "Roman",
       "year": 2026,
       "durationSeconds": 352,
       "cefrLevel": "B1",
@@ -20,12 +20,183 @@
       "videoKey": "ted/20260106-how-japan-saved-its-biggest-city-from-collapse-roman/video.mp4",
       "vttKey": "ted/20260106-how-japan-saved-its-biggest-city-from-collapse-roman/subtitle.vtt",
       "thumbnailKey": "ted/20260106-how-japan-saved-its-biggest-city-from-collapse-roman/cover.jpg",
-      "vocabSet": [],
+      "vocabSet": [
+        {
+          "word": "ecological",
+          "ipa": "/ˌiːkəˈlɒdʒɪkl/",
+          "pos": "adj.",
+          "cefrLevel": "B2",
+          "definitionCn": "生态的；生态学的",
+          "exampleSentence": "However, it was on the verge of ecological collapse.",
+          "examTag": "高考重点"
+        },
+        {
+          "word": "deforestation",
+          "ipa": "/diːˌfɒrɪˈsteɪʃn/",
+          "pos": "n.",
+          "cefrLevel": "C1",
+          "definitionCn": "森林砍伐；滥伐森林",
+          "exampleSentence": "Years of intense logging had led to massive deforestation.",
+          "examTag": "雅思"
+        },
+        {
+          "word": "erosion",
+          "ipa": "/ɪˈrəʊʒn/",
+          "pos": "n.",
+          "cefrLevel": "B2",
+          "definitionCn": "侵蚀；水土流失",
+          "exampleSentence": "The city now faced timber shortages and the impacts of severe erosion.",
+          "examTag": "四六级"
+        },
+        {
+          "word": "sustainable",
+          "ipa": "/səˈsteɪnəbl/",
+          "pos": "adj.",
+          "cefrLevel": "B2",
+          "definitionCn": "可持续的；能长久维持的",
+          "exampleSentence": "Edo will transform and become one of the most sustainable cities in history.",
+          "examTag": "高考重点"
+        },
+        {
+          "word": "reforestation",
+          "ipa": "/riːˌfɒrɪˈsteɪʃn/",
+          "pos": "n.",
+          "cefrLevel": "C1",
+          "definitionCn": "重新造林；植树再造林",
+          "exampleSentence": "The shoguns introduced limitations on logging and launched sprawling reforestation programs.",
+          "examTag": "雅思"
+        },
+        {
+          "word": "rationing",
+          "ipa": "/ˈræʃənɪŋ/",
+          "pos": "n.",
+          "cefrLevel": "B2",
+          "definitionCn": "定量配给；配给制",
+          "exampleSentence": "To curb demands for timber, strict rationing rules were introduced.",
+          "examTag": "四六级"
+        },
+        {
+          "word": "byproduct",
+          "ipa": "/ˈbaɪprɒdʌkt/",
+          "pos": "n.",
+          "cefrLevel": "B2",
+          "definitionCn": "副产品",
+          "exampleSentence": "Residents used agricultural byproducts, like rice straw, to make rope.",
+          "examTag": "四六级"
+        },
+        {
+          "word": "repurpose",
+          "ipa": "/ˌriːˈpɜːpəs/",
+          "pos": "v.",
+          "cefrLevel": "B2",
+          "definitionCn": "改变用途；重新利用",
+          "exampleSentence": "Families developed techniques to reuse or repurpose items, rather than discarding them.",
+          "examTag": "雅思"
+        },
+        {
+          "word": "authoritarian",
+          "ipa": "/ɔːˌθɒrɪˈteəriən/",
+          "pos": "adj.",
+          "cefrLevel": "C1",
+          "definitionCn": "独裁主义的；专制的",
+          "exampleSentence": "Strict laws and regulations were enforced by harsh authoritarian rule.",
+          "examTag": "雅思"
+        },
+        {
+          "word": "circular",
+          "ipa": "/ˈsɜːkjələ(r)/",
+          "pos": "adj.",
+          "cefrLevel": "B2",
+          "definitionCn": "循环的；循环经济的",
+          "exampleSentence": "Today, at a time when only 7% of the global economy is circular.",
+          "examTag": "高考重点"
+        }
+      ],
       "tasks": {
-        "cloze": [],
-        "matching": []
+        "cloze": [
+          {
+            "id": "cloze-1",
+            "sentenceWithBlanks": "However, it was on the verge of ___ collapse.",
+            "blanks": [
+              "ecological"
+            ],
+            "fullSentence": "However, it was on the verge of ecological collapse.",
+            "startSeconds": 19
+          },
+          {
+            "id": "cloze-2",
+            "sentenceWithBlanks": "Years of intense logging had led to massive ___.",
+            "blanks": [
+              "deforestation"
+            ],
+            "fullSentence": "Years of intense logging had led to massive deforestation.",
+            "startSeconds": 23
+          },
+          {
+            "id": "cloze-3",
+            "sentenceWithBlanks": "They drew upon the concept of motainai, which emphasized not ___ resources.",
+            "blanks": [
+              "wasting"
+            ],
+            "fullSentence": "They drew upon the concept of motainai, which emphasized not wasting resources.",
+            "startSeconds": 123
+          },
+          {
+            "id": "cloze-4",
+            "sentenceWithBlanks": "To curb demands for timber, strict ___ rules were introduced.",
+            "blanks": [
+              "rationing"
+            ],
+            "fullSentence": "To curb demands for timber, strict rationing rules were introduced.",
+            "startSeconds": 152
+          },
+          {
+            "id": "cloze-5",
+            "sentenceWithBlanks": "Edo reminds us that we can create economies driven not by ___ and waste.",
+            "blanks": [
+              "consumption"
+            ],
+            "fullSentence": "Edo reminds us that we can create economies driven not by consumption and waste.",
+            "startSeconds": 325
+          }
+        ],
+        "matching": [
+          {
+            "id": "match-1",
+            "summaryText": "Ecological crisis: severe deforestation and timber shortages",
+            "timestampSeconds": 19,
+            "formattedTime": "00:19"
+          },
+          {
+            "id": "match-2",
+            "summaryText": "The Motainai philosophy: reforestation and zero-waste industries",
+            "timestampSeconds": 123,
+            "formattedTime": "02:03"
+          },
+          {
+            "id": "match-3",
+            "summaryText": "Kintsugi gold repair and boro patchwork traditions",
+            "timestampSeconds": 208,
+            "formattedTime": "03:28"
+          }
+        ]
       },
-      "shadowingSegments": []
+      "shadowingSegments": [
+        {
+          "id": "seg-1",
+          "startSeconds": 123,
+          "endSeconds": 147,
+          "transcript": "They drew upon the Buddhist concept of motainai, which emphasized not wasting resources and being satisfied with just enough. Realizing the extent of ecological destruction, the shoguns introduced limitations on logging and launched sprawling reforestation programs.",
+          "transcriptCn": "他们借鉴了佛教‘motainai’（物尽其用）的理念，强调不浪费资源，知足常乐。在意识到生态破坏的严重程度后，幕府将军实施了砍伐限制，并启动了大规模的重新造林计划。"
+        },
+        {
+          "id": "seg-2",
+          "startSeconds": 306,
+          "endSeconds": 335,
+          "transcript": "Edo's transformation from a city teetering on ecological collapse to a thriving cultural epicenter shows us that what's broken can be repaired, and by doing so, we can create something even more beautiful.",
+          "transcriptCn": "江户从一座在生态崩溃边缘摇摇欲坠的城市转变为繁荣的文化中心，这告诉我们：破碎的事物可以被修复，而在修复的过程中，我们能够创造出更加美丽的事物。"
+        }
+      ]
     }
   ]
 }
