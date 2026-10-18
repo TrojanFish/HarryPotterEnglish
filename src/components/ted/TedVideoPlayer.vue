@@ -116,15 +116,16 @@
         </div>
 
         <!-- Mobile Cue List -->
-        <div v-else class="space-y-3">
+        <div v-else class="space-y-3 pb-24">
           <div
             v-for="(cue, i) in enCues"
             :key="cue.id ?? i"
+            :ref="(el) => setMobileCueRef(el, i)"
             @click="setLoopCue(i)"
-            class="p-3 rounded-xl transition-all border cursor-pointer"
+            class="p-3 rounded-xl transition-all border cursor-pointer scroll-my-16"
             :class="[
               tedStore.activeCueIndex === i
-                ? 'border-l-4 border-amber-400 bg-amber-500/10'
+                ? 'border-l-4 border-amber-500 bg-amber-500/10 opacity-100'
                 : 'border-transparent opacity-40 hover:opacity-80'
             ]"
           >
@@ -266,16 +267,16 @@
       </div>
 
       <!-- Subtitle Cue Items -->
-      <div v-else class="flex-1 p-3 space-y-2.5">
+      <div v-else class="flex-1 p-3 space-y-2.5 pt-4 pb-36">
         <div
           v-for="(cue, i) in enCues"
           :key="cue.id ?? i"
           :ref="(el) => setCueRef(el, i)"
           @click="setLoopCue(i)"
-          class="p-3 rounded-xl transition-all border cursor-pointer select-text"
+          class="p-3 rounded-xl transition-all border cursor-pointer select-text scroll-my-20"
           :class="[
             tedStore.activeCueIndex === i
-              ? 'border-l-4 border-amber-400 bg-amber-500/10 opacity-100'
+              ? 'border-l-4 border-amber-500 bg-amber-500/10 opacity-100 shadow-xs'
               : 'border-transparent opacity-40 hover:opacity-80'
           ]"
         >
@@ -342,7 +343,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import {
   Play,
   Pause,
@@ -376,6 +377,7 @@ const videoRef = ref(null)
 const playerContainerRef = ref(null)
 const subtitleListContainerRef = ref(null)
 const cueElementRefs = ref([])
+const mobileCueElementRefs = ref([])
 
 // --- Draggable Splitter Width Management ---
 const DEFAULT_PANEL_WIDTH = 360
@@ -529,6 +531,12 @@ function setCueRef(el, index) {
   }
 }
 
+function setMobileCueRef(el, index) {
+  if (el) {
+    mobileCueElementRefs.value[index] = el
+  }
+}
+
 // VTT Loading with cache-busting to guarantee latest bilingual subtitles, with instant fallback to embedded VTT
 async function loadVtt(src) {
   // 1. Immediately initialize with embedded bilingual subtitleVtt if available on current talk
@@ -583,17 +591,33 @@ watch(
   { immediate: true }
 )
 
-// Autoscroll active cue in desktop subtitle list
+// Autoscroll active cue in desktop & mobile subtitle lists to comfortable vertical center
 watch(
   () => tedStore.activeCueIndex,
   (newIdx) => {
-    if (newIdx !== -1 && cueElementRefs.value[newIdx]) {
-      try {
-        cueElementRefs.value[newIdx].scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest'
-        })
-      } catch {}
+    if (newIdx !== -1) {
+      nextTick(() => {
+        // Desktop / Tablet subtitle panel
+        const desktopEl = cueElementRefs.value[newIdx]
+        if (desktopEl && typeof desktopEl.scrollIntoView === 'function') {
+          try {
+            desktopEl.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            })
+          } catch {}
+        }
+        // Mobile in-flow subtitle stream
+        const mobileEl = mobileCueElementRefs.value[newIdx]
+        if (mobileEl && typeof mobileEl.scrollIntoView === 'function') {
+          try {
+            mobileEl.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            })
+          } catch {}
+        }
+      })
     }
   }
 )

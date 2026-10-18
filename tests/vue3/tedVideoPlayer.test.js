@@ -88,6 +88,11 @@ describe('TedVideoPlayer.vue', () => {
     assert.ok(src.includes('currentTalk?.speaker'), 'Missing currentTalk?.speaker binding for currentSpeaker')
   })
 
+  it('autoscrolls active cue with smooth center alignment (block: center) to prevent bottom cutoff', () => {
+    assert.ok(src.includes("block: 'center'") || src.includes('block: "center"'), 'Must use block: "center" for active cue autoscroll')
+    assert.ok(src.includes('nextTick'), 'Must use nextTick to ensure DOM is rendered before scrollIntoView')
+  })
+
   it('is a valid Vue 3 SFC', () => {
     assert.ok(existsSync(FILE_PATH), 'TedVideoPlayer.vue must exist')
     const { descriptor, errors } = parse(src)
