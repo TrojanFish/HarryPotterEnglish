@@ -1,5 +1,5 @@
 // Hogwarts Audio English - PWA Service Worker
-const CACHE_NAME = 'hogwarts-audio-v1.3';
+const CACHE_NAME = 'hogwarts-audio-v1.4';
 
 // Static Shell Assets to pre-cache
 const PRECACHE_ASSETS = [
@@ -58,8 +58,11 @@ self.addEventListener('fetch', (event) => {
       fetch(event.request)
         .then((response) => {
           if (response.status === 200) {
-            const resClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('text/html')) {
+              const resClone = response.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+            }
           }
           return response;
         })

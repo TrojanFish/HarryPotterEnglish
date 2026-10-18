@@ -122,7 +122,8 @@ export const useTedStore = defineStore('ted', {
                 shadowingSegments:
                   Array.isArray(remoteTalk.shadowingSegments) && remoteTalk.shadowingSegments.length > 0
                     ? remoteTalk.shadowingSegments
-                    : localMatch.shadowingSegments
+                    : localMatch.shadowingSegments,
+                subtitleVtt: remoteTalk.subtitleVtt || localMatch.subtitleVtt
               }
             })
 

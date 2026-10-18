@@ -80,6 +80,14 @@ describe('TedVideoPlayer.vue', () => {
     assert.ok(src.includes("cache: 'no-cache'") || src.includes('cache: "no-cache"'), 'Missing cache: "no-cache" option in loadVtt fetch')
   })
 
+  it('loadVtt falls back to embedded subtitleVtt when network fetch fails or 404s', () => {
+    assert.ok(src.includes('subtitleVtt') || src.includes('vttContent'), 'Missing embedded subtitle fallback in loadVtt')
+  })
+
+  it('currentSpeaker binds to tedStore.currentTalk?.speaker', () => {
+    assert.ok(src.includes('currentTalk?.speaker'), 'Missing currentTalk?.speaker binding for currentSpeaker')
+  })
+
   it('is a valid Vue 3 SFC', () => {
     assert.ok(existsSync(FILE_PATH), 'TedVideoPlayer.vue must exist')
     const { descriptor, errors } = parse(src)

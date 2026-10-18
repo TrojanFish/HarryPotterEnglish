@@ -369,7 +369,7 @@ const tedStore = useTedStore()
 const activeContextQuote = ref('')
 
 const currentSpeaker = computed(() => {
-  return tedStore.selectedTalk?.speaker || '演讲者'
+  return tedStore.currentTalk?.speaker || tedStore.selectedTalk?.speaker || '演讲者'
 })
 
 const videoRef = ref(null)
@@ -529,30 +529,55 @@ function setCueRef(el, index) {
   }
 }
 
-// VTT Loading with cache-busting to guarantee latest bilingual subtitles
+// VTT Loading with cache-busting to guarantee latest bilingual subtitles, with instant fallback to embedded VTT
 async function loadVtt(src) {
-  if (!src) {
+  // 1. Immediately initialize with embedded bilingual subtitleVtt if available on current talk
+  const fallbackVtt = tedStore.currentTalk?.subtitleVtt || tedStore.selectedTalk?.subtitleVtt
+  if (fallbackVtt) {
+    const fallbackParsed = parseBilingualVtt(fallbackVtt)
+    if (fallbackParsed.enCues?.length > 0) {
+      enCues.value = fallbackParsed.enCues
+      zhCues.value = fallbackParsed.zhCues || []
+    }
+  } else if (!src) {
     enCues.value = []
     zhCues.value = []
     return
   }
+
+  if (!src) return
+
   try {
     const separator = src.includes('?') ? '&' : '?'
     const bustUrl = `${src}${separator}_t=${Date.now()}`
     const res = await fetch(bustUrl, { cache: 'no-cache' })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const text = await res.text()
+    if (!text || text.trim().startsWith('<')) {
+      throw new Error('Received HTML error page instead of VTT')
+    }
     const parsed = parseBilingualVtt(text)
-    enCues.value = parsed.enCues || []
-    zhCues.value = parsed.zhCues || []
+    if (parsed.enCues?.length > 0) {
+      enCues.value = parsed.enCues
+      zhCues.value = parsed.zhCues || []
+    } else if (fallbackVtt) {
+      const fallbackParsed = parseBilingualVtt(fallbackVtt)
+      enCues.value = fallbackParsed.enCues || []
+      zhCues.value = fallbackParsed.zhCues || []
+    }
   } catch (err) {
-    console.warn('[TedVideoPlayer] Failed to load VTT:', err?.message)
+    console.warn('[TedVideoPlayer] Failed to load VTT from network, using embedded fallback:', err?.message)
+    if (fallbackVtt && (!enCues.value || enCues.value.length === 0)) {
+      const fallbackParsed = parseBilingualVtt(fallbackVtt)
+      enCues.value = fallbackParsed.enCues || []
+      zhCues.value = fallbackParsed.zhCues || []
+    }
   }
 }
 
 watch(
-  () => tedStore.vttSrc,
-  (newSrc) => {
+  () => [tedStore.vttSrc, tedStore.selectedTalkId],
+  ([newSrc]) => {
     loadVtt(newSrc)
   },
   { immediate: true }

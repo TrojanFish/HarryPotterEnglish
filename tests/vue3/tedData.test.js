@@ -16,6 +16,13 @@ describe('TALKS', () => {
     const v = TALKS[0].vocabSet[0]
     assert.ok(v.word && v.ipa && v.pos && v.cefrLevel && v.definitionCn && v.exampleSentence)
   })
+  it('talk 2 (Japan collapse) has embedded bilingual subtitle fallback with 69 cues', () => {
+    const t = TALKS[1]
+    assert.ok(t.subtitleVtt && t.subtitleVtt.length > 0, 'Must have subtitleVtt embedded')
+    const { enCues, zhCues } = parseBilingualVtt(t.subtitleVtt)
+    assert.equal(enCues.length, 69, 'Must have 69 English cues')
+    assert.equal(zhCues.length, 69, 'Must have 69 Chinese cues')
+  })
 })
 
 describe('resolveVideoStreamUrl', () => {
@@ -33,8 +40,12 @@ describe('resolveVideoStreamUrl', () => {
 })
 
 describe('resolveTedSubtitleUrl', () => {
-  it('maps vttKey to /api/subtitles/ path', () => {
+  it('maps vttKey to /api/subtitles/ path when no CDN', () => {
     assert.equal(resolveTedSubtitleUrl('ted/foo/subtitle.vtt'), '/api/subtitles/ted/foo/subtitle.vtt')
+  })
+  it('returns CDN URL when customCdnDomain provided', () => {
+    const url = resolveTedSubtitleUrl('ted/foo/subtitle.vtt', '', 'https://cdn.example.com')
+    assert.equal(url, 'https://cdn.example.com/ted/foo/subtitle.vtt')
   })
 })
 

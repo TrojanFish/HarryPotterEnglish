@@ -1,6 +1,280 @@
-/**
- * TED Talks data repository and URL resolvers
- */
+export const JAPAN_TED_SUBTITLE_VTT = `WEBVTT - Hogwarts Audio Bilingual Subtitles
+
+00:07.060 --> 00:14.200
+400 years ago, modern-day Tokyo was known as Edo, and it was already one of the biggest
+400 年前，现代的东京被称为江户，它已经是最大的东京之一
+
+00:14.200 --> 00:18.840
+cities in the world, with a population approaching one million.
+世界上人口接近百万的城市。
+
+00:19.360 --> 00:23.280
+However, it was on the verge of ecological collapse.
+然而，它正处于生态崩溃的边缘。
+
+00:23.960 --> 00:28.000
+Years of intense logging had led to massive deforestation.
+多年的密集伐木导致了大规模的森林砍伐。
+
+00:28.260 --> 00:33.900
+The city now faced timber shortages and the impacts of severe erosion
+该市现在面临木材短缺和严重侵蚀的影响
+
+00:33.900 --> 00:37.300
+and frequent flooding that threatened food supplies.
+频繁的洪水威胁着粮食供应。
+
+00:37.790 --> 00:43.970
+But over just a few decades, Edo will transform and become one of the most sustainable
+但在短短几十年内，江户将发生转变并成为最可持续发展的地区之一
+
+00:43.970 --> 00:46.170
+and efficient cities in history.
+历史上高效的城市。
+
+00:46.470 --> 00:50.670
+So, how did this city that wasted nothing come about?
+那么，这座不浪费的城市是怎么来的呢？
+
+00:51.540 --> 01:00.520
+In 1467, Japan entered a series of continuous, bloody civil wars that would last over a century.
+1467 年，日本陷入了一系列持续不断的血腥内战，持续了数年之久。 一个世纪。
+
+01:00.300 --> 01:06.960
+But in 1600, Tokugawa Ieyasu defeated his warlord rivals
+但在 1600 年，德川家康击败了他的军阀对手
+
+01:06.960 --> 01:09.720
+and unified Japan under his rule.
+并在他的统治下统一了日本。
+
+01:10.060 --> 01:13.940
+This marked the beginning of the Tokugawa shogunate's reign,
+这标志着德川幕府统治的开始，
+
+01:14.220 --> 01:18.520
+which lasted from 1603 through 1867.
+从 1603 年持续到 1867 年。
+
+01:19.370 --> 01:25.670
+During this time, Ieyasu and the shoguns who succeeded him enacted a series of sweeping
+在此期间，家康和继任他的幕府将军制定了一系列扫荡行动。
+
+01:25.670 --> 01:31.030
+reforms that reshaped the country's economy, landscape, and culture.
+重塑国家经济、景观的改革 和文化。
+
+01:31.590 --> 01:38.470
+Concerned over the growing influence of outside powers, the shoguns imposed severe limitations
+由于担心外部势力的影响力日益增强，幕府将军施加了严格的限制
+
+01:38.470 --> 01:39.890
+on foreign relations.
+关于对外关系。
+
+01:40.210 --> 01:46.810
+They banned foreign traders from entering the country and heavily restricted citizens from leaving.
+他们禁止外国商人进入该国并严格限制公民 从离开。
+
+01:47.850 --> 01:54.130
+To make up for the sudden decrease in imported goods, the Tokugawa shoguns invested heavily
+为了弥补进口商品的突然减少，德川幕府投入巨资
+
+01:54.130 --> 01:59.730
+in increasing internal production while decreasing consumption and waste.
+增加内部生产同时减少消费 和浪费。
+
+01:59.950 --> 02:02.850
+These practices were not entirely new.
+这些做法并不是全新的。
+
+02:03.150 --> 02:09.230
+They drew upon the Buddhist concept of motainai, which emphasized not wasting resources
+他们借鉴了佛教的 motainai 概念，强调不要浪费资源
+
+02:09.230 --> 02:12.050
+and being satisfied with just enough.
+并满足于刚刚好。
+
+02:13.010 --> 02:18.170
+Realizing the extent of ecological destruction impacting the capital city,
+意识到生态破坏对首都的影响程度，
+
+02:18.490 --> 02:22.930
+Edo, the Tokugawa shoguns introduced limitations on logging
+江户时代，德川将军引入了伐木限制
+
+02:22.930 --> 02:26.750
+and launched sprawling reforestation programs.
+并启动了庞大的重新造林计划。
+
+02:27.310 --> 02:32.730
+Local villagers were required, and later paid, to plant millions of trees.
+当地村民被要求种植数百万棵树，后来又得到报酬。
+
+02:32.930 --> 02:37.430
+To curb demands for timber, strict rationing rules were introduced,
+为了抑制对木材的需求，引入了严格的配给规则，
+
+02:37.670 --> 02:44.030
+and houses were built with standardized wooden components that could be disassembled and reused.
+房屋是用可拆卸的标准化木构件建造的 并重复使用。
+
+02:44.350 --> 02:49.830
+Soon, entire industries grew around eliminating the city's waste.
+很快，整个行业都围绕消除城市垃圾而发展。
+
+02:50.270 --> 02:55.430
+Residents used agricultural byproducts, like rice straw, to make rope
+居民使用稻草等农业副产品来制造绳索
+
+02:55.430 --> 02:56.850
+and packaging material.
+和包装材料。
+
+02:57.290 --> 03:00.770
+Candle wax drippings were saved and remolded.
+烛蜡滴被保存并重塑。
+
+03:01.110 --> 03:06.410
+Craftsmen repaired old umbrellas and worn-out sandals, rather than tossing them.
+工匠们修复旧雨伞和破旧凉鞋，而不是扔掉它们。
+
+03:06.410 --> 03:10.590
+Even human waste was collected and turned into fertilizer.
+甚至人类排泄物也被收集起来并转化为肥料。
+
+03:11.760 --> 03:15.920
+Within households, families developed techniques to reuse
+在家庭内部，家庭开发了重复利用的技术
+
+03:15.920 --> 03:19.020
+or repurpose items, rather than discarding them.
+或重新利用物品，而不是丢弃它们。
+
+03:19.580 --> 03:21.840
+Kimonos were continuously mended.
+和服不断地修补。
+
+03:22.340 --> 03:26.820
+When the fabric was too frayed for repair, it was used to cover futons,
+当织物磨损得无法修复时，它被用来覆盖蒲团，
+
+03:27.080 --> 03:32.820
+then cut into diapers or cleaning cloths, before finally being burned as fuel.
+然后切成尿布或清洁布，最后作为燃料燃烧。
+
+03:33.230 --> 03:40.590
+Artisans deftly repaired ceramics using kintsugi, where broken pieces are plastered together
+工匠们巧妙地使用金继修复陶瓷，将破碎的碎片粘在一起
+
+03:40.590 --> 03:43.810
+and the fracture lines brushed with gold lacquer.
+骨折线刷有金漆。
+
+03:44.250 --> 03:50.030
+A tradition known as boro developed, in which fragments of old cloth were sewn together
+一种被称为“boro”的传统得以发展，其中旧布料的碎片被缝在一起
+
+03:50.030 --> 03:55.230
+to create beautifully patchworked garments that were then passed down for generations.
+创造出精美的拼接服装，并代代相传。
+
+03:56.180 --> 04:03.060
+Meanwhile, poetry, theater, and literature flourished, as did the study of Chinese Confucianism
+与此同时，诗歌、戏剧和文学蓬勃发展，中国儒学研究也蓬勃发展。
+
+04:03.060 --> 04:07.400
+and European scientific texts, which were welcomed in the country,
+和欧洲科学文献，在该国受到欢迎，
+
+04:07.660 --> 04:09.200
+even as their authors were not.
+即使他们的作者不是。
+
+04:09.900 --> 04:14.720
+Yet, while the Tokugawa period was marked by achievements in sustainability
+然而，虽然德川时代在可持续发展方面取得了成就
+
+04:14.720 --> 04:17.300
+and art, it wasn't without its flaws.
+和艺术一样，它也并非没有缺陷。
+
+04:17.800 --> 04:22.720
+Strict laws and regulations were enforced by harsh authoritarian rule.
+严格的法律法规是由严厉的独裁统治执行的。
+
+04:22.960 --> 04:27.480
+It was a feudal society, rife with social and economic inequality.
+那是一个封建社会，充满了社会和经济不平等。
+
+04:27.480 --> 04:33.260
+The majority peasant population, for example, was forced to pay an often crippling rice
+例如，大多数农民被迫支付经常导致严重损失的大米费用。
+
+04:33.260 --> 04:37.620
+tax called nengu to regional lords known as daimo.
+称为“nengu”的税收向称为“daimo”的地区领主征收。
+
+04:38.310 --> 04:43.570
+And by the second half of the 19th century, the country faced rising inflation,
+到了 19 世纪下半叶，该国面临着不断上升的通货膨胀，
+
+04:43.830 --> 04:48.030
+destabilizing its economy, and increasing external pressure,
+经济不稳定，外部压力加大，
+
+04:48.310 --> 04:51.230
+including the United States' use of military power.
+包括美国对军事力量的使用。
+
+04:51.590 --> 04:56.070
+All of this forced Japan to reopen its doors to foreign trade
+这一切迫使日本重新开放对外贸易大门
+
+04:56.070 --> 05:01.010
+and influence, and ultimately led to the end of the Tokugawa shogunate's reign.
+和影响，最终导致德川幕府统治的结束。
+
+05:01.800 --> 05:06.020
+Despite these challenges, this period can serve as a powerful lesson.
+尽管存在这些挑战，这一时期可以作为一个强有力的教训。
+
+05:06.480 --> 05:12.220
+Edo's transformation from a city teetering on ecological collapse to a thriving cultural
+江户从生态崩溃的城市转变为繁荣的文化
+
+05:12.220 --> 05:15.740
+epicenter shows us that what's broken can be repaired,
+震中向我们展示了损坏的东西是可以修复的，
+
+05:16.020 --> 05:19.480
+and by doing so, we can create something even more beautiful.
+通过这样做，我们可以创造出更美丽的东西。
+
+05:19.480 --> 05:25.140
+Today, at a time when only 7% of the global economy is circular,
+如今，当全球经济只有 7% 是循环经济时，
+
+05:25.840 --> 05:31.260
+Edo's history also reminds us that we can create economies driven not by consumption
+江户的历史也提醒我们，我们可以创造不由消费驱动的经济
+
+05:31.260 --> 05:35.780
+and waste, but rather by making the most of limited resources.
+和浪费，而是通过充分利用有限的资源。
+
+05:36.680 --> 05:42.860
+So, what could the future look like if we harness our technology to create a more sustainable world?
+那么，如果我们利用我们的技术创造一个更可持续的世界，未来会是什么样子？
+
+05:42.760 --> 05:45.240
+Take a look at the possibilities with this video.
+看看这个视频的可能性。
+
+05:45.560 --> 05:52.320
+Or, learn about how consumers are pushing for the right to repair products they buy on their own with this video.
+或者，通过这个视频了解消费者如何争取自行维修所购产品的权利。`
 
 export const TALKS = [
   {
@@ -186,6 +460,7 @@ export const TALKS = [
     topicTags: ['environment', 'history', 'sustainability'],
     videoKey: 'ted/20260106-how-japan-saved-its-biggest-city-from-collapse-roman/video.mp4',
     vttKey: 'ted/20260106-how-japan-saved-its-biggest-city-from-collapse-roman/subtitle.vtt',
+    subtitleVtt: JAPAN_TED_SUBTITLE_VTT,
     thumbnailKey: 'ted/20260106-how-japan-saved-its-biggest-city-from-collapse-roman/cover.jpg',
     vocabSet: [
       {
@@ -396,8 +671,22 @@ export function resolveVideoStreamUrl(videoKey, apiBase = '', customCdnDomain = 
  * @param {string} [apiBase=''] - Optional base URL prefix
  * @returns {string} Resolved VTT URL
  */
-export function resolveTedSubtitleUrl(vttKey, apiBase = '') {
+export function resolveTedSubtitleUrl(vttKey, apiBase = '', customCdnDomain = null) {
   if (!vttKey) return ''
+
+  const cdn =
+    customCdnDomain ||
+    (typeof import.meta !== 'undefined' && import.meta.env?.VITE_R2_PUBLIC_DOMAIN) ||
+    (typeof window !== 'undefined' && window.__HP_CDN_DOMAIN__) ||
+    ''
+
+  if (cdn) {
+    const cleanDomain = cdn.replace(/\/+$/, '')
+    const cleanKey = vttKey.replace(/^\/+/, '')
+    const prefix = cleanDomain.startsWith('http') ? cleanDomain : `https://${cleanDomain}`
+    return `${prefix}/${cleanKey}`
+  }
+
   const cleanApiBase = apiBase ? apiBase.replace(/\/+$/, '') : ''
   const cleanKey = vttKey.replace(/^\/+/, '')
   return `${cleanApiBase}/api/subtitles/${cleanKey}`
