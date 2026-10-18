@@ -75,6 +75,11 @@ describe('TedVideoPlayer.vue', () => {
     assert.ok(src.includes('GripVertical'), 'Missing GripVertical icon')
   })
 
+  it('loadVtt appends cache-busting timestamp and passes no-cache option to bust browser disk cache', () => {
+    assert.ok(src.includes('_t=') || src.includes('Date.now()'), 'Missing cache-busting timestamp parameter in loadVtt')
+    assert.ok(src.includes("cache: 'no-cache'") || src.includes('cache: "no-cache"'), 'Missing cache: "no-cache" option in loadVtt fetch')
+  })
+
   it('is a valid Vue 3 SFC', () => {
     assert.ok(existsSync(FILE_PATH), 'TedVideoPlayer.vue must exist')
     const { descriptor, errors } = parse(src)

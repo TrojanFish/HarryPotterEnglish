@@ -83,7 +83,7 @@ export function r2DevPlugin() {
         try {
           const text = fs.readFileSync(localFilePath, 'utf8')
           res.setHeader('Content-Type', 'text/vtt; charset=utf-8')
-          res.setHeader('Cache-Control', 'public, max-age=86400')
+          res.setHeader('Cache-Control', 'no-cache, must-revalidate')
           res.end(text)
           return
         } catch (readErr) {
@@ -98,7 +98,7 @@ export function r2DevPlugin() {
         const response = await s3Client.send(command)
         const text = await response.Body.transformToString()
         res.setHeader('Content-Type', 'text/vtt; charset=utf-8')
-        res.setHeader('Cache-Control', 'public, max-age=86400')
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate')
         res.end(text)
         return
       } catch (err) {

@@ -682,11 +682,16 @@ app.get('/api/subtitles/*', async (req, res) => {
   let key = req.params[0];
   if (!key.endsWith('.vtt')) key = `${key}.vtt`;
 
+  const bypassCache = Boolean(req.query.refresh || req.query._t || req.query.t);
+  if (bypassCache) {
+    subtitleCache.delete(key);
+  }
+
   // Memory Cache Hit
-  if (subtitleCache.has(key)) {
+  if (!bypassCache && subtitleCache.has(key)) {
     res.set({
       'Content-Type': 'text/vtt; charset=utf-8',
-      'Cache-Control': 'public, max-age=86400, stale-while-revalidate=3600',
+      'Cache-Control': 'no-cache, must-revalidate',
       'X-Cache': 'HIT-MEMORY',
     });
     return res.send(subtitleCache.get(key));
@@ -700,7 +705,7 @@ app.get('/api/subtitles/*', async (req, res) => {
       subtitleCache.set(key, vttContent);
       res.set({
         'Content-Type': 'text/vtt; charset=utf-8',
-        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=3600',
+        'Cache-Control': 'no-cache, must-revalidate',
         'X-Cache': 'HIT-LOCAL',
       });
       return res.send(vttContent);
@@ -723,7 +728,7 @@ app.get('/api/subtitles/*', async (req, res) => {
 
     res.set({
       'Content-Type': 'text/vtt; charset=utf-8',
-      'Cache-Control': 'public, max-age=86400, stale-while-revalidate=3600',
+      'Cache-Control': 'no-cache, must-revalidate',
       'X-Cache': 'MISS',
     });
     res.send(vttContent);

@@ -82,9 +82,17 @@
             <Mic class="w-3.5 h-3.5 text-amber-800 shrink-0" aria-hidden="true" />
             <span class="truncate">{{ currentSpeaker }}</span>
           </div>
-          <span class="text-xs font-mono font-bold text-amber-900 bg-amber-100/80 px-2 py-0.5 rounded-md border border-amber-200">
-            {{ enCues.length }} 句
-          </span>
+          <div class="flex items-center gap-1.5">
+            <span
+              v-if="zhCues.length > 0"
+              class="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200"
+            >
+              中英双语
+            </span>
+            <span class="text-xs font-mono font-bold text-amber-900 bg-amber-100/80 px-2 py-0.5 rounded-md border border-amber-200">
+              {{ enCues.length }} 句
+            </span>
+          </div>
         </div>
 
         <!-- Blind mode overlay for mobile -->
@@ -205,6 +213,12 @@
             <Mic class="w-3.5 h-3.5 text-amber-800 shrink-0" aria-hidden="true" />
             <span class="truncate max-w-[120px]">{{ currentSpeaker }}</span>
           </div>
+          <span
+            v-if="zhCues.length > 0"
+            class="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200"
+          >
+            中英双语
+          </span>
           <span class="text-xs font-mono font-bold text-amber-900 bg-amber-100/80 px-2 py-0.5 rounded-md border border-amber-200">
             {{ enCues.length }} 句
           </span>
@@ -515,7 +529,7 @@ function setCueRef(el, index) {
   }
 }
 
-// VTT Loading
+// VTT Loading with cache-busting to guarantee latest bilingual subtitles
 async function loadVtt(src) {
   if (!src) {
     enCues.value = []
@@ -523,7 +537,9 @@ async function loadVtt(src) {
     return
   }
   try {
-    const res = await fetch(src)
+    const separator = src.includes('?') ? '&' : '?'
+    const bustUrl = `${src}${separator}_t=${Date.now()}`
+    const res = await fetch(bustUrl, { cache: 'no-cache' })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const text = await res.text()
     const parsed = parseBilingualVtt(text)

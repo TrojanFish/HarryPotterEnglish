@@ -126,4 +126,15 @@ describe('TED R2 Auto-Discovery and Routes', () => {
     assert.ok(Array.isArray(data.talks));
     assert.equal(data.talks.length, 3);
   });
+
+  it('GET /api/subtitles/* returns VTT with no-cache and revalidation headers for fresh bilingual delivery', async () => {
+    const res = await fetch(`${baseUrl}/api/subtitles/ted/20260106-how-japan-saved-its-biggest-city-from-collapse-roman/subtitle.vtt?_t=${Date.now()}`);
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get('content-type'), 'text/vtt; charset=utf-8');
+    const cacheControl = res.headers.get('cache-control') || '';
+    assert.ok(cacheControl.includes('no-cache'), `Cache-Control must contain no-cache, got: ${cacheControl}`);
+    const body = await res.text();
+    assert.ok(body.includes('WEBVTT'), 'Response must be valid WebVTT');
+    assert.ok(/[\u4e00-\u9fff]/.test(body), 'Response must contain Chinese characters');
+  });
 });
